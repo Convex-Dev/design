@@ -6,10 +6,10 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 
 ## Current CADs
 
-Number         | Title                            | Status     | Author
----------------|----------------------------------|------------|------------
-[cad/1.md](1)  | Architecture                     | Initial    | Mike Anderson
-[cad/2.md](2)  | Encoding Format                  | Initial    | Mike Anderson
+| Number         | Title                            | Status     | Author
+| -------------  | -------------------------------- | ---------- | -----------
+| [cad/1.md](1)  | Architecture                     | Initial    | Mike Anderson
+| [cad/2.md](2)  | Encoding Format                  | Initial    | Mike Anderson
 
 ## Contributing
 
