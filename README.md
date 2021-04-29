@@ -10,14 +10,15 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | -------------    | -------------------------------- | ---------- | -----------
 | [CAD1](cad/1.md) | Architecture                     | Initial    | Mike Anderson
 | [CAD2](cad/2.md) | Encoding Format                  | Initial    | Mike Anderson
+|
 
 ## Convex Project Portfolio
 
 We are undertaking a number of projects under the umbrella of the Convex-Dev organisation.
 
 | Name                                                     | Description                             | Status     | Lead Dev.
-| -------------                                            | --------------------------------        | ---------- | -----------
-| [Convex](https://github.com/Convex-Dev/convex)           | Main Convex distrinution                | Active     | Mike
+| -------------                                            | --------------------------------        | ---------- | -----
+| [Convex](https://github.com/Convex-Dev/convex)           | Main Convex distribution                | Active     | Mike
 | [Convex](https://github.com/Convex-Dev/design)           | Architecture and design documents       | Active     | Mike
 | [convex-web](https://github.com/Convex-Dev/convex-web)   | convex.world website and live sandbox   | Active     | Pedro
 | [convexity](https://github.com/Convex-Dev/convexity)     | Mobile application and wallet           | Active     | Pedro
@@ -31,7 +32,9 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 ## Contributing
 
-Contributions from the community to add or improve this repository are welcome.
+Contributions to this repository are welcome.
+
+It is recommended that contributors discuss complex proposals with the broader community at the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
 
 ## License
 
