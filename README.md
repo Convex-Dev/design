@@ -6,12 +6,20 @@ This repository is dedicated to Convex Design and Documentation
 
 Convex Architecture Documents (CADs) are defined for standards relating to the Convex network and ecosystem, in a manner inspired by Internet RFCs
 
-| Code             | Title                            | Status     | Author
-| -------------    | -------------------------------- | ---------- | -----------
-| [CAD1](cad/1.md) | Architecture                     | Initial    | Mike Anderson
-| [CAD2](cad/2.md) | Encoding Format                  | Initial    | Mike Anderson
-| XXX              | Numerical Tower                  | Initial    | Mike Anderson
-|
+| Code                         | Title                            | Status     | Author
+| ------------------           | -------------------------------- | ---------- | -----------
+| [CAD1](cad/arch.md)          | Vision & Architecture            | Initial    | Mike Anderson
+| [CAD2](cad/values.md)        | CVM Values                       | Initial    | Mike Anderson
+| [CAD3](cad/encoding.md)      | Encoding Format                  | Initial    | Mike Anderson
+| [CAD4](cad/accounts.md)      | Account Model                    | Initial    | Mike Anderson
+| [CAD5](cad/cvmex.md)         | CVM Execution                    | Initial    | Mike Anderson
+| [CAD6](cad/memory.md)        | Memory Accounting                | Initial    | Mike Anderson
+| [CAD7](cad/juice.md)         | Juice Accounting                 | Initial    | Mike Anderson
+| [CAD8](cad/compiler.md)      | Convex Lisp Compiler             | Initial    | Mike Anderson
+| [CAD9](cad/expanders.md)     | Expanders and Macros             | Initial    | Mike Anderson
+| [CAD10](cad/transactions.md) | Transactions                     | Initial    | Mike Anderson
+| [CAD11](cad/errors.md)       | Error Handling                   | Initial    | Mike Anderson
+| [CAD12](cad/numerics.md)     | Numerics                         | Initial    | Mike Anderson
 
 ## Convex Project Portfolio
 
