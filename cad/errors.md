@@ -32,6 +32,15 @@ The reason for this decision is that the security and integrity of smart contrac
 
 As an alternative to catching Errors, CVM code SHOULD perform appropriate checks on preconditions before calling other code. If precoditions are not met, alternative handling may performed. 
 
+## Machanics
+
+An Error is said to be "thrown" when the execution of a CVM operation produces an exception of an Error type. There are two possibilities for this to occur:
+
+- The Error is thrown according to CVM runtime execution rules, for example during the execution of Core Runtime functionality.
+- The Error is thrown by user code explicitly calling the `fail` Runtime function.
+
+If an Error is thrown, normal execution is terminated and no normal result is produced by the CVM operation.
+
 ## Standard Error Codes
 
 The following are standard Error Codes that are recommended for use in the CVM
@@ -70,9 +79,15 @@ A `:NOBODY` Error should be returned whenever an attempt is made to access an Ac
 
 A `:STATE` Error SHOULD be returned when an operation is attempted that would possibly be legal, but fails in the current situation because of some information in the current CVM State not permitting it.
 
+### `:TODO`
+
+A `:TODO` Error SHOULD be thrown by code that is not yet complete, but may be later upgraded to full functionality. 
+
+This Error is probably most appropriate during development and testing, but could plausibly be used in production code that is designed to be upgraded at a later date.
+
 ### `:TRUST`
 
-A `:STATE` Error SHOULD be returned when an operation is attempted that is not permitted due to security or access control conditions. Typically, this would indicate an attempt to perform an action that the User is not allowed to perform.
+A `:TRUST` Error SHOULD be thrown when an operation is attempted that is not permitted due to security or access control conditions. Typically, this would indicate an attempt to perform an action that the User is not allowed to perform.
 
 ### `:FUNDS`
 
@@ -109,6 +124,19 @@ Otherwise, Core Runtime functions MUST return an `:ARGUMENT` Error when an argum
 Otherwise, Core Runtime functions MUST return an Error if their execution causes any CVM code to be executed that in turn causes an Error. CVM functions MAY, in certain cases, alter the Error Code or Message to provide additional information.
 
 Otherwise, Core Runtime Functions MUST NOT return an Error.
+
+### Fatal Errors
+
+The CVM MUST return a `:FATAL` error if any unexpected problem occurs the should not be legally possible during CVM execution (typically caused by a host runtime exception)
+
+A Peer that encounters a `:FATAL` error has a serious problem. Hardware failure, bugs in the CVM implementation or resource limitations of the host environment are all possibilities, all of which may cause the Peer to fail to correctly compute the updated CVM State in consensus.
+
+The Peer MAY attempt the following resolutions:
+
+- Retry the CVM execution, to see if it can recover from a transient error
+- Re-sync with other Peers that may not have encountered the failure
+
+Otherwise, Peers SHOULD shut down gracefully to prevent risk of loss (e.g. stake slashing) from failing to maintain consensus.
 
 ### Transaction handling
 
