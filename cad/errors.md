@@ -20,9 +20,9 @@ A difference in Error Code MUST NOT affect CVM State, however it MAY be returned
 
 ### Error Messages
 
-All Errors have a Message, which may be any CVM value.
+All Errors have a Message, which may be any CVM value (including `nil`). Error messages are returned alongside the Error Code when an Error is thrown, with the intention that this can be relayed to Clients.
 
-Messages SHOULD be meaningful, and human readable to facilitate debugging or appropriate notification to uses.
+Messages SHOULD be meaningful, and human readable to facilitate debugging or appropriate notification to Users.
 
 ### No catches
 
@@ -43,41 +43,45 @@ If an Error is thrown, normal execution is terminated and no normal result is pr
 
 ## Standard Error Codes
 
-The following are standard Error Codes that are recommended for use in the CVM
+The following are standard Error Codes that are recommended for use in the CVM. User code SHOULD follow these conventions where possible.
+
+### `:ARGUMENT`
+
+An `:ARGUMENT` Error SHOULD be thrown whenever a Function is passed an argument that is of an allowable Type for some reason is invalid (usually in relation to other arguments). An example would be attempting to put `assoc` a non-Blob value into a BlobMap (which only accepts Blobs as keys).
+
+If the argument is definitely of the wrong Type (i.e. would never be valid in any situation) then a `:CAST` Error should be thrown instead.
 
 ### `:ARITY`
 
-An `:ARITY` Error SHOULD be returned whenever an attempt is made to call a function with an invalid number of arguments.
+An `:ARITY` Error SHOULD be thrown whenever an attempt is made to call a Function with an illegal number of arguments.
 
 Note that a function may allow a variable number of arguments with a parameter declaration such as `[a & more]`. In such cases, code SHOULD still throw an `:ARITY` Error if the number of variable arguments is impermissible for any reason (e.g. requiring an odd number of arguments)
 
 ### `:ASSERT`
 
-An `:ASSERT` Error MAY be returned whenever a precodition for some code is not satifisied. In many cases, a more specific Error message may be appropriate or informative (e.g. `:CAST` or `:STATE`.
+An `:ASSERT` Error MAY be thrown whenever a precodition for some code is not satifisied. In many cases, a more specific Error message may be appropriate or informative (e.g. `:CAST` or `:STATE`.
 
 The Core function `assert` throws an `:ASSERT` error if any of its conditions evaluates to `false`
 
-### `:CAST`
-
-A `:CAST` Error SHOULD be returned whenever a function is passed an argument that is of the wrong Type.
-
-In particualar, a `:CAST` Error should be thrown whenever an attempt is made to explicitly or implicitly convert a value to a different Type, but the conversion is not permitted. 
-
-### `:ARGUMENT`
-
-An `:ARGUMENT` Error SHOULD be returned whenever code is passed an argument that is of an allowable Type, but for some reason is invaid in the situtation encountered. An example would be attempting to put `assoc` a non-Blob value into a BlobMap (which only accepts Blobs as keys).
-
 ### `:BOUNDS`
 
-An `:BOUNDS` Error SHOULD be returned whenever an attempt is made to access an indexed element of a countable collection when the index used does not exist.
+An `:BOUNDS` Error SHOULD be thrown whenever an attempt is made to access an indexed element of a countable collection when the index used does not exist.
+
+This Error is useful because it is more specific than `:ARGUMENT` when working with indexed collection.
+
+### `:CAST`
+
+A `:CAST` Error SHOULD be thrown whenever a Function is passed an argument that is of the wrong Type.
+
+In particualar, a `:CAST` Error SHOULD be thrown whenever an attempt is made to explicitly or implicitly convert a value to a different Type, but the conversion is not permitted. 
 
 ### `:NOBODY`
 
-A `:NOBODY` Error should be returned whenever an attempt is made to access an Account that does not exist. 
+A `:NOBODY` Error should be thrown whenever an attempt is made to access an Account that does not exist. 
 
 ### `:STATE`
 
-A `:STATE` Error SHOULD be returned when an operation is attempted that would possibly be legal, but fails in the current situation because of some information in the current CVM State not permitting it.
+A `:STATE` Error SHOULD be thrown when an operation is attempted that would possibly be legal, but fails in the current situation because of some information in the current CVM State not permitting it.
 
 ### `:TODO`
 
@@ -91,19 +95,19 @@ A `:TRUST` Error SHOULD be thrown when an operation is attempted that is not per
 
 ### `:FUNDS`
 
-A `:FUNDS` Error SHOULD be returned when an operation is attempted that fails because an Account has insufficient balance of Convex Coins (or another digital asset) to afford the operation.
+A `:FUNDS` Error SHOULD be thrown when an operation is attempted that fails because an Account has insufficient balance of Convex Coins (or another digital asset) to afford the operation.
 
 ### `:MEMORY`
 
-A `:MEMORY` Error SHOULD be returned when an operation is attempted that fails because an Account has insufficient Memory Allowance to complete the operation.
+A `:MEMORY` Error SHOULD be thrown when an operation is attempted that fails because an Account has insufficient Memory Allowance to complete the operation.
 
 ### `:JUICE`
 
-A `:JUICE` Error SHOULD be returned if the `*origin*` Account of the currently executing code has insufficent Convex Coin balance to pay the required Juice costs. User code MAY return this Error to indicate that an infeasibly expensive operation was attempted.
+A `:JUICE` Error SHOULD be thrown if the `*origin*` Account of the currently executing code has insufficent Convex Coin balance to pay the required Juice costs. User code MAY return this Error to indicate that an infeasibly expensive operation was attempted.
 
 ### `:UNDECLARED`
 
-An `:UNDECLARED` Error SHOULD be returned whenever an attempt is made to lookup a Symbol in an Account's Environment that is not defined.
+An `:UNDECLARED` Error SHOULD be thrown whenever an attempt is made to lookup a Symbol in an Account's Environment that is not defined.
 
 ## CVM Behaviour
 
