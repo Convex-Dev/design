@@ -10,11 +10,11 @@ Principle are rarely absolute. There are allways tradeoffs in engineering decisi
 
 Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known servere security defects.
 
-## Favour Simple over Convenient
+## Favour Simple over Easy
 
 Especially in API design, there may be a tendency to want to add new features for user convenience, e.g. additional optional arguments for Core functions.
 
-In such cases we SHOULD stongly resist the temptation to add additional complexity, and prefer the simplest possible implementation, especially within core Convex functionality. It is more important that core functionality is clean, simple and maintainable than easy to use. Users have a powerful language with macro capabilities if they wish to implement more convenient programmatic interfaces appropriate for their own use case or design tastes.
+In such cases we SHOULD stongly resist the temptation to add additional complexity, and prefer the simplest possible implementation, especially within core Convex functionality. It is more important that core functionality is clean, simple and maintainable than superficially easy to use. Users have a powerful language with macro capabilities if they wish to implement more convenient programmatic interfaces appropriate for their own use case or design tastes.
 
 ## Design for Composition
 
