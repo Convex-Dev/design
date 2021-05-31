@@ -22,9 +22,9 @@ Convex features should be explicitly designed to compose to enable higher-order 
 
 ## Think Agebraically
 
-Wherever possible, consideration should be given of the algebraic properties of Functions and Values. An algebraic approach lends itself well to cleaner, simpler definitions and well-behaved functionality.
+Wherever possible, consideration should be given of the algebraic properties of Functions and Values. An algebraic approach lends itself well to cleaner, simpler definitions and well-behaved functionality. As far as possible, we want Convex functionality to behave as pure mathematical constructs.
 
-Algebraic thinking may also be usefull when thinking about the "zero" case of function arities. This might be considered by treating the varargs parameter as a vector where consideration should be given to the case where this vector is empty e.g. 
+For example, Algebraic thinking may be useful when thinking about the "zero" case of function arities. This might be considered by treating the varargs parameter as a vector where consideration should be given to the case where this vector is empty e.g. 
 
 - `(apply + []) -> 0`
 - `(apply conj coll []) => 'coll'`
@@ -51,9 +51,9 @@ Mutability in implementations is permitted (e.g. a mutable cached value for perf
 
 ## Favour Explicit over Implicit
 
-We prefer to avoid implicit behaviour, and require operations to be explicitly requested.
+We prefer to avoid implicit behaviour, and generally require operations to be explicitly requested. It is better to throw an Error rather than having implicit behaviour (which creates implementation complexity and may not be what the user intended).
 
-This principle manifests, for example, in casting functions that generally avoid performing implicit casts between different Types.
+This principle manifests, for example, in the idea that most functions should avoid performing implicit casts between different Types. If a user wants a value to be cast to a different type, they should specify it explicitly, e.g. `(+ 1 (long 0x1234))` works but `(+ 1 0x1234)` should not.
 
 ## Bounded Resources
 
