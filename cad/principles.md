@@ -20,6 +20,17 @@ In such cases we SHOULD stongly resist the temptation to add additional complexi
 
 Convex features should be explicitly designed to compose to enable higher-order functionality to be built from simple, regular, well-behaved components.
 
+## Think Agebraically
+
+Wherever possible, consideration should be given of the algebraic properties of Functions and Values. An algebraic approach lends itself well to cleaner, simpler definitions and well-behaved functionality.
+
+Algebraic thinking may also be usefull when thinking about the "zero" case of function arities. This might be considered by treating the varargs parameter as a vector where consideration should be given to the case where this vector is empty e.g. 
+
+- `(apply + []) -> 0`
+- `(apply conj coll []) => 'coll'`
+- `(apply * []) => 1`
+- `(apply assoc m []) => m`
+
 ## Always be additive
 
 We can add functionality, we can't remove it (at least in released versions of Convex). We MUST always continue to support existing released functionality, since users may be depending on it.
