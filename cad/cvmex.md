@@ -129,8 +129,25 @@ Logical Structure:
 0x02 [<AddressOp> <SymOp>]
 ```
 
-The `Lookup` Op performs lookup of a vlaue in the current Context's Environment.
+The `Lookup` Op performs lookup of a value for a Symbol in the current Context's Environment.
 
+### `0x06` Def
+
+```
+Logical Structure:
+0x02 [<SymOrSyntax> <ValueOp>]
+```
+
+The `Def` Op defines the value of a Symbol in the current Context's Environment.
+
+The parameter (`SymOrSyntax`) must be either a Symbol or a Syntax Object containing a Symbol value. This restriction is enforced by Op validation.
+
+If a Syntax Object is provided for `SymOrStnax`, metadata from the Syntax Object is stored for the contained Symbol in current Context's Environment Metadata. Otherwise, any existing Metadata is unchanged.
+
+Note that in the compiler, `def` takes metadata from its value argument in the compiler and adds it to the Symbol if provided, hence the subtle difference:
+
+(def a (syntax 1 {:foo true})) defines a Syntax value
+(def b ^{:foo true} 1) defines the value 1 (with metadata on a)
 
 ### `0x40` - `0x7f` Special
 
