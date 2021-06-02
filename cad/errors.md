@@ -12,17 +12,19 @@ Other classes of Exception are used to signal special case handling e.g. `rollba
 
 ### Error Codes
 
-All Errors are defined to have a non-nil Error Code that describes the general nature of the Error.
+All Errors are defined to have a non-nil Error Code that describes the general nature of the Error. The Error code SHOULD provide information regarding the type or cause of the Error, in a way that may be interpreted appropriately by Clients.
 
-Error Codes SHOULD be Keywords by convention, though this is not enforced by the CVM and altrenative CVM types MAY be used.
+Error Codes SHOULD be Keywords (e.g. `:ASSERT`) by convention, though this is not enforced by the CVM and alternative CVM types MAY be used.
 
-A difference in Error Code MUST NOT affect CVM State, however it MAY be returned to Clients by Peers for informational purposes.
+The value of the Error Code MUST NOT affect CVM State, however it SHOULD be returned to Clients by Peers for informational purposes.
 
 ### Error Messages
 
 All Errors have a Message, which may be any CVM value (including `nil`). Error messages are returned alongside the Error Code when an Error is thrown, with the intention that this can be relayed to Clients.
 
 Messages SHOULD be meaningful, and human readable to facilitate debugging or appropriate notification to Users.
+
+The contents of the Message MUST NOT affect CVM State, however it SHOULD be returned to Clients by Peers for informational purposes.
 
 ### No catches
 
@@ -32,7 +34,7 @@ The reason for this decision is that the security and integrity of smart contrac
 
 As an alternative to catching Errors, CVM code SHOULD perform appropriate checks on preconditions before calling other code. If precoditions are not met, alternative handling may performed. 
 
-## Machanics
+## Mechanics
 
 An Error is said to be "thrown" when the execution of a CVM operation produces an exception of an Error type. There are two possibilities for this to occur:
 
@@ -117,30 +119,34 @@ Clients MAY assume that the CVM behaves consistently according to these rules, B
 
 ### Core Runtime functions
 
-Core Runtime functions MUST return an `:ARITY` Error if an invalid number of arguments is passed to a funtion.
+Core Runtime functions MUST throw an `:ARITY` Error if an invalid number of arguments is passed to a funtion.
 
-Otherwise, Core Runtime functions MUST return a `:CAST` Error when an argument of the wrong Type is provided.
+Otherwise, Core Runtime functions MUST throw a `:CAST` Error when an argument of the wrong Type is provided, or if an explicit cast function such as `blob` fails.
 
-Otherwise, Core Runtime functions MUST return a `:NOBODY` Error when an attempt is made to access an Account that does not exist.
+Otherwise, Core Runtime functions MUST throw a `:NOBODY` Error when an attempt is made to access an Account that does not exist.
 
-Otherwise, Core Runtime functions MUST return an `:ARGUMENT` Error when an argument of an allowable Type is provided, but the specific value is not permitted.
+Otherwise, Core Runtime functions MUST throw an `:ARGUMENT` Error when an argument of an allowable Type is provided, but the specific value is not permitted.
 
-Otherwise, Core Runtime functions MUST return an Error if their execution causes any CVM code to be executed that in turn causes an Error. CVM functions MAY, in certain cases, alter the Error Code or Message to provide additional information.
+Otherwise, Core Runtime functions MUST throw an Error if their execution causes any CVM code to be executed that in turn causes an Error. CVM functions MAY, in certain defined cases, alter the Error Code or Message to provide additional information.
 
 Otherwise, Core Runtime Functions MUST NOT return an Error.
 
-### Fatal Errors
+### Fatal Failures
 
-The CVM MUST return a `:FATAL` error if any unexpected problem occurs the should not be legally possible during CVM execution (typically caused by a host runtime exception)
+If the CVM encounters any condition that should not be legally possible during CVM execution (typically caused by a host runtime exception), it should regard this condition as a Fatal Failure
 
-A Peer that encounters a `:FATAL` error has a serious problem. Hardware failure, bugs in the CVM implementation or resource limitations of the host environment are all possibilities, all of which may cause the Peer to fail to correctly compute the updated CVM State in consensus.
+The CVM MUST report a `:FATAL` Error if any Fatal Failure occurs.
+
+The CVM MUST NOT interpret an Error thrown by user code as a Fatal Failure, but such Errors MAY still have the `:FATAL` Error Code.
+
+A Peer that encounters a Fatal Failure has a serious problem. Hardware failure, bugs in the CVM implementation or resource limitations of the host environment are all possibilities, all of which may cause the Peer to fail to correctly compute the updated CVM State in Consensus.
 
 The Peer MAY attempt the following resolutions:
 
 - Retry the CVM execution, to see if it can recover from a transient error
 - Re-sync with other Peers that may not have encountered the failure
 
-Otherwise, Peers SHOULD shut down gracefully to prevent risk of loss (e.g. stake slashing) from failing to maintain consensus.
+Otherwise, Peers SHOULD shut attempt to shut down gracefully to prevent risk of loss (e.g. stake slashing) from failing to maintain consensus. Peers MAY choose to act as a Client of another Peer to submit transactions as part of this process, for example to withdraw Peer Stake.
 
 ### Transaction handling
 
