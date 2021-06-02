@@ -20,6 +20,8 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD10](cad/transactions.md) | Transactions                     | Initial    | Mike Anderson
 | [CAD11](cad/errors.md)       | Error Handling                   | Initial    | Mike Anderson
 | [CAD12](cad/numerics.md)     | Numerics                         | Initial    | Mike Anderson
+| [CAD13](cad/edn.md)          | EDN Encoding                     | Initial    | Mike Anderson
+| [CAD14](cad/edn.md)          | CNS Registry                     | Initial    | Mike Anderson
 
 ## Convex Project Portfolio
 
@@ -41,7 +43,7 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 ## Contributing
 
-Contributions to this repository are welcome.
+Contributions to this repository are welcome. Contributors may clarify existing design documents, or propose new formal specification changes to Convex.
 
 It is recommended that contributors discuss complex proposals with the broader community at the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
 
