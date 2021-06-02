@@ -151,6 +151,23 @@ Note that in the compiler, `def` takes metadata from its value argument in the c
 
 ### `0x40` - `0x7f` Special
 
+Special Ops perform the computation of a Result based on the current Context, loeading it into the Result Register. Special Ops are high performance ways to make certain information in the Context available to CVM Code.
+
+#### `0x40 - *juice*`
+
+Gets the current Juice available in the Context. 
+
+#### TODO - complete Specials
+
+## Op Execution
+
+When executed in a given Context, every Op must do exactly one of the following:
+
+- Completes normally with some resulting Value loaded into the Context's Result Register
+- Throw an Exception, which may be caught an handled by the CVM at appropriate points (recur, return etc.)
+- Throw an Error, which is never caught
+
+
 
 ## Garbage Collection
 
