@@ -21,7 +21,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD11](cad/errors.md)       | Error Handling                   | Initial    | Mike Anderson
 | [CAD12](cad/numerics.md)     | Numerics                         | Initial    | Mike Anderson
 | [CAD13](cad/edn.md)          | EDN Encoding                     | Initial    | Mike Anderson
-| [CAD14](cad/edn.md)          | CNS Registry                     | Initial    | Mike Anderson
+| [CAD14](cad/cns.md)          | CNS Registry                     | Initial    | Mike Anderson
 
 ## Convex Project Portfolio
 
