@@ -4,17 +4,19 @@ This document details general design and engineering principles deployed in the 
 
 ## Apply Judgement
 
-Principle are rarely absolute. There are allways tradeoffs in engineering decisions that must be considered. Discussion is encouraged to ensure relevant aspects are considered from a number of perspectives.
+Principle are rarely absolute. There are always tradeoffs in engineering decisions that must be considered. Discussion is encouraged to ensure relevant aspects are considered from a number of perspectives.
 
 ## Security First
 
-Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known servere security defects.
+Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
 
 ## Favour Simple over Easy
 
 Especially in API design, there may be a tendency to want to add new features for user convenience, e.g. additional optional arguments for Core functions.
 
-In such cases we SHOULD stongly resist the temptation to add additional complexity, and prefer the simplest possible implementation, especially within core Convex functionality. It is more important that core functionality is clean, simple and maintainable than superficially easy to use. Users have a powerful language with macro capabilities if they wish to implement more convenient programmatic interfaces appropriate for their own use case or design tastes.
+In such cases we SHOULD strongly resist the temptation to add additional complexity, and prefer the simplest possible implementation, especially within core Convex functionality. It is more important that core functionality is clean, simple and maintainable than superficially easy to use. Users have a powerful language with macro capabilities if they wish to implement more convenient programmatic interfaces appropriate for their own use case or design tastes.
+
+An Excellent talk by Rich Hickey on this topic: https://www.infoq.com/presentations/Simple-Made-Easy-QCon-London-2012/
 
 ## Design for Composition
 
@@ -49,6 +51,8 @@ We adopt immutablility as a standard principle for all Values in Convex. Immutab
 
 Mutability in implementations is permitted (e.g. a mutable cached value for perfomance reasons), however such mutability should not be externally visible (e.g. should not affect the Encoding of Values)
 
+An important presentation on the topic: https://www.infoq.com/presentations/Value-Values/
+
 ## Favour Explicit over Implicit
 
 We prefer to avoid implicit behaviour, and generally require operations to be explicitly requested. It is better to throw an Error rather than having implicit behaviour (which creates implementation complexity and may not be what the user intended).
@@ -59,4 +63,4 @@ This principle manifests, for example, in the idea that most functions should av
 
 In most cases, it is necessary to place a bound on the size of resources used. This is essential to ensure that the CVM does not ever attempt to process data of unbounded size, which could allow DoS attacks by adversaries constructing arbitrarily sized input.
 
-Where CVM input may be effectively unbounded (e.g. the size of data structures such as Vectors), the CVM MUST never attempt O(n) or greater operations on such structures unless these operations are protected by roesource constraints (e.g. accounting for juice costs, memory allowances). 
+Where CVM input may be effectively unbounded (e.g. the size of data structures such as Vectors), the CVM MUST never attempt O(n) or greater operations on such structures unless these operations are protected by resource constraints (e.g. accounting for juice costs, memory allowances). 
