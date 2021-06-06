@@ -6,13 +6,22 @@ This repository is dedicated to Convex Design and Documentation
 
 Convex Architecture Documents (CADs) are defined for standards relating to the Convex network and ecosystem, in a manner inspired by Internet RFCs
 
-| Code             | Title                            | Status     | Author
-| -------------    | -------------------------------- | ---------- | -----------
-| [CAD1](cad/1.md) | Architecture                     | Initial    | Mike
-| [CAD2](cad/2.md) | Encoding Format                  | Initial    | Mike
-| XXX              | Numerical Tower                  | Initial    | Mike
-| XXX              | Time & Scheduling                | Initial    | Mike
-|
+| Code                         | Title                            | Status     | Author
+| ------------------           | -------------------------------- | ---------- | -----------
+| [CAD1](cad/arch.md)          | Vision & Architecture            | Initial    | Mike
+| [CAD2](cad/values.md)        | CVM Values                       | Initial    | Mike
+| [CAD3](cad/encoding.md)      | Encoding Format                  | Initial    | Mike
+| [CAD4](cad/accounts.md)      | Account Model                    | Initial    | Mike
+| [CAD5](cad/cvmex.md)         | CVM Execution                    | Initial    | Mike
+| [CAD6](cad/memory.md)        | Memory Accounting                | Initial    | Mike
+| [CAD7](cad/juice.md)         | Juice Accounting                 | Initial    | Mike
+| [CAD8](cad/compiler.md)      | Convex Lisp Compiler             | Initial    | Mike
+| [CAD9](cad/expanders.md)     | Expanders and Macros             | Initial    | Mike
+| [CAD10](cad/transactions.md) | Transactions                     | Initial    | Mike
+| [CAD11](cad/errors.md)       | Error Handling                   | Initial    | Mike
+| [CAD12](cad/numerics.md)     | Numerics                         | Initial    | Mike
+| [CAD13](cad/edn.md)          | EDN Encoding                     | Initial    | Mike
+| [CAD14](cad/cns.md)          | CNS Registry                     | Initial    | Mike
 
 ## Convex Project Portfolio
 
@@ -34,7 +43,7 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 ## Contributing
 
-Contributions to this repository are welcome.
+Contributions to this repository are welcome. Contributors may clarify existing design documents, or propose new formal specification changes to Convex.
 
 It is recommended that contributors discuss proposals with the broader community at the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
 
