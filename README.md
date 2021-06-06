@@ -8,9 +8,10 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 
 | Code             | Title                            | Status     | Author
 | -------------    | -------------------------------- | ---------- | -----------
-| [CAD1](cad/1.md) | Architecture                     | Initial    | Mike Anderson
-| [CAD2](cad/2.md) | Encoding Format                  | Initial    | Mike Anderson
-| XXX              | Numerical Tower                  | Initial    | Mike Anderson
+| [CAD1](cad/1.md) | Architecture                     | Initial    | Mike
+| [CAD2](cad/2.md) | Encoding Format                  | Initial    | Mike
+| XXX              | Numerical Tower                  | Initial    | Mike
+| XXX              | Time & Scheduling                | Initial    | Mike
 |
 
 ## Convex Project Portfolio
@@ -35,7 +36,7 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 Contributions to this repository are welcome.
 
-It is recommended that contributors discuss complex proposals with the broader community at the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
+It is recommended that contributors discuss proposals with the broader community at the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
 
 ## License
 
