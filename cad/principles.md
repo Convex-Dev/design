@@ -22,14 +22,14 @@ An Excellent talk by Rich Hickey on this topic: https://www.infoq.com/presentati
 
 Convex features should be explicitly designed to compose to enable higher-order functionality to be built from simple, regular, well-behaved components.
 
-## Think Agebraically
+## Think Algebraically
 
 Wherever possible, consideration should be given of the algebraic properties of Functions and Values. An algebraic approach lends itself well to cleaner, simpler definitions and well-behaved functionality. As far as possible, we want Convex functionality to behave as pure mathematical constructs.
 
 For example, Algebraic thinking may be useful when thinking about the "zero" case of function arities. This might be considered by treating the varargs parameter as a vector where consideration should be given to the case where this vector is empty e.g. 
 
 - `(apply + []) -> 0`
-- `(apply conj coll []) => 'coll'`
+- `(apply conj coll []) => coll`
 - `(apply * []) => 1`
 - `(apply assoc m []) => m`
 
@@ -42,14 +42,14 @@ This principle also applies to error conditions. We can permissibly turn a failu
 
 ## Values are Immutable
 
-We adopt immutablility as a standard principle for all Values in Convex. Immutability is important for several reasons:
+We adopt immutability as a standard principle for all Values in Convex. Immutability is important for several reasons:
 
-- Enables hash codes to be used as a proxy for Value Identity
-- Enables stuctural sharing in persistent data structures
+- Enables hash codes to be used for Value Identity (Value IDs)
+- Enables structural sharing in persistent data structures
 - Easier to reason about immutable values, especially with pure functions
 - Better suited for concurrency
 
-Mutability in implementations is permitted (e.g. a mutable cached value for perfomance reasons), however such mutability should not be externally visible (e.g. should not affect the Encoding of Values)
+Mutability in implementations is permitted (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the Encoding of Values). 
 
 An important presentation on the topic: https://www.infoq.com/presentations/Value-Values/
 
