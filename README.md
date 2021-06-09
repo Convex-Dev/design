@@ -6,22 +6,22 @@ This repository is dedicated to Convex Design and Documentation
 
 Convex Architecture Documents (CADs) are defined for standards relating to the Convex network and ecosystem, in a manner inspired by Internet RFCs
 
-| Code                         | Title                            | Status     | Author
+| Code                         | Title                            | Status     | Editor
 | ------------------           | -------------------------------- | ---------- | -----------
-| [CAD1](cad/arch.md)          | Vision & Architecture            | Initial    | Mike
-| [CAD2](cad/values.md)        | CVM Values                       | Initial    | Mike
-| [CAD3](cad/encoding.md)      | Encoding Format                  | Initial    | Mike
-| [CAD4](cad/accounts.md)      | Account Model                    | Initial    | Mike
-| [CAD5](cad/cvmex.md)         | CVM Execution                    | Initial    | Mike
-| [CAD6](cad/memory.md)        | Memory Accounting                | Initial    | Mike
-| [CAD7](cad/juice.md)         | Juice Accounting                 | Initial    | Mike
-| [CAD8](cad/compiler.md)      | Convex Lisp Compiler             | Initial    | Mike
-| [CAD9](cad/expanders.md)     | Expanders and Macros             | Initial    | Mike
-| [CAD10](cad/transactions.md) | Transactions                     | Initial    | Mike
-| [CAD11](cad/errors.md)       | Error Handling                   | Initial    | Mike
-| [CAD12](cad/numerics.md)     | Numerics                         | Initial    | Mike
-| [CAD13](cad/edn.md)          | EDN Encoding                     | Initial    | Mike
-| [CAD14](cad/cns.md)          | CNS Registry                     | Initial    | Mike
+| [CAD1](cad/arch.md)          | Vision & Architecture            | Initial    | mikera
+| [CAD2](cad/values.md)        | CVM Values                       | Initial    | mikera
+| [CAD3](cad/encoding.md)      | Encoding Format                  | Initial    | mikera
+| [CAD4](cad/accounts.md)      | Account Model                    | Initial    | mikera
+| [CAD5](cad/cvmex.md)         | CVM Execution                    | Initial    | mikera
+| [CAD6](cad/memory.md)        | Memory Accounting                | Initial    | mikera
+| [CAD7](cad/juice.md)         | Juice Accounting                 | Initial    | mikera
+| [CAD8](cad/compiler.md)      | Convex Lisp Compiler             | Initial    | mikera
+| [CAD9](cad/expanders.md)     | Expanders and Macros             | Initial    | mikera
+| [CAD10](cad/transactions.md) | Transactions                     | Initial    | mikera
+| [CAD11](cad/errors.md)       | Error Handling                   | Initial    | mikera
+| [CAD12](cad/numerics.md)     | Numerics                         | Initial    | mikera
+| [CAD13](cad/edn.md)          | EDN Encoding                     | Initial    | mikera
+| [CAD14](cad/cns.md)          | CNS Registry                     | Initial    | mikera
 
 ## Convex Project Portfolio
 
@@ -29,15 +29,15 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 | Name                                                     | Description                             | Status     | Lead Dev.
 | -------------                                            | --------------------------------        | ---------- | -----
-| [Convex](https://github.com/Convex-Dev/convex)           | Main Convex distribution                | Active     | Mike
-| [Convex](https://github.com/Convex-Dev/design)           | Architecture and design documents       | Active     | Mike
-| [convex-web](https://github.com/Convex-Dev/convex-web)   | convex.world website and live sandbox   | Active     | Pedro
-| [convexity](https://github.com/Convex-Dev/convexity)     | Mobile application and wallet           | Active     | Pedro
-| [convex-py](https://github.com/Convex-Dev/convex-api-py) | Python Library and tools for Convex     | Active     | Bill
-| [convex-js](https://github.com/Convex-Dev/convex-api-js) | Javascript Library and tools for Convex | Active     | Bill
-| [convex-java](https://github.com/Convex-Dev/convex-java) | Java Library and tools for Convex       | Active     | Mike
-| [convex-clj](https://github.com/Convex-Dev/convex-clj)   | Clojure Library and tools for Convex    | Pending    | Pedro
-| Pending                                                  | Language Server (LSP) tools             | Pending    | Pedro
+| [Convex](https://github.com/Convex-Dev/convex)           | Main Convex distribution                | Active     | mikera
+| [Convex](https://github.com/Convex-Dev/design)           | Architecture and design documents       | Active     | mikera
+| [convex-web](https://github.com/Convex-Dev/convex-web)   | convex.world website and live sandbox   | Active     | pedrorgirardi
+| [convexity](https://github.com/Convex-Dev/convexity)     | Mobile application and wallet           | Active     | pedrorgirardi
+| [convex-py](https://github.com/Convex-Dev/convex-api-py) | Python Library and tools for Convex     | Active     | billbsing
+| [convex-js](https://github.com/Convex-Dev/convex-api-js) | Javascript Library and tools for Convex | Active     | billbsing
+| [convex-java](https://github.com/Convex-Dev/convex-java) | Java Library and tools for Convex       | Active     | mikera
+| [convex-clj](https://github.com/Convex-Dev/convex-clj)   | Clojure Library and tools for Convex    | Pending    | pedrorgirardi
+| Pending                                                  | Language Server (LSP) tools             | Pending    | pedrorgirardi
 
 
 
