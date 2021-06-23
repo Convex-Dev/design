@@ -544,14 +544,14 @@ Assuming Good Peers are well-staked, and connect preferentially to other well-st
 
 ### Execution Engine
 
-The Convex execution engine is referred to as the Convex Virtual Machine (CVM). This is a general purpose computational environment that can be used to implement the state transitions triggered by transactions.
+The Convex execution engine is referred to as the Convex Virtual Machine (CVM). This is a general purpose computational environment that is used to execute the State Transitions triggered by Transactions.
 
 #### Accounts
 
-The fundamental control mechanism for the CVM is via Accounts.
+The fundamental control mechanism for the CVM is via Accounts. There are two main types of Accounts, which differ primarily in the means that they can be controlled:
 
 * **User Accounts**: Accounts that are controlled by external users, where access is controlled by Ed25519 digital signatures on transactions.
-* **Actor Accounts**: Accounts that are managed by an autonomous Actor, where behaviour is 100% deterministic according the the associated CVM code. Actor functionality may be invoked within a externally submitted transaction, but only if this is initiated and validated via a User Account.
+* **Actor Accounts**: Accounts that are managed by an autonomous Actor, where behaviour is 100% deterministic according the the associated CVM code. Actor functionality may be invoked directly or indirectly within a externally submitted transaction, but only if this is initiated and validated via a User Account.
 
 It is important to note particular the two types of Account share a common abstraction. Both User Accounts and Actor Accounts may hold exclusive control over assets, allowing for decentralised value exchange mediated by smart contracts. This common abstraction is useful, because it makes it simple to write code that does not need to distinguish between assets controlled directly by a user and assets managed by a Smart Contract.
 
@@ -1049,9 +1049,20 @@ Actor developers may include a capability to reclaim Memory allowances from an A
 
 #### Pool trading
 
-The Memory Pool employs a simple Automated Market Maker, allowing users to buy and sell memory allowances at any time.
+The Memory Pool employs a simple Automated Market Maker, allowing users to buy and sell memory allowances at any time. The price of memory in the Pool will adjust to find an equilibrium between supply and demand.
 
-The Memory Pool liquidity is provided by the Convex Foundation as service to the ecosystem. It is the Foundation's responsibility to govern the continuous availability of memory at an appropriate price.
+#### New Memory Release
+
+It is expected that advantages in storage technology over time will allow memory constraints to be gradually relaxed. Furthermore, it would be unwise to have memory be priced too cheaply at the beginning but continuously increase as State size grows and more memory is bought from the Pool.
+
+Methods are therefore implemented to allow the gradual release of new memory into the Pool. Knowledge that additional memory will be released (and subsequently reduce memory prices) is a useful incentive against deliberate hoarding of memory allowances.
+
+The current Convex design anticipates two such mechanisms:
+
+- A protocol based, automatic addition of new memory into the Pool (based on Consensus timestamps).
+- Network Governance roles specially authorised to create and release new Memory into the Pool.
+
+The first of these two methods is strongly preferred in order to minimise potential centralisation, complexity and risk innate to allowing any privileged governance controls over the Network. However it may be necessary given the high probability of technological shocks which cannot be predicted in the protocol.
 
 #### Size persistence
 
@@ -1059,9 +1070,9 @@ The memory size is persisted in the Storage System as part of the header informa
 
 #### Memory Accounting impact
 
-The memory accounting subsystem is designed so that it always has a minimal effect on CVM state size, even though it causes changes in the CVM state (consumption of allowances etc.). This limits any risk of state growth size from the memory accounting itself.
+The memory accounting subsystem is designed so that it always has a minimal effect on CVM state size, even though it causes changes in the CVM state (consumption of allowances etc.). This limits any risk of state growth size from the Memory Accounting itself.
 
-This is achieved mainly by ensuring that state changes due to memory accounting cause no net Cell allocations, at most small embedded fields within existing Cells are updated (specifically balances and allowances stored within Accounts). 
+This is achieved mainly by ensuring that state changes due to Memory Accounting cause no net Cell allocations, at most small embedded fields within existing Cells are updated (specifically balances and allowances stored within Accounts). 
 
 #### Performance characteristics
 
@@ -1076,7 +1087,7 @@ This achievement is possible because:
 
 #### Accounting for computational costs
 
-The direct computational cost of performing this memory accounting is factored in to the juice cost of operations that perform new Cell allocations. This compensates Peer operators for the (relatively small) overhead of performing meory accounting.
+The direct computational cost of performing this Memory Accounting is factored in to the juice cost of operations that perform new Cell allocations. This compensates Peer operators for the (relatively small) overhead of performing Memory Accounting.
 
 The storage cost is, of course, handled by the general economics of the Memory Accounting model and pool trading.
 
@@ -1100,13 +1111,13 @@ As an engineering principle, Convex only uses trusted implementations of cryptog
 
 Convex presents a new approach to programmable economic systems that provides a powerful combination of scalability, security and decentralisation - suitable for building applications for the Internet of Value.
 
-At the same time, it maintains a certain degree of simplicity. We believe that simple, composable systems offer a more stable and secure foundation to build upon, and Convex therefore features:
+At the same time, it maintains a certain degree of simplicity. Simple, composable systems offer a more stable and secure foundation to build upon, and Convex therefore features:
 
 * Functional programming on the CVM based on the lambda calculus
 * Immutable values for all data structures
 * A surprisingly simple consensus algorithm based on CRDTs
 
-It is our hope that the innovations in Convex and the careful engineering decisions made in its implementation will provide a practical, high performance system for a new generation of decentralised applications and economic value creation.
+We hope that the innovations in Convex and the careful engineering decisions made in its implementation will provide a practical, high performance system for a new generation of decentralised applications and economic value creation.
 
 ## Contact and Links
 
