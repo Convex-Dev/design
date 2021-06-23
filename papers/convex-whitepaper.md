@@ -234,194 +234,259 @@ Where we refer to "value" or "data value" in this document, we are generally ref
 
 ### Consensus Algorithm
 
+#### Peers and Stake
+
+Convex defines the set of actors that participate in the consensus algorithm as **Peers** in the Network.
+
+Anyone may operate a Peer by providing an economic **Stake** in Convex Coins. The size of the Peer Stake determines the relative voting power of the Peer in the consensus algorithm, but it is locked up and at risk of forfeiture in the case that bad behaviour is provably detected. Stake could also be appropriated by malicious actors if the Peer does not maintain strong security for their system (in particular the security of the Peer's private key). Requiring a Stake is therefore a key aspect of the economic incentive for Peers to maintain the security of the network.
+
+As a reward for helping to operate and secure the network, Peers are entitled to a share of fees for transactions executed on the network, plus other incentive pools provided by the network. This reward is proportional to Peer stake, again creating a positive incentive for Peers to provide more Stake and greater security.
+
 #### State
 
-At the core of the Convex consensus design is the concept of the **Global State**.
+The key task of the Peer Network is to securely store and update the **Global State**.
 
-The State is an representation of the complete information in the CVM at any point in time. The Convex network as a whole operates as a globally replicated state machine, where new updates cause changes to the current State. Updates are defined on a globally consistent basis according to the sequence of transactions confirmed through the Consensus algorithm.
+The State is an representation of the complete information in the CVM at any point in time. The Convex Network as a whole operates as a globally replicated state machine, where new updates cause changes to the current State. Updates are defined on a globally consistent basis according to the sequence of transactions confirmed through the Consensus algorithm.
 
-The latest State of the CVM network after all verified transctions in consensus have been executed is called the **Consensus State**.
+The latest State of the CVM network after all verified Transactions in consensus have been executed is called the **Consensus State**.
 
 The State is represented as an immutable Decentralised Data Value (DDV) that includes:
 *	All Account information and balances
-*	All Actor code and state
+*	All Actor code, static information and current state
 *	All information relating to active Peers and staking
 *	Global information (such as the latest Block timestamp)
 
 Since it is a DDV, it follows that a State is a Merkle DAG, and has a unique Value ID. This means that if two Peers compute a State update and announce the VIDs, it is possible to immediately validate if they computed the same resulting State.
 
-#### Reduction to Block Ordering Problem
+#### Transactions and Blocks
 
-Consensus in the state of a decentralised machine can be achieved with the combination of:
+A **Transaction** is an instruction by any network participant (typically users of client applications) to effect an update in the Consensus State. Transactions are digitally signed to ensure that they can only cause effects in the Consensus State that are authorised for the holder of the corresponding private key.
+
+Transactions are grouped into **Blocks**, which contain an ordered sequence of Transactions and some additional metadata (most importantly a Block timestamp).
+
+The inclusion of Transactions in Blocks is at the discretion of the Peer to which they are submitted. Users may chose any Peer, but normally should prefer to submit transactions to a Peer that they trust to behave correctly, since this discretion could be abused by the receiving Peer:
+
+- The Peer could ignore a Transaction and neglect to propose it for consensus
+- The Peer could insert its own Transaction(s) before the user's transaction, potentially executing a front running attack 
+
+
+#### Reduction to the Ordering Problem
+
+Consensus in a decentralised state machine can trivially be achieved with the combination of:
 
 * Agreement on some initial genesis State: `S[0]`
 * Consensus over the complete ordering of Blocks of transactions `B[n]` 
-* A deterministic state update function, which updates the state according to the transactions contained in a Block: `S[n+1] = f(S[n],B[n])`
+* A deterministic State Transition Function, which updates the State according to the Transactions contained in a Block: `S[n+1] = f(S[n],B[n])`
 
-This construction reduces the problem of generalised consensus to the problem of determining consensus over Block ordering. The CVM execution environment provides the state update function, which is orthogonal to the consensus algorithm but provides the necessary state updates given a total ordering of Blocks.
+This construction reduces the problem of generalised consensus to the problem of determining consensus over Block ordering. The CVM execution environment provides the State Transition Function, which is orthogonal to the consensus algorithm but provides the deterministic computations to computed the new Consensus State (given any Ordering of Blocks in consensus).
 
-We define the **Consensus Point** to be the number of Blocks confirmed by the consensus algorithm, and the **Consensus State** to be the state obtained after applying the state update function up to the consensus point.
+We define the **Consensus Point** to be the number of Blocks confirmed by the consensus algorithm in the Ordering, and the Consensus State is correspondingly the State obtained after applying the State Transition Function up to the Consensus Point.
 
-#### Peers and the Consensus Set
-
-Convex defines the set of actors that participate in the consensus algorithm as Peers in the network.
-
-Any actor may create a Peer by placing an economic **Stake**, denominated in the native currency of the network (Convex Coins). The size of the stake determines the relative voting power of the peer in the consensus algorithm, but is at risk of forfeiture in the case that bad behaviour is provably detected, or could be appropriated by malicious actors if the Peer does not maintain strong security for their system (in particular the security of the Peer's private key).
-
-As a reward for helping to operate the network, Peers are entitled to a share of fees for transactions executed on the network. This reward is proportionate to Peer stake.
+The hard problem that the consensus algorithm needs to solve is determining the **Ordering** of Blocks given the potential presence of malicious actors who may seek to profit by changing the order of transactions (e.g. a "Double Spend" attack). 
 
 #### Block proposals
 
 Traditional Blockchain solutions have focused on mechanisms to determine which participant gains the right to propose the next block, which includes a hash of the previous block in order to extend a linked chain of blocks. This was the basis for the original Bitcoin Proof of Work algorithm (which used the ability to mine cryptographic hashes as the basis for allowing a miner to publish a block and claim the corresponding block reward).
 
-This approach of selecting a "leader" to publish a new block has some problems:
+Approaches that involve selecting a "leader" to publish a new block have some notable problems:
 
-* It is a complex task to determine which participant should be the next leader, at least in a way that simultaneously works efficiently, provides security in the presence of potential byzantine actors, and is guaranteed to make progress in cases such as leaders becoming unavailable.
+* It is a complex task to determine which participant should be the next leader, at least in a way that simultaneously works efficiently, provides security in the presence of potential malicious actors, and is guaranteed to make progress in cases such as leaders becoming unavailable.
 * Including the hash of the previous block in a chain creates an inherent data dependency that limits the ability to propose blocks in parallel and increases latency - each leader must build upon the work of the previous leader sequentially, which implies a minimum lower bound on the block time (given fundamental physical constraints).
-* It is necessary to make sure that the leader possesses the transactions that should be included in a Block. This implies the need for a mechanism to transmit transactions across peers prior to block creation (e.g. with the "mempool" used by Bitcoin to share pending transactions), which in turn implies communication costs and many opportunities for attacker to launch "front running" attacks on transactions that they observe.
+* It is necessary to make sure that the leader possesses the transactions that should be included in a Block. This implies the need for a mechanism to transmit transactions across peers prior to block creation (e.g. with the "mempool" used by Bitcoin to share pending transactions), which in turn implies additional communication costs and many opportunities for attackers to launch "front running" attacks on transactions that they observe.
 
-Convex therefore eschews the idea of selecting a leader. **Any Peer may propose a new Block at any time**, and the new Block is independent of all previous Blocks, i.e. it does not form a "chain". A consequence of this is that is is possible for multiple Peers to concurrently submit blocks for inclusion in consensus at the same time.
+Convex therefore eschews the idea of selecting a leader. We maintain the principle that **any Peer may propose a new Block at any time**. This "leaderless" approach has some important desirable consequences:
 
+- Blocks can be **instantaneously proposed**, without a Peer having to become a leader, perform any expensive computation, or wait for confirmation on any previous Block.
+- Users can **select a trusted Peer** to publish their transactions, rather than having to forward them to a leader that may not be trustworthy. As previously noted, this is an important mitigation against censorship and front-running attacks.
+- Blocks can be **independent of all previous Blocks**, e.g. they do not necessarily form a "chain" linked by cryptographic hashes.
+- It is possible for multiple Peers to **concurrently** propose Blocks for inclusion in consensus at the same time, removing a major bottleneck compared to systems that require on some form of sequential leadership.
 
-#### Convergence
+A Peer proposed a Block for consensus simply by appending it to its current Ordering, where this Ordering includes all Blocks up to the Consensus Point, plus any additional Blocks still to be confirmed in consensus.
 
-Convex uses a variant of Convergent Replicated Data Types (CRDTs)  to provide part of this solution. CRDTs have the provable property of Eventual Consistency - which might be informally defined as a situation where all peers eventually reach the same state given no novel transactions in the network.
+#### Convergent Consensus
 
-This is achieved through:
+Convex uses a variant of Convergent Replicated Data Types (CRDTs) ensure that the Network as a whole converges to Consensus. CRDTs have the provable property of Eventual Consistency - which might be informally defined as a situation where all nodes eventually agree on the same value (in this case, the value of interest is the Ordering up to an agreed Consensus Point).
 
-* A data structure called a **Belief**, which represents a Peer's view of consensus across the whole network, including the current proposed Block orderings from other Peers
-* A **Belief Merge function** for each Peer, which:
+The CRDT is implemented through:
+
+* A data structure called a **Belief**, which represents a Peer's view of consensus across the whole Network, including the latest Block Orderings from other Peers
+* A **Belief Merge Function**, which:
   * Combines any two (or more) Beliefs to create an updated Belief
   * Is idempotent, commutative and associative with respect to the merging of other Beliefs
 
 This effectively forms a *join-semilattice* for each Peer, and satisfies the conditions required for a CRDT. Repeated applications of the Belief merge result to Beliefs propagated by Peers in the network automatically results in convergence to a stable consensus.
 
-Digital signatures ensure that Peers are only able to (validly) update the part of the overall Belief structure that represents their *own* proposals. This ensures that full cryptographic security is maintained throughout the operation of the consensus algorithm since nobody can impersonate a Peer.  
+Digital signatures ensure that Peers are only able to (validly) update the part of the overall Belief structure that represents their *own* proposals. This ensures that full cryptographic security is maintained throughout the operation of the consensus algorithm since nobody can impersonate a Peer.
+
+Malicious Peers could remove the Ordering of one or more other Peers from their Belief, perhaps in an attempt to censor transactions. However, this will not be an effective attack against the Network since the Ordering will also be relayed via other Peers, and will ultimately be merged into Consensus.
 
 #### Stake-weighted voting
 
-Convergence is guaranteed by a system of continuous voting. At each Belief Merge step, the Peer computes the total share of stake voting for each proposed Block in the next position after the current consensus point. It is able to do this because it has a view of the orderings proposed by all other Peers. 
+During the process of convergence, it may be necessary to resolve conflicts in proposed block Orderings from different Peers. This is achieved by a system of stake-weighted voting. 
 
-This voting is applied iteratively to blocks in following positions, but only counting the votes by Peers that have supported the winning ordering up to this point (i.e. supporting a minority Block causes Peers to be temporarily excluded from the considered vote in following blocks).
+At each Belief Merge step, if there is a conflict between Orderings the Peer computes the total share of stake voting for each proposed Block in the next position after the current Consensus Point. It is able to do this because it has a view of the Orderings proposed by all other Peers. 
 
-Once the overall winning ordering has been determined, the Peer appends any new Blocks it wishes to propose, then adopts this ordering as it's own proposal. The proposal is incorporated into the Peer's own Belief, which is then communicated back to the other Peers.
+This voting is applied iteratively to Blocks in following positions, but only counting the votes by Peers that have supported the winning Ordering up to this point (i.e. supporting a minority Block causes Peers to be temporarily excluded from the considered vote in following Blocks). Peers that vote for anything inconsistent with the majority therefore cannot influence the Ordering of any subsequent Blocks.
 
-As an illustration, consider three peers that are initially in consensus with respect to an ordering of blocks `XXXX` but peers 1 and 2 propose new blocks A and B:
+Once the overall winning Ordering has been determined, the Peer appends any new Blocks it wishes to propose, then adopts this Ordering as it's own proposal. This Ordering is signed and incorporated into the Peer's own Belief, which is then propagated onwards to other Peers.
 
-```
-Peer 1: (stake 20) ordering = XXXXA
-Peer 2: (stake 30) ordering = XXXXB
-Peer 3: (stake 40) ordering = XXXX
-```
-
-Peer 3 observes the orderings of Peer 1 and 2 via network gossip. It sees two conflicting proposals, but because Peer 2 has the higher stake it takes this ordering first. It then appends the other block it has seen:
+As an illustration, consider three Peers that are initially in consensus with respect to an Ordering of Blocks `XXXX` but peers `A` and `B` propose new Blocks `Y` and `Z`:
 
 ```
-Peer 1: (stake 20) ordering = XXXXA
-Peer 2: (stake 30) ordering = XXXXB
-Peer 3: (stake 40) ordering = XXXXBA (updated)
+Peer A: (stake 20) ordering = XXXXY
+Peer B: (stake 30) ordering = XXXXZ
+Peer C: (stake 40) ordering = XXXX
 ```
 
-Peer 1 observes the orderings of the other Peers at this point. Since there is a conflict, it calculates the vote for each ordering and sees that there is a 70-30 vote in favour of having block B first (and a 40/0 vote in favour of block A next). It therefore adopts the winning ordering proposed by Peer 3.
+Peer `C` observes the orderings of Peer `A` and `B` (after propagation of Beliefs). It sees two conflicting proposals, but because Peer `B` has the higher stake it takes this Ordering first. It then appends the other Block it has observed:
 
 ```
-Peer 1: (stake 20) ordering = XXXXBA (updated)
-Peer 2: (stake 30) ordering = XXXXB
-Peer 3: (stake 40) ordering = XXXXBA 
+Peer A: (stake 20) ordering = XXXXY
+Peer B: (stake 30) ordering = XXXXZ
+Peer C: (stake 40) ordering = XXXXZY (updated)
 ```
 
-Peer 2 now observes the orderings. It sees everyone agreed on block B, and a 60-0 vote in favour of Block A next. It therefore adopts this winning ordering as its own:
+Peer `A` now observes the Orderings of the other Peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-30 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
 
 ```
-Peer 1: (stake 20) ordering = XXXXBA 
-Peer 2: (stake 30) ordering = XXXXBA (updated)
-Peer 3: (stake 40) ordering = XXXXBA 
+Peer A: (stake 20) ordering = XXXXZY (updated)
+Peer B: (stake 30) ordering = XXXXZ
+Peer C: (stake 40) ordering = XXXXZY 
 ```
 
-This procedure naturally converges to a single ordering: Any situation where Peers are voting for different Blocks is unstable and will collapse towards one outcome, since Peers will switch to whichever ordering is observed to have a slight majority. After a few rounds of gossip, the good Peers (at minimum) will align on the same ordering.
+Peer `B` now observes the Orderings. It sees everyone agreed on block `Z`, and a 60-0 vote in favour of Block `Y` next. It therefore adopts this winning Ordering as its own:
+
+```
+Peer A: (stake 20) ordering = XXXXZY 
+Peer B: (stake 30) ordering = XXXXZY (updated)
+Peer C: (stake 40) ordering = XXXXZY 
+```
+
+This procedure naturally converges to a single Ordering: Any situation where Peers are voting for different Blocks (in any position) is unstable and will collapse towards one outcome, since Peers will switch to whichever Ordering is observed to have a slight majority. After a few rounds of Belief propagation, all good Peers will align on the same Ordering.
  
 #### Stability
 
-At some point, we therefore reach a threshold where greater than 2/3 of the Peers (by stake weight) are aligned in proposing the same ordering. This situation is **stable** because of the following logic:
+The Belief Merge procedure outlined above has many desirable stability properties even in the presence of some proportion of Byzantine adversaries. Some of these are listed below:
 
-* Since we assume less than 1/3 of Peers (by voting weight) are potentially malicious, the number of good peers in the aligned set of peers strictly outweigh the malicious peers.
-* Even if all malicious peers were to act in concert and attempt to disrupt consensus they would still fail because they are outnumbered by good peers already in alignment (the worst case is where they initially support the ordering, then simultaneously switch to a new ordering - the good peers in alignment would outvote them and secure the support of the majority of remaining non-aligned good peers and eventually reach the 2/3 threshold again, but this time, the 2/3 represents good peers only, so cannot be disrupted any further)
+##### 51% Stability with Good Peer Majority
+
+If more than 50% of Peers adopt the same Ordering, and all of this majority are are Good Peers and they are all aware of each other's agreement, then the Ordering is provably stable no matter what any adversaries subsequently attempt, since the adversaries cannot cause any Good Peer to change their vote.
+
+##### 51% Stability with Rapid Propagation
+
+If more than 50% of Peers (some of which may be Bad Peers) adopt the same ordering, less than 50% of all Peers are Bad Peers, and these Beliefs are propagated quickly to all other Peers (at least before the next round of Belief Merges), then the Ordering will be provably stable since a majority of Good Peers will adopt the same Ordering during the next Belief Merge.
+
+##### 67% Stability vs. Irrelevant Alternatives
+
+Assuming that:
+
+1. At least 2/3 of all Peers are aligned in proposing the same Ordering, and are aware of each other's Orderings
+2. Less than 1/3 of Peers (by Staked voting weight) are Bad Peers, the remainder (>2/3) are Good Peers 
+3. Bad Peers may collude arbitrarily, but do not have a Belief propagation speed advantage (on average) relative to Good Peers 
+4. Non-aligned Good Peers do not initially have any significant support for any conflicting ordering.
+
+Then the Ordering is provably stable, since: 
+
+- By (1) and (2), the number of Good Peers within in the aligned set of Peers must strictly outweigh the Bad Peers.
+- Whatever the Bad Peers do (including switching from being in the aligned group to supporting a new conflicting Ordering), their new Ordering will still be outweighed by the Good Peers which are already in alignment
+- Therefore the initially aligned Good Peers will win 50%+ majority with Good Peers, since they will win a propagation race by sharing their Beliefs which will bring the majority of remaining non-aligned Good Peers as per assumption (3)
+
+##### 75% Stability vs. powerful adversaries
+
+Assuming that 75% of Peers are aligned in proposing the same Ordering, and are aware of each other's orderings, the the Ordering is stable as long as less than 25% of Peers are Bad Peers.
+
+This hold true even against powerful adversaries with capabilities such as:
+- Ability to temporarily isolate and trick non-aligned Peers into adopting a conflicting Proposal
+- Ability to censor or delay arbitrary messages on the network (as long as at least one Belief propagation path eventually exists between any pair of Good Peers) 
+- Ability to delay the activity of any Good Peer
+
 
 #### Determining consensus
 
-Once the threshold of Peers are observed by any Peer to be voting for the same ordering up to a certain Block number in the ordering, the Peer marks and communicates this as a **proposed consensus point**. And once 2/3 of Peers are observed to have the same proposed consensus point with the same ordering, this value is taken by the Peer as the **new consensus point**. 
+Even after a stable Ordering is observed, it is necessary to confirm Consensus. This is achieved through what is essentially a decentralised implementation of a 2-phase commit.
 
-This is essentially a decentralised implementation of a 2-phase commit, and is used as a precaution against malicious Peers attempting to reverse consensus by changing their vote at the last minute (this might delay the consensus briefly, but not stop it, since we are already past the tipping point where the good peers supporting the proposed consensus outweigh the bad peers).
+Once a 2/3 threshold of Peers are observed by any Peer to be aligned on the same Ordering up to a certain Block number, the Peer marks and communicates this number as a **Proposed Consensus Point (PCP)**. The Peers propagate this PCP as part of their next published Belief, attached to their Ordering.
+
+Once a 2/3 threshold of Peers are observed to have the same Proposed Consensus Point with the same Ordering, this value is confirmed by the Peer as the new **Consensus Point (CP)**. From this point on, Good Peers will consider the Consensus final.
+
+This procedure is used as a precaution against malicious Peers attempting to reverse consensus by changing their Ordering at the last minute (this might delay the consensus briefly, but not stop it, since we are already past the tipping point where the good peers supporting the proposed consensus will outweigh the bad peers).
 
 #### Illustration
 
-Consider a case where all peers A,B,C,D,E initially agree on an ordering (labeled `1`). At this instant, peer B receives a set of new transactions, and proposes an updated ordering `2`. Initially, this is unknown to all other Peers. We can visualise this situation as a Matrix, where each row is the Belief help by one peer, and each column represents the latest signed belief observed by each peer from another peer. Each Peer also has knowledge of the current consensus defined by `1`.
+Consider a case where all peers A,B,C,D,E initially agree on an Ordering (labelled `o`). At this point, peer B receives a set of new Transactions, and proposes an updated Ordering (`x`) including a new proposed Block. Initially, this is unknown to all other Peers. We can visualise this situation as a Matrix, where each row is the Belief help by one peer, and each column represents the latest signed belief observed by each peer from another peer. Each Peer also has knowledge of the current consensus defined by `o`, which is also its proposed consensus.
 
 ```
-  ABCDE Consensus
+  ABCDE  Consensus   Proposed Consensus
  
-A 11111 1 
-B 12111 1
-C 11111 1
-D 11111 1
-E 11111 1
+A ooooo  o           o
+B oxooo  o           o
+C ooooo  o           o
+D ooooo  o           o
+E ooooo  o           o
 ```
 
-At this point, Peer B propagates its new Belief to other Peers. The other Peers observe that Peer B has proposed a new ordering, and incorporate this into their local view of Peer B:
+At this point, Peer B propagates its new Belief to other Peers. The other Peers observe that Peer B has proposed a new Ordering, and incorporate this into their local view of Peer B:
 
 ```
-  ABCDE Consensus
+  ABCDE  Consensus   Proposed Consensus
  
-A 12111 1 
-B 12111 1 
-C 12111 1
-D 12111 1
-E 12111 1
+A oxooo  o           o 
+B oxooo  o           o 
+C oxooo  o           o 
+D oxooo  o           o 
+E oxooo  o           o 
 ```
 
-With this information, all Peers are aware of a new ordering. They validate that this is compatible with the previous consensus, and because it is a valid extension of `1` they automatically adopt it as their own proposed ordering (the diagonal of the matrix).
+With this information, all Peers are aware of a new Ordering. They validate that this is compatible with the previous consensus, and because it is a simple, non-conflicting extension of `o` (just one new Block appended) they automatically adopt it as their own proposed Ordering (the diagonal of the matrix).
 
 ```
-  ABCDE Consensus
+  ABCDE  Consensus   Proposed Consensus
  
-A 22111 1
-B 12111 1
-C 12211 1
-D 12121 1
-E 12112 1
+A xxooo  o           o 
+B oxooo  o           o 
+C oxxoo  o           o 
+D oxoxo  o           o 
+E 0xoox  o           o 
 ```
 
-Another round of Belief propagation is performed. Now each peer is aware of the latest ordering `2` being communicated by all other Peers:
+Another round of Belief propagation is performed. Now each peer is aware of the latest Ordering `x` being communicated by all other Peers. Since each Peer can now observe 100% of Stake proposing the same Ordering, it meets the threshold to be considered as the Proposed Consensus (the request for a 2-phase commit).
 
 ```
-  ABCDE Consensus
+  ABCDE  Consensus   Proposed Consensus
  
-A 22222 1
-B 22222 1
-C 22222 1
-D 22222 1
-E 22222 1
+A xxxxx  o           x 
+B xxxxx  o           x
+C xxxxx  o           x
+D xxxxx  o           x
+E xxxxx  o           x
 ```
 
-At this point, Peers are able to confirm that the proposed ordering appears to meet the threshold for a new consensus. However, they don't yet know that other Peers have confirmed this, so another round of propagation is performed to ensure that the 2-phase commit protocol is completed. After this round, all peers know that the consensus threshold has been met, and update their own view of consensus accordingly.
+Finally, another round of propagation is performed. Peers now observe 100% of Stake proposing the same consensus, so are able to confirm the Ordering `x` as the new consensus (the completion of the 2-phase commit)
 
 ```
-  ABCDE Consensus
+  ABCDE  Consensus   Proposed Consensus
  
-A 22222 2
-B 22222 2
-C 22222 2
-D 22222 2
-E 22222 2
+A xxxxx  x           x 
+B xxxxx  x           x
+C xxxxx  x           x
+D xxxxx  x           x
+E xxxxx  x           x
 ```
 
-The network is now in a new quiescent state, with consensus advanced, and ready to process the next set of proposed transactions.
+The network is now in a new quiescent state, with the Consensus Point advanced to include the full Ordering `x`, and ready to process the next proposed Block(s).
 
-This illustration is a simplification. In practice:
+In this simple case, consensus requires four rounds of Belief propagation:
+- Peer B communicating the new Block
+- Other Peers communicating their adoption of the new Block
+- All Peers Proposing Consensus
+- All Peers Confirming Consensus
 
-* Multiple Peers may propose transactions at the same time. In this case, stake weighed voting would be used to determine which transactions are included first.
-* The network might not reach a quiescent state before further new transactions are added. This is not an issue: consensus can be confirmed up to the point of the initial transactions while the new transactions are still being propagated.
-* Some Peers might misbehave, or be disconnected from the network. Again, this is not a problem as long as a sufficient number of good peers are still operating and connected, since the consensus threshold can still be met. Temporarily disconnected or offline Peers can "catch up" later.
+In more complex cases:
+
+* Multiple Peers may propose Blocks at the same time. In this case, stake weighed voting would be used to resolve conflicts and determine which Blocks are included first.
+* The network might not reach a quiescent state before further new Blocks are added. This is fortunately not an issue: consensus will be confirmed for the initial Block(s) while the new Blocks are still being propagated.
+* Some Peers might misbehave, or be temporarily unavailable. Again, this is not a problem as long as a sufficient number of good peers are still operating and connected, since the consensus thresholds can still be met. Temporarily disconnected or offline Peers can "catch up" later.
+* The Peer Network may not be fully connected, potentially adding up to `O(log(number of peers))` additional rounds of propagation. However in practice, this is likely to be quicker because a smaller number of highly staked and well-connected Peers will be able to confirm consensus without waiting for the rest of the Network.
 
 #### Important note on complexity
 
@@ -440,6 +505,7 @@ However, we exploit some powerful techniques to minimise this:
 * Peers are only required to actively maintain block data for a limited period of time (e.g. 1 day of storage would be less than 10GB in this case)
 * The Decentralised Data Values support usage where only the **incremental change** (or "Novelty") needs can be detected. 
 * The number of outgoing connections for each Peer is **bounded** to a small constant number of Peers that they wish to gossip to (typically around 10, but configurable on a per-peer basis)
+* Beliefs can be selectively **culled** to remove Orderings from Peers that have very low stakes and are irrelevant to consensus. This can be performed adaptively to network conditions if required: Peers only need to consider the "long tail" of low staked Peers in rare situations where these are required to hit a consensus threshold or decide a close vote.
 
 With these techniques, Peers only need to propagate the novelty they receive (in this example around 100k per second, plus some accounting overhead) to a small number of other peers. Bandwidth required is therefore on the order of 2-5MB/s (allowing for some overheads and a reasonable number of Peer connections), which is certainly practical for any modern server with a reasonable network connection.
 
