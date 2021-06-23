@@ -370,7 +370,7 @@ The Belief Merge procedure outlined above has many desirable stability propertie
 
 ##### 51% Stability with Good Peer Majority
 
-If more than 50% of Peers adopt the same Ordering, and all of this majority are are Good Peers and they are all aware of each other's agreement, then the Ordering is provably stable no matter what any adversaries subsequently attempt, since the adversaries cannot cause any Good Peer to change their vote.
+If more than 50% of Peers adopt the same Ordering, and all of this majority are are Good Peers and they are mutually aware of each other's agreement, then the Ordering is provably stable no matter what any adversaries subsequently attempt, since the adversaries cannot cause any Good Peer to change their vote.
 
 ##### 51% Stability with Rapid Propagation
 
@@ -409,13 +409,18 @@ Once a 2/3 threshold of Peers are observed by any Peer to be aligned on the same
 
 Once a 2/3 threshold of Peers are observed to have the same Proposed Consensus Point with the same Ordering, this value is confirmed by the Peer as the new **Consensus Point (CP)**. From this point on, Good Peers will consider the Consensus final.
 
-This procedure is used as a precaution against malicious Peers attempting to reverse consensus by changing their Ordering at the last minute (this might delay the consensus briefly, but not stop it, since we are already past the tipping point where the good peers supporting the proposed consensus will outweigh the bad peers).
+Consensus is **guaranteed** providing:
+
+- A stable Ordering is reached where a majority of Peers consistently propose the same Ordering
+- At least 2/3 of Stake is held by Good Peers that are active in the network
+
+This follows from the fact that given a majority for a stable Ordering, all Good Peers will eventually adopt the same Ordering and therefore the Network will pass both the Proposed Consensus and Consensus thresholds.
 
 #### Illustration
 
-Consider a case where all peers A,B,C,D,E initially agree on an Ordering (labelled `o`). At this point, peer B receives a set of new Transactions composes these into a Block, and produces a Belief with an updated Ordering (`x`), including the new proposed Block. Initially, this is unknown to all other Peers. 
+Consider a case where all peers A,B,C,D,E initially agree on a Consensus Ordering (labelled `o`). At this point, peer B receives a set of new Transactions composes these into a Block, and produces a Belief with an updated Ordering (`x`), including the new proposed Block. Initially, this is unknown to all other Peers. 
 
-We can visualise this initial situation as a Matrix, where each row is the Belief help by one peer, and each column represents the latest signed belief observed by each peer from another peer. Each Peer also has knowledge of the current consensus defined by `o`, which is also its proposed consensus.
+We can visualise this initial situation as a Matrix, where each row is the Belief help by one peer, and each column represents the latest signed Ordering observed by each peer from another peer. Each Peer also has knowledge of the current Consensus defined by `o`, which is also its Proposed Consensus.
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -427,7 +432,7 @@ D ooooo  o           o
 E ooooo  o           o
 ```
 
-At this point, Peer B propagates its new Belief to other Peers. The other Peers observe that Peer B has proposed a new Ordering `x`, and incorporate this into their Belief regarding Peer B:
+Because it has a new Belief which represents novelty to the Network, Peer B propagates this Belief to other Peers. The other Peers observe that Peer B has proposed a new Ordering `x`, and incorporate this into their Belief regarding Peer B:
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -439,7 +444,7 @@ D oxooo  o           o
 E oxooo  o           o 
 ```
 
-With this information, all Peers are aware of a new Ordering. They validate that this is compatible with the previous consensus, and because it is a simple, non-conflicting extension of `o` (just one new Block appended) they automatically adopt it as their own proposed Ordering (the diagonal of the matrix).
+With this information, all Peers are aware of a new Ordering. They validate that this is consistent with the previous Consensus Ordering `o`, and because it is a simple, non-conflicting extension of `o` (just one new Block appended) they automatically adopt it as their own proposed Ordering (the diagonal of the matrix).
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -451,7 +456,7 @@ D oxoxo  o           o
 E oxoox  o           o 
 ```
 
-Another round of Belief propagation is performed. Now each peer is aware of the latest Ordering `x` being communicated by all other Peers. Since each Peer can now observe 100% of Stake proposing the same Ordering, it meets the threshold to be considered as the Proposed Consensus (the request for a 2-phase commit).
+Another round of Belief propagation is performed. Now each peer is aware of the latest Ordering `x` being communicated by all other Peers. Since each Peer can now observe 100% of Stake proposing the same Ordering, it meets the threshold to be considered as the Proposed Consensus (the start of the 2-phase commit).
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -463,7 +468,7 @@ D xxxxx  o           x
 E xxxxx  o           x
 ```
 
-Finally, another round of propagation is performed. Peers now observe 100% of Stake proposing the same consensus, so are able to confirm the Ordering `x` as the new consensus (the completion of the 2-phase commit)
+Finally, another round of propagation is performed. Peers now observe 100% of Stake supporting the same Proposed Consensus, so are able to confirm the Ordering `x` as the new Consensus (the completion of the 2-phase commit)
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -477,17 +482,14 @@ E xxxxx  x           x
 
 The network is now in a new quiescent state, with the Consensus Point advanced to include the full Ordering `x`, and ready to process the next proposed Block(s).
 
-In this simple case, consensus involves four rounds of Belief propagation:
-- Peer B communicating the new Block
-- Other Peers communicating their adoption of the new Block
-- All Peers Proposing Consensus (after which individual Peers can confirm Consensus)
-- All Peers Confirming Consensus (after which all Peers are mutually aware of Consensus)
-
-It should be noted that finality is technically achieved after 3 rounds or propagation, but users may wish to wait for the fourth round for additional confirmation that the Consensus is network-wide.
+In this simple case, the new Consensus is confirmed within just three rounds of Belief propagation:
+- Peer B communicates the new Block to other Peers
+- Other Peers communicate their adoption of the new Block
+- All Peers communicate Proposed Consensus (after which individual Peers can independently confirm Consensus)
 
 In more complex cases:
 
-* Multiple Peers may propose Blocks at the same time. In this case, stake weighed voting would be used to resolve conflicts and determine which Blocks are included first.
+* Multiple Peers may propose Blocks at the same time. In this case, stake weighed voting would be used to resolve conflicts and determine which Blocks are included first. It may take an additional round or two to resolve such conflicts into a stable Ordering, though overall this is actually more efficient since multiple Blocks are being brought into Consensus in a similar overall number of rounds.
 * The network might not reach a quiescent state before further new Blocks are added. This is not an issue: consensus will be confirmed for the initial Block(s) while the new Blocks are still being propagated at earlier stages.
 * Some Peers might misbehave, or be temporarily unavailable. Again, this is not a problem as long as a sufficient number of Good Peers are still operating and connected, since the consensus thresholds can still be met. Temporarily disconnected or offline Peers can "catch up" later.
 * The Peer Network may not be fully connected, potentially adding `O(log(number of peers))` additional rounds of propagation assuming that each Peer propagates to a small constant number of other Peers in each time period. However in practice, these additional rounds may not be needed because a smaller number of highly staked and well-connected Peers will be able to confirm consensus without waiting for the rest of the Network.
@@ -506,12 +508,12 @@ Each Peer would theoretically be holding ~100 *petabytes* of information for the
 However, we exploit some powerful techniques to minimise this:
 
 * Beliefs are represented as Decentralised Data Values that support **structural sharing**: identical values or subtrees containing identical values need only be stored once. Since Orderings will be identical up to the Consensus Point, these can be de-duplicated almost perfectly.
-* Peers are only required to actively maintain block data for a limited period of time (e.g. 1 day of storage would be less than 10GB in this case)
+* Peers are only required to actively maintain Block data for a limited period of time (e.g. 1 day of storage would be less than 10GB in this case)
 * The Decentralised Data Values support usage where only the **incremental change** (or "Novelty") can be detected. 
 * The number of outgoing connections for each Peer is **bounded** to a small constant number of Peers that they wish to propagate to (typically around 10, but configurable on a per-peer basis)
-* Beliefs can be selectively **culled** to remove Orderings from Peers that have very low stakes and are irrelevant to consensus. This can be performed adaptively to network conditions if required: Peers only need to consider the "long tail" of low staked Peers in rare situations where these are required to hit a consensus threshold or decide a close vote.
+* Beliefs can be **selectively culled** to remove Orderings from Peers that have very low stakes and are irrelevant to consensus. This can be performed adaptively to network conditions if required: Peers may only need to consider the "long tail" of low staked Peers in rare situations where these are required to hit a consensus threshold or decide a close vote.
 
-With these techniques, Peers only need to propagate the novelty they receive (in this example around 100k of Block data per second, plus some accounting and structural overhead) to a small number of other peers. Bandwidth required is therefore on the order of 2-5MB/s (allowing for overheads and a reasonable number of Peer connections), which is certainly practical for any modern server with decent network connectivity.
+With these techniques, Peers only need to propagate the novelty they receive (in this example around 100k of Block data per second, plus some accounting and structural overhead) to a small number of other peers. Bandwidth required is therefore on the order of 1-10MB/s (allowing for overheads and a reasonable number of Peer connections), which is certainly practical for any modern server with decent network connectivity.
 
 Overall complexity is therefore (factoring out constants):
 
@@ -521,21 +523,21 @@ Overall complexity is therefore (factoring out constants):
 
 We believe this is optimal for any decentralised network that maintains consensus over a global state. Note that Lower latency can be achieved by communicating to all peers simultaneously, but at the cost of significantly higher bandwidth.
 
-#### A note on "front-running"
+#### A note on Front Running
 
 Front running is difficult for an adversary to perform against the Convex consensus algorithm. While theoretically possible, it would require a sophisticated and well-resourced attacker.
 
 The main reason for this is that Transactions are not visible to any untrusted participants in the Network until *after* a new Block has been proposed by a Peer and propagated as part of a Belief, by which point it is already well on its way to being included in consensus.
 
-A user concerned about front-running attacks should submit vulnerable transactions exclusively via a well connected, well-staked Peer (trusted not to be malicious, i.e. this Peer must itself not be participating in a front-running attack).
+A user concerned about front-running attacks should submit vulnerable transactions exclusively via a well connected, well-staked Peer that is trusted not to be malicious, i.e. this Peer must not itself be helping to facilitate a front-running attack.
 
-In this scenario front running attack would need to:
+In this scenario a front running attack would need to:
 
 * Listen to vulnerable transactions broadcast on the Network
-* Quickly generate a new Block with the transaction(s) used to execute the front-running attack
+* Quickly generate a new Block with the Transaction(s) needed to execute the front-running attack
 * Have sufficient influence over consensus formation to ensure that the new Block is somehow re-ordered *before* the original Block (that is already approaching consensus)
 
-Practically, this attack would require the attacker to have more resources (Stake and network connectivity) than the original Good Peer *and all the Good Peers it is connected to*, since the original Block would already be ahead by at least one round of propagation. Furthermore, the attack would be publicly visible and traceable to the Peer(s) that launched it: so even if successful the attacker would be vulnerable to blacklisting and/or real world legal repercussions.
+Practically, this attack would require the attacker to have more resources (Stake and network connectivity) than the original Good Peer *and all the Good Peers it is connected to*, since the original Block would already be ahead by at least one round of propagation by the time the attacker can observe it. Furthermore, the attack would be publicly visible and traceable to the Peer(s) that launched it: so even if successful the attacker would be vulnerable to blacklisting and/or real world legal repercussions.
 
 Assuming Good Peers are well-staked, and connect preferentially to other well-staked, trusted Peers with a known legal identity (which would be good practice, and should be configured as default behaviour), we believe such front running attacks will be highly difficult to execute and generally impractical from an economic perspective.
 
