@@ -26,6 +26,9 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD12](cad/numerics.md)     | Numerics                         | Initial    | mikera
 | [CAD13](cad/edn.md)          | EDN Encoding                     | Initial    | mikera
 | [CAD14](cad/cns.md)          | CNS Registry                     | Initial    | mikera
+| [CAD15](cad/peercomms.md)    | Peer Connection Protocol         | Initial    | mikera
+| [CAD16](cad/peerstake.md)    | Peer Staking                     | Initial    | mikera
+| [CAD17](cad/peerops.md)      | Peer Operations                  | Initial    | mikera
 
 ## Convex Project Portfolio
 
@@ -34,7 +37,7 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 | Name                                                     | Description                             | Status     | Lead Dev.
 | -------------                                            | --------------------------------        | ---------- | -----
 | [Convex](https://github.com/Convex-Dev/convex)           | Main Convex distribution                | Active     | mikera
-| [Convex](https://github.com/Convex-Dev/design)           | Architecture and design documents       | Active     | mikera
+| [Convex Design](https://github.com/Convex-Dev/design)    | Architecture and design documents       | Active     | mikera
 | [convex-web](https://github.com/Convex-Dev/convex-web)   | convex.world website and live sandbox   | Active     | pedrorgirardi
 | [convexity](https://github.com/Convex-Dev/convexity)     | Mobile application and wallet           | Active     | pedrorgirardi
 | [convex-py](https://github.com/Convex-Dev/convex-api-py) | Python Library and tools for Convex     | Active     | billbsing
