@@ -550,8 +550,8 @@ The Convex execution engine is referred to as the Convex Virtual Machine (CVM). 
 
 The fundamental control mechanism for the CVM is via Accounts. There are two main types of Accounts, which differ primarily in the means that they can be controlled:
 
-* **User Accounts**: Accounts that are controlled by external users, where access is controlled by Ed25519 digital signatures on transactions.
-* **Actor Accounts**: Accounts that are managed by an autonomous Actor, where behaviour is 100% deterministic according the the associated CVM code. Actor functionality may be invoked directly or indirectly within a externally submitted transaction, but only if this is initiated and validated via a User Account.
+* **User Accounts**: Accounts that are controlled by external users, where access is secured by Ed25519 digital signatures on Transactions.
+* **Actor Accounts**: Accounts that are managed by an autonomous Actor, where behaviour is 100% deterministic according the the defined CVM code. Actor functionality may be called directly or indirectly within a externally submitted Transaction, but only if this is initiated and validated via a User Account.
 
 It is important to note particular the two types of Account share a common abstraction. Both User Accounts and Actor Accounts may hold exclusive control over assets, allowing for decentralised value exchange mediated by smart contracts. This common abstraction is useful, because it makes it simple to write code that does not need to distinguish between assets controlled directly by a user and assets managed by a Smart Contract.
 
@@ -566,22 +566,34 @@ A novel feature of the Convex Account model is that each Account receives it's o
 
 We believe this is a powerful model to encourage rapid development and innovation: for example, a developer can easily experiment with code in their own user account, then capture the same code in the definition of a deployable Actor for production usage.
 
-Futhermore, Accounts can be utilised as "libraries" of code for use by other Accounts. Since it is possible to create an immutable Actor Account (i.e. any actor that lacks externally accessible code to change its own environment), this means that you can create Libraries that are provably immutable, and can therefore be relied upon from a security perspective never to change.
+Optionally, Actor Accounts can be utilised as **Libraries** of code for use by other Accounts. Since it is possible to create an immutable Actor Account (i.e. any actor that lacks externally accessible code to change its own environment), this means that you can create Libraries that are provably immutable, and can therefore be relied upon from a security perspective never to change.
 
+Environments also support **Metadata** which can be optionally attached to any definition. This innovation is particularly useful to allow custom tags and documentation to be attached to library definitions in a way that can be inspected and utilised on-chain. For example, the metadata for a core function might look like:
+
+```clojure
+{
+	 :doc {:description "Casts the argument to an Address. Valid arguments include hex Strings, Longs, Addresses and Blobs with the correct length (8 bytes)."
+         :examples [{:code "(address 451)"}]
+         :type :function
+         :signature [{:params [a]
+                      :return Address}]
+         :errors {:CAST "If the argument is not castable to a valid Address."}}
+}
+```
 
 #### Information Model
 
-Convex requires a standard data model because in order for consensus to be useful, it must be agreed precisely what the information in consensus represents, and it is necessary for any smart contract to operate on well-defined data with clear semantics.
+Convex requires a standard information model because in order for consensus to be useful, it must be agreed precisely what the information in consensus represents, and it is necessary for any smart contract to operate on well-defined data with clear semantics.
 
-Design decisions regarding the information model have been driven by a number of theoretical and pragmatic considerations:
+Design decisions regarding the information model have been driven by a combination of theoretical and pragmatic considerations:
 
 - Representing types that are theoretically sound and fundamental to computing such as vectors, maps and lambda functions
-- Providing types that are generally likely to be useful for developers of decentralised asset systems
+- Providing types that are generally useful for developers of decentralised asset systems
 - Supporting all the capabilities required for a Lambda Calculus
 - Using types that are conveniently represented in modern computing platforms (e.g. the use of 64-bit Long integers and IEEE 754 double precision floating point values)
 - Ensuring that information can be efficiently encoded to minimise storage and bandwidth requirements
 
-Convex therefore implements a comprehensive set of data types, which are utilised both within the CVM and in the broader implementation of a Convex Peer (including the consensus algorithm and communication protocols).
+Convex implements a relatively comprehensive set of data types, which are utilised both within the CVM and in the broader implementation of a Convex Peer (including the consensus algorithm and communication protocols).
 
 All data types available in the CVM might be considered as Decentralised Data Values (DDVs) - immutable, persistent and structured for efficient network communication of information.
 
@@ -687,7 +699,7 @@ NOTE: Supporting user-defined, row-polymorphic record types is under considerati
 
 ##### Functions
 
-Functions are first class objects suitable for use in functional programming. We choose to implement functions directly in the CVM because they are fundamental and powerful constructs that allow the construction of effective programs without having to simulate them with lower level constructs (e.g. a stack based model).
+Functions are first class objects suitable for use in functional programming. Convex implements functions in this way because they are fundamental and powerful constructs that allow the construction of effective programs without having to simulate them with lower level constructs (e.g. a stack based model).
 
 The decision to emphasise first-class functions and functional programming is justified by the strong theoretical foundations of the Lambda Calculus.
 
@@ -695,6 +707,7 @@ Important features of functions include:
 
 * Support for variable arity function application, e.g. `(+ 1 2 3 4)`
 * Full lexical closures (capturing values in the lexical environment at the point of creation). 
+* Explicit tail-recursion support (i.e. recursively calling functions without consuming stack space)
 
 Many functions are provided as part of the runtime environment, generally available to users in the standard library `convex.core`. These functions provide the foundation for construction of higher level functionality.
 
@@ -706,19 +719,19 @@ In addition (adopting an idiom that has proved convenient in the Clojure languag
 
 ##### Macros and Expanders
 
-Convex supports the use of macros, in the manner of most Lisps. Macros provide powerful code generation and templating facilities, allowing users to extend the language to add new programming constructs. 
+Convex supports the use of macros, in the manner of most Lisps. Macros provide powerful code generation and templating facilities, allowing users to extend the language to add new programming constructs. In fact, a large proportion of the `convex.core` library itself is implemented using macros.
 
-Macros are also useful for generating efficient smart contracts, since they enable many computations to be performed once at compile time, reducing the cost of subsequent executions.
+Macros are also useful for generating efficient smart contracts, since they enable many computations to be performed once at compile time, reducing the cost of subsequent executions. For example, mathematical values required for liquidity curve calculations can be compiled into constants when liquidity curve Actors are deployed, eliminating wasteful computation when the Actor is subsequently called by users.
 
 Macros are implemented using the lower level construct of Expanders, which are Functions that generate code at expansion time (i.e. just before compilation).
 
-The idea of Expanders as a fundamental language construct is covered in the 1988 Paper "Expansion-passing style: A general macro mechanism" (R. Kent Dybvig, Daniel P. Friedman & Christopher T. Haynes). Interested readers are encouraged to read this article to understand the detailed rationale for this approach, but perhaps the most important point is that Expanders are strictly more powerful than traditional Lisp macros.  
+The idea of Expanders as a fundamental language construct is covered in the 1988 Paper "Expansion-passing style: A general macro mechanism" (R. Kent Dybvig, Daniel P. Friedman & Christopher T. Haynes). Interested readers are encouraged to read this article to understand the detailed rationale for this approach, but perhaps the most important point is that Expanders are strictly more powerful and flexible than traditional Lisp macros.  
 
 Macros and expanders present powerful possibilities for decentralised application, including automated code generation for new actors and smart contracts.
 
 ##### Ops
 
-Ops are low level, programmatic constructs that represent individual instructions on the CVM. All CVM code is compiled to a tree of Ops. They can be considered analogous to the "machine code" instructions on the CVM. Currently the key Ops supported are:
+Ops are low level, programmatic constructs that represent individual instructions on the CVM. All CVM code is compiled to a tree of Ops. They can be considered as the "machine code" instructions on the CVM. Currently the key Ops supported are:
 
 - `cond` - conditional evaluation
 - `constant` - load a constant value
@@ -750,48 +763,20 @@ If the juice limit has been exceeded, the CVM terminates transaction execution w
 
 ##### Space
 
-A significant but often overlooked problem facing a global, decentralised database that provides a commitment to preserve data indefinitely is the problem of state growth: if not constrained, the size of the CVM state might grow excessively large.
+Convex performs a complete, deterministic analysis of space usage by each Transaction, defined as the delta in the size of the Global State caused by the Transaction.
 
-This is an economic problem: The participants who create additional state are not necessarily the same as those who must bear the cost of ongoing storage. This can create a "Tragedy of the Commons" where participants are careless about creating new state. This could quickly lead to a situation where the state grows too large to be feasible for normal computers to participate as Peers in the Convex networks, which will in turn cause centralisation towards a few large and powerful nodes.
+This is an important execution constraint, without which there would be poor incentives for developers to be efficient with CVM memory usage (beyond paying the initial juice cost). Juice costs alone cannot be accurately used to constrain memory usage, because they are fundamentally a one-off "flow" cost that is immediately incurred, whereas space is an ongoing "stock" cost that is incurred by all Peers over time.
 
-This problem cannot be solved by charging at execution time alone. There is no way to determine at execution time how long a particular set of data will be stored for - it might be deallocated in the very next transaction, or it might need to persist forever. Any "average" estimate will end up penalising those who are being efficient only need the storage briefly, and subsidising those who are careless and consume space forever.
-
-To solve this problem, Convex implements **memory accounting** with the following features:
-
-* Every change to the state tracks the impact on **state size**, measured in bytes, which is (to a close approximation) the amount of memory that would be required to write out the byte encoding of the entire state tree.
-* Each account has an allocation of **memory** to utilise. 
-* When a transaction is executed, the **change in state size** is computed. An increase in state size reduces the accounts free memory, while a decrease in state size increases the account's free memory.
-* If at the end of a transaction the incremental space exceeds free memory then the transaction will fail and be rolled back.
-* Accounts may *temporarily* exceed their memory allocation during the course of transaction execution, e.g. through construction of temporary data structures. We can safely allow this because the maximum amount of temporary object allocation is bounded to a constant size by juice limits.
-
-**Note 1**: that in practice, the actual storage size of the CVM state will be significantly smaller than the tracked state size, because the use of immutable persistent data structures allows many equal tree branches to be shared. The effectiveness of this structural sharing needs to be observed over time, but we anticipate perhaps a 2-3x reduction in state size may be possible in the long term.
-
-**Note 2**: Observant system hackers may notice that the memory accounting mechanism means that if Account A causes some memory to be allocated, and Account B causes that same memory to be de-allocated (e.g. through the use of calls to an Actor), then Account B will gain memory from A. We consider this a feature, not a bug: It incentivises participants to clean up state wherever possible, and incentivises the writers of Actor code to consider their memory allocations and deallocations carefully.
-
-To ensure correct economic behaviour, it is necessary for free memory to have an economic cost. Therefore, Convex provides a **memory market** though which memory allocations may be traded. This has the following features:
-
-* An automatic market maker enabling accounts to buy and sell memory at any time, placing an effective price on memory
-* A total cap on available memory set at a level that constrains the total state size to an acceptable level
-* Ongoing governance to regulate changes in the total cap, which can be adjusted to allow for additional state growth as technology improves average Peer resources, without risking a loss of decentralisation.
-
-The overall cryptoeconomic system of memory accounting and memory markets offers a number of important benefits to the Convex ecosystem:
-
-* A guaranteed cap on state growth, that can safeguard against the growth of storage requirements driving centralisation
-* A general incentive for all participants to minimise and manage memory usage. This incentive increases as total state size grows towards the cap.
-* A specific incentive for coders to write memory-efficient code, and provide the ability for unused data to be deleted, if they want their Actors to be considered high quality and trustworthy.
-* A partial disincentive to hoard memory allocations (since expected future cap additions may devalue large memory holdings).
-* When space becomes scarce, there is an incentive for less economically viable applications to wind up operations and sell their freed memory allocation.
-
-For convenience, memory purchases happen automatically if additional allocations are needed within a transaction. This means that in most cases, users need not be concerned with the specifics of managing their memory allowance.
+This constraint is described in more detail in the "Memory Accounting" section of the White Paper.
 
 ##### Depth
 
-Convex places a limit on "stack" depth within Ops and Functions. While not strictly necessary (execution time constraints would at some point halt infinite recursion) a maximum depth is useful for two reasons:
+Convex places a limit on "stack" depth within Ops and Functions. While not strictly necessary (execution time constraints will at some point halt infinite recursion) a maximum depth is useful for two reasons:
 
 * Unbounded recursion should be discouraged in CVM code. The kinds of situations where it might be useful (heavy computations, or traversing large data structures, for example) should probably not be running on the CVM itself - this generally belongs in client or server code outside the CVM. 
 * It makes the CVM implementation simpler and more performant, since the depth limit allows the underlying JVM stack to be safely used without the risk of `StackOverFlowError`s, and therefore removes the need to explicitly handle these.
 
-Currently the depth limit is 256.
+Currently the depth limit is 256. This could be relaxed if needed, but we currently do not see any realistic smart contract use cases that are likely to require this much stack depth, especially considering that the CVM supports techniques like tail recursion (which avoid consuming stack depth).
 
 #### Runtime environment
 
@@ -813,34 +798,32 @@ In many cases, the runtime system is optimised for performance - for example, me
 
 #### Transparent persistence
 
-The Convex execution engine implements a form of transparent (sometimes also known as orthogonal) persistence. In this model, the CVM state size may exceed the working memory capacity of a Peer, and necessary parts of the state tree are loaded in from persistent storage on demand.
+The Convex execution engine implements a system of transparent (sometimes also known as orthogonal) persistence. In this model, the CVM state size may exceed the working memory capacity of a Peer, and necessary parts of the State tree are loaded in from persistent storage on demand.
 
-This presents a significant conceptual benefit for the developer: there is no need to write any code to load or unload data from storage in normal CVM code. This imposes some additional implementation complexity for the CVM itself, but this is considered a worthwhile trade-off, especially since it simplifies the logic of other parts of the Convex Peer implementation (e.g. eliminates the need to explicitly handle the memory consumption growth of long block orderings generated by the consensus algorithm over time). 
+This presents a significant conceptual benefit for the developer: there is no need to write any code to load or unload data from storage in normal CVM code. There is some additional implementation complexity for the CVM itself, but this is considered a worthwhile trade-off, especially since it simplifies the logic of other parts of the Convex Peer implementation (e.g. eliminates the need to explicitly handle the memory consumption growth of long Block Orderings generated by the CPoS consensus algorithm over time). 
 
-In the reference implementation, this is achieved with judicious reliance upon the very efficient JVM automatic memory management. This enables the following lifecycle for in-memory data values:
+In the current implementation, this is achieved with judicious reliance upon the very efficient JVM automatic memory management. This enables the following lifecycle for in-memory data values:
 
 1. Values are initial created with strong (RefDirect) references, which ensure that they are held in memory for as long as they are potentially needed
-2. At certain checkpoints (most importantly, after the successful processing of each Block) the current state is *persisted*. All objects which are reachable but not yet persisted are written to storage, and references to them are converted from strong references to soft (RefSoft) references. This happens as an atomic operation.
-3. From this point onwards, the persisted objects may be garbage collected at any time by the JVM if memory pressure occurs
+2. At certain checkpoints (most importantly, after the successful processing of each Block) the current State is *persisted*. All Cells which are reachable but not yet persisted are written to storage, and references to them are converted from strong references to soft (RefSoft) references. This happens as an atomic operation. This is made efficient by the system of Novelty Detection which can identify the `n` new Cells to be persisted in `O(n)` time.
+3. From this point onwards, the persisted objects may be garbage collected at any time by the JVM if memory pressure occurs. 
 4. If an attempt is made to access a value that has been garbage collected, the reference automatically fetches the associated data value from storage. This is guaranteed to succeed assuming that the previous persistence step was successfully completed.
 5. Over longer time periods, it is possible to perform garbage collection on the storage itself by compacting the store to remove data that is no longer required by the current consensus state. Peers may choose to do this at their own discretion based on their operational requirements, or alternatively they may decide to preserve all data (for example in order to perform historical analysis)
 
 #### Convex Lisp
 
-The CVM includes a small, dynamically typed, embedded Lisp suitable for general purpose programming within the CVM environment.
+The CVM includes a small, dynamically typed, embedded Lisp suitable for general purpose programming within the CVM environment. Convex Lisp draws inspiration from Common Lisp, Racket and Clojure. It is designed as primarily a functional language, with fully immutable data structures, as it is our belief that functional programming forms a strong foundation for building robust, secure systems.
 
-Lisp was chosen as the first language implementation in Convex for the following reasons:
+Convex Lisp was chosen as the first language implementation in Convex for the following reasons:
 
-* It can be constructed using a very small number of axiomatic primitives, which in turn are based on the Lambda Calculus. This provides a robust logical and mathematical foundation, suitable for the type of verifiable, deterministic computations that the CVM must support.
+* Experience with Lisp as a highly productive language for developers, particularly when manipulating data structures (as seen in data-driven development approaches with Clojure, for example).
+* It can be constructed using a very small number of simple, well-defined axiomatic primitives, which in turn are based on the Lambda Calculus. This provides a robust logical and mathematical foundation, suitable for the type of verifiable, deterministic computations that the CVM must support.
 * Lisp has a very simple regular syntax, homoiconic nature of code and ability to implement powerful macros. We hope this provides the basis for innovative new languages and domain-specific languages (DSLs) on the CVM.
 * Lisp compilers are small enough and practical enough to include as a capability within the CVM, avoiding the need for external compilers and tools to generate CVM code.
 * It is comparatively simple to implement, reducing the risk of bugs in the CVM implementation (which may require a protocol update to correct).
 * Lisp is well suited for interactive usage at a REPL prompt. This facilitates rapid prototyping and development of Actors in a way that we believe is a significant advantage for decentralised application builders looking to test and prototype new ideas.
 
-Developers using the Convex system are not required to use Convex Lisp: It is perfectly possible to create alternative language front-ends that target the CVM (e.g. by constructing trees of Ops directly)
-
-Convex Lisp draws inspiration from Common Lisp, Racket and Clojure. It is designed as primarily a functional language, with fully immutable data structures, as it is our belief that functional programming forms a strong foundation for building robust, secure systems.
-
+Developers using the Convex system are not required to use Convex Lisp: It is perfectly possible to create alternative language front-ends that target the CVM (e.g. by constructing trees of Ops directly). We have experimental support for a JavaScript-like language (Scrypt) and are encouraging community members to innovate further in this space.
 
 #### Scheduled execution
 
@@ -875,9 +858,7 @@ The storage system is also used to facilitate serialisation and transport of dat
 
 Storage is constructed out of Cells. 
 
-In most cases, a Cell is an immutable value value that represents an object in the CVM Informational Model.
-
-Normally there is a 1-1 mapping between Cells and CVM DDVs, however there are some exceptions:
+In most cases, a Cell is an entity that represents an Value in the CVM Informational Model. Normally there is a 1-1 mapping between Cells and CVM Values, however there are some exceptions:
 
 - For larger data structures a tree of Cells may be necessary - this is because we need to place a fixed upper bound on the size of each cell.
 - Small data values do not require a cell in their own right, since it is more efficient to embed them directly within a larger Cell.
@@ -887,12 +868,12 @@ Normally there is a 1-1 mapping between Cells and CVM DDVs, however there are so
 
 All Cells have a unique Encoding.
 
-The encoding is designed to provide the following properties:
+The Encoding is designed to provide the following properties:
 
 * A bounded maximum encoding size for any Cell (currently 8191 bytes)
 * Very fast serialisation and deserialisation, with minimal requirements for temporary object allocation.
-* Uniqueness of encoding - there is a 1:1 mapping between cell values and valid encodings. This means, among other useful properties, that Data Value equality can be determined by comparing hashes of encodings.
-* Self describing format: given a valid Cell encoding, the Data Value can be reconstructed without additional context
+* Uniqueness of encoding - there is a 1:1 mapping between Cell values and valid encodings. This means, among other useful properties, that Value equality can be determined by comparing hashes of encodings.
+* Self describing format: given a valid Cell Encoding, the Data Value can be reconstructed without additional context
 
 The same encoding is utilised in both durable storage and in network transmission.
 
@@ -908,11 +889,11 @@ This has the important property that it requires all values in the storage syste
 
 #### Embedding
 
-Small Data Values can usually be Embedded within another Cell (e.g. a Cell representing part of a larger data structure). In most cases, this avoids the need to construct and store separate cells for small primitive values, and often small data structures themselves can be fully embedded.
+Small Data Values can usually be Embedded within the Encoding of another Cell (typically a Cell representing part of a larger data structure). In most cases, this avoids the need to construct and store separate cells for small primitive values, and often small data structures themselves can be fully embedded.
 
-For example the vector `[1 2]` is encoded as a 6 byte sequence (`800209010902`) which can be seen to embed the values `1` (`0901`) and 2 (`0902`).
+For example the vector `[1 2]` is encoded as a 6 byte sequence (`0x800209010902`) which can be seen to embed the values `1` (`0901`) and 2 (`0902`).
 
-Currently, most data values with an encoding size of up to 140 bytes are automatically embedded. This heuristic may be modified based on further testing and profiling but it seems reasonable: per-Cell storage overheads make it inefficient to separately store small objects, and by compressing many small objects into a single Cell we avoid the need to compute separate SHA3-256 VIDs for each, which we have observed to be a bottleneck in some cases.
+Currently, Cells with an Encoding size of up to **140 bytes** are automatically embedded. This heuristic may be modified based on further testing and profiling but it seems reasonable: per-Cell storage overheads make it inefficient to separately store such small objects, and by compressing many small objects into a single Cell we avoid the need to compute separate SHA3-256 VIDs for each, which we have observed to be a bottleneck in some cases.
 
 #### Convergence
 
@@ -924,7 +905,7 @@ This convergence property is particularly beneficial when combined with the stru
 
 #### Monotonic Headers
 
-In addition to value IDs and encodings, the storage system allows header information to be attached to each Cell.
+In addition to Value IDs and Encodings, the storage system allows header information to be attached to each Cell.
 
 As we require the storage system to be convergent, we require each field of the header to be *monotonic*, i.e. there is a simple function that can compute the new header as the maximum value of any previous header values. This ensure that the headers themselves satisfy the convergence property.
 
@@ -951,8 +932,8 @@ The basic status levels are:
 
 Some special status levels are also possible, including:
 
-* **EMBEDDED** - A Data Value is able to be embedded within other Cells, and does *not* need to be individually stored.
-* **INVALID** - A cell has been proven to be inconsistent with some validation rules. Such values cannot be used in the CVM, but caching the invalid status can be helpful to avoid the need to redo the validation.
+* **EMBEDDED** - A Cell is able to be embedded within other Cells, and does *not* need to be individually stored.
+* **INVALID** - A Cell has been proven to be inconsistent with some validation rules. Such values cannot be used in the CVM, but caching the invalid status can be helpful to avoid the need to repeat the validation.
 
 This status tagging is monotonic and compatible with being included in the storage CRDT, since:
 * The status level can never go backwards: once verified, the result is known to be true forever. If the status was reset (e.g. in the case of storage failure), the only real loss would be the Peer having to repeat certain calculations to re-verify the status.
@@ -960,21 +941,23 @@ This status tagging is monotonic and compatible with being included in the stora
 
 #### Novelty detection
 
-A key feature of the storage system is the ability to detect and apply special handling to novelty. Novelty is defined as a stored value that is moving up to a higher status level for the first time.
+A key feature of the storage system is the ability to detect and apply special handling to Novelty. Novelty is defined as a stored value that is moving up to a higher status level for the first time.
 
 Novelty detection is important for the following reasons:
 
 * When information needs to be shared on the network, only the incremental information needs to be transmitted. This is especially important for the consensus algorithm, for example: the transmission of a new Belief need only include the additions to the proposed Ordering, without communicating the complete Ordering (which may be very long, but is already likely to held by all other Peers)
 * When validating data, it avoids the need to re-compute validation on parts of the data that have already been validated. This is particularly important when the data structures to be validated are large, but have only a few small changes in comparison with a previously validated data structure (e.g. the entire CVM State)
 
+Most importantly, when a Belief data structure is produced an determined to be Novelty, Peers utilise this fact to trigger the propagation of the Belief to other Peers - however they only need to transmit the small subset of Cells in the Belief that are new, since most of the Belief data structure will not be novel and a Peer can safely assume that other Peers will already have access to such data in memory or storage.
+
 #### Garbage Collection
 
-If we had infinite cheap storage, we could just keep accumulating values in the database forever. However, practical concerns of storage limits will probably make this infeasible for most Peers.
+Given infinite cheap storage, we could just keep accumulating values in the database forever. However, practical storage limits or costs will make this infeasible or undesirable for many Peers operators.
 
 Peers are only strictly required to maintain:
 
 * Enough information regarding Beliefs to participate in the consensus algorithm (about one day of orderings and transactions - exact limit TBC)
-* The current State for the CVM
+* The current Consensus State for the CVM
 
 The storage system therefore allows garbage collection to be performed on a periodic basis, so that storage space containing data that is no longer required can be reclaimed. Garbage collection is done on a mark+copy basis, where currently used storage is copied to a new data file, and after which the old data file can be safely discarded. This could theoretically be performed concurrently with ongoing Peer operation in a future version.
 
@@ -984,11 +967,49 @@ This behaviour is of course configurable by Peer Operators - we expect some will
 
 The Convex reference implementation implements the storage system using a specialised memory-mapped database called Etch, which is heavily optimised for the storage of Cells as described here. Assuming sufficient available RAM on a Peer, Etch effectively operates as an in-memory database.
 
-In performance tests, we have observed millions of reads and writes per second. This compares favourably to traditional approaches, such as using a relational database or generalised key-value store.
+In performance tests, we have observed millions of reads and writes per second. This compares favourably to traditional approaches, such as using a relational database or a more generalised key-value store.
 
 ### Memory Accounting
 
 In order to address the problem of economic and storage costs of state growth, Convex performs continuous memory accounting calculations to ensure that participants pay appropriate costs for resources that they consume.
+
+#### Motivation
+
+A significant but often overlooked problem facing a global, decentralised database that provides a commitment to preserve data indefinitely is the problem of state growth: if not constrained, the size of the CVM state might grow excessively large.
+
+This is an economic problem: The participants who create additional state are not necessarily the same as those who must bear the cost of ongoing storage. This can create a "Tragedy of the Commons" where participants are careless about creating new state. This could quickly lead to a situation where the state grows too large to be feasible for normal computers to participate as Peers in the Convex networks, which will in turn cause centralisation towards a few large and powerful nodes.
+
+This problem cannot be solved by charging at execution time alone. There is no way to determine at execution time how long a particular set of data will be stored for - it might be deallocated in the very next transaction, or it might need to persist forever. Any "average" estimate will end up penalising those who are being efficient only need the storage briefly, and subsidising those who are careless and consume space forever.
+
+#### Overall Design
+
+To solve the state growth problem, Convex implements **Memory Accounting** with the following features:
+
+* Every change to the state tracks the impact on **State Size**, measured in bytes, which is (to a close approximation) the amount of memory that would be required to write out the byte encoding of the entire state tree.
+* Each account has an allocation of **Memory Allowance** to utilise. 
+* When a transaction is executed, the **change in State Size** is computed. An increase in state size reduces the accounts free memory, while a decrease in state size increases the account's free memory.
+* If at the end of a transaction the incremental space exceeds free memory then the transaction will fail and be rolled back.
+* Accounts may *temporarily* exceed their memory allocation during the course of transaction execution, e.g. through construction of temporary data structures. We can safely allow this because the maximum amount of temporary object allocation is bounded to a constant size by juice limits.
+
+**Note 1**: that in practice, the actual storage size of the CVM state will be significantly smaller than the tracked state size, because the use of immutable persistent data structures allows many equal tree branches to be shared. The effectiveness of this structural sharing needs to be observed over time, but we anticipate perhaps a 2-3x reduction in state size may be possible in the long term.
+
+**Note 2**: Observant system hackers may notice that the memory accounting mechanism means that if Account A causes some memory to be allocated, and Account B causes that same memory to be de-allocated (e.g. through the use of calls to an Actor), then Account B will gain memory from A. We consider this a feature, not a bug: It incentivises participants to clean up state wherever possible, and incentivises the writers of Actor code to consider their memory allocations and deallocations carefully.
+
+To ensure correct economic behaviour, it is necessary for free memory to have an economic cost. Therefore, Convex provides a **Memory Exchange** though which memory allocations may be traded. This has the following features:
+
+* An automatic market maker enabling accounts to buy and sell memory at any time, placing an effective price on memory
+* A total cap on available memory set at a level that constrains the total state size to an acceptable level
+* Ongoing governance to regulate changes in the total cap, which can be adjusted to allow for additional state growth as technology improves average Peer resources, without risking a loss of decentralisation.
+
+For convenience, memory purchases happen automatically if additional allocations are needed within a transaction. This means that in most cases, users need not be concerned with the specifics of managing their memory allowance.
+
+The overall cryptoeconomic design of Memory Accounting and the Memory Exchange offers a number of important benefits to the Convex ecosystem:
+
+* A guaranteed cap on state growth, that can safeguard against the growth of storage requirements driving centralisation
+* A general incentive for all participants to minimise and manage memory usage. This incentive increases as total state size grows towards the cap.
+* A specific incentive for coders to write memory-efficient code, and provide the ability for unused data to be deleted, if they want their Actors to be considered high quality and trustworthy.
+* A partial disincentive to hoard memory allocations (since expected future cap additions may devalue large memory holdings).
+* When space becomes scarce, there is an incentive for less economically viable applications to wind up operations and sell their freed memory allocation.
 
 #### Memory Size
 
@@ -1012,19 +1033,19 @@ Each Account on the Convex network is given a Memory Allowance which is a quanti
 
 #### Consumption
 
-Whenever a transaction is executed on the CVM, Memory Consumption is calculated based on the total impact of the transaction on the size of CVM state.
+Whenever a Transaction is executed on the CVM, Memory Consumption is calculated based on the total impact of the Transaction on the size of CVM state (the State Size).
 
 Memory Consumption is computed at the end of each transaction, and is defined as:
 
-`Memory Consumption = [Size of CVM state at end of transaction] - [Size of CVM state at start of transaction]` 
+`Memory Consumption = [CVM State Size at end of Transaction] - [CVM State Size at start of Transaction]` 
 
 If a transaction has zero Memory Consumption, it will complete normally with no effect from the Memory Accounting subsystem
 
 If a transaction would complete normally, but has a positive Memory Consumption, the following resolutions are attempted, in this order:
 
-1. If the user has sufficient allowance, the additional memory requirement will be deducted from the allowance, and the transaction will complete normally
-2. If the transaction execution context has remaining juice, and attempt will be made to automatically purchase sufficient memory from the pool. The maximum amount paid will be the current juice price multiplied by the remaining juice for the transaction. If this succeeds, the transaction will complete successfully with the additional memory purchase included in the total juice cost.
-3. The transaction will fail with a MEMORY condition, and any state changes will be rolled back. The User will still be charged the juice cost of the transaction
+1. If the user has sufficient Allowance, the additional memory requirement will be deducted from the allowance, and the transaction will complete normally
+2. If the transaction execution context has remaining juice, and attempt will be made to automatically purchase sufficient memory from the Memory Exchange. The maximum amount paid will be the current juice price multiplied by the remaining juice for the transaction. If this succeeds, the transaction will complete successfully with the additional memory purchase included in the total juice cost.
+3. The transaction will fail with a MEMORY Error, and any state changes will be rolled back. The User will still be charged the juice cost of the transaction
 
 If a transaction has negative Memory Consumption, the memory allowance of the user will be increased by the absolute size of this value. In effect, this is a refund granted for releasing storage requirements.
 
@@ -1047,9 +1068,9 @@ The exception to this is with scheduled execution, where an Actor itself may be 
 
 Actor developers may include a capability to reclaim Memory allowances from an Actor (e.g. transferring it to a nominated User Account). This is optional, but without this there may be no way to ever utilise an allowance held within an Actor (either because a scheduled transaction obtained a Memory refund, or because an allowance transfer was made to the Actor).
 
-#### Pool trading
+#### Memory Exchange trading
 
-The Memory Pool employs a simple Automated Market Maker, allowing users to buy and sell memory allowances at any time. The price of memory in the Pool will adjust to find an equilibrium between supply and demand.
+The Memory Exchange is a simple Automated Market Maker, allowing users to buy and sell memory allowances at any time from a Memory Pool. The price of memory in the Pool will automatically adjust to find an equilibrium between supply and demand.
 
 #### New Memory Release
 

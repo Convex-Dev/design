@@ -2,21 +2,21 @@
 
 ## Solving The State Growth Problem
 
-Decentralised databases have an issue with *state growth*, defined as the increasing requirement for peers to store information that accumulates over time. Because on-chain data must be retained, potentially indefinitely, in order to satisfy future on-chain queries or smart contract operation, there is no option to discard data arbitrarily: a correct peer cannot do so and maintain correct participation in the consensus protocol.
+Decentralised ledgers often encounter an serious issue with *state growth*, defined as the increasing requirement for peers to store information that accumulates over time. Because on-chain data must be retained, potentially indefinitely, in order to satisfy future on-chain queries or smart contract operation, there is no option to discard data arbitrarily: a correct peer cannot do so and maintain correct participation in the consensus protocol.
 
 This growing demand for storage space presents a significant problem.
 
-- It creates a requirement for peers to incur increasing storage costs over time, for data that must be retained indefinitely
+- It creates a requirement for peers to incur increasing storage costs over time, for data that must potentially be retained indefinitely if the peer is to be able to fulfil its commitments to provide access to this data to any future transactions.
 - There are perverse incentives at work: a user might pay a one-off code to store data on-chain, but does not bear the cost of indefinite future storage (which falls on peer operators)
 - Over time, careless use of on-chain storage may make it impractical for a typical individual to operate a peer with normal computer hardware and storage capabilities
 - This problem might be manageable for low-transaction-volume platforms, but is clearly unaccaptable for systems such as Convex that are designed to handle high volumes of transactions for sustained periods of time
 
 Convex implements a novel solution of Memory Accounting to help manage the problem.
 
-- Each user is given a memory allowance
-- Memory allowance is consumed when on-chain storage is allocated, and released when stored objects are deleted
-- A common "pool" of memory is available which limits the maximum size of the on-chain state. This pool can be increased or reduced subject to on-chain governance by the Foundation
-- A user may buy additional memory at any time from the pool, or sell memory back to the pool for Convex Coins
+- Each user is given a Memory Allowance
+- Memory Allowance is consumed when on-chain storage is allocated, and released when stored objects are deleted
+- A common "Pool" of memory is available which limits the maximum size of the on-chain state. 
+- A user may buy additional memory at any time from the Pool, or sell memory back to the pool for Convex Coins
 
 
 ## Memory Accounting Design
@@ -33,7 +33,7 @@ The Memory Size includes:
 
 ### Consumption
 
-Whenever a transaction is executed on the CVM, Memory Consumption is calculated based on the total impact of the transaction on the size of CVM state.
+Whenever a transaction is executed on the CVM, Memory Consumption is calculated based on the total impact of the transaction on the size of CVM State.
 
 Memory Consumption is computed at the end of each transaction, and is defined as:
 
@@ -44,10 +44,10 @@ If a transaction has zero Memory Consumption, it will complete normally with no 
 If a transaction would complete normally, but has a positive Memory Consumption, the following resolutions are attempted, in this order:
 
 1. If the user has sufficient allowance, the additional memory requirement will be deducted from the allowance, and the transaction will complete normally
-2. If the transaction execution context has remaining juice, and attempt will be made to automatically purchase sufficient memory from the pool. The maximum amount paid will be the current juice price multiplied by the remaining juice for the transaction. If this succeeds, the transaction will complete successfully with the additional memory purchase included in the total juice cost.
+2. If the transaction execution context has remaining juice, and attempt will be made to automatically purchase sufficient memory from the Pool. The maximum amount paid will be the current juice price multiplied by the remaining juice for the transaction. If this succeeds, the transaction will complete successfully with the additional memory purchase included in the total juice cost.
 3. The transaction will fail with a MEMORY condition, and any state changes will be rolled back. The User will still be charged the juice cost of the transaction
 
-If a transaction has negative Memory Consumption, the memory allowance of the user will be increased by the absolute size of this value. In effect, this is a refund granted for releasing storage requirements.
+If a Transaction has negative Memory Consumption, the Memory Allowance of the user will be increased by the absolute size of this value. In effect, this is a refund granted for releasing storage.
 
 
 ### Allowance transfers
@@ -61,7 +61,7 @@ It is permissible to make an allowance transfer directly between Accounts. This 
 
 ### Actor Memory allowances
 
-All Accounts, including Actors, have a memory allowance. However, in most cases Actors have no need for a memory allowance because the allowance utilised will be that of a User account that was the Origin of a transaction.
+All Accounts, including Actors, have a Memory Allowance. However, in most cases Actors have no need for a memory allowance because the allowance utilised will be that of a User account that was the Origin of a transaction.
 
 The exception to this is with scheduled execution, where an Actor itself may be the Origin for a transaction.
 
@@ -69,9 +69,16 @@ Actor developers may include a capability to reclaim Memory allowances from an A
 
 ### Pool trading
 
-The Memory Pool employs a simple Automated Market Maker, allowing users to buy and sell memory allowances at any time.
+The Memory Pool employs a simple Automated Market Maker, allowing users to buy and sell Memory Allowances at any time.
 
-The Memory Pool liquidity is provided by the Convex Foundation as service to the ecosystem. It is the Foundation's responsibility to govern the continuous availability of memory at an appropriate price.
+The Memory Pool liquidity is initially set at network initialisation to be:
+
+- 1,000,000,000 bytes of Memory Allowance (~1 GB)
+- 1,000 Convex Gold
+
+Giving an initial memory price of ~1 Convex Gold / MB
+
+TODO: Revise this based on updated estimates
 
 ## Incentives
 
@@ -116,7 +123,7 @@ Alternatives to this design that were considered include techniques such as refe
 - It would mean that the cost of Memory allocations would be unpredictable, based on Memory usage of other users
 - Accounting for refunds of memory become highly complicated, and can create perverse incentives: If only the last User to release the object gets the refund, there is no incentive to be the first one to do do.
 
-## Technical implementation notes
+## Technical implementation
 
 ### Definition of Memory Size
 
@@ -146,9 +153,13 @@ Memory requirements for a Cell are only calculated when required (usually at the
 
 This minimises the computational costs associated with memory accounting for transient in-memory objects.
 
-### Size persistence
+### Memory Size Caching and Persistence
 
-The memory size is persisted in storage as part of the header information for a Cell. Persisting this value is important to ensure that memory sizes can be computed incrementally without re-visiting the complete tree of child Cells.
+Implementations MUST cache memory size for Cells, and persist cached values in storage.
+
+Caching and persisting Memory Size is important to ensure that memory sizes can be computed incrementally without re-visiting the complete tree of Cells.
+
+This ensures that memory size computation is at worst `O(n)` for a Transaction, where `n` is the number of new Cells constructed during the transaction.
 
 ### Memory Accounting impact
 
@@ -158,13 +169,13 @@ This is achieved mainly by ensuring that state changes due to memory accounting 
 
 ### Performance characteristics
 
-Memory Accounting is O(1) for each non-embedded Cell allocated, with a relatively small constant. This would appear to be asymptotically optimal for any system that performs exact memory accounting at a fine-grained level.
+Memory Accounting is `O(1)` for each non-embedded Cell allocated, with a relatively small constant. This would appear to be asymptotically optimal for any system that performs exact memory accounting at a fine-grained level.
 
 This achievement is possible because:
 
 - The Memory Size is computed incrementally and cached for each Cell.
 - The number of child cells for each Cell is itself bounded by a small constant
-- Memory Size computation is usually lazy, that is it is not performed unless required
+- Memory Size computation is usually lazy, i.e. it is not performed unless required
 - The immutable nature of Convex Cell values means that there is never a need to update Memory Sizes once cached
 
 The computational cost of performing this memory accounting is factored in to the juice cost of operations that perform new Cell allocations. The storage cost is, of course, factored in to the general economics of the Memory Accounting model.
