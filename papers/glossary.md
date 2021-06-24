@@ -82,7 +82,7 @@ A network of Peers, maintaining a consistent global state and executing state tr
 
 A programming language based on Lisp, that is available by default as part of the CVM.
 
-Convex Lisp prioritises features that are well suited to the development decentralised economic systems. This includes:
+Convex Lisp prioritises features that are well suited to the development of decentralised economic systems. This includes:
 
 * Emphasis on functional programming to reduce error and improve logical clarity
 * Use of immutable, persistent data structures
@@ -105,10 +105,6 @@ The CVM is Turing complete, and is capable of executing arbitrary logic. It enfo
 A representation of computer code that can be executed natively on the CVM. CVM code is based on a small number of core primitives that map to the Lambda Calculus, which can be composed in a tree data structure to represent arbitrary Turing-complete code.
 
 Different languages may be compiled to CVM code.
-
-## Data Object
-
-
 
 ## DApp
 
@@ -278,7 +274,7 @@ Transactions must be digitally signed by the owner of the Account in order to be
 
 ## Value
 
-A Value is a first-class, immutable piece of information managed by Convex. A Value can be simple (e.g. the number `1`) or composite (e.g. a vector containing other values like `[1 2 [3 4] :foo]`)
+A Value is a first-class, immutable piece of information managed by Convex. A Value can be simple (e.g. the number `1`) or composite (e.g., a vector containing other values like `[1 2 [3 4] :foo]`)
 
 Value types include:
 
@@ -291,8 +287,8 @@ Values may be processed by code within the CVM, and are the fundamental building
 
 ## Wallet
 
-A Wallet is a secure collection of Accounts along with their associated private keys.
+A Wallet is an application or device that stores keys (especially private keys) for Convex Accounts, enabling access and control over digital assets held by those accounts.
 
-Wallet functionality may be provided by a Dapp, or embedded in any system that communicates with the Convex Network.
+Wallet functionality may be provided by a Dapp, or embedded in any system that communicates with the Convex Network. It may also be a specialised hardware device (Hardware Wallet).
 
 Wallet security is paramount: if access to the private keys in a wallet is compromised, any on-chain digital assets (coins, tokens, smart contract rights etc.) may be at risk.
