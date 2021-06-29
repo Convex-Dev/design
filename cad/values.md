@@ -8,9 +8,15 @@ Convex depends on a consistent representation of information values that are use
 
 All CVM values MUST be **immutable**. 
 
-This restriction is necessary from the perspective of maintaining integrity of the decentralised state. 
+This restriction is necessary from the perspective of maintaining integrity of the decentralised state. The property of immutability is also helpful from a performance perspective, since it means that CVM values can be safely cached and used in structural sharing of composite data structures.
 
-The property of immutability is also helpful from a performance perspective, since it means that CVM values can be safely cached and used in structural sharing of composite data structures.
+### Structural Sharing
+
+All CVM values which are data structure MUST support structural sharing of sub components if they have greater than `O(1)` size. 
+
+This ensures that we can offer better than `O(n)` performance bounds for reads and updates of immutable structures (i.e. avoiding copy-on-write costs). Typically these costs should be either `O(1)` or `O(log n)` for most operations.
+
+This also ensures that Peers can safely store multiple versions of large data structures with minor changes while only incurring storage requirements that scale with the size of the changes. This is particularly important for Beliefs and Block Orderings, which may grow very large over time.
 
 ### Canonical Encoding
 
