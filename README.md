@@ -12,24 +12,24 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 
 | Code                         | Title                            | Status     | Editor
 | ------------------           | -------------------------------- | ---------- | -----------
-| [CAD0](cad/000_principles/README.md)    | Design principles                | Initial    | mikera
-| [CAD1](cad/001_arch/README.md)          | Vision & Architecture            | Initial    | mikera
-| [CAD2](cad/002_values/README.md)        | CVM Values                       | Initial    | mikera
-| [CAD3](cad/003_encoding/README.md)      | Encoding Format                  | Initial    | mikera
-| [CAD4](cad/004_accounts/README.md)      | Account Model                    | Initial    | mikera
+| [CAD0](cad/000_principles/README.md)    | Design principles                | Active    | mikera
+| [CAD1](cad/001_arch/README.md)          | Vision & Architecture            | Active    | mikera
+| [CAD2](cad/002_values/README.md)        | CVM Values                       | Active    | mikera
+| [CAD3](cad/003_encoding/README.md)      | Encoding Format                  | Active    | mikera
+| [CAD4](cad/004_accounts/README.md)      | Account Model                    | Pending    | mikera
 | [CAD5](cad/005_cvmex/README.md)         | CVM Execution                    | Initial    | mikera
-| [CAD6](cad/006_memory/README.md)        | Memory Accounting                | Initial    | mikera
-| [CAD7](cad/007_juice/README.md)         | Juice Accounting                 | Initial    | mikera
-| [CAD8](cad/008_compiler/README.md)      | Convex Lisp Compiler             | Initial    | mikera
-| [CAD9](cad/009_expanders/README.md)     | Expanders and Macros             | Initial    | mikera
-| [CAD10](cad/010_transactions/README.md) | Transactions                     | Initial    | mikera
-| [CAD11](cad/011_errors/README.md)       | Error Handling                   | Initial    | mikera
-| [CAD12](cad/012_numerics/README.md)     | Numerics                         | Initial    | mikera
-| [CAD13](cad/013_edn/README.md)          | EDN Encoding                     | Initial    | mikera
-| [CAD14](cad/014_cns/README.md)          | CNS Registry                     | Initial    | mikera
-| [CAD15](cad/015_peercomms/README.md)    | Peer Connection Protocol         | Initial    | mikera
-| [CAD16](cad/016_peerstake/README.md)    | Peer Staking                     | Initial    | mikera
-| [CAD17](cad/017_peerops/README.md)      | Peer Operations                  | Initial    | mikera
+| [CAD6](cad/006_memory/README.md)        | Memory Accounting                | Active    | mikera
+| [CAD7](cad/007_juice/README.md)         | Juice Accounting                 | Pending    | mikera
+| [CAD8](cad/008_compiler/README.md)      | Convex Lisp Compiler             | Pending    | mikera
+| [CAD9](cad/009_expanders/README.md)     | Expanders and Macros             | Pending    | mikera
+| [CAD10](cad/010_transactions/README.md) | Transactions                     | Pending    | mikera
+| [CAD11](cad/011_errors/README.md)       | Error Handling                   | Active    | mikera
+| [CAD12](cad/012_numerics/README.md)     | Numerics                         | Pending    | mikera
+| [CAD13](cad/013_edn/README.md)          | EDN Encoding                     | Pending    | mikera
+| [CAD14](cad/014_cns/README.md)          | CNS Registry                     | Pending    | mikera
+| [CAD15](cad/015_peercomms/README.md)    | Peer Connection Protocol         | Pending    | mikera
+| [CAD16](cad/016_peerstake/README.md)    | Peer Staking                     | Pending    | mikera
+| [CAD17](cad/017_peerops/README.md)      | Peer Operations                  | Pending    | mikera
 
 ## Convex Project Portfolio
 
