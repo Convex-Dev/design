@@ -1,4 +1,4 @@
-# Design Princicples
+# Design Principles
 
 This document details general design and engineering principles deployed in the implementation of Convex.
 
