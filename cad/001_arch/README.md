@@ -32,7 +32,7 @@ Clients MAY connect to multiple Peers. This may be valuable if the Client wishes
 
 ### 3. State
 
-The State data structure that represents all information contained within the CVM.
+The State is a data structure that represents all information managed by the CVM.
 
 Peers MUST maintain a copy of the current consensus State.
 
