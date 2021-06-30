@@ -49,12 +49,14 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 ## Contributing
 
-Contributions to this repository are welcome. Contributors may clarify existing design documents, or propose new formal specification changes to Convex.
+Contributions to this repository are welcome. Contributors may clarify existing design documents, or propose new formal specification changes to Convex by opening issues.
 
-It is recommended that contributors discuss proposals with the broader community at the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
+For questions and broader discussions, please join the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
+
+It is recommended consulting the broader community first before preparing proposals or improvements that might otherwise be rejected.
 
 ## License
 
-Copyright 2021 Convex Foundation (UK) and others
+Copyright 2021 Convex Foundation (UK) and contributors
 
 Contributors retain copyright in their contributions, but agree that the Convex Foundation may freely distribute these contributions under any license of its choice.
