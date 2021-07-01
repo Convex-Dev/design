@@ -37,7 +37,7 @@ For example, Algebraic thinking may be useful when thinking about the "zero" cas
 
 We can add functionality, we can't remove it (at least in released versions of Convex). We MUST always continue to support existing released functionality, since users may be depending on it.
 
-This principle also applies to error conditions. We can permissibly turn a failure into a sucess (e.g. defining a function that was previously undeclared) but cannot turn a success into a failure (e.g. removing a core function).
+This principle also applies to error conditions. We can permissibly turn a failure into a success (e.g. defining a function that was previously undeclared) but cannot turn a success into a failure (e.g. removing a core function).
 
 
 ## Values are Immutable
