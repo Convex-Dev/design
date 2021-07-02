@@ -198,26 +198,98 @@ A Signature Value is encoded by the Tag byte followed by the 64 bytes Ed25519 Si
 ```Encoding
 If String is 1024 Characters or less:
 
-0x30 <VLC Length n> <2*n bytes UTF-16 Characters>
+0x30 <VLC Length = n> <2*n bytes UTF-16 Characters>
 
 If String is more than 1024 Characters:
 
-0x30 <VLC Length n> <Child String Value>(repeated 1-16 times)
+0x30 <VLC Length = n> <Child String Value>(repeated 2-16 times)
 ```
 
-Every string Encoding starts with the Tag byte and a VLC-encoded Long length.
+Every String Encoding starts with the Tag byte and a VLC-encoded Long length.
 
 Encoding then splits dpeending on the String length `n`.
 - If 1024 characters or less, the UTF16 characters of the String are encoded directly (`n*2` bytes total)
-- If more than 1024 charcters, the String is broken up into a tree of child Strings, where each child except the last maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
+- If more than 1024 charcters, the String is broken up into a tree of child Strings, where each child except the last is the maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
 
 Because child strings are likely to be non-embedded (because of Encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large String will have a top level Cell Encoding of a few hundred bytes, allowing for a few child Refs and a (perhaps Embedded) final child. 
 
 Importantly, this design allows:
-- Arbitrary length Strings to be encoded, while still keeping each Cell Encoding within a fixed
+- Arbitrary length Strings to be encoded, while still keeping each Cell Encoding within a fixed size
 - Structural sharing of tree nodes, giving O(log n) update with path copying
 - Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 1024 characters.
 
+### `0x31` Blob
+
+```Encoding
+If Blob is 4096 bytes or less:
+
+0x31 <VLC Length = n> <n bytes>
+
+If Blob is more than 4096 bytes:
+
+0x31 <VLC Length = n> <Child Blob Value>(repeated 2-16 times)
+```
+
+Every Blob Encoding starts with the Tag byte and a VLC-encoded Long length.
+
+Encoding then splits dpeending on the Blob length `n`.
+- If 4096 bytes or less, the bytes of the Blob are encoded directly (`n*2` bytes total)
+- If more than 4096 byte, the Blob is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child Blob (4096, 65536, 1048576 etc.), and the last child contains all remaining Bytes. Up to 16 children are allowed before the tree must grow to the next level.
+
+Because child Blobs are likely to be non-embedded (because of Encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large Blob will have a top level Cell Encoding of a few hundred bytes, allowing for a few child Refs and a (perhaps Embedded) final child. 
+
+Importantly, this design allows:
+- Arbitrary length Blobs to be encoded, while still keeping each Blob Encoding within a fixed size
+- Structural sharing of tree nodes, giving O(log n) update with path copying
+- Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 4096 bytes.
+
+### 0x32 Symbol
+
+```Encoding
+0x32 <VLC Length = n> <n bytes UTF-8 String>
+```
+
+A Symbol is Encoded with the Tag byte, a VLC Symbol length `n`, and `n` bytes of UTF-8 encoded characters.
+
+The Symbol must have a length of 1-64 UTF-16 characters (TODO: may change to UTF-8)
+
+### 0x33 Keyword
+
+```Encoding
+0x32 <VLC Length = n> <n bytes UTF-8 String>
+```
+
+A Keyword is Encoded with the Tag byte, a VLC Symbol length `n`, and `n` bytes of UTF-8 encoded characters.
+
+The Keyword must have a length of 1-64 UTF-16 characters (TODO: may change to UTF-8)
+
+### 0x80 Vector
+
+```Encoding
+If a Leaf Count:
+
+0x80 <VLC Count = n> <Prefix Vector> <Value>(repeated 0-16 times)
+
+If a non-Leaf Count:
+
+0x80 <VLC Count = n> <Child Vector>(repeated 2-16 times)
+```
+
+A Leaf Count `n` is defined as 0, 16, or any other positive integer which is not an exact multiple of 16.
+
+A Vector is defined as Packed if its Count is `16 ^ level`, where `level` is any positive integer. Intuitively, this represents a Vector which has the maximum number of elements before a new level in the tree must be added.
+
+All Vector Encodings start with the Tag byte and a VLC Count of elements in the Vector.
+
+Subsequently:
+- For Leaf Vectors, a Prefix Vector is Encoded (which may be `nil`) that contains all elements up to the highest multiple of 16 less than the Count, followed by the Values
+- For non-Leaf Vectors, Child Vectors are encoded where each child is the maximum size Packed Vector less than Count in lenth, except the last which is the Vector containing all remaining Values.
+
+This Encoding has some elegant properties which make Convex Vectors particularly efficient in regular usage:
+- Short Vectors (0-16 Count) are always encoded in a single Cell, which may require no further Cell encodings in the common case that all elements are Embedded.
+- The last few elements of the Vector are usually in a Leaf Vector, which allows `O(1)` access and update to Elements
+- Append is always `O(1)` (since either it is a Leaf Vector, or the append creates a new Leaf Vector with the origibal Vector as its Prefix)
+- Generally, access and update is O(log n) with a reasonably high branching factor
 
 ### TODO: More tags
 
