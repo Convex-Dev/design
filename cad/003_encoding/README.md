@@ -28,9 +28,9 @@ Any given Cell MUST map to one and only one Encoding.
 
 Any two distinct (non-identical) Cell MUST map to different Encoding
 
-It must be possible to reconstruct the Cell from its own Encoding.
+It MUST be possible to reconstruct the Cell from its own Encoding, to the extent that the Cell represents the same Value (it is possible for implementations to use different internal formats if desired, providing these do not affect the CVM Value semantics)
 
-The Encoding MUST have a maximum length of 8191 bytes. This ensure that an Encoded value will always fit within a reasonable fixed size buffer.
+The Encoding MUST have a maximum length of 8191 bytes. This ensure that an Encoded Cell will always fit within a reasonable fixed size buffer, and guarantees that most operations on Cells are `O(1)` complexity.
 
 ### Value ID
 
@@ -97,6 +97,18 @@ The first byte of the Encoding is defined to be the Tag, which designates the ty
 
 Implementations MUST reject an Encoding as Invalid if the Tag byte is not recognised as one defined in this document.
 
+### VLC Integers
+
+Integers are normally encoded using a Variable Length Coding (VLC) format. This ensure that small integers have a 1-byte Encoding, and most 64-bit values encoded will have an encoded length shorter than 8 bytes, based on the expected distributions of 64-bit integers encountered in the system.
+
+Encoding rules are:
+- The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
+- The remaining bits from each byte are considered as a standard big-endian two's complement binary encoding.
+- The highest two's complement bit (i.e. the 2nd highest bit of the first byte) is considered as a sign bit.
+- The Encoding is defined to be the shortest possible such encoding for any given integer.
+
+It should be noted that this system can technically support arbitrary sized integers, but in most contexts in Convex it is used for 64-bit Long values.
+
 ### `0x00` Nil
 
 The single byte `0x00` is the Encoding for  `nil` Value.
@@ -121,9 +133,91 @@ Encoding:
 0xb1 <=> true
 ```
 
-A Boolean values `true` or `false` have the Encodings `0xb1` and `0xb0` respectively. 
+The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` respectively. 
 
 Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
+
+### `0x09` Long
+
+```Encoding
+0x09 <VLC Long>
+```
+
+A Long Value is encoded by the Tag byte followed by a VLC Encoding of the 64-bit value.
+
+### `0x0c` Character
+
+```Encoding
+0x0c <2 Byte UTF16>
+```
+
+A Character Value is encoded by the Tag byte followed by 2 bytes representing a standard UTF16 Character. All 16-bit values are considered valid by the CVM, it is the responsibility of the application to interpret Characters.
+
+Note: A switch to UTF8 is being considered, see: https://github.com/Convex-Dev/convex/issues/215
+
+### `0x0d` Double
+
+```Encoding
+0x0d <8 bytes IEEE 764>
+```
+
+A Double Value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
+
+### `0x20` Ref
+
+```Encoding
+0x20 <32 bytes Value ID>
+```
+A Reference is Encoded as the Tag byte follwed by the 32-byte Value ID (which is in turn defined as the SHA3-256 hash of the Encoding of the referenced Value).
+
+Refs Encodings are special for a number of reasons:
+- They are not themselves Cell Values, rather they represent a Reference to a Cell
+- They MUST be used as substitutes for child Values contained withing other Cell Encodings, whenever the child is not Embedded
+
+### `0x21` Address
+
+```Encoding
+0x21 <VLC Long>
+```
+
+An Address Value is encoded by the Tag byte followed by a VLC Encoding of the 64-bit value of the Address. 
+
+Since Addresses are allocated sequentually from zero (and Accounts can be re-used), this usually results in a short Encoding.
+
+### `0x22` Signature
+
+```Encoding
+0x21 <64 bytes Ed25519 signature>
+```
+
+A Signature Value is encoded by the Tag byte followed by the 64 bytes Ed25519 Signature
+
+
+### `0x30` String
+
+```Encoding
+If String is 1024 Characters or less:
+
+0x30 <VLC Length n> <2*n bytes UTF-16 Characters>
+
+If String is more than 1024 Characters:
+
+0x30 <VLC Length n> <Child String Value>(repeated 1-16 times)
+```
+
+Every string Encoding starts with the Tag byte and a VLC-encoded Long length.
+
+Encoding then splits dpeending on the String length `n`.
+- If 1024 characters or less, the UTF16 characters of the String are encoded directly (`n*2` bytes total)
+- If more than 1024 charcters, the String is broken up into a tree of child Strings, where each child except the last maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
+
+Because child strings are likely to be non-embedded (because of Encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large String will have a top level Cell Encoding of a few hundred bytes, allowing for a few child Refs and a (perhaps Embedded) final child. 
+
+Importantly, this design allows:
+- Arbitrary length Strings to be encoded, while still keeping each Cell Encoding within a fixed
+- Structural sharing of tree nodes, giving O(log n) update with path copying
+- Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 1024 characters.
+
 
 ### TODO: More tags
 
