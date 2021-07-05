@@ -52,6 +52,8 @@ Peer Operators SHOULD attempt to withdraw their Stake immediately, possibly thro
 
 ## Staking
 
+Peers are required to post a Peer Stake to participate in consensus.
+
 ## Key Management
 
 ## Connection Management
@@ -75,6 +77,10 @@ Outgoing connections follow the following rules:
 Peers SHOULD NOT reveal their current outgoing connection list to external parties, since this opens up some risk of the Peer being vulnerable to attacks in situations where it could be isolated from the rest of the Network (e.g. censorship).
 
 ## Storage Management
+
+Storage management is at the discretion of the Peer Operator.
+
+Peer Operators SHOULD arrange for periodic garbage collection of the Etch Store, if they do not have another reason to keep historicl data (e.g. for analytics).
 
 ## Logging and Analytics
 
