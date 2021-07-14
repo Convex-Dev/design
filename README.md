@@ -30,6 +30,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD15](cad/015_peercomms/README.md)    | Peer Connection Protocol         | Pending    | mikera
 | [CAD16](cad/016_peerstake/README.md)    | Peer Staking                     | Pending    | mikera
 | [CAD17](cad/017_peerops/README.md)      | Peer Operations                  | Pending    | mikera
+| [CAD18](cad/018_metadata/README.md)     | Metadata                         | Initial    | helins
 
 ## Convex Project Portfolio
 
