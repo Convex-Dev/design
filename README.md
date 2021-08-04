@@ -25,12 +25,11 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD10](cad/010_transactions) | Transactions                     | Pending    | mikera
 | [CAD11](cad/011_errors)       | Error Handling                   | Active    | mikera
 | [CAD12](cad/012_numerics)     | Numerics                         | Pending    | mikera
-| [CAD13](cad/013_edn)          | EDN Encoding                     | Pending    | mikera
+| [CAD13](cad/013_metadata)     | Metadata                         | Initial    | helins
 | [CAD14](cad/014_cns)          | CNS Registry                     | Pending    | mikera
 | [CAD15](cad/015_peercomms)    | Peer Connection Protocol         | Pending    | mikera
 | [CAD16](cad/016_peerstake)    | Peer Staking                     | Pending    | mikera
 | [CAD17](cad/017_peerops)      | Peer Operations                  | Pending    | mikera
-| [CAD18](cad/018_metadata)     | Metadata                         | Initial    | helins
 
 ## Convex Project Portfolio
 
