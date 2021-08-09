@@ -37,14 +37,16 @@ More hops may be required in the case that the network is less well connected. T
 After network latency, the largest source of delay is the performance of the Belief merge function. This is central to the CPoS algorithm functioning as a CRDT and is typically performed many times as a transaction is propagated between Peers. This represents a delay before the merged Belief can be re-broadcast to the network, so we make this fast with the following measures:
 - The Belief merge can merge multiple received Beliefs from different Peers at once (more efficient than performing repeatedly for each Belief received)
 - The Belief merge handles multiple Blocks simultaneously (Which may come from different Peers)
-- Overall algorithmm performance is roughly `O(n+m)` where `n` is the number of ative Peers, and `m` is the number of additional Blocks being handled in the merge
+- Overall algorithm performance is roughly `O(n+m)` where `n` is the number of ative Peers, and `m` is the number of additional Blocks being handled in the merge
 - We use a very efficient algorithm for comparing Orderings of Blocks from different Peers so that consistency can be confirmed (or conflicts detected). This is effectively `O(1)` even on long Orderings (we say effectively, because it is technically `O(log n)` but the high branching factor and practical bounds on ordering length growth make this behave like `O(1)` in practice). 
 
+### Zero Belief propagation delay
 
+Because CPoS operated as a CRDT, Peers can immediately propagate a Belief as soon as they have perfromed a Belief merge.
 
 ### Zero Block delay
 
-A potential major source of latency would be a block delay, i.e. the need to wait between receiving a transaction and producing a Block containing the transaction (within stage 3). Traditional blockchains almost all have at least some delay here, either needing to wait for an allocated time at which a block can be produced as the "leader" of the network, or solving a PoW problem to earn the right to produce a block)
+A potential major source of latency from the perspective of a Client would be a block delay, i.e. the need to wait between receiving a transaction and producing a Block containing the transaction (within stage 3). Traditional blockchains almost all have at least some delay here, either needing to wait for an allocated time at which a block can be produced as the "leader" of the network, or solving a PoW problem to earn the right to produce a block)
 
 Convex solves this problem by implementing a zero block delay strategy:
 1. A Peer produces a Block immediately whenever it has at least one transaction
@@ -63,14 +65,32 @@ Result "convex.benchmarks.BigBlockBenchmark.benchmark":
   468.024 ±(99.9%) 42.190 ops/s [Average]
 ```
 
-Block processing is very quick because:
-- Raw CVM execution speed for transactions is very high (approx ~1 million transactions per second_
+Block processing in general is very quick because:
+- Raw CVM execution speed for transactions is very high (up to 1 million transactions per second)
 - Expensive operations (merkle tree hashing, writing to storage) are performed lazily, typically only done once per Block
 - Blocks only have a small amount of additional processing required (timestamp updates, distribution of transaction fees etc.)
 
 
 
 ## Throughput
+
+Convex targets a peak transaction throughput of 100,000+ transactions per second.
+
+### Staged Event Driven Architacture
+
+We emply a staged event-driven architecture (SEDA) to optimise throughput and ensure that expensive work is performed concurrently on different threads. Hence overall throughput is maximised by maximising the throughput at each stage.
+
+Stages are connected with efficient in-memory queues which can easily transfer millions of events per second. This queue based approach helps up to manage complexity by clearly decopling the different stages and also allows for backpressure to be used to manage periods of high loads (an essential technique for high volume distributed systems).
+
+The most important stages are:
+1. Network ingestion, where a NIO Server reads messages from the network at maximum speed and puts these messages on an in-memoery queue
+2. Message handling, where messages are decoded and either handled directly or placed on an appropriate queue
+3. Peer update, where relevant messages (Beliefs, Transactions) are processed for the Peer's Belief update. All critical CPoS computation is performed here
+4. Transaction signature verification
+5. CVM execution, where the results of transactions are computed and CVM state updated
+6. Outbound messaging, where responses are returned to other Peers / clients
+
+Convex is agnostic to the underlying hardware architecture used, however this configiration of stages would be weel suited for efficient execution on commodity PC hardware with 8-16 cores.
 
 ### CVM performance
 
@@ -90,21 +110,30 @@ OpBenchmark.simpleSum             thrpt    5    8336440.019 ±    444054.388  op
 OpBenchmark.simpleSumPrecompiled  thrpt    5   21846062.388 ±   1823368.198  ops/s     (a sum with constants, 4 Ops)
 ```
 
+
+### Query offload
+
+We further enhance capacity by offloading queries (i.e. read-only requests that do not affect CVM state) to a separate thread. Because the CVM State is an immutable data structure, it can be copied as a snapshot in `O(1)` time and queries can be processed by separate threads, removing the need for queries to bottleneck the main CVM execution or Belief merge processes.
+
+Furthermore, it would be possible to replicate the CVM state to multiple servers and offer effectively unlimited scalability for query capacity. In practice we do not believe this to be necessary: a single CVM worker thread might be able to handle a million queries per second which is already enough for internet-scale transaction volumes, (for example Google might need to handle in the region of 60,000 search queries per second).
+
 ### Storage engine
 
 Database stoarge is often a significant bottleneck in computational systems that require durable storage and reliability. Because of this, we have implemented `Etch`, a highly performant database specifically designed to meet the storage needs of Convex:
 
 - Content addressible storage (keyed by Hash of value encodings, i.e. Storage resembles an immutable Merkle DAG)
-- Embedded small objects mean that many values can typically be read or written in a single storage call
+- Embedded encodings of small values mean that many values can typically be read or written in a single storage call
 - High performance, memory mapped file access
 
+Our `EtchBenchmark` suggests that Etch can handle approximately 5 million reads per second, and 800,000 writes per second on a regular laptop. This compares highly favouraby with alternative database engines, and means we can comfortably achive 100,000+ TPS (most transactions are likely to require only a small number of writes, especially given the embedding of small values). Reads can furthermore be executed concurrently on multiple threads, which is particularly helpful for query performance.
 
+### Network bandwidth
 
+The majority of network bandwidth is required for transaction data, which are typically in the range of 100-150 bytes. Allowing for some additional overheads and Belief propagation, 100,000 TPS is likely to require handling sustained streams of data in the region of 16 Mb/s. We must also allow for streams of data of similar size to be maintained for each Peer to which a Peer is connected, say 5-20 different Peers.
 
+Overall, this level of bandwidth is plausible for a 1 Gigabit network connection, although a faster connection would be recommended for heavily staked Peers wishing to handle peak loads or serve the needs of a particularly large number of clients. 10 Gbps would probably be recommended for such Peers.
 
-### Query offload
-
-We further enhance capacity by offloading queries (i.e. read-only requests that do not affect CVM state) to a separate process. 
+Fortunately, Peers have significant control over bandwidth consumption: they can limit the number of Peer connections they maintain in order to reduce bandwidth requirements. They can also temporaily drop out of consensus (by reducing their stake to zero) if necessary. 
 
 ### Crypto
 
