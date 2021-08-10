@@ -7,7 +7,7 @@ We care primarily about two different measurements of performance:
 - **Latency** (how quickly results can be achieved - important for interactive applications
 - **Throughput** (how many requests per second can we handle) - important for achieving internet scale
 
-Convex performance is based around a key idea: We implement consensus as a **CRDT** (conflict-free replicated data type) where the Peers achieve consensus by simply sharing a Belief data structure which is repeatedly merged with other Beliefs to form consensus. CRDTs are guaranteed to eventually converge to a consistent value under reasonable assumptions, which gives the properties of safety and liveness to the network. Peers therefore have a simple task: merge and propagate new beliefs to the newtork as quickly as possible.
+Convex performance is based around a key idea: We implement consensus using a **CRDT** (conflict-free replicated data type) where the Peers achieve consensus by simply sharing a Belief data structure which is repeatedly merged with other Beliefs to form consensus. CRDTs are guaranteed to eventually converge to a consistent value under reasonable assumptions, which gives the desired properties of safety and liveness to the network. Peers therefore have a simple primary task: merge and propagate new beliefs to the network as quickly as possible.
 
 
 ## Latency
@@ -121,6 +121,17 @@ OpBenchmark.simpleSum             thrpt    5    8336440.019 ±    444054.388  op
 OpBenchmark.simpleSumPrecompiled  thrpt    5   21846062.388 ±   1823368.198  ops/s     (a sum with constants, 4 Ops)
 ```
 
+The `CVMBenchmark` measures the time of applying entire transactions to the CVM state (comprising the atomic application of multiple Ops plus some transaction accounting), and suggests that over a million TPS may be feasible on the CVM.
+
+```
+Benchmark                               Mode  Cnt        Score       Error  Units
+CVMBenchmark.contractCall              thrpt    5   573728.219 ± 45555.012  ops/s
+CVMBenchmark.defInEnvironment          thrpt    5   808384.086 ± 64336.668  ops/s
+CVMBenchmark.simpleCalculationDynamic  thrpt    5  1169199.192 ± 15417.298  ops/s
+CVMBenchmark.simpleCalculationStatic   thrpt    5  1293331.725 ± 36267.904  ops/s
+CVMBenchmark.smallTransfer             thrpt    5   845463.961 ± 16815.637  ops/s
+```
+
 ### Query offload
 
 We further enhance capacity by offloading queries (i.e. read-only requests that do not affect CVM state) to a separate thread. Because the CVM State is an immutable data structure, it can be copied as a snapshot in `O(1)` time and queries can be processed by separate threads, removing the need for queries to bottleneck the main CVM execution or Belief merge processes.
@@ -145,11 +156,20 @@ Overall, this level of bandwidth is plausible for a 1 Gigabit network connection
 
 Fortunately, Peers have significant control over bandwidth consumption: they can limit the number of Peer connections they maintain in order to reduce bandwidth requirements. They can also temporaily drop out of consensus (by reducing their stake to zero) if necessary. 
 
-### Crypto
+### Signature verification
 
 Convex uses high performance, well-tested libraries for crypto algorithms, most notably LibSodium for Ed25519. With multiple cores focused primarily on signature verification, Peers can realistically validate 100,000+ transactions per second. 
 
-This is actually the largest proportion of the computation work done by peers under load. We are exploring strategies to relieve this bottleneck and push performance even further, in particular:
+This is actually the largest proportion of the computational work done by peers under load. We are exploring strategies to relieve this bottleneck and push performance even further, in particular:
 - We have an experimental design to allow small, low staked peers to randomly skip some percentage of signature verifications (which can be proved safe for practical purposes because all signatures will still be checked by a good peer with probablity arbitrarily close to 1).
 - Hardware based approached to signature verification may be feasible
+
+## Conclusion and future work
+
+Engineering high performance systems is a challenge, and we're proud of the great work to get Convex so far.
+
+In the future, we expect to continue to improve performance and innovate in this domain. Key ideas include:
+- Support for subnets, enabling work to be performed separately from the main CVM Global State. This is a "Later 2" appraoch that has some drawbacks (mainly, being disconnected from atomic updates to the Global state) but may support some use cases that wish to operate more independently and only occoasionally sync up with the Global State using techniques such as state channels.
+- Further optimisation of the core Convex code base. We expect to be able to squeeze out a variety of fine grained optimisations, especially in the core data structures and algorithms.
+- Support for dedicated read-only "query" Peers which can serve the needs of read-intensive workloads without burdening the primary set of consensus-maintaing Peers.
 
