@@ -42,7 +42,16 @@ After network latency, the largest source of delay is the performance of the Bel
 
 ### Zero Belief propagation delay
 
-Because CPoS operated as a CRDT, Peers can immediately propagate a Belief as soon as they have perfromed a Belief merge.
+Because CPoS operated as a CRDT, Peers can immediately propagate a Belief as soon as they have perfromed a Belief merge. Propagating a new Belief as soon as one has been updated is the default behaviour for Peers, and is optimal for low latency performance.
+
+### Delta Transmission
+
+Beliefs are large data structures, and it would be a significant performance cost if the entire Belief needed to be transmitted every time one was propagated - adding significant latency delays in Stage 4. Fortunately, we are able to send only the Deltas (changes) to a Belief in most circumstances. This is possible because:
+- Beliefs are structured as Merkle DAGs
+- We track which parts of a Belief have already been broadcast, and omit sending these again
+- Reveivers of Beliefs can verify the Belief by examining the cryptographic hashes from the root of the Merkle DAG, and in most cases confirm that they already hold the rest of the data structre required. If not, they can always recover by explicitly requesting a missing piece of data (which again, they can identify using the cryptographic hash)
+
+In many ways, Belief propagation can be seen as analogous to the efficient storage and merging of source code trees utilised in the Git version control system. 
 
 ### Zero Block delay
 
@@ -74,11 +83,11 @@ Block processing in general is very quick because:
 
 ## Throughput
 
-Convex targets a peak transaction throughput of 100,000+ transactions per second.
+Convex targets a peak transaction throughput of 100,000+ transactions per second. This is many orders of magnitude faster than traditional blockchains, and even faster than centralised payment systems such as VISA (which might typically handle in the range of 1700 TPS). The key to achieving this perfoamance is the sucecssive elimination of bottlenecks to performance, and choosing an architecture that makes it possible to efficiently utilise Peer resources.
 
 ### Staged Event Driven Architacture
 
-We emply a staged event-driven architecture (SEDA) to optimise throughput and ensure that expensive work is performed concurrently on different threads. Hence overall throughput is maximised by maximising the throughput at each stage.
+We emply a staged event-driven architecture (SEDA) within Peers to optimise throughput and ensure that expensive work is performed concurrently on different threads. Hence overall throughput is maximised by maximising the throughput at each stage.
 
 Stages are connected with efficient in-memory queues which can easily transfer millions of events per second. This queue based approach helps up to manage complexity by clearly decopling the different stages and also allows for backpressure to be used to manage periods of high loads (an essential technique for high volume distributed systems).
 
@@ -90,7 +99,7 @@ The most important stages are:
 5. CVM execution, where the results of transactions are computed and CVM state updated
 6. Outbound messaging, where responses are returned to other Peers / clients
 
-Convex is agnostic to the underlying hardware architecture used, however this configiration of stages would be weel suited for efficient execution on commodity PC hardware with 8-16 cores.
+Convex is agnostic to the underlying hardware architecture used, however this configiration of stages would be well suited for efficient execution on commodity PC hardware with 8-16 cores.
 
 ### CVM performance
 
@@ -109,7 +118,6 @@ OpBenchmark.emptyLoop             thrpt    5       2180.943 ±       118.609  op
 OpBenchmark.simpleSum             thrpt    5    8336440.019 ±    444054.388  ops/s     (a sum involving dynamic lookup, 4 Ops)
 OpBenchmark.simpleSumPrecompiled  thrpt    5   21846062.388 ±   1823368.198  ops/s     (a sum with constants, 4 Ops)
 ```
-
 
 ### Query offload
 
