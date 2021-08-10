@@ -12,7 +12,7 @@ Convex performance is based around a key idea: We implement consensus using a **
 
 ## Latency
 
-Latency can be seen as a total time to achieve some specified result. From the perspective of a Client, this would typically be the sum of the following six stages:
+Latency can be seen as a total time to achieve some specified result. From the perspective of a Client, this would typically be the sum of the following six sequential stages (with approximate contributions to latency given as examples):
 
 1. Digitally signing a transaction (1ms)
 2. Sending the signed transaction to a Peer (50ms)
@@ -21,7 +21,9 @@ Latency can be seen as a total time to achieve some specified result. From the p
 5. Computing the result of the transaction / CVM state updates (10ms)
 6. Returning the result to the Client (50ms)
 
-Below we describe a number of key techniques we use to keep the latency as small as possible.
+In some cases, a client may not need to wait for all six stages, for example a client that trusts the reliability and correctness of the Peer they connect too may be happy to assume that their transaction will be sucessfully processed after Stage 2.
+
+Below we describe a number of key techniques we use to keep the overall latency as small as possible. 
 
 ### Minimising Hops
 
