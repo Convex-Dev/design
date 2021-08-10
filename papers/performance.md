@@ -1,6 +1,8 @@
 # Performance - How we do it
 
-Convex offers unparalleled performance for denentralised applications. We care primarily about two different measurements of performance:
+Convex offers unparalleled performance for decentralised applications. Our objective is to offer the best combination of decentralised security and interactive performance for applications in categories such as DeFi, gaming and the metaverse with large numbers of concurrent users.
+
+We care primarily about two different measurements of performance:
 
 - **Latency** (how quickly results can be achieved - important for interactive applications
 - **Throughput** (how many requests per second can we handle) - important for achieving internet scale
