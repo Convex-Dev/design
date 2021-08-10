@@ -4,7 +4,7 @@ Convex offers unparalleled performance for decentralised applications. Our objec
 
 We care primarily about two different measurements of performance:
 
-- **Latency** (how quickly results can be achieved - important for interactive applications
+- **Latency** (how quickly results can be achieved) - important for interactive applications
 - **Throughput** (how many requests per second can we handle) - important for achieving internet scale
 
 Convex performance is based around a key idea: We implement consensus using a **CRDT** (conflict-free replicated data type) where the Peers achieve consensus by simply sharing a Belief data structure which is repeatedly merged with other Beliefs to form consensus. CRDTs are guaranteed to eventually converge to a consistent value under reasonable assumptions, which gives the desired properties of safety and liveness to the network. Peers therefore have a simple primary task: merge and propagate new beliefs to the network as quickly as possible.
@@ -27,14 +27,14 @@ Below we describe a number of key techniques we use to keep the overall latency 
 
 ### Minimising Hops
 
-The total round trip transaction time is driven mainly by network lag (stages 2,4,6). In a decentralised network this is inevitable - we cannot avoid the network latency between the Peer and the Client, and the need for a few rounds of communication between peers to confirm consensus (the minimum is 3, as can be proven in various consensus algorithms in the relevant literature e.g. PBFT).
+The total round trip transaction time is driven mainly by network lag (stages 2,4,6). In a decentralised network this is inevitable - we cannot avoid the network latency between the Peer and the Client, and the need for a few rounds of communication between peers to confirm consensus (the theoretical minimum number of rounds for systems of this type is generally three, as can be proven in various consensus algorithms in the relevant literature e.g. PBFT).
 
-The CPoS consensus algotithm, fortunately, is able to achieve the theoretical minimum number of hops to confirm consensus under good conditions. Given a well connected network, with the majority of highly staked Peers directly connected to each other, only three hops between Peers are required:
+The CPoS consensus algorithm, fortunately, is able to achieve the theoretical minimum number of hops to confirm consensus under good conditions. Given a well connected network, with the majority of highly staked Peers directly connected to each other, only three hops between Peers are required:
 1. Peer broadcasts Belief containing new block to other Peers
-2. Peers (2/3+) broadcast Belief with new block in next position in consensus
+2. Peers (representing at least 2/3 of total stake) broadcast Belief with new block in next position in consensus
 3. Peers broadcast Belief confirming consensus based on observing same proposal from 2/3 of other peers
 
-More hops may be required in the case that the network is less well connected. Typically however this only adds a small constant number of extra hops, since Belief propagation spreads exponentially across the network (and hence will cover the whole network in log(n) hops)
+More hops may be required in the case that the network is less well connected. Typically however this only adds a small constant number of extra hops, since Belief propagation spreads exponentially across the network (and hence will cover the whole network in `log(n)` hops)
 
 ### Belief merge performance
 
@@ -46,28 +46,28 @@ After network latency, the largest source of delay is the performance of the Bel
 
 ### Zero Belief propagation delay
 
-Because CPoS operated as a CRDT, Peers can immediately propagate a Belief as soon as they have perfromed a Belief merge. Propagating a new Belief as soon as one has been updated is the default behaviour for Peers, and is optimal for low latency performance.
+Because CPoS operated as a CRDT, Peers can immediately propagate a Belief as soon as they have perfromed a Belief merge. Propagating a new Belief as soon as one has been updated is the default behaviour for Peers, and is optimal for low latency performance. Because belief merges are idempotent, there is no harm in broadcasting a Belief multiple times.
 
 ### Delta Transmission
 
 Beliefs are large data structures, and it would be a significant performance cost if the entire Belief needed to be transmitted every time one was propagated - adding significant latency delays in Stage 4. Fortunately, we are able to send only the Deltas (changes) to a Belief in most circumstances. This is possible because:
-- Beliefs are structured as Merkle DAGs
-- We track which parts of a Belief have already been broadcast, and omit sending these again
+- Beliefs are structured as Merkle DAGs, allowing the integrity of the whole structure to be validated
+- We track which parts of a Belief have already been broadcast, and normally omit sending these again
 - Reveivers of Beliefs can verify the Belief by examining the cryptographic hashes from the root of the Merkle DAG, and in most cases confirm that they already hold the rest of the data structre required. If not, they can always recover by explicitly requesting a missing piece of data (which again, they can identify using the cryptographic hash)
 
 In many ways, Belief propagation can be seen as analogous to the efficient storage and merging of source code trees utilised in the Git version control system. 
 
 ### Zero Block delay
 
-A potential major source of latency from the perspective of a Client would be a block delay, i.e. the need to wait between receiving a transaction and producing a Block containing the transaction (within stage 3). Traditional blockchains almost all have at least some delay here, either needing to wait for an allocated time at which a block can be produced as the "leader" of the network, or solving a PoW problem to earn the right to produce a block)
+A potential major source of latency from the perspective of a Client would be a block delay, i.e. the need to wait between receiving a transaction and producing a Block containing the transaction (within stage 3). Traditional blockchains almost all have at least some delay here, either needing to wait for an allocated time at which a block can be produced as the "leader" of the network, or solving a PoW problem to earn the right to produce a block.
 
 Convex solves this problem by implementing a zero block delay strategy:
 1. A Peer produces a Block immediately whenever it has at least one transaction
 2. Blocks can be submitted immediately at any time by adding the Block to the current Peer Belief and broadcasting it
 
-This approach means that it is possible, and even likely, that multiple Peers to submit Blocks for consensus simultaneously. Fortunately, this is not a problem for the CPoS algorithm since sucessive Belief merges will efficiently resolve any conflicts and sort the Blocks into a stable consistent ordering. Hence we can allow a zero block delay strategy without compromising the overall conesnsus approach.
+This approach means that it is possible, and even likely, that multiple Peers will submit Blocks for consensus simultaneously. Fortunately, this is not a problem for the CPoS algorithm since sucessive Belief merges will efficiently resolve any conflicts and sort the Blocks into a stable consistent ordering. Hence we can allow a zero block delay strategy without compromising the overall consensus approach.
 
-Although the overhead of producing aBlock is comparatively small, it is still more efficient to wait for a few transactions before producing a single larger Block. Hence this behaviour is configurable by Peer operators who can then offer clients a trade-off between cost and latency.
+Although the overhead of producing a Block is comparatively small, it is still more efficient to wait for a few transactions before producing a single larger Block. Hence this behaviour is configurable by Peer operators who can then offer clients a trade-off between cost and latency.
 
 ### CVM Execution Time
 
@@ -168,7 +168,7 @@ This is actually the largest proportion of the computational work done by peers 
 
 ## Conclusion and future work
 
-Engineering high performance systems is a challenge, and we're proud of the great work to get Convex so far.
+Engineering high performance systems is a challenge, and we're proud of the great work to get Convex so far as we move towards main network launch.
 
 In the future, we expect to continue to improve performance and innovate in this domain. Key ideas include:
 - Support for subnets, enabling work to be performed separately from the main CVM Global State. This is a "Later 2" appraoch that has some drawbacks (mainly, being disconnected from atomic updates to the Global state) but may support some use cases that wish to operate more independently and only occoasionally sync up with the Global State using techniques such as state channels.
