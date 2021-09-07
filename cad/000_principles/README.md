@@ -10,7 +10,7 @@ Principle are rarely absolute. There are always tradeoffs in engineering decisio
 
 Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
 
-## Favour Simple over Easy
+## Favour Simplicity
 
 Especially in API design, there may be a tendency to want to add new features for user convenience, e.g. additional optional arguments for Core functions.
 
@@ -20,7 +20,7 @@ An Excellent talk by Rich Hickey on this topic: https://www.infoq.com/presentati
 
 ## Design for Composition
 
-Convex features should be explicitly designed to compose to enable higher-order functionality to be built from simple, regular, well-behaved components.
+Convex features should be explicitly designed to compose to enable higher-order functionality to be built from simple, regular, well-behaved components. In general, pure functions and immutable data compose well.
 
 ## Think Algebraically
 
@@ -64,3 +64,7 @@ This principle manifests, for example, in the idea that most functions should av
 In most cases, it is necessary to place a bound on the size of resources used. This is essential to ensure that the CVM does not ever attempt to process data of unbounded size, which could allow DoS attacks by adversaries constructing arbitrarily sized input.
 
 Where CVM input may be effectively unbounded (e.g. the size of data structures such as Vectors), the CVM MUST never attempt O(n) or greater operations on such structures unless these operations are protected by resource constraints (e.g. accounting for juice costs, memory allowances). 
+
+## Avoid Scope Creep
+
+Convex is designed to faclitate on-chain transactions and smart contracts between multiple participants, providing foundational capabilities for the Internet of Value. Many types of software are a poor fit for a publicly accessible on-chain network such as Convex, e.g. text processing or data analytics. We SHOULD NOT add features n complexity to support use cases that do not belong on Convex in the first case.
