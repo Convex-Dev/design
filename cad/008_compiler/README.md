@@ -4,14 +4,14 @@
 
 Convex includes an on-chain Compiler as part of the CVM. The Compiler is responsible for taking source code and compiling this down to low level CVM Ops.
 
-The Compiler is designed for Convex Lisp, which is a natural fit the Lambda Calculus features of the CVM. However alternative language front-ends are possible for Convex providing that these are able to compile down to either Convex Lisp (as an intermediate language) or CVM Ops (the basic operations of the CVM)
+The Compiler is designed for Convex Lisp, which is a natural fit for the Lambda Calculus features of CVM. However alternative language front-ends are possible for Convex providing that these are able to compile down to either Convex Lisp (as an intermediate language) or CVM Ops (the basic operations of the CVM)
 
 ## Phases
 
 The Compiler operates in two phases, Expansion and Compilation.
 
-These phases can be accessed in serveral ways:
-- The `eval` Runtime Function function can be used to perform both phases of the Compiler and execute the result.
+These phases can be accessed in several ways:
+- The `eval` Runtime Function can be used to perform both phases of the Compiler and execute the result.
 - The `compile` Runtime Function can be used to execute the Compilation phase alone.
 - The `expand` Runtime Function can be used to perform Expansion alone, typically using the `*initial-expander*`.
 
@@ -39,8 +39,8 @@ The Compiler takes the Expanded Form passed to the Compilation Phase as Input an
 - If the Input is a CVM Op, it is returned directly as the Output
 - If the Input is an empty data structure, the Output is a Constant Op for the data structure
 - If the Input is a List:
-  - Lists starting with Special Symbols denoting CVM Ops (e.g. `do`, `def`) are compiled as the appropriate Op, with remaining list elements handled according to the special op definition
-  - List starting with Special Symbol relating to quoting (e.g. `quote`, `unquote`) are handled according to quoting semantics  
+  - Lists starting with Special Symbols denoting CVM Ops (e.g. `do`, `def`) are compiled down to the corresponding Op, with remaining list elements handled according to the special op definition
+  - Lists starting with Special Symbols that are quoting-related (e.g. `quote`, `unquote`) are handled according to quoting semantics
   - Otherwise, the Output is an Invoke Op, invoking the compiled first element as a function, with the remaining elements compiled as arguments
 - If the Input is a Vector, the Output is the result of compiling `(vector arg1 arg2 ... argN)` where the `argX` values are the Output from compiling each element of the Vector in order
 - If the Input is a Map, the Output is the result of compiling `(hash-map k1 v1 k2 v2 ... kN vN)` where the keys and values are the Output from compiling each key and value of the Map in order
@@ -64,9 +64,9 @@ Users making use of the Compiler SHOULD ensure that they avoid error cases as fa
 
 ## Compiler Costs
 
-The Expansion Phase incurs a Juice Cost according to the cost of any expanders used (which may be user defined in regular CVM code). The `*initial-expander*` incurs small constant costs for each element expanded. In normal usage, expansion costs are therefore usually `O(n)` in the size of the Form being expanded, but can be arbitrarily large if custom macros or expanders are used.
+The Expansion Phase incurs a Juice Cost according to the cost of any expanders used (which may be user defined in regular CVM code). The `*initial-expander*` incurs small constant costs for each element expanded. In normal usage, expansion costs are therefore usually `O(n)` relative to the size of the Form being expanded, but can be arbitrarily large if custom macros or expanders are used.
 
-The Compilation Phase incurs a constant Juice Cost for each node of the Expanded Form processed. Compilation costs are therefore never more than `O(n)` in the size of the Expanded Form.
+The Compilation Phase incurs a constant Juice Cost for each node of the Expanded Form processed. The complexity of Compilation costs therefore never exceed `O(n)` relative to the size of the Expanded Form.
 
 Juice Consumed is accounted for in the normal way (i.e. it will be charged for as part of the transaction executing the compiler, and the transaction will fail if any limits are exceeded). 
 

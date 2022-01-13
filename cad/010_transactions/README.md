@@ -70,6 +70,6 @@ Peers MAY reject transactions that do not appear to be legitimate, in which case
 
 
 
-## Signatues
+## Signatures
 
 All Transactions MUST be signed by the Account Key of the Account for which the User submits the Transaction

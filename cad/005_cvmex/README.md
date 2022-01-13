@@ -11,9 +11,9 @@ State' = f (State, Block)
 Under this model, the latest Consensus State can always be reconstructed given both:
 
 - A initial State
-- All Blocks between the initial State and the current consenus point
+- All Blocks between the initial State and the current consensus point
 
-Normally, Peers maintain the current Consensus State, and update this accordingly whenever one or more new Blocks are confirmed by the CPoS Consensus Algorithm. However, a new Peer can reliably reconstruct the Conensus State from any preceding State as long it it also holds the necessary Blocks from that state onwards. This enables a new Peer to efficiently synchronise with the Convex Network without having to process all preceding Blocks.
+Normally, Peers maintain the current Consensus State, and update this accordingly whenever one or more new Blocks are confirmed by the CPoS Consensus Algorithm. However, a new Peer can reliably reconstruct the Consensus State from any preceding State as long as it also holds the necessary Blocks from that state on-wards. This enables a new Peer to efficiently synchronize with the Convex Network without having to process all preceding Blocks.
 
 ## State Transition
 

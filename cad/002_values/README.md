@@ -8,11 +8,11 @@ Convex depends on a consistent representation of information values that are use
 
 All CVM values MUST be **immutable**. 
 
-This restriction is necessary from the perspective of maintaining integrity of the decentralised state. The property of immutability is also helpful from a performance perspective, since it means that CVM values can be safely cached and used in structural sharing of composite data structures.
+This restriction is necessary from the perspective of maintaining the integrity of the decentralised state. The property of immutability is also helpful from a performance perspective, since it means that CVM values can be safely cached and used in structural sharing of composite data structures.
 
 ### Structural Sharing
 
-All CVM values which are data structure MUST support structural sharing of sub components if they have greater than `O(1)` size. 
+All CVM values which are data structures MUST support structural sharing of subcomponents if they have greater than `O(1)` size. 
 
 This ensures that we can offer better than `O(n)` performance bounds for reads and updates of immutable structures (i.e. avoiding copy-on-write costs). Typically these costs should be either `O(1)` or `O(log n)` for most operations.
 
@@ -26,7 +26,7 @@ CVM values are **defined to be equal** if and only if their Encoding is identica
 
 ### Value ID
 
-Each unqiue CVM value is defined to have a **Value ID** that is equal to the SHA3-256 hash of the value's Encoding.
+Each unique CVM value is defined to have a **Value ID** that is equal to the SHA3-256 hash of the value's Encoding.
 
 The Value ID is important, since it makes it possible to refer to Values using a relatively small fixed-length reference type. 
 
@@ -94,7 +94,7 @@ Transaction types represent instructions to Convex that can be submitted by exte
 
 ### Equivalent host values
 
-Implementations MAY make use of different host types to represent the same CVM values, subject to the condition that they MUST repect canonical encodings, Value IDs and Value  identity rules.
+Implementations MAY make use of different host types to represent the same CVM values, subject to the condition that they MUST respect canonical encodings, Value IDs and Value  identity rules.
 
 The use of such different types MUST NOT result in CVM behaviour change, i.e. the distinction should not be visible to external observers.
 

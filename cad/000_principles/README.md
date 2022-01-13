@@ -2,9 +2,9 @@
 
 This document details general design and engineering principles deployed in the implementation of Convex.
 
-## Apply Judgement
+## Apply Judgment
 
-Principle are rarely absolute. There are always tradeoffs in engineering decisions that must be considered. Discussion is encouraged to ensure relevant aspects are considered from a number of perspectives.
+Principles are rarely absolute. There are always trade-offs in engineering decisions that must be considered. Discussion is encouraged to ensure relevant aspects are considered from a number of perspectives.
 
 ## Security First
 
@@ -67,4 +67,6 @@ Where CVM input may be effectively unbounded (e.g. the size of data structures s
 
 ## Avoid Scope Creep
 
-Convex is designed to faclitate on-chain transactions and smart contracts between multiple participants, providing foundational capabilities for the Internet of Value. Many types of software are a poor fit for a publicly accessible on-chain network such as Convex, e.g. text processing or data analytics. We SHOULD NOT add features n complexity to support use cases that do not belong on Convex in the first case.
+Convex is designed to facilitate on-chain transactions and smart contracts between multiple participants, providing foundational capabilities for the Internet of Value.
+XXX
+Many types of software are a poor fit for a publicly accessible on-chain network such as Convex, e.g. text processing or data analytics. We SHOULD NOT introduce features and unnecessary complexity to support use cases that do not belong on Convex in the first place.

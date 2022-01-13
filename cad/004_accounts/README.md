@@ -2,21 +2,21 @@
 
 ## Overview
 
-Accounts are a fundamental construct in Convex - they are logical records in the CVM State that are either securely controlled by an external User, or operate as Autonomous Actors. 
+Accounts are a fundamental construct in Convex - they are logical records in the CVM State that are either securely controlled by an external User, or operate as Autonomous Actors.
 
 Accounts are the primary means of managing security and access control for on-chain Transactions. Any Transaction executed by Convex must be associated with a User Account and signed with a valid digital signature. This protects the User's account from unauthorised access.
 
-Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, Accounts will probably constitute over 99% of the CVM State size - there isn't much else apart from data structure to support Peers managing consensus and a little network-global data.
+Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, Accounts will probably constitute over 99% of the CVM State size - the remaining 1% being consensus management data and network-global data. there isn't much else apart from data structure to support Peers managing consensus and a little network-global data.
 
 ## Addresses
 
-Every Account has an Address, which is a unique ID that identified the Account. These are conventially shown in the format `#1234`, and are primitive Values in the CVM in their own right.
+Every Account has an Address, which is a unique ID that identifies the Account. These are conventionally shown in the format `#1234`, and are primitive CVM Values in their own right.
 
 Addresses are assigned sequentially whenever new Accounts are created. It is impossible to change the Address of an Account once created.
 
 Addresses are recommended as the unique ID to be used for access control mehanisms, e.g. an Actor might maintain a Set of Addresses which are allowed to execute a security-critical operation.
 
-Addresses are also typically used as the index for data structures that track ownership of digital assets. A common pattern is to represent ownership as a Map of Addresses to numbers representing balances of the appropriate digital asset(s).
+Addresses are also typically used as the index for data structures that track ownership of digital assets. A common pattern is to represent ownership as a Map of Addresses to numbers that represent balances of respective digital asset(s).
 
 ## User Accounts
 
@@ -53,7 +53,7 @@ It is possible to recycle old Accounts, perhaps even selling them! This is likel
 An example procedure for doing this securely is:
 - Transfer away any digital assets or other access control rights you want to keep
 - Set the Controller to `nil`
-- Delete unwanted definitions fro the Account with `*undef*`
+- Delete unwanted definitions from the Account with `*undef*`
 - Especially, it is important to delete:
   - any exported functions that might be called externally
   - The `*schedule-start*` value, which may enable Scheduled Operations

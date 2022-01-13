@@ -14,24 +14,25 @@ The network MUST be configured as a set of Peers with the ability to communicate
 
 The network MAY suffer from temporary disconnection or interruption. Peers MUST attempt to make progress (subject to the constraints of the Consensus Algorithm), i.e. the network should be resilient to temporary partitions that isolate a set of Peers.
 
-Peers MUST accept Belief update messages from at least one other Peer. Failure to do so will result in that Peer being unable to observe consensus.
+Peers MUST accept Belief update messages from at least one other Peer. Failure to do so will result in that Peer being unable to observe consensus. XXX
 
-Peers SHOULD transmit their own Belief updates to at least one other Peer. Failure to do so will result in the Peer being unable to contribute its own transactions to network consensus.
+Peers SHOULD transmit their own Belief updates to at least one other Peer. Otherwise Peers' transactions won't end up in the consensed network State.
 
-The Network SHOULD be configured in such a way that the sharing of Belief updates will ultimately propagate information from any Peer to any other Peer, i.e. the network graph transmission should be strongly connected. Failure to respect this property may result in Peers being unable to participate from consensus, in a manner similar to suffering from a network partition.
+The Network SHOULD be configured in such a way that sharing Belief updates will ultimately propagate information from any Peer to any other Peer, i.e. the network transmission graph should be strongly connected. Otherwise Peers may fail to reach consensus, leading to network partitioning.
 
 ### 2. Clients
 
-Clients are defined as any participating system that transacts or queries the Convex network.
+Clients are defined as any participating system that transacts on or queries the Convex network.
+a Client is any participating system that transacts or queries the Convex network.
 
-Clients MUST connect to an active Peer in the Peer Network, either locally or to a remote Peer.
+Clients MUST connect to an active Peer in the Peer Network, either locally or remotely.
 
-Clients SHOULD ensure that the trust the Peer that they use to faithfully carry out queries or transactions on their behalf.
+Clients SHOULD ensure that the Peer they connect to would faithfully carry out queries or transactions on their behalf.
 
-Clients MAY connect to multiple Peers. This may be valuable if the Client wishes to verify information from multiple sources, e.g. to confirm the consensus state of the network.
+Clients MAY connect to multiple Peers. This may be valuable if the Client wishes to verify information from multiple sources, e.g. to confirm the consensus State of the network.
 
 ### 3. State
-
+XXX
 The State is a data structure that represents all information managed by the CVM.
 
 Peers MUST maintain a copy of the current consensus State.
