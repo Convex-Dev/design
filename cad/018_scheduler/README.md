@@ -4,6 +4,8 @@ The scheduler provides a on-chain facility for code execution to be deferred unt
 
 Users (and Actors) can make use of this to reliably ensure code execution at a future time, secured by the network protocol. Once scheduled, such operations are effectively "unstoppable".
 
+The primary motivation of this capability is for users to trigger actions at a future time without requiring further external interaction.
+
 ## General Design Principles
 
 ### Concept of State timestamps
@@ -18,7 +20,7 @@ The first state update after the scheduled timestamp is defined as the one cause
 
 ### Ordering
 
-Peers MUST execute scheduled transactions before any regular user transactions in the same block. The is logical in the sense that they are considered to be know to the network before any user transactions. 
+Peers MUST execute scheduled transactions before any regular user transactions in the same block. This is logical in the sense that they are considered to be known to the network before any user transactions. 
 
 Peers MUST execute scheduled transactions in timestamp order.
 
