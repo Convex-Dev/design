@@ -218,6 +218,7 @@ Lists have special behaviour when evaluated: They are treated as expressions by 
 
 '(+ 2 3)
 => (+ 2 3)           ;; Quoted list is not evaluated
+```
 
 Lists are particularly efficient when prepending to the front of the List, which is guaranteed to be an `O(1)` operation. This property is especially useful when constructing code, since a common pattern is to prepend a function to a List of arguments. Lists also guarantee `O(1)` indexed access and update - in this sense Convex Lists are considerably superious to traditional linked lists.
 
