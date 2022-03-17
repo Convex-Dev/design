@@ -121,9 +121,9 @@ Bytes are suitable for representing small integer values efficiently, such as a 
 
 #### Character
 
-A Character is a unicode code point expressed as a 32-bit integer.
+A Character is a Unicode code point expressed as a 32-bit unsigned integer.
 
-A Character can map to 1-4 bytes in UTF-8 encoding. For maximum efficiency, characters in the ASCII range should be used.
+A Character can map to 1-4 bytes in UTF-8 encoding. For maximum efficiency, characters in the ASCII range should be used as these will map to a minimal 2-byte Encoding.
 
 #### Boolean
 
@@ -207,7 +207,7 @@ a
 => a                               ;; No lookup is performed for quoted symbol
 ```
 
-Iternally Symbols *may* contain arbitrary characters, but some of these may not read correctly in an off-chain Parser - therefore it is up to users to ensure that the Symbols they define are readable if this is a requirement.
+Internally Symbols *may* contain arbitrary characters (including badly formed UTF-8), but some of these may not read correctly in an off-chain Parser - therefore it is up to users to ensure that the Symbols they define are readable if this is a requirement.
 
 #### Keyword
 
