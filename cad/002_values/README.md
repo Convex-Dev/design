@@ -123,9 +123,20 @@ Bytes are suitable for representing small integer values efficiently, such as a 
 
 A Character is a unicode code point expressed as a 32-bit integer.
 
-A Character can map to 1-4 bytes in UTF-8 encoding.
+A Character can map to 1-4 bytes in UTF-8 encoding. For maximum efficiency, characters in the ASCII range should be used.
 
+#### Boolean
 
+A Boolean type contains only two values `true` and `false`.
+
+In addition to their utility in general purpose programming, `true` and `false` are particularly efficient in the CVM, requiring only 1 byte of Encoding.
+
+When considering truth values in the the CVM, any Value is considered "truthy" of "falsey". `false` and `nil` are the only Values that are considered falsey, all other values are truthy. The reason for this is that it is often useful to directly test for the presence or absence of a value in a conditional expression without converting to Boolean values first, e.g.
+
+```clojure
+(if (get {1 :foo 2 :bar} 1) "Found Foo" "No Foo")
+=> "Found Foo"
+```
 
 #### Address
 
