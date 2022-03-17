@@ -60,7 +60,7 @@ All CVM values which are data structure MUST support structural sharing of sub c
 
 This ensures that we can offer better than `O(n)` performance bounds for reads and updates of immutable structures (i.e. avoiding copy-on-write costs). Typically these costs should be either `O(1)` or `O(log n)` for most operations.
 
-This also ensures that Peers can safely store multiple versions of large data structures with minor changes while only incurring storage requirements that scale with the size of the changes. This is particularly important for Beliefs and Block Orderings, which may grow very large over time.
+This also ensures that Peers can safely store multiple versions of large data structures with minor changes while only incurring storage requirements that scale with the size of the changes. This is particularly important for Beliefs and their constituent Block Orderings, which may grow very large over time.
 
 ### Canonical Encoding
 
@@ -70,7 +70,7 @@ CVM values are **defined to be equal** if and only if their Encoding is identica
 
 ### Value ID
 
-Each unqiue CVM value is defined to have a **Value ID** that is equal to the SHA3-256 hash of the value's Encoding.
+Each unique CVM value is defined to have a **Value ID** that is equal to the SHA3-256 hash of the value's Encoding.
 
 The Value ID is important, since it makes it possible to refer to Values using a relatively small fixed-length reference type. 
 
@@ -117,7 +117,7 @@ Doubles support some special values as per the IEEE 754 standard: Positive infin
 
 A Byte is an 8-bit, unsigned integer.
 
-Bytes are suitable for representing small integer values efficiently, such as a small set of flages or short codes. They are also important as the individual elements of Blob data (equivalent to immutable byte arrays)
+Bytes are suitable for representing small integer values efficiently, such as a small set of flags or short codes. They are also important as the individual elements of Blob data (equivalent to immutable byte arrays)
 
 #### Character
 
@@ -156,7 +156,7 @@ Examples
 0x                                                                    ;; The empty Blob (0 bytes)
 ```
 
-Blobs are especially useful for storing Opaque units of data that may be important to external systems (e.g. client data encodings) as well as cryptographic values such as keys, hashes or verification proofs. While is is possible to manipulate Blobs in CVM code, this is not usually recommended: such hanling should normally be done off-chain.
+Blobs are especially useful for storing opaque units of data that may be important to external systems (e.g. client data encodings) as well as cryptographic values such as keys, hashes or verification proofs. While is is possible to manipulate Blobs in CVM code, this is not usually recommended: such handling should normally be done off-chain.
 
 #### String
 
@@ -305,6 +305,8 @@ An Account record represents information regarding the current state of an Accou
 
 
 #### Peer
+
+A Peer Record represents the current state of a Peer.
 
 #### Ordering
 
