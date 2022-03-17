@@ -4,7 +4,7 @@ Convex depends on a consistent representation of information values that are use
 
 ## Motivation
 
-Fundamentally, all computing is dependent on the represntation of information values (alongside the specification of programs that work with these values). This is particularly important in a decentralised context, where different systems must share and come to consensus over such values. We therefore need a consistent and meaningful definition of all such values.
+Fundamentally, all computing is dependent on the representation of information values (alongside the specification of programs that work with these values). This is particularly important in a decentralised context, where different systems must share and come to consensus over such values. We therefore need a consistent and meaningful definition of all such values.
 
 Functional programming languages such as Clojure, Haskell and Scala have shown the effectiveness of **immutable** values expressed as persistent data structures. This is perhaps best illustrated with a simple example:
 
@@ -26,16 +26,33 @@ These immutable values have some important advantages for a decentralised networ
 
 - Reasoning about code behaviour is easier with immutable values. If a value is immutable, you don't have to worry about concurrent updates. This has important security benefits too: you don't need to remember to perform defensive copies when passing references to other code (e.g. a potentially untrusted smart contract).
 - Immutable values **compose** in a simple way that breaks down in the presence of mutable values. A collection of mutable values is conceptually mutable even if the collection itself is immutable, but if all values are immutable then you are guaranteed that any composed data structure is also immutable.
-- When internally implemented as trees, persistent data structures have favourable computational complexity bounds, e.g. `O(1)` operations for common copy, update and append operations. Since decentralised systems may frequently operate on large data structures, these are extremely important for performance. A traditional approach using mutable data structures might require `O(n)` operations and memory to perform a copy, for example when snapshotting *any* data structure in Convex is always `O(1)`.
+- When internally implemented as trees, persistent data structures have favourable computational complexity bounds, e.g. `O(1)` operations for common copy, update and append operations. Since decentralised systems may frequently operate on large data structures, these are extremely important for performance. A traditional approach using mutable data structures might require `O(n)` operations and memory to perform a copy, for example creating a full immutable snapshot of *any* data structure in Convex is always `O(1)`.
 - Cryptographic hashes of immutable values are possible and safe: if values cannot change, neither can thir hash. This makes it practical to use immutable values (but not mutable ones!) in data structures such as Merkle DAGs. Hashes can be used to efficiently determine if two entire data structures are identical and/or identify any differences.
 
 ## General  Principles
+
+### Sound Definitions
+
+Values (and their corresponding types) MUST have clear logical definitions, ideally corresponding to logical and mathematical constructs.
+
+This is an important principle, since types with simple logical definitions are easier to implement correctly, less likely to require handling of special cases and less likely to require future changes.
+
+### Useful Types
+
+The available set of CVM Values SHOULD represent a generally useful set of data types with the following criteria:
+
+- They should support common programming paradigms and idioms. As far a possible, prefer types that will be familiar to programmers
+- They should facilitate the types of code likely to be run on-chain, particularly smart contracts dealing with digital assets
+- They should allow for efficient implementation and execution performance
+- Keep it simple: we should not have too many types. additional types will not be included without compelling use cases that cannot be adequately supported by existing types
 
 ### Immutability
 
 All CVM values MUST be **immutable**. 
 
-This restriction is necessary from the perspective of maintaining integrity of the decentralised state. The property of immutability is also helpful from a performance perspective, since it means that CVM values can be safely cached and used in structural sharing of composite data structures.
+This restriction is necessary from the perspective of maintaining integrity of the decentralised state, where values can be identified by a hash of their encoding.
+
+The property of immutability is also helpful from a performance perspective, since it means that CVM values can be safely cached and de-duplicated in memory or storage.
 
 ### Structural Sharing
 
@@ -47,7 +64,7 @@ This also ensures that Peers can safely store multiple versions of large data st
 
 ### Canonical Encoding
 
-All CVM values MUST have a unique canonical **Encoding** as a fixed length sequence of bytes. See [Encoding](encoding.md) for full specification.
+All CVM values MUST have a unique canonical **Encoding** as a fixed length sequence of bytes. See [Encoding CAD](/cad/003_encoding/README.md) for full specification.
 
 CVM values are **defined to be equal** if and only if their Encoding is identical.
 
@@ -104,6 +121,12 @@ Bytes are suitable for representing small integer values efficiently, such as a 
 
 #### Character
 
+A Character is a unicode code point expressed as a 32-bit integer.
+
+A Character can map to 1-4 bytes in UTF-8 encoding.
+
+
+
 #### Address
 
 An Address is an identifier for a Convex Account. 
@@ -137,6 +160,15 @@ Blobs are especially useful for storing Opaque units of data that may be importa
 
 #### String
 
+A String is a sequence of bytes intended to represent the UTF-8 character encoding of text.
+
+Examples:
+
+```
+"Hello Convex"
+""                ;; The empty string
+```
+
 #### Symbol
 
 A Symbol is a identifier used to name things: values stored in an Account environment, or meaningful symbolic values in code.
@@ -149,7 +181,7 @@ count
 hello
 ```
 
-Symbols are 1-64 characters long. 
+Symbols are 1-128 byes long, expressed in UTF-8 encoding. 
 
 Symbols have special behaviour when evaluated: they perform a lookup of the value named by the symbol in the current environment. If this behaviour is not desired, they should be **quoted** with `'` to specify that the actual symbol is required, not the referenced value. An example of this usage:
 
@@ -164,11 +196,11 @@ a
 => a                               ;; No lookup is performed for quoted symbol
 ```
 
-Iternally Symbols *may* contain arbitrary characters, but some of these may not read correctly in an off-chain Parser - therefore it is up to users to esnure that the Symbols they define are readable if this is a requirement.
+Iternally Symbols *may* contain arbitrary characters, but some of these may not read correctly in an off-chain Parser - therefore it is up to users to ensure that the Symbols they define are readable if this is a requirement.
 
 #### Keyword
 
-A keyword is similar to a Symbol, but generally should be used to specify fields or other meaningfully named categorical values in data strauctures.
+A Keyword is similar to a Symbol, but generally should be used to specify fields or other meaningfully named categorical values in data structures.
 
 Examples:
 
@@ -177,7 +209,7 @@ Examples:
 :hello
 ```
 
-Keywords are geneally more convenient to use than Symbols as explicit values in user code since they do not need to be quoted.
+Keywords are generally more convenient to use than Symbols as explicit values in user code since they do not need to be quoted.
 
 ### Collection Types
 
@@ -197,7 +229,7 @@ Examples:
 
 Vectors are the most natural way of expressing most sequences where array-like behaviour is required. They support Long indexes.
 
-Vectors are particualarly efficient when appending to the end of the Vector, which is always an `O(1)` operation. Indexed access and update is also guaranteed to be `O(1)`.
+Vectors are particularly efficient when appending to the end of the Vector, which is always an `O(1)` operation. Indexed access and update is also guaranteed to be `O(1)`.
 
 #### List
 
@@ -212,7 +244,7 @@ Examples:
 
 Lists have special behaviour when evaluated: They are treated as expressions by the compiler to be executed, where the first element of the List specifies the function to be executed. As with Symbols, you can **quote** a List to prevent immediate evaluation:
 
-```
+```clojure
 (+ 2 3)
 => 5                 ;; List is evaluated as an expression
 
@@ -220,43 +252,107 @@ Lists have special behaviour when evaluated: They are treated as expressions by 
 => (+ 2 3)           ;; Quoted list is not evaluated
 ```
 
-Lists are particularly efficient when prepending to the front of the List, which is guaranteed to be an `O(1)` operation. This property is especially useful when constructing code, since a common pattern is to prepend a function to a List of arguments. Lists also guarantee `O(1)` indexed access and update - in this sense Convex Lists are considerably superious to traditional linked lists.
+Lists are particularly efficient when prepending to the front of the List, which is guaranteed to be an `O(1)` operation. This property is especially useful when constructing code, since a common pattern is to prepend a function to a List of arguments. Lists also guarantee `O(1)` indexed access and update - in this sense Convex Lists are considerably superior to traditional linked lists.
 
 #### Map
 
+A Map is a data structure that maps keys to values. Keys and values may be any valid Value (including other data structures). Examples:
+
+```clojure
+{}                     ;; The empty Map
+{1 2}                  ;; Map of key 1 to value 2
+{:a 1 :b [:foo]}       ;; Map with Keyword keys and heterogeneous value types
+```
+
+The map may also be considered as a sequential collection of Map entries, where each entry is a `[Key Value]` Vector. Examples of this usage:
+
+```clojure
+(first {1 2})
+=> [1 2]
+```
+
+Internally, a Map is structured an efficient tree indexed with the the Value ID of values in the Map. All entries will therefore be ordered by the Value ID of Map keys.
+
 #### Set
+
+A Set is a data structure that contains zero or more values as **members** of the set. 
+
+From a logical perspective, every Value is either present or excluded from the set. For this reason, you can consider a Set as a mapping from any value to the Boolean type. To reflect this, the standard function `get` returns `true` or `false` when used with sets:
+
+```clojure
+(get #{1} 1) 
+=> true
+
+(get #{1} 2) 
+=> false
+```
 
 ### Record Types
 
 Records are specialised data structures that implement a defined sequence of fields.
 
-Records behave like Maps when accessed using their field names as keys mapped to the corresponding field values. If updated, errors may occur if the update is inconsistent with the requirements on field values (e.g. attempting to put a value of the wrong Type into a field..
+Records behave like Maps when accessed using their field names as keys mapped to the corresponding field values. If updated, errors may occur if the update is inconsistent with the requirements on field values (e.g. attempting to put a value of the wrong Type into a field.
 
 #### Block
 
 #### Account
 
+An Account record represents information regarding the current state of an Account. This includes:
+
+| Key                    | Type    | Description |
+| ---                    | ----    | ----        |
+| :sequence              | Long    | The current sequence number. Next transaction must have this value plus one |
+
+
 #### Peer
 
-#### Order
+#### Ordering
+
+An Ordering a special record type used by Peers to represent their Belief regarding:
+
+- The sequence of all Blocks
+- The current Consensus Point
+- The proposed Consensus Point
+
+Orderings are not normally used or accessible in CVM code.
 
 #### State
+
+The State represents a total global State of the CVM. This includes
+
+- All Accounts
+- All Peers
+- Global settings and status flags
+- The Schedule
 
 ### Transaction Types
 
 Transaction types represent instructions to Convex that can be submitted by external Clients.
 
-#### Call
-
 #### Invoke
 
+An `Invoke` transaction is a request to execute some CVM code by a User Account. This is the most general type of transaction: any CVM code may be executed.
+
+#### Call
+
+A `Call` is a transaction requesting the execution of a callable function (typically a smart contract entry point) from a user Account.
+
+Semantically, this is roughly equivalent to using an `Invoke` transaction to do the following:
+
+`(call target-address (function-name arg1 arg2 .... argN)`
+
+`Call` transaction types are mainly intended as an efficient way for user applications to invoke smart contract calls on behalf of the User.
+
+
 #### Transfer
+
+A `Transfer` is a transaction requesting the tranfer of Convex Coins from a User Account to some other Account. 
 
 ## Implementation notes
 
 ### Equivalent host values
 
-Implementations MAY make use of different host types to represent the same CVM values, subject to the condition that they MUST repect canonical encodings, Value IDs and Value  identity rules.
+Implementations MAY make use of different host types to represent the same CVM values, subject to the condition that they MUST respect canonical encodings, Value IDs and Value identity rules.
 
 The use of such different types MUST NOT result in CVM behaviour change, i.e. the distinction should not be visible to external observers.
 
