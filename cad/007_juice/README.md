@@ -2,7 +2,11 @@
 
 ## Overview
 
-The CVM implements a system of Juice to control execution costs on the CVM, and prevent bad actors from flooding the network with pointless transactions (or at least, making it very expensive to do so).
+The CVM implements a system of Juice with the following reasons:
+
+- control execution costs on the CVM so that e.g. infinite loops are terminated
+- prevent bad actors from flooding the network with pointless transactions (or at least, making it very expensive to do so).
+- reward peers with a share of transaction fees to pay them for the valuable resources they provide to the network
 
 ## Juice Fees
 
