@@ -64,7 +64,7 @@ An asset path MUST be either:
 #### Asset Path Examples
 
 - `#1234` is an asset path that refers to the asset implemented by the Actor at Address `#1234`
-- `[#1234 :foo]` is an asset path that refers to an asset implemented by the Actor at Address `#1234` with a sub-path of `:foo`
+- `[#1234 :USD]` is an asset path that refers to an asset implemented by the Actor at Address `#1234` with a sub-path of `:USD`
 
 
 
