@@ -2,7 +2,11 @@
 
 The Convex Asset Model is a universal system for expressing and controlling digital assets in an on-chain environment.
 
-We enable a diverse system of digital assets on the Convex network via the asset model. Secure exchange of valuable assets protected by the security guarantees of the network is possible through a standard API.
+The key motivation for the Asset Model is to enable economic value transfer using digital assets: digital assets can be securely owned, traded and used as part of contractual agreements just like real world assets.
+
+We enable a diverse ecosystem of digital assets on the Convex network. A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a wide variety of digital assets, including many possible assets that have not yet been invented.
+
+Secure exchange of valuable assets protected by the security guarantees of the network is possible through a standard API.
 
 ## Objectives
 
@@ -21,11 +25,17 @@ Examples:
 - A non-fungible token (NFT)
 - A fungible token representing shares in a company
 - A fungible token representing units of derivative "put" contract
-- 
-Asset logic MUST be implemented by an Actor on Convex.
+
+### Asset Implementation
+
+Asset logic MUST be implemented by an Actor on Convex. This actor may be referred to as the "asset implementation".
 
 An asset MAY map one-to-one to an actor, however a single actor MAY implement multiple assets. This allowance is primarily for efficiency reasons: if many assets share the same on-chain logic, it makes sense for a single actor to implement them all rather than deploying new actors for each one.
 
+The use of an actor to provide the asset implementation is important for two reasons:
+
+- It allows for the development of new types of compatible assets: these simply need to provide a new implementation actor and they can be used according to the standard asset model, often without needing to change existing code.
+- Actors allow for trusted code execution and governance, providing assurance that digital assets will behave correctly and not present unacceptable security risks
 
 ### Quantities
 
@@ -57,14 +67,102 @@ An asset path is a descriptor that identifies an asset. Asset paths are importan
 
 An asset path MUST be either:
 
-- An Address of an actor that implements the Asset
-- A Vector where the first element is the Address of the Actor, and the remainder of the Vector is interpreted by that Actor on an implementation dependent basis 
+- An Address of an actor that implements the asset
+- A Vector where the first element is the Address of the actor, and the remainder of the Vector is interpreted by that Actor on an implementation defined basis.
+
+Typically, a Vector based asset path is used to allow a single actor to implement many different digital assets, e.g. 
+
+- Currencies might be designated by an asset path of `[#123456 :USD]`
+- Derivative contracts such as put options might have an asset path that includes the underlying asset, strike price and expiry time e.g. `[#98765 [#12345 :USD] 12500 1741948885345]`
 
 
 #### Asset Path Examples
 
 - `#1234` is an asset path that refers to the asset implemented by the Actor at Address `#1234`
 - `[#1234 :foo]` is an asset path that refers to an asset implemented by the Actor at Address `#1234` with a sub-path of `:foo`
+
+
+## User API
+
+The user API for the Asset Model is provided by the library `convex.asset`.
+
+Users do not need to use the `convex.asset` library to work with Convex digital assets - they are free to access the underlying actor functions directly. However the user API presents a convenient, well-tested interface that should be suitable for most purposes.
+
+### `balance`
+
+The `balance` function gets the total quantity of an asset currently held by an account. 
+
+```
+(balance some-fungible-asset *address*)
+=> 1500
+```
+
+The returned value should always be a valid quantity for the specified asset. In particular, the owner should be able to `transfer` this amount to send their entire holdings of the specified asset to another account.
+
+If the address argument is omitted, the balance for the current account is queried (i.e. an implicit `*address*` argument is used to specify the current account).
+
+
+## Security considerations
+
+### Untrusted assets
+
+Assets are implemented by Actors in the Convex asset model, and as such there are a number of issues that may arise if untrusted assets are used.
+
+The general recommendation is that users SHOULD NOT interact with untrusted assets.
+
+However, in some circumstances, it may be necessary to write code that may interact with untrusted assets. An example of this could be an "Auction House" actor that enables users to post lots containing other digital assets for auction. There is no way, in advance, for the auction house actor to know whether assets that may be sold in the future will be trusted or not. Hence the auction house must be written in a way that is robust to the inclusion of untrusted assets.
+
+#### Arbitrary code execution
+
+When an actor implementing an asset is interacted with, it may execute arbitrary code. Unless the actor is trusted, caution must be taken to mitigate these risks (as with a call to an untrusted actor).
+
+While the Convex security model prevents the actor from directly taking actions on behalf of the caller (e.g. it cannot steal arbitrary assets) it may take other actions during the scope of the transaction. Developers interacting with untrusted assets should be particularly aware of:
+- Re-entrancy attacks where a malicious asset calls back into the same smart contract
+- Possibility that a malicious asset implementation may call other smart contracts, e.g. DEX exchange calls
+
+#### Unspecified behaviour
+
+If an asset implementation is untrusted, it is possible that the asset may not behave correctly according to the requirements in this CAD. Some examples:
+
+- A transfer may appear to have succeeded, when it has in fact failed
+- A malicious asset may lie about balances or the success or otherwise of transfers
+- A 3rd party may have the ability to update holdings unilaterally, without the authorisation of owners.
+- A previously well-behaved asset may be "upgraded" to become malicious
+
+### Volatile balances
+
+Some assets may have balances / quantities that may vary independently of usage of the asset model. Some examples:
+
+- An interest-bearing asset that pays out some form of periodic rewards that increase balance
+- A utility token that has quantity deducted automatically through usage of services
+
+If such assets might be used, applications SHOULD always check the balance at the start of any transaction rather than relying on any previously stored balances which may no longer be correct.
+
+### Inaccessible Accounts
+
+It is possible to transfer assets to an account that may be locked or otherwise inaccessible (e.g. a user account with a lost key pair). In such cases, the quantity of asset transferred may be irretrievably lost.
+
+Some mitigations for this risk:
+
+- Prefer solutions where the destination account explicitly calls `accept` to obtain the asset. By requiring the active participation of the receiver, this minimises the risk of the asset being locked in an inaccessible account.
+- Only implement `receive-asset` for an actor if the actor provides mechanisms for extracting assets at a later time. Otherwise,a `transfer` to an actor risks losing access to the asset.
+- Perform off-chain validation that the destination user has access to their account (e.g. requiring a signature of a random number to prove possession of the appropriate key pair).
+- Use appropriate governance mechanisms (e.g. `set-controller`) to enable account recovery as a last resort.
+
+### Quantity Overflow
+
+Asset implementations should ensure that they do not allow bugs resulting from numerical overflow or other issues relating to calculations of quantities. In general:
+
+- Limits MUST be placed on total quantities available where overflow might otherwise be possible, e.g. a maximum supply for a fungible token. This limit should normally be enforced when minting / issuing new quantities.
+- Functions involving quantities as arguments MUST check whether the quantity is valid, e.g. a non-negative integer less than or equal to the balance of the account requesting the transfer for a fungible token. Typically a check such as `(<= 0 amount balance)` is appropriate.
+
+An asset implementation which is vulnerable to quantity overflow issues should be considered as broken (and therefore untrusted).
+
+
+
+
+
+
 
 
 
