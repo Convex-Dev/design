@@ -4,7 +4,7 @@ The Convex Asset Model is a universal system for expressing and controlling digi
 
 The key motivation for the Asset Model is to enable economic value transfer using digital assets: digital assets can be securely owned, traded and used as part of contractual agreements just like real world assets.
 
-We enable a diverse ecosystem of digital assets on the Convex network. A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a wide variety of digital assets, including many possible assets that have not yet been invented.
+The Convex network enables a diverse ecosystem of digital assets. A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a wide variety of digital assets, including many possible future assets that have not yet been invented.
 
 Secure exchange of valuable assets protected by the security guarantees of the network is possible through a standard API.
 
@@ -15,7 +15,7 @@ Secure exchange of valuable assets protected by the security guarantees of the n
 - There should be a standard SPI that allows for flexibility in underlying asset implementations - in particular it should be possible to create new kinds of digital assets and new rules / behaviours without changing the user level API
 - The Asset Model should allow efficient and simple implementations to minimise transaction costs and memory usage
 
-## Definitions
+## Definitions and Key Concepts
 
 ### Assets
 
@@ -37,23 +37,42 @@ The use of an actor to provide the asset implementation is important for two rea
 - It allows for the development of new types of compatible assets: these simply need to provide a new implementation actor and they can be used according to the standard asset model, often without needing to change existing code.
 - Actors allow for trusted code execution and governance, providing assurance that digital assets will behave correctly and not present unacceptable security risks
 
+### Asset Path
+
+An asset path is a descriptor that identifies an asset. Asset paths are important because they enable a stable reference to a specific asset under consideration.
+
+An asset path MUST be either:
+
+- The Address of the actor that provides the asset implementation - e.g. - `#1234` is a valid asset path referring to the asset implemented by the actor at the Address `#1234`
+- A Vector where the first element is the Address of the actor, and the remainder of the Vector is interpreted by that Actor on an implementation defined basis. e.g. `#[2345 :foo :bar]`
+
+A Vector-based asset path SHOULD be used to allow a single actor to implement many different digital assets, e.g. 
+
+- Currencies might be designated by an asset path of `[#123456 :USD]`
+- Derivative contracts such as put options might have an asset path that includes the underlying asset, strike price and expiry time e.g. `[#98765 [#12345 :USD] 12500 1741948885345]`
+- Bets on a football match might specify the match date and selected winner `[#8978 "2023-6-06" "Manchester United"]` (note that a bet on a different outcome of the same match would be a different fungible asset since they are not mutually fungible)
+
 ### Quantities
 
-All Assets MUST define a notion of "quantity" that can be used to represent an amount of an asset. 
+All Assets MUST define a notion of "quantity" that can be used to represent an amount or subdivision of an asset. 
 
 Because we want to enable innovation in the types and representations of assets, we do not restrict the definition of quantity to a specific type (e.g. integer amounts) - instead we define the mathematical properties that quantities must obey.
 
-Quantities for any asset MUST be a commutative monoid (in the mathematical sense). This requirement is necessary in order for addition, subtraction and comparison of asset quantities to behave in well-defined ways.
+Quantities for any asset MUST be a **commutative monoid** (in the mathematical sense). This requirement is necessary in order for addition, subtraction and comparison of asset quantities to behave in well-defined ways.
 
-Assets MUST define an addition function enable quantities to be additively combined, i.e. given any two quantities of an asset it should be possible to use the addition function to compute the total quantity. This is equivalent to the addition function of the commutative monoid.
+Assets MUST define an **addition** function enable quantities to be additively combined, i.e. given any two quantities of an asset it should be possible to use the addition function to compute the total quantity. This is equivalent to the addition function of the commutative monoid.
 
-Assets MUST define a comparison function enabling quantities to compared, i.e. given any two quantities of an asset it should be possible to use the comparison function to determine if one quantity is a subset of the other. This is equivalent to the algebraic pre-ordering of the monoid.
+Assets MUST define a **comparison** function enabling quantities to compared, i.e. given any two quantities of an asset it should be possible to use the comparison function to determine if one quantity is a subset of the other. This is equivalent to the algebraic pre-ordering of the monoid.
 
-Assets MUST define a subtraction function enabling quantities to be subtracted, i.e. given two quantities of an asset where the first is "larger" than the second (as defined by the comparison function), it should be possible to subtract the second value from the first and get a result that is also a valid quantity.
+Assets MUST define a **subtraction** function enabling quantities to be subtracted, i.e. given two quantities of an asset where the first is "larger" than the second (as defined by the comparison function), it should be possible to subtract the second value from the first and get a result that is also a valid quantity.
 
-Assets MUST define a "zero" quantity that logically represents an empty holding of an asset. This zero value is the identity element of the commutative monoid.
+Assets MUST define a **zero** quantity that logically represents an empty holding of an asset. This zero value is the identity element of the commutative monoid. The zero quantity itself will usually an "empty" value such as `#{}` or `0`. 
+
+The zero quantity SHOULD be the default balance of all accounts. Logically, an account should have a zero holding of an asset until some quantity of the asset is otherwise obtained. An example of an exception to this might be an asset implementation that gives a free non-zero quantity of the asset to all accounts, though this is probably unwise given the obvious potential for abuse.
 
 For any given Asset, it MUST be possible to identify a Holding of the Asset for a given Account, where the Holding is the Quantity of the Asset that the Account owns.
+
+When passed as an argument to an asset implementation, the value `nil` MUST be treated as the zero quantity. This requirement ensures that a zero-equivalent value is known for all implementations, and can be used by generic code without having incurring the cost of explicitly querying the zero value.
 
 #### Quantity examples
 
@@ -61,25 +80,35 @@ For any given Asset, it MUST be possible to identify a Holding of the Asset for 
 - Non-fungible tokens typically use a quantity expressed as sets of NFT IDs e.g. `#{101 1002 1003}`
 - An asset representing a voting right may use a boolean quantity `true` and `false`
 
-### Asset Path
+### Ownership
 
-An asset path is a descriptor that identifies an asset. Asset paths are important because they enable a stable reference to a specific asset under consideration.
+Quantities of digital assets are owned by accounts in Convex.
 
-An asset path MUST be either:
+Assets may be owned by either user accounts or actors. In the latter case, it should be expected that the actor implements code able to manage the assets that it owns.
 
-- An Address of an actor that implements the asset
-- A Vector where the first element is the Address of the actor, and the remainder of the Vector is interpreted by that Actor on an implementation defined basis.
+Assets SHOULD be transferrable, i.e. it should be possible for a quantity of an asset to be transferred from one owned to another.
 
-Typically, a Vector based asset path is used to allow a single actor to implement many different digital assets, e.g. 
+### Offers and Acceptance
 
-- Currencies might be designated by an asset path of `[#123456 :USD]`
-- Derivative contracts such as put options might have an asset path that includes the underlying asset, strike price and expiry time e.g. `[#98765 [#12345 :USD] 12500 1741948885345]`
+It is often necessary for a smart contract to ensure that it receives another asset before it takes some action: for example a contract for sale would expect payment to be made before allowing the purchased assets to be released.
+
+A typical process would be something like:
+
+- Account `A` **offers** a quantity of asset `F` to account `B` (where `B` is a smart contract)
+- `A` calls a callable smart contract function on `B` to request a transaction
+- `B` checks preconditions for the transaction as necessary
+- `B` **accepts** the quantity of `F` from the caller (`A`) to pay for the transaction
+- Assuming all is successful, `B` completes the transaction
+- `B` returns to caller with transaction complete
+- Optional: `A` closes down the offer (only relevant if some non-accepted quantity remains)
+
+Assets SHOULD implement a system of offers, whereby an owner may offer a quantity of an asset to another account, which can subsequently be accepted by that account.
+
+Assets SHOULD implement a system of acceptance, whereby an account that has been offered a quantity of the asset may accept that quantity (or a partial quantity thereof).
+
+Offers SHOULD remain open at the discretion of the offering account. However, closing of offers by a trusted 3rd party (e.g. to mitigate against security risks) MAY be acceptable in some cases.
 
 
-#### Asset Path Examples
-
-- `#1234` is an asset path that refers to the asset implemented by the Actor at Address `#1234`
-- `[#1234 :USD]` is an asset path that refers to an asset implemented by the Actor at Address `#1234` with a sub-path of `:USD`
 
 
 ## User API
