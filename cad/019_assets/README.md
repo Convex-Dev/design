@@ -187,6 +187,19 @@ Asset implementations should ensure that they do not allow bugs resulting from n
 
 An asset implementation which is vulnerable to quantity overflow issues should be considered as broken (and therefore untrusted).
 
+### Aliasing
+
+It is possible that multiple assets may refer to the same underlying quantity or resources. As such, code referencing multiple assets MUST NOT assume that operations on the assets are independent.
+
+For example, transferring a quantity of an asset `A` may affect the balance available of asset `B`.
+
+In general, it is safest to:
+
+- Operate on each asset in turn - avoid interleaving actions API calls on multiple assets.
+- Assume that any action on any asset may invalidate previously observed balances on all other assets.
+
+
+
 
 
 
