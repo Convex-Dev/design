@@ -1,19 +1,38 @@
 # Asset Model
 
-The Convex Asset Model is a universal system for expressing and controlling digital assets in an on-chain environment.
+The Convex Asset Model is a universal system for expressing and controlling digital assets in an on-chain environment. The key motivation for the Asset Model is to enable economic value transfer using digital assets: digital assets can be securely owned, traded and used as part of contractual agreements just like real world assets. Of course, the security of the digital assets is enforced by the security guarantees of the Convex network.
 
-The key motivation for the Asset Model is to enable economic value transfer using digital assets: digital assets can be securely owned, traded and used as part of contractual agreements just like real world assets.
 
-The Convex network enables a diverse ecosystem of digital assets. A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a wide variety of digital assets, including many possible future assets that have not yet been invented.
-
-Secure exchange of valuable assets protected by the security guarantees of the network is possible through a standard API.
 
 ## Objectives
+
+### Universal and Extensible
+
+A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a diverse ecosystem of digital assets, including asset types that have not yet been invented. By way of example, it should be possible to use the same API to transfer a quantity of a fungible token:
+
+`(asset/transfer [currency.USD 10000] destination-address)`
+
+As it is to transfer a set of numbered NFTs:
+
+`(asset/transfer [asset.nfts #{101 102 105}] destination-address)`
+
+Why is this important?
+
+- It reduces the number of APIs that developers must learn: instead of having separate APIs for fungible token, NFTs, game items etc. we offer a single unified API.
+- It makes it possible to write *generic* smart contracts that can work with any type of asset.
+- It makes it possible to innovate with new types of asset without having to redesign user code
+
+We therefore propose the following objectives:
 
 - The Asset Model should be able to express all types of on-chain digital assets (fungible tokens, security tokwns, stablecoins, NFTs, voting rights etc.)
 - There should be a standard API for users that works with all types of assets in a generic way
 - There should be a standard SPI that allows for flexibility in underlying asset implementations - in particular it should be possible to create new kinds of digital assets and new rules / behaviours without changing the user level API
-- The Asset Model should allow efficient and simple implementations to minimise transaction costs and memory usage
+
+### Efficiency
+
+The Asset Model should allow efficient and simple implementations to minimise transaction costs and memory usage. If digital assets are to be widely accepted as a part of economic value exchange, it is essential that the are efficient and offer low transaction costs compared to alternatives.
+
+
 
 ## Definitions and Key Concepts
 
