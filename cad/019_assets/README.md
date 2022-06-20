@@ -1,12 +1,10 @@
 # Asset Model
 
-The Convex Asset Model is a universal system for expressing and controlling digital assets in an on-chain environment.
+The Convex Asset Model is a universal system for expressing and controlling digital assets in an on-chain environment. The key motivation for the Asset Model is to enable economic value transfer using digital assets: digital assets can be securely owned, traded and used as part of contractual agreements just like real world assets. Of course, the security of the digital assets is enforced by the security guarantees of the Convex network.
 
-The key motivation for the Asset Model is to enable economic value transfer using digital assets: digital assets can be securely owned, traded and used as part of contractual agreements just like real world assets.
+A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a diverse ecosystem of digital assets, including asset types that have not yet been invented.
 
-We enable a diverse ecosystem of digital assets on the Convex network. A key design goal is therefore that the API is universal and extensible, in the sense that it can be used to handle a wide variety of digital assets, including many possible assets that have not yet been invented.
 
-Secure exchange of valuable assets protected by the security guarantees of the network is possible through a standard API.
 
 ## Objectives
 
