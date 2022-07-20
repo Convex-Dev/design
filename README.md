@@ -4,6 +4,7 @@ This repository is dedicated to Convex Design and Documentation
 
 ## Key Documents
 
+- [Convex Manifesto](papers/manifesto.md)
 - [Convex White Paper (Draft)](papers/convex-whitepaper.md)
 
 ## Current CADs
