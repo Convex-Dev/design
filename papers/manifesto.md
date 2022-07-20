@@ -58,7 +58,7 @@ We envision that some user facing applications will be pure dApps (i.e. clients 
 
 ## Negligible costs
 
-**Convex must make transaction costs negligible, i.e. they should not be a significant factor in any user's decision whether or not to transact. **
+**Convex must make transaction costs negligible, i.e. they should not be a significant factor in any user's decision whether or not to transact.**
 
 Transaction costs are a curse. They represent friction that prevents useful value exchange from taking place, a deadweight loss to the whole economy. They exclude those with less financial resources, as the costs may become prohibitive for smaller transactions. For technology products, they present a major barrier to adoption and regular usage.
 
