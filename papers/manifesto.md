@@ -60,7 +60,7 @@ We envision that some user facing applications will be pure dApps (i.e. clients 
 
 **Convex must make transaction costs negligible, i.e. they should not be a significant factor in any user's decision whether or not to transact.**
 
-Transaction costs are a curse. They represent friction that prevents useful value exchange from taking place, a deadweight loss to the whole economy. They exclude those with less financial resources, as the costs may become prohibitive for smaller transactions. For technology products, they present a major barrier to adoption and regular usage.
+High transaction costs are a curse. They represent friction that prevents useful value exchange from taking place, a deadweight loss to the whole economy. They exclude those with less financial resources, as the costs may become prohibitive for smaller transactions. For technology products, they present a major barrier to adoption and regular usage.
 
 At the same time, it would be unfair to make transaction costs exactly zero: someone must provide real resources to operate and secure the network. Operators should be fairly compensated for the services they provide, and it is right that the users causing these costs to be incurred should pay for them.
 
