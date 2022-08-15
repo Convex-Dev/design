@@ -95,7 +95,9 @@ We develop software in public, according to open source methodologies and practi
 
 **Convex is a neutral network, which does not censor or discriminate between users or applications.**
 
-We do not believe that it is the role of networks to discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all.
+We do not believe that it is the role of networks to discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all, in the spirit of the Internet.
+
+In particular, the network should treat all user transactions equally, without giving preferential treatment or blocking any particular transactions.
 
 ## The Convex Coin
 
@@ -123,10 +125,10 @@ Once Convex Coins are initially issued, they are the property of the holder and 
 
 **Convex should be governed in the long term interests of all users as a public utility network.** 
 
-One key role of network governance is to prevent forks. As a public utility that records important economic information on a decentralised basis, the network must avoid forks since these present significant risk of confusion and loss to participants in the ecosystem. Forks are obviously not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
+One key role of network governance is to prevent forks. As a public utility that records important economic information on a decentralised basis, the network must avoid forks since these present significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
 
-Initially, the governance role will be performed by the Convex Foundation, a non-profit company registered in the United Kingdom. 
+Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom. 
 
-This governance must be sustainable, in the sense that adequate provision should be made to allow for continued investment in the core technology and infrastructure, supporting the common needs of ecosystem participants. To ensure this, the Convex Foundation will manage a long term fund, comprising both an endowment of Convex Coins and proceeds from the sale of Convex Coins to initial purchasers. 
+Governance must be sustainable, in the sense that adequate provision should be made to allow for continued investment in the core technology and infrastructure, supporting the common needs of ecosystem participants. To ensure this, the Convex Foundation will manage a long term endowment fund, comprising both an initial allocation of Convex Coins and proceeds from the sale of Convex Coins to initial purchasers. 
 
-In the longer term, we intend to implement decentralised governance. Decentralised governance will be adopted once we have sufficient confidence that it is practical to implement, secure against plausible threats and serves the interest of Convex users and society as a whole.
+In the longer term, we we will implement decentralised governance. Decentralised governance will be adopted once we have sufficient confidence that it is practical to implement, secure against plausible threats and serves the interest of Convex users and society as a whole.
