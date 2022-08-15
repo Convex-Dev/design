@@ -2,7 +2,9 @@
 
 ## Overview
 
-The CVM implements numerical operations similar to thse available in typical programming languages. Most basic numerical operations are provided as Runtime Functions such as `+`, `sqrt`, `max` etc.
+The CVM implements numerical operations similar to those available in typical programming languages. Most basic numerical operations are provided as Runtime Functions such as `+`, `sqrt`, `max` etc.
+
+CVM numerical capabilities are primarily intended to support the kind of calculations likely to be required in on-chain decentralised applications. More sophisticated numerical calculations, particularly those that require significant computational power, should normally be performed off-chain.
 
 ## Numeric Tower
 
