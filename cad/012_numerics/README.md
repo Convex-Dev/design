@@ -31,7 +31,7 @@ These generally behave in the expected way, support variadic arguments and are c
 - `(< 1 3 2) => false`
 - `(>= 3 3) => true`
 
-## Exlpicit Casting to Numeric Values
+## Explicit Casting to Numeric Values
 
 Certain types can be explicitly cast to Numeric Values using Runtime Functions `(long x)` and `(double x)`
 

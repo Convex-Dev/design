@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convex includes an on-chain Compiler as part of the CVM. The Compiler is responsible for taking source code and compiling this down to low level CVM Ops.
+Convex includes an on-chain Compiler as part of the CVM. The Compiler is responsible for taking Convex Lisp source code forms and compiling these down to low level CVM Ops.
 
 The Compiler is designed for Convex Lisp, which is a natural fit the Lambda Calculus features of the CVM. However alternative language front-ends are possible for Convex providing that these are able to compile down to either Convex Lisp (as an intermediate language) or CVM Ops (the basic operations of the CVM)
 
