@@ -32,6 +32,18 @@ The problem is exacerbated when we look globally: many people throughout the wor
 
 Access to Convex should therefore be possible for everyone on a self-sovereign, first class basis without being required to use privileged gatekeepers or pay middlemen. 
 
+## Global State
+
+**Convex provides an integrated, shared global database of on-chain information**
+
+The Convex Global State is a set of decentralised information managaed according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, prgrams or other restricted sub-containers. This allows for full interoperability and atomic transactionality across all users and smart contracts.
+
+The Global State is managed according to strict access control rules: account holders on Convex may store information freely within the scope of their own account. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
+
+The state is internally implementated as a Merkle Tree / DAG allowing for full cryptograhic verification of the entire global state given a single 32-byte root hash. This model allows for immutable snapshots of the entire state to be analysed and stored for future reference. It also allows for the entire tree to be considered as content-addressible storage.
+
+A system of memory accounting ensures a cost is applied for those wishing to use on-chain memory within the global state. Refunds are provided when memory is released. This is reasonable and fair since on-chain memory is a scarce resource and we wish to incentivise efficient usage, including appropriate clean up when memory is no longer needed.
+
 ## Programmability
 
 **The Convex network must provide secure, atomic, programmable smart contract capabilities.**
