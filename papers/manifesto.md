@@ -83,17 +83,19 @@ Because Convex is an open, decentralised system, it is not possible for us to di
 
 ## Open Source
 
-**All core Convex technology should be open source, developed by the community in the interests of all users.**
+**All core Convex technology will be open source, developed by the community in the interests of all users.**
 
 We are inspired by the principles of open source software, making high quality software freely available to all users and encouraging collaboration. Most importantly, this applies to the libraries and tools required by users to interact with Convex, so that facilities to access the network are guaranteed to be freely available to all.
 
-The Convex primary implementation itself is open source software, released under the Convex Public License (CPL). The CPL is a relatively permissive open source license that in addition supports the goal of effective network governance.
+The Convex primary implementation itself is open source software, released under the Convex Public License (CPL). The CPL is a relatively permissive open source license that supports the goal of effective network governance in addition to the usual open source freedoms.
+
+There is a patent (pending) on some of the underlying technology in Convex, including the critical Convergent Proof of Stake algorithm. However, License to use this and any other patents is automatically granted to all Convex users and developers under the terms of the CPL, thereby ensuring the the Convex network is always free to use in line with our open principles.
 
 We develop software in public, according to open source methodologies and practices. Currently, all core Convex technology is available on GitHub at [https://github.com/Convex-Dev].
 
 ## Network Neutrality
 
-**Convex is a neutral network, which does not censor or discriminate between users or applications.**
+**Convex provides neutral network infrastructure, which does not censor or discriminate between users or applications.**
 
 We do not believe that it is the role of networks to discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all, in the spirit of the Internet.
 
@@ -113,11 +115,11 @@ The use of the Convex coin as part of the protocol does not in any way prevent o
 
 ## Coin issuance
 
-**Convex Coins will be issued gradually over time to people or organisations that contribute to developing Convex and the broader ecosystem.**
+**Convex Coins will be issued over time to people or organisations that contribute to developing Convex and the broader ecosystem.**
 
-Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used to grow Convex further).
+Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used to grow Convex further). We endeavour to ensure that grants of coins are fair and proportionate to the scale of contribution.
 
-We issue coins in this way because we require a fair and effective way of distributing the initially issued Convex Coins so that the currency can be used throughout the ecosystem. Rewarding contributors is a pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
+We issue coins in this way because we require an effective way of distributing the initially issued Convex Coins so that the currency can be used throughout the ecosystem. Rewarding contributors is a pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
 
 Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
 
