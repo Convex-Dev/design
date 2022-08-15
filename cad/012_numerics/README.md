@@ -14,6 +14,20 @@ The numeric Tower is defined as follows:
 
 Operations that have arguments of different levels perform an implicit cast to the level of the highest argument.
 
+### Double
+
+Doubles are 64-bit double precision floating point values as defined in the IEEE754 standard.
+
+Certain special values are supported:
+
+- `##Inf` is positive infinity (hex 0x7ff0000000000000)
+- `##-Inf` is negative infinity (hex 0xfff0000000000000)
+- `##NaN` is a unique "not a number" value (hex 0x7ff8000000000000)
+
+### Long
+
+Longs are 64-bit signed integer values.
+
 ## Numeric Equality
 
 Numerical equality can be checked with the `==` Function. 
