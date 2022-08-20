@@ -2,15 +2,21 @@
 
 ## Abstract
 
-Decentralised networks offer the potential to enable peer-to-peer value exchange involving digital assets and services.  They are protected at the protocol level by smart contracts and cryptographic keys that can be issued and managed on a self-sovereign basis. In the long term, we can forsee an **Internet of Value** where a significant proportion of economically significant transactions and facilitated by decentralised networks with very low transaction costs.
+Decentralised economic systems depend upon peer-to-peer value exchange involving digital assets and services, facilitated by smart contracts. In the long term, we can foresee an **Internet of Value** where a significant proportion of economic activity is enabled by decentralised networks with very low transaction costs.
 
-Existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to "front-running" attacks and no truly decentralised security. Early Blockchain implementations successfully demonstrated the potential of the decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve.
+Value exchange within such systems is protected at the protocol level by cryptographic keys that can be issued and managed on a **self-sovereign basis**. With these capabilities in place, efficient and secure transactions between any participants become possible without any dependency on centralised authorities or intermediaries.
 
-Convex (CONVergent EXecution) is a decentralised platform for the Internet of Value that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a conflict-free replicated data type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a fully Byzantine Fault Tolerant algorithm.
+However, existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to "front-running" attacks and no truly decentralised security. Early Blockchain implementations successfully demonstrated the potential of the decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve.
 
-The CPoS algorithm solves the "double spend" problem in crypto by essentially implementing a *decentralised sort* of transactions that enter the network. Importantly, this is a "leaderless" approach that allows multiple Peers to submit blocks of transactions into the network simultaneously, dramatically improving the latency between submitting a transaction and receiving a confirmed result. Early tests suggest that the global Convex Network may be able to confirm transactions in around **one second** - substantially quicker than any competing approaches and making Convex viable for a wide range of realtime and consumer applications.
+Convex (CONVergent EXecution) is a decentralised network for the Internet of Value that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a conflict-free replicated data type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
 
-Convex augments the CPoS algorithm with an execution engine and storage system. Building on the lambda calculus, Convex provides immutable persistent data structures and content addressable storage. Combined with the consensus algorithm, this provides a fully decentralised, global computer capable of executing arbitrary smart contracts with decentralised ownership and security via the "Convex Virtual Machine" (CVM).
+The CPoS algorithm solves the "double spend" problem by implementing a continuous *decentralised sort* of transactions that enter the network. Once an ordering of transactions is confirmed up to some position, it is stable and immutable from the perspective of all participants, thus preventing double spend and transaction rollback.
+
+Importantly, CPoS is a "leaderless" approach that allows multiple Peers to submit blocks of transactions into the network simultaneously. This property dramatically improving the latency between submitting a transaction and receiving a confirmed result. Early tests suggest that the global Convex Network may be able to confirm transactions **under one second** - substantially quicker than any competing approaches and making Convex viable for a wide range of **soft realtime** and consumer applications.
+
+Convex augments the CPoS algorithm with an execution engine and storage system - the **Convex Virtual Machine (CVM)**. Building on the lambda calculus, Convex provides immutable persistent data structures and content addressable storage. 
+
+Combined with the consensus algorithm, the CVM provides a fully decentralised, global computer capable of executing arbitrary smart contracts with decentralised ownership and security.
 
 ## Context
 
@@ -33,7 +39,7 @@ A problem with moving value exchange to the Internet, however, is that many part
 
 ### The Internet of Value
 
-We envision a system that enables value exchange mechanisms while solving the problems of traditional approaches - a network of economic agents that serves the needs of the digital economy.
+We envision a system that enables value exchange while solving the problems of traditional approaches - a network of economic agents that serves the needs of the digital economy.
 
 The seven key properties that are essential to this vision are that it must be:
 
@@ -49,7 +55,7 @@ Convex has been designed from the ground up to provide these properties.
 
 ### Applications
 
-The Internet of Value's primary purpose is to enable **decentralised applications** that typically involve digital assets and value exchange. Just as anyone can create a website on the Internet, anyone can create a decentralised application for the Internet of Value. Convex is designed to make the process of building, operating and using such applications as simple and effective as possible.
+The Internet of Value will enable **decentralised applications** that involve digital assets and trusted value exchange. Just as anyone can create a website on the Internet, anyone can create a decentralised application for the Internet of Value. Convex is designed to make the process of building, operating and using such applications as simple and effective as possible.
 
 There is no practical limit to the ideas that could be implemented given an open and extensible system. Some notable ideas include:
 
