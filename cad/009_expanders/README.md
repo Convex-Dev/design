@@ -4,7 +4,10 @@
 
 The CVM provides the facility for advanced macro capabilities for on-chain code generation.
 
-Macros are run at compile time, and can perform arbitrary code transformations.
+Macros are run at compile time, and can perform arbitrary code transformations. As such, they offer a number of advantages over regular functional code:
+
+- They can perform optimisations, e.g. pre-computing certain values at compile time
+- They can be used to extend the Convex Lisp language with new language constructs that would not be expressible as a regular function
 
 ## Key Components
 
@@ -26,19 +29,19 @@ Where:
 - `x` is the Form to be transformed
 - `e` is a Continuation Expander, i.e. another Expander which may be called recursively to expand further forms.
 
-Expanders MUST have the metadata `{:expander true}` set in order to be recognised as Expanders by the compiler Expansion Phase.
+Expanders stored in the environment MUST have the metadata `{:expander true}` set in order to be recognised as Expanders by the compiler Expansion Phase.
 
 Typically an Expander will:
 - Perform some specialised code expansion
 - Call the Continuation Expander on the result and / or parts of the result with the pattern `(e z e)`
 
-However Expanders are extremely flexible. It is perfectly possible to create Expanders which vary this logic. e.g.
+However, Expanders are extremely flexible. It is perfectly possible to create Expanders which vary this logic. e.g.
 
 - Changing the Continuation Expander call to `(e z identity)` will cause the continuation expander to expand only once (useful e.g. for debugging and tests)
 - Omitting any calls to the continuation expander gives this Expander the final say on the resulting form
 - Using itself as the continuation expander, an expander can implement a custom language.
 
-For more information, it is woth referring to the 1988 paper "Expansion-passing style: A general macro mechanism" (Dybvig, Friedman & Haynes) which describes this elegant approach in more detail.
+For more information, it is worth referring to the 1988 paper "Expansion-passing style: A general macro mechanism" (Dybvig, Friedman & Haynes) which describes this elegant approach in more detail.
 
 ### Macros
 
@@ -61,7 +64,7 @@ The initial expander executes the following logic when passed the parameters `[x
 
 ### Implementation Notes
 
-- `*initial-expander*` is implemented in optimised Java for performance reasons
+- `*initial-expander*` is implemented in optimised Java for performance reasons. It is however possible to implement custom expanders in pure Convex Lisp.
 - Expanders MAY make use of tail recursion to avoid consuming CVM stack depth on multiple expansions, since the call to the Continuation Expander often occurs in tail position.
 
 
