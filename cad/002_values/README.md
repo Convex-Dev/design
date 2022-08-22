@@ -27,7 +27,7 @@ These immutable values have some important advantages for a decentralised networ
 - Reasoning about code behaviour is easier with immutable values. If a value is immutable, you don't have to worry about concurrent updates. This has important security benefits too: you don't need to remember to perform defensive copies when passing references to other code (e.g. a potentially untrusted smart contract).
 - Immutable values **compose** in a simple way that breaks down in the presence of mutable values. A collection of mutable values is conceptually mutable even if the collection itself is immutable, but if all values are immutable then you are guaranteed that any composed data structure is also immutable.
 - When internally implemented as trees, persistent data structures have favourable computational complexity bounds, e.g. `O(1)` operations for common copy, update and append operations. Since decentralised systems may frequently operate on large data structures, these are extremely important for performance. A traditional approach using mutable data structures might require `O(n)` operations and memory to perform a copy, for example creating a full immutable snapshot of *any* data structure in Convex is always `O(1)`.
-- Cryptographic hashes of immutable values are possible and safe: if values cannot change, neither can thir hash. This makes it practical to use immutable values (but not mutable ones!) in data structures such as Merkle DAGs. Hashes can be used to efficiently determine if two entire data structures are identical and/or identify any differences.
+- Cryptographic hashes of immutable values are possible and safe: if values cannot change, neither can their hash. This makes it practical to use immutable values (but not mutable ones!) in data structures such as Merkle DAGs. Hashes can be used to efficiently determine if two entire data structures are identical and/or identify any differences.
 
 ## General  Principles
 
@@ -359,7 +359,7 @@ Semantically, this is roughly equivalent to using an `Invoke` transaction to do 
 
 #### Transfer
 
-A `Transfer` is a transaction requesting the tranfer of Convex Coins from a User Account to some other Account. 
+A `Transfer` is a transaction requesting the transfer of Convex Coins from a User Account to some other Account. 
 
 ## Implementation notes
 
