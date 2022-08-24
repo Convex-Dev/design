@@ -2,7 +2,7 @@
 
 Convex is a public network for real-time value exchange, designed as a substrate for decentralised economic transactions and smart contracts.
 
-We are building Convex and its ecosystem because we believe that this capability is essential for a fair, inclusive, efficient and sustainable economic systems ofr the 21st century and beyond.
+We are building Convex and its ecosystem because we believe that this capability is essential for a fair, inclusive, efficient and sustainable economic systems for the 21st century and beyond.
 
 This manifesto outlines our beliefs and core principles.
 
