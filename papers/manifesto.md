@@ -46,7 +46,7 @@ We note that realtime performance is of particular importance for the adoption o
 
 **Convex provides an integrated, shared global database of on-chain information**
 
-The Convex Global State is a set of decentralised information managaed according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, prgrams or other restricted sub-containers. This allows for full interoperability and atomic transactionality across all users and smart contracts.
+The Convex Global State is a set of decentralised information managaed according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactionality across all users and smart contracts.
 
 The Global State is managed according to strict access control rules: account holders on Convex may store information freely within the scope of their own account. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
 
