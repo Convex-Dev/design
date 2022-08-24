@@ -2,7 +2,7 @@
 
 Convex is a public network for real-time value exchange, designed as a substrate for decentralised economic transactions and smart contracts.
 
-We are building Convex and its ecosystem because we believe that this capability is essential for a fair, inclusive, efficient and sustainable economic system.
+We are building Convex and its ecosystem because we believe that this capability is essential for a fair, inclusive, efficient and sustainable economic systems ofr the 21st century and beyond.
 
 This manifesto outlines our beliefs and core principles.
 
@@ -14,13 +14,15 @@ Done properly, value exchange is a "win-win" where participants are each better 
 
 We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a club etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
 
-## Realtime
+## Self Sovereignty
 
-**Convex provides users with realtime, interactive transactions.**
+**Participants must be empowered to act as self-sovereign economic agents: they must be allowed to transact freely with others without prior restraint by third parties**
 
-While absolutely instantaneous transactions are impossible in a global decentralised network (due to speed of light, network propagation etc.), low latency is fundamentally important for many applications and users.
+This principle is critical so that participants are able to act freely in the economy without being excluded.
 
-We note that realtime performance is of particular importance for the adoption of many consumer focused applications of decentralised technology, e.g. mobile payments, gaming and metaverse economies.
+While we require the right of particpants to act in a self-sovereign manner, they may choose to delegate or appoint a representatitive to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by particiapnts, and they are not forced into such arrangements.
+
+It is important to note that self sovereignty does not negate the requirement for participants to act within the law and fulfill societal obligations such as paying appropriate taxes.
 
 ## Fair access
 
@@ -31,6 +33,14 @@ For too long, economic participation to many parts of the economy has been sever
 The problem is exacerbated when we look globally: many people throughout the world have no significant access to financial technology and capabilities.
 
 Access to Convex should therefore be possible for everyone on a self-sovereign, first class basis without being required to use privileged gatekeepers or pay middlemen. 
+
+## Realtime
+
+**Convex provides users with realtime, interactive transactions.**
+
+While absolutely instantaneous transactions are impossible in a global decentralised network (due to speed of light, network propagation etc.), low latency is fundamentally important for many applications and users.
+
+We note that realtime performance is of particular importance for the adoption of many consumer focused applications of decentralised technology, e.g. mobile payments, gaming and metaverse economies.
 
 ## Global State
 
