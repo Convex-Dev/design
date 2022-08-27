@@ -1,8 +1,8 @@
 # The Convex Manifesto - DRAFT
 
-Convex is a public network for real-time value exchange, designed as a substrate for decentralised economic transactions and smart contracts.
+We are building a fair, inclusive, efficient, diverse and sustainable economic system based on decentralised technology.
 
-We are building Convex and its ecosystem because we believe that this capability is essential for a fair, inclusive, efficient and sustainable economic system.
+Convex is a public network for real-time value exchange, designed as a substrate for decentralised economic transactions and smart contracts.
 
 This manifesto outlines our beliefs and core principles.
 
