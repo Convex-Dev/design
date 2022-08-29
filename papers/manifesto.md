@@ -20,9 +20,9 @@ We define value broadly: it may be represented through currency, information, ow
 
 This principle is critical so that participants are able to act freely in the economy without being excluded.
 
-While we require the right of particpants to act in a self-sovereign manner, they may choose to delegate or appoint a representatitive to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by particiapnts, and they are not forced into such arrangements.
+While we require the right of participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
 
-It is important to note that self sovereignty does not negate the requirement for participants to act within the law and fulfill societal obligations such as paying appropriate taxes.
+It is important to note that self-sovereignty does not negate the requirement for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
 
 ## Fair access
 
