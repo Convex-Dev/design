@@ -165,17 +165,28 @@ When executed in a given Context, every Op must do exactly one of the following:
 
 - Completes normally with some resulting Value loaded into the Context's Result Register
 - Throw an Exception, which may be caught an handled by the CVM at appropriate points (recur, return etc.)
-- Throw an Error, which is never caught
+- Throw an Error, which is never caught and results in the failure of the whole transaction
 
 
 
-## Garbage Collection
+## Memory Management
 
-The CVM implements full garbage collection - values which are no longer referenced are automatically discarded from memory without the need for any programmer intervention.
+Memory management is a critical aspect of any scalable computational system. The CVM memory management works on the following principles:
 
-We note that this is an important prereqisite for high performance in an execution that depends heavily on immutable, persistent data structures, as it allows safe structural sharing of values without the need to resort to cumbersome and computationally expensive approaches such as reference counting.
+- On-chain developers never have to worry about memory management. It is fully automatic and transparent.
+- Memory management costs are properly accounted for in the transaction fees paid by users of the network (either for juice execution costs or via memory accounting).
 
-Implementation notes: 
+The CVM therefore implements full automatic garbage collection - values which are no longer referenced are automatically discarded from memory without the need for any programmer intervention.
+
+### A note on the efficiency of GC
+
+We note that GC is an important prerequisite for high performance in an execution that depends heavily on immutable, persistent data structures. Some reasons for this:
+
+- It allows safe structural sharing of values without the need to resort to cumbersome and computationally expensive approaches such as reference counting.
+- Approaches that are dependent on "ownership" of memory (RAII, Rust-style borrowing) are not effective when there is a need to make multiple, cheap `O(1)` copies of references.
+- Modern generational GCs are extremely efficient - in may cases better than traditional heap-based allocators
+
+### Further implementation notes
 
 - While the CVM specification does not require persistent storage, it is expected that Peers will rely upon persistent storage for CVM Objects. To the extend that CVM values are written to persistent storage in a database, Peers may need to perform a separate garbage collection phase on the database
-- The current CVM implementation makes use of JVM `SoftReference`s and lazy loading, which allows the host JVM to garbage collect values in many cases even if they are still potentially reachable. This is safe provided that the values can be recoved from storage on demand if required. The advantage of this approach is that it allows the processing of large CVM data structures (such as the State itself) even if these structures exceed the size of available Peer memory.
+- The current CVM implementation makes use of JVM `SoftReference`s and lazy loading, which allows the host JVM to garbage collect values in many cases even if they are still potentially reachable. This is safe provided that the values can be recovered from storage on demand if required. The advantage of this approach is that it allows the processing of large CVM data structures (such as the State itself) even if these structures exceed the size of available Peer memory.
