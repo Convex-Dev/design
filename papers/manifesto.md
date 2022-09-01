@@ -48,9 +48,11 @@ Atomicity of transactions is also critical - without this, users are exposed to 
 
 **Users should be able to interact with a decentralised, shared global state**
 
-The Convex Global State is a set of decentralised information managed according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactions across all users and smart contracts.
+Global state is essential to the vision of building decentralised economic systems. Information such as asset balances, the status of smart contracts and publicly verifiable data must be available to network participants on a decentralised basis, without being subject to centralised control or arbitrary modification.
 
-The Global State is managed according to strict access control rules: account holders on Convex may store information freely within the scope of their own account. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
+The Convex Global State is maintained by Peers, managed on a decentralised basis according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactions across all users and smart contracts.
+
+The Global State is protected by strict access control rules: account holders on Convex may store information freely within the scope of their own account. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
 
 A system of memory accounting ensures a cost is applied for those wishing to use on-chain memory within the global state. Refunds are provided when memory is released. This is reasonable and fair since on-chain memory is a scarce resource and we wish to incentivise efficient usage, including appropriate clean up when memory is no longer needed.
 
@@ -76,9 +78,11 @@ According to the "end-to-end" principle, we expect most significant application 
 
 We envision that some user facing applications will be pure dApps (i.e. clients which interact purely with decentralised networks) but that many will likely be hybrid dApps (some usage of decentralised networks but coupled with traditional centralised servers). Convex supports both configurations equally well.
 
+Furthermore, the open architecture supports "Layer 2" extensions to the network, allowing for even greater flexibility in building decentralised systems (for example, scaling transaction volumes outside the main network). We note that Layer 2 solutions have some drawbacks (most notably, lacking atomic transactions within the global state), but they will always be available as options via the open architecture for those that choose them. 
+
 ## Negligible costs
 
-**Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However they should fairly compensate providers of infrastrcure and services.**
+**Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However they should fairly compensate providers of infrastructure and services.**
 
 High transaction costs are a curse. They represent friction that prevents useful value exchange from taking place, a deadweight loss to the whole economy. They exclude those with less financial resources, as the costs may become prohibitive for smaller transactions. For technology products, they present a major barrier to adoption and regular usage.
 
@@ -106,43 +110,43 @@ Because Convex is an open, decentralised system, it is not possible for us to di
 
 ## Open Source
 
-**All core Convex technology will be open source, developed by the community in the interests of all users.**
+**All core Convex technology will be open source, available for free, and developed by the community in the interests of all users.**
 
 We are inspired by the principles of open source software, making high quality software freely available to all users and encouraging collaboration. Most importantly, this applies to the libraries and tools required by users to interact with Convex, so that facilities to access the network are guaranteed to be freely available to all.
 
 The Convex primary implementation itself is open source software, released under the Convex Public License (CPL). The CPL is a relatively permissive open source license that supports the goal of effective network governance in addition to the usual open source freedoms.
 
-There is a patent (pending) on some of the underlying technology in Convex, including the critical Convergent Proof of Stake algorithm. However, License to use this and any other patents is automatically granted to all Convex users and developers under the terms of the CPL, thereby ensuring the the Convex network is always free to use in line with our open principles.
+Contributors to Convex may retain copyright or other intellectual property. However, free license to use any such intellectual property (including patents) must be automatically granted to all Convex users and developers under the terms of the CPL, thereby ensuring the the Convex network is always free to use, in line with our open principles.
 
 We develop software in public, according to open source methodologies and practices. Currently, all core Convex technology is available on GitHub at [https://github.com/Convex-Dev].
 
 ## Network Neutrality
 
-**Convex provides neutral network infrastructure, which does not censor or discriminate between users or applications.**
+**We must provide neutral network infrastructure, which does not censor or discriminate between users or applications.**
 
-We do not believe that it is the role of networks to discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all, in the spirit of the Internet.
+Networks should not discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all, in the spirit of the Internet.
 
-In particular, the network should treat all user transactions equally, without giving preferential treatment or blocking any particular transactions.
+In particular, the Convex network protocol must treat all user transactions equally, without giving preferential treatment or blocking any particular transactions.
 
 ## The Convex Coin
 
-**The Convex Coin is the native currency of Convex.**
+**Users should have access to a native currency for the network.**
 
-The Convex Coin can be used to purchase services on the Convex network. In that sense, it can be regarded as a "utility token". It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
+A native currency is required as a utility token so that that those who provide resources to the network can be fairly compensated, in an automatic way, as part of the network protocol. It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
 
-We need a protocol defined native currency for two main technical reasons: firstly, as a mechanism to fairly compensate those who provide infrastructure and services to the network on an ongoing basis (peer operators), and secondly as a means to regulate usage of the network (if transactions were free in a public permissionless network, nothing would prevent a malicious actor from flooding the network with malicious transactions and preventing genuine users from using it).
+The Convex Coin is the native currency of the Convex network, and has a fixed maximum supply of `1,000,000,000,000,000,000` units. For convenience, we designate the quantity `1,000,000,000` as `1 Convex Gold`, i.e. the maximum supply is one billion Convex Gold, each of which can be subdivided one billion times.
 
-The Convex Coin has a fixed maximum supply of `1,000,000,000,000,000,000` units. For convenience, we designate the quantity `1,000,000,000` as `1 Convex Gold`, i.e. the maximum supply is one billion Convex Gold, each of which can be subdivided one billion times.
+A protocol defined native currency is also important as a means to regulate usage of the network. If transactions were free in a public permissionless network, nothing would prevent a malicious actor from unfairly flooding the network with malicious transactions and preventing genuine users from using it.
 
-The use of the Convex coin as part of the protocol does not in any way prevent other currencies from being established by users of the Convex network. Indeed, a key capability of Convex is the ability it gives for all users to create their own currencies, tokens and other digital assets.
+The use of the Convex Coin as part of the protocol does not in any way prevent other currencies from being established by users of the Convex network. Indeed, a key capability of Convex is the ability it gives for all users to create their own currencies, tokens and other digital assets.
 
-## Coin issuance
+## Fair coin issuance
 
 **Convex Coins will be issued over time to people or organisations that contribute to developing Convex and the broader ecosystem.**
 
-Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used to grow Convex further). We endeavour to ensure that grants of coins are fair and proportionate to the scale of contribution.
+We require an effective way of distributing Convex Coins so that the native currency can be used throughout the ecosystem. Rewarding contributors is a fair and pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
 
-We issue coins in this way because we require an effective way of distributing the initially issued Convex Coins so that the currency can be used throughout the ecosystem. Rewarding contributors is a pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
+Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used to grow Convex further). We endeavour to ensure that grants of coins are fair and proportionate to the scale of contribution.
 
 Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
 
