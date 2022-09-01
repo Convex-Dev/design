@@ -12,7 +12,7 @@ This manifesto outlines our beliefs and core principles.
 
 Done properly, value exchange is a "win-win" where participants are each better off than they were before the exchange. Generally, value exchange is a net good that should be encouraged. 
 
-We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a club etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
+We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a society etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
 
 ## Self Sovereignty
 
@@ -23,6 +23,16 @@ This principle is critical so that participants are able to act freely in the ec
 While we require the right of participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
 
 It is important to note that self-sovereignty does not negate the requirement for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
+
+## Digital Assets
+
+**Participants must be empowered to create and utilise digital assets.**
+
+In most cases, value exchange will relate to one or more forms of digital asset. These assets may be entirely virtual, or represent ownership of some asset in the real world.
+
+Given the infinite variety of possible assets, it is essential to allow users to innovate and create their own assets that are usable in value exchange. This may involve defining rules and governance mechanisms (both on-chain and off-chain).
+
+The creation and usage of digital assets may be regulated in some jurisdictions. This is an emerging area of law with considerable uncertainty. The Convex network is neutral to such regulations: it is as always the responsibility of participants to comply with relevant laws and regulation in their own jurisdiction.
 
 ## Fair access
 
@@ -38,11 +48,11 @@ Access to Convex should therefore be possible for everyone on a self-sovereign, 
 
 **Users must be provided with real-time, interactive, atomic transactions.**
 
-While absolutely instantaneous transactions are impossible in a global decentralised network (due to speed of light, network propagation etc.), low latency is fundamentally important for many applications and users.
+While perfectly instantaneous transactions are impossible in a global decentralised network (due to speed of light, network propagation etc.), low latency is fundamentally important for many applications and users. From a practical perspective, latency is the difference in time between a user taking an action (initiating a transaction) and seeing the effect (receiving a confirmed transaction result).
 
 We note that realtime performance is of particular importance for the adoption of many consumer focused applications of decentralised technology, e.g. mobile payments, gaming and metaverse economies.
 
-Atomicity of transactions is also critical - without this, users are exposed to undue risks that may be created if part of a transaction fails to complete or requires separate settlement at a later time.
+Atomicity of transactions is also critical - without this, users are exposed to undue risks that may be created if part of a transaction fails to complete or requires separate settlement at a later time. Lack of atomic transactions also opens up users to significant security risks - timing attacks, front running etc.
 
 ## Global State
 
@@ -92,6 +102,8 @@ We solve this dilemma this by making Convex scalable and efficient, able to supp
 
 Convex transaction costs include both immediate processing costs (network and CPU) and long term storage costs. Both are accounted for automatically in the CVM, via juice accounting and memory accounting respectively.
 
+Read only interactions with the network ("queries") are free at the protocol level, and should also generally be be 100% free for users (subject only to peer operators being willing to service requests).
+
 
 ## Sustainability
 
@@ -128,6 +140,14 @@ Networks should not discriminate amongst users, both from an ethical and practic
 
 In particular, the Convex network protocol must treat all user transactions equally, without giving preferential treatment or blocking any particular transactions.
 
+## Freedom to Operate a Peer
+
+**All who wish to do so may operate a Peer on the network, subject only to following protocol rules**
+
+As a decentralised network, anyone should be permitted to operate a Peer on the network and participate in maintaining the secure consensus.
+
+As long as protocol rules are followed, Peer Operators are free to customise the software and services they operate as they wish. This might include value added services for users, high end analytics capabilities, performance optimisations etc. 
+
 ## The Convex Coin
 
 **Users should have access to a native currency for the network.**
@@ -140,13 +160,13 @@ A protocol defined native currency is also important as a means to regulate usag
 
 The use of the Convex Coin as part of the protocol does not in any way prevent other currencies from being established by users of the Convex network. Indeed, a key capability of Convex is the ability it gives for all users to create their own currencies, tokens and other digital assets.
 
-## Fair coin issuance
+## Fair Coin Distribution
 
 **Convex Coins will be issued over time to people or organisations that contribute to developing Convex and the broader ecosystem.**
 
 We require an effective way of distributing Convex Coins so that the native currency can be used throughout the ecosystem. Rewarding contributors is a fair and pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
 
-Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used to grow Convex further). We endeavour to ensure that grants of coins are fair and proportionate to the scale of contribution.
+Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used for the benefit of the ecosystem). We endeavour to ensure that grants of coins are fair and proportionate to the value of contributions.
 
 Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
 
@@ -154,10 +174,12 @@ Once Convex Coins are initially issued, they are the property of the holder and 
 
 **Convex should be governed in the long term interests of all users as a public utility network.** 
 
-One key role of network governance is to prevent forks. As a public utility that records important economic information on a decentralised basis, the network must avoid forks since these present significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
-
-Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom. 
+Good governance of the network is essential for several reasons: the network and protocol must be maintained and upgraded, and the interests of all ecosystem participants must be fairly protected.
 
 Governance must be sustainable, in the sense that adequate provision should be made to allow for continued investment in the core technology and infrastructure, supporting the common needs of ecosystem participants. To ensure this, the Convex Foundation will manage a long term endowment fund, comprising both an initial allocation of Convex Coins and proceeds from the sale of Convex Coins to initial purchasers. 
+
+One key role of network governance is to prevent forks. As a public utility that records important economic information on a decentralised basis, the network must avoid forks since these present significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
+
+Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom.
 
 In the longer term, we we will implement decentralised governance. Decentralised governance will be adopted once we have sufficient confidence that it is practical to implement, secure against plausible threats and serves the interest of Convex users and society as a whole.
