@@ -24,7 +24,7 @@ While we require the right of participants to act in a self-sovereign manner, th
 
 It is important to note that self-sovereignty does not negate the requirement for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
 
-## Digital Assets
+## Digital Asset Innovation
 
 **Participants must be empowered to create and utilise digital assets.**
 
@@ -34,7 +34,7 @@ Given the infinite variety of possible assets, it is essential to allow users to
 
 The creation and usage of digital assets may be regulated in some jurisdictions. This is an emerging area of law with considerable uncertainty. The Convex network is neutral to such regulations: it is as always the responsibility of participants to comply with relevant laws and regulation in their own jurisdiction.
 
-## Fair access
+## Fair Access
 
 **Everyone should have equal, fair and direct access to the mechanisms of value exchange, enabling them to participate fully in the benefits of modern economies.**
 
@@ -44,7 +44,7 @@ The problem is exacerbated when we look globally: many people throughout the wor
 
 Access to Convex should therefore be possible for everyone on a self-sovereign, first class basis without being required to use privileged gatekeepers or pay middlemen. 
 
-## Real-time transactions
+## Real-time Transactions
 
 **Users must be provided with real-time, interactive, atomic transactions.**
 
@@ -76,7 +76,7 @@ Furthermore, programmability allows for innovation in terms of new types of digi
 
 Because it is impossible to anticipate the full scope of potential future innovation in advance, Convex provides for general purpose, Turing-complete programming languages on the Convex Virtual Machine (CVM).
 
-## Open architecture
+## Open Architecture
 
 **Convex must operate as an open network in the spirit of the original Internet.**
 
@@ -90,7 +90,7 @@ We envision that some user facing applications will be pure dApps (i.e. clients 
 
 Furthermore, the open architecture supports "Layer 2" extensions to the network, allowing for even greater flexibility in building decentralised systems (for example, scaling transaction volumes outside the main network). We note that Layer 2 solutions have some drawbacks (most notably, lacking atomic transactions within the global state), but they will always be available as options via the open architecture for those that choose them. 
 
-## Negligible costs
+## Negligible Costs
 
 **Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However they should fairly compensate providers of infrastructure and services.**
 
@@ -182,4 +182,4 @@ One key role of network governance is to prevent forks. As a public utility that
 
 Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom.
 
-In the longer term, we we will implement decentralised governance. Decentralised governance will be adopted once we have sufficient confidence that it is practical to implement, secure against plausible threats and serves the interest of Convex users and society as a whole.
+In the longer term, we will implement decentralised governance. This will happen once we have sufficient confidence that it is practical to implement, secure against plausible threats and serves the interest of Convex users and society as a whole.
