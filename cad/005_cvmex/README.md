@@ -13,7 +13,22 @@ Under this model, the latest Consensus State can always be reconstructed given b
 - A initial State
 - All Blocks between the initial State and the current consenus point
 
-Normally, Peers maintain the current Consensus State, and update this accordingly whenever one or more new Blocks are confirmed by the CPoS Consensus Algorithm. However, a new Peer can reliably reconstruct the Conensus State from any preceding State as long it it also holds the necessary Blocks from that state onwards. This enables a new Peer to efficiently synchronise with the Convex Network without having to process all preceding Blocks.
+Normally, Peers maintain the current Consensus State, and update this accordingly whenever one or more new Blocks are confirmed by the CPoS Consensus Algorithm. However, a new Peer can reliably reconstruct the Consensus State from any preceding State as long it it also holds the necessary Blocks from that state onwards. This enables a new Peer to efficiently synchronise with the Convex Network without having to process all preceding Blocks.
+
+## The State
+
+The State is a global, decentralised data structure which contains all of the currently active on-chain information. Logically, the purpose of transactions is to cause changes in the State.
+
+Some useful notes about the State:
+
+- It may be large - typically larger than RAM on many machines
+- There is only one "consensus" state at any one time, but it is also possible to refer to previous (or potential future) States using the State Hash.
+
+### State Representation
+
+The State is regarded by the CVM as an immutable value, a special type of Record. See CAD-002 for more details on the specifics of Record types.
+
+Since it is a CVM value, the state is internally implemented as a Merkle Tree / DAG allowing for full cryptographic verification of the entire global state given a single 32-byte root hash. This model allows for immutable snapshots of the entire state to be analysed and stored for future reference. It also allows for the entire tree to be considered as content-addressable storage.
 
 ## State Transition
 

@@ -6,7 +6,7 @@ Convex is a public network for real-time value exchange, designed as a substrate
 
 This manifesto outlines our beliefs and core principles.
 
-## Value exchange
+## P2P Value exchange
 
 **The primary purpose of Convex is to facilitate value exchange: interactions where economic participants come to an agreement where they gain something of value from each other.**
 
@@ -34,29 +34,29 @@ The problem is exacerbated when we look globally: many people throughout the wor
 
 Access to Convex should therefore be possible for everyone on a self-sovereign, first class basis without being required to use privileged gatekeepers or pay middlemen. 
 
-## Realtime
+## Real-time transactions
 
-**Convex provides users with realtime, interactive transactions.**
+**Users must be provided with real-time, interactive, atomic transactions.**
 
 While absolutely instantaneous transactions are impossible in a global decentralised network (due to speed of light, network propagation etc.), low latency is fundamentally important for many applications and users.
 
 We note that realtime performance is of particular importance for the adoption of many consumer focused applications of decentralised technology, e.g. mobile payments, gaming and metaverse economies.
 
+Atomicity of transactions is also critical - without this, users are exposed to undue risks that may be created if part of a transaction fails to complete or requires separate settlement at a later time.
+
 ## Global State
 
-**Convex provides an integrated, shared global database of on-chain information**
+**Users should be able to interact with a decentralised, shared global state**
 
-The Convex Global State is a set of decentralised information managaed according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactionality across all users and smart contracts.
+The Convex Global State is a set of decentralised information managed according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactions across all users and smart contracts.
 
 The Global State is managed according to strict access control rules: account holders on Convex may store information freely within the scope of their own account. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
-
-The state is internally implementated as a Merkle Tree / DAG allowing for full cryptograhic verification of the entire global state given a single 32-byte root hash. This model allows for immutable snapshots of the entire state to be analysed and stored for future reference. It also allows for the entire tree to be considered as content-addressible storage.
 
 A system of memory accounting ensures a cost is applied for those wishing to use on-chain memory within the global state. Refunds are provided when memory is released. This is reasonable and fair since on-chain memory is a scarce resource and we wish to incentivise efficient usage, including appropriate clean up when memory is no longer needed.
 
 ## Programmability
 
-**The Convex network must provide secure, atomic, programmable smart contract capabilities.**
+**Users must have access to secure, atomic, programmable smart contract capabilities.**
 
 This capability is critical to allow value exchange to be specified and executed automatically, so that parties to the exchange can be certain that the transaction will complete successfully and be settled as a single atomic transaction (or alternatively, if something goes wrong, the whole transaction will be rolled back and they will at least not lose anything of value). 
 
@@ -66,7 +66,7 @@ Because it is impossible to anticipate the full scope of potential future innova
 
 ## Open architecture
 
-**Convex is an open network in the spirit of the original Internet.**
+**Convex must operate as an open network in the spirit of the original Internet.**
 
 Indeed, Convex effectively adds a new capability to the Internet: a secure, persistent global state machine that can efficiently execute transactions and enforce smart contracts.
 
