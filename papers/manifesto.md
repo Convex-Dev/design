@@ -142,7 +142,7 @@ In particular, the Convex network protocol must treat all user transactions equa
 
 ## Freedom to Operate a Peer
 
-**All who wish to do so may operate a Peer on the network, subject only to following protocol rules**
+**Anyone may operate a Peer on the network, subject only to following protocol rules**
 
 As a decentralised network, anyone should be permitted to operate a Peer on the network and participate in maintaining the secure consensus.
 
@@ -150,7 +150,7 @@ As long as protocol rules are followed, Peer Operators are free to customise the
 
 ## The Convex Coin
 
-**Users should have access to a native currency for the network.**
+**Users must have access to a native currency for the network.**
 
 A native currency is required as a utility token so that that those who provide resources to the network can be fairly compensated, in an automatic way, as part of the network protocol. It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
 
@@ -166,13 +166,13 @@ The use of the Convex Coin as part of the protocol does not in any way prevent o
 
 We require an effective way of distributing Convex Coins so that the native currency can be used throughout the ecosystem. Rewarding contributors is a fair and pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
 
-Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used for the benefit of the ecosystem). We endeavour to ensure that grants of coins are fair and proportionate to the value of contributions.
+Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used for the benefit of the ecosystem). We endeavour to ensure that grants of coins are fair and proportional to the value of contributions.
 
 Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
 
 ## Network Governance
 
-**Convex should be governed in the long term interests of all users as a public utility network.** 
+**Convex should be governed in the long term interests of users as a public utility network.** 
 
 Good governance of the network is essential for several reasons: the network and protocol must be maintained and upgraded, and the interests of all ecosystem participants must be fairly protected.
 
