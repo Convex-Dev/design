@@ -2,7 +2,9 @@
 
 We are building a fair, inclusive, efficient, diverse and sustainable economic system based on decentralised technology for the 21st century and beyond.
 
-Convex is a public network for real-time value exchange, designed as a substrate for decentralised economic transactions and smart contracts. As such, it provides the foundation for the type of decentralised economics we want to see in the world.
+The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Monopolistic organisations hold undue power, profiting from centralised control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary costs. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+
+Convex is a public network for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of decentralised economics we want to see in the world.
 
 This manifesto outlines our beliefs and core principles.
 
@@ -18,11 +20,11 @@ We define value broadly: it may be represented through currency, information, ow
 
 **Participants must be empowered to act as self-sovereign economic agents: they must be allowed to transact freely with others without prior restraint by third parties**
 
-This principle is critical so that participants are able to act freely in the economy without being excluded.
+We believe that being able to participate in the economy is a fundamental right. This principle is critical so that people are able to act freely in the economy without being excluded.
 
-While we require the right of participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
+While we ensure the possibility for participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
 
-It is important to note that self-sovereignty does not negate the requirement for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
+It is important to note that self-sovereignty does not negate the obligation for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
 
 ## Sustainability
 
