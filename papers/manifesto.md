@@ -6,7 +6,7 @@ Convex is a public network for real-time value exchange, designed as a substrate
 
 This manifesto outlines our beliefs and core principles.
 
-## P2P Value exchange
+## Decentralised Value exchange
 
 **The primary purpose of Convex is to facilitate value exchange: interactions where economic participants come to an agreement where they gain something of value from each other.**
 
@@ -24,15 +24,19 @@ While we require the right of participants to act in a self-sovereign manner, th
 
 It is important to note that self-sovereignty does not negate the requirement for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
 
-## Digital Asset Innovation
+## Sustainability
 
-**Participants must be empowered to create and utilise digital assets.**
+**Convex will provide the most efficient and sustainable system for value exchange available to humanity.** 
 
-In most cases, value exchange will relate to one or more forms of digital asset. These assets may be entirely virtual, or represent ownership of some asset in the real world.
+The system of value exchange must be ecologically responsible, supporting economic activity without unnecessary waste or environmental costs. It is unacceptable that many of our current systems of value exchange produce massive waste, with the costs primarily borne by innocent third parties and future generations.
 
-Given the infinite variety of possible assets, it is essential to allow users to innovate and create their own assets that are usable in value exchange. This may involve defining rules and governance mechanisms (both on-chain and off-chain).
+We note that centralised systems are not a good solution: large organisations and the complex services that support them represent a very high ecological footprint. Perhaps 5-10% of the entire global economy is dedicated to financial services and transaction costs related to value exchange. We must do better.
 
-The creation and usage of digital assets may be regulated in some jurisdictions. This is an emerging area of law with considerable uncertainty. The Convex network is neutral to such regulations: it is as always the responsibility of participants to comply with relevant laws and regulation in their own jurisdiction.
+We will never use technology or services that are ecologically unjustifiable. Among other things, this rules out Proof of Work (PoW) as an acceptable consensus mechanism.  
+
+Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
+
+Because Convex is an open, decentralised system, it is not possible for us to directly ensure that value exchange conducted on top of Convex is fully sustainable. However we hope for a world where all economic activity is conducted on a sustainable basis, and Convex will make important contributions towards that goal.
 
 ## Fair Access
 
@@ -42,7 +46,7 @@ For too long, economic participation to many parts of the economy has been sever
 
 The problem is exacerbated when we look globally: many people throughout the world have no significant access to financial technology and capabilities.
 
-Access to Convex should therefore be possible for everyone on a self-sovereign, first class basis without being required to use privileged gatekeepers or pay middlemen. 
+Access to Convex should therefore be possible for everyone on a self-sovereign, first class basis without being required to use privileged gatekeepers or pay middlemen. This requires that the Convex network is open and censorship resistant.
 
 ## Real-time Transactions
 
@@ -72,15 +76,39 @@ A system of memory accounting ensures a cost is applied for those wishing to use
 
 This capability is critical to allow value exchange to be specified and executed automatically, so that parties to the exchange can be certain that the transaction will complete successfully and be settled as a single atomic transaction (or alternatively, if something goes wrong, the whole transaction will be rolled back and they will at least not lose anything of value). 
 
-Furthermore, programmability allows for innovation in terms of new types of digital assets as well as decentralised autonomous actors (e.g. DAOs).
+Furthermore, programmability allows for innovation in terms of new types of digital assets as well as decentralised autonomous economic actors (e.g. DAOs).
 
 Because it is impossible to anticipate the full scope of potential future innovation in advance, Convex provides for general purpose, Turing-complete programming languages on the Convex Virtual Machine (CVM).
+
+## Negligible Costs
+
+**Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However they should fairly compensate providers of infrastructure and services.**
+
+High transaction costs are a curse. They represent friction that prevents useful value exchange from taking place, a deadweight loss to the whole economy. They exclude those with less financial resources, as the costs may become prohibitive for smaller transactions. For technology products, they present a major barrier to adoption and regular usage.
+
+At the same time, it would be impractical and unfair to make transaction costs exactly zero: someone must provide real resources to operate and secure the network. Operators should be fairly compensated for the services they provide, and it is right that the users incurring these costs should pay for them.
+
+We solve this dilemma this by making Convex scalable and efficient: being able to support a large number of transactions with low underlying infrastructure requirements results in low costs per transaction. We furthermore design the protocol so that this low cost is passed on to users.
+
+Convex transaction costs include both immediate processing costs (network and CPU) and long term storage costs. Both are accounted for automatically in the CVM, via juice accounting and memory accounting respectively.
+
+Read-only access to the network ("queries") is free at the protocol level, and should also generally be be 100% free for users (subject only to peer operators being willing to service requests).
+
+## Digital Asset Innovation
+
+**Participants must be empowered to create and utilise digital assets.**
+
+In many cases, value exchange will relate to one or more forms of digital asset. These assets may be entirely virtual, or represent ownership of some asset in the real world. We believe everyone should have the freedom to create and use digital assets.
+
+Given the infinite variety of possible assets, it is essential to allow users to innovate and create new kinds of assets without limitation. This may involve defining rules and governance mechanisms (both on-chain and off-chain). Convex technology will allow the development of new digital asset classes on a decentralised basis.
+
+The creation and usage of digital assets may be regulated in some jurisdictions. This is an emerging area of law with considerable uncertainty. The Convex network is neutral to such regulations: it is as always the responsibility of participants to comply with relevant laws and regulation in their own jurisdiction.
 
 ## Open Architecture
 
 **Convex must operate as an open network in the spirit of the original Internet.**
 
-Indeed, Convex effectively adds a new capability to the Internet: a secure, persistent global state machine that can efficiently execute transactions and enforce smart contracts.
+Convex effectively adds a new capability to the Internet: a secure, persistent global state machine that can efficiently execute transactions and enforce smart contracts.
 
 As a protocol and network for value exchange, Convex is agnostic to the types of applications which are built on top of this base layer. Like the Internet, we support innovation and and a wide variety of use cases but do not limit or prescribe the possibilities in any way.
 
@@ -89,36 +117,6 @@ According to the "end-to-end" principle, we expect most significant application 
 We envision that some user facing applications will be pure dApps (i.e. clients which interact purely with decentralised networks) but that many will likely be hybrid dApps (some usage of decentralised networks but coupled with traditional centralised servers). Convex supports both configurations equally well.
 
 Furthermore, the open architecture supports "Layer 2" extensions to the network, allowing for even greater flexibility in building decentralised systems (for example, scaling transaction volumes outside the main network). We note that Layer 2 solutions have some drawbacks (most notably, lacking atomic transactions within the global state), but they will always be available as options via the open architecture for those that choose them. 
-
-## Negligible Costs
-
-**Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However they should fairly compensate providers of infrastructure and services.**
-
-High transaction costs are a curse. They represent friction that prevents useful value exchange from taking place, a deadweight loss to the whole economy. They exclude those with less financial resources, as the costs may become prohibitive for smaller transactions. For technology products, they present a major barrier to adoption and regular usage.
-
-At the same time, it would be unfair to make transaction costs exactly zero: someone must provide real resources to operate and secure the network. Operators should be fairly compensated for the services they provide, and it is right that the users causing these costs to be incurred should pay for them.
-
-We solve this dilemma this by making Convex scalable and efficient, able to support a large number of transactions while incurring low underlying infrastructure costs per transaction. We furthermore design the protocol so that this low cost is passed on to users.
-
-Convex transaction costs include both immediate processing costs (network and CPU) and long term storage costs. Both are accounted for automatically in the CVM, via juice accounting and memory accounting respectively.
-
-Read only interactions with the network ("queries") are free at the protocol level, and should also generally be be 100% free for users (subject only to peer operators being willing to service requests).
-
-
-## Sustainability
-
-**Convex will provide the most efficient and sustainable system for value exchange available to humanity.** 
-
-The system of value exchange must be ecologically responsible, supporting economic activity without unnecessary waste or environmental costs. It is unacceptable that many of our current systems of value exchange produce massive waste, with the costs primarily borne by innocent third parties and future generations.
-
-We note that centralised systems are not a good solution: large organisations and the complex services that support them represent a very high ecological footprint. Perhaps 5-10% of the entire global economy is dedicated to financial services and transaction costs related to value exchange. We must do better.
-
-We will never use technology or services that are ecologically unjustifiable. Among other things, this rules out Proof of Work (PoW) as an acceptable consensus mechanism.  
-
-Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
-
-Because Convex is an open, decentralised system, it is not possible for us to directly ensure that value exchange conducted on top of Convex is fully sustainable. However we hope for a world where all economic activity is conducted on a sustainable basis, and Convex will make important contributions towards that goal.
-
 
 ## Open Source
 
@@ -150,7 +148,7 @@ As long as protocol rules are followed, Peer Operators are free to customise the
 
 ## The Convex Coin
 
-**Users must have access to a native currency for the network.**
+**Users must have access to the native currency for the network, usable as a form of money.**
 
 A native currency is required as a utility token so that that those who provide resources to the network can be fairly compensated, in an automatic way, as part of the network protocol. It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
 
@@ -160,17 +158,19 @@ A protocol defined native currency is also important as a means to regulate usag
 
 The use of the Convex Coin as part of the protocol does not in any way prevent other currencies from being established by users of the Convex network. Indeed, a key capability of Convex is the ability it gives for all users to create their own currencies, tokens and other digital assets.
 
-## Fair Coin Distribution
+## Community Recognition
 
 **Convex Coins will be issued over time to people or organisations that contribute to developing Convex and the broader ecosystem.**
 
-We require an effective way of distributing Convex Coins so that the native currency can be used throughout the ecosystem. Rewarding contributors is a fair and pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
+As a decentralised ecosystem, Convex depends on its community and ecosystem for building technology and creating value for society through its many applications.
+
+We furthermore require an effective way of distributing Convex Coins so that the native currency can be used throughout the ecosystem. Rewarding contributors in the community is a fair and pragmatic way of doing so: without their combined contributions we cannot hope to deliver on this manifesto.
 
 Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used for the benefit of the ecosystem). We endeavour to ensure that grants of coins are fair and proportional to the value of contributions.
 
 Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
 
-## Network Governance
+## Good Governance
 
 **Convex should be governed in the long term interests of users as a public utility network.** 
 
@@ -182,4 +182,4 @@ One key role of network governance is to prevent forks. As a public utility that
 
 Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom.
 
-In the longer term, we will implement decentralised governance. This will happen once we have sufficient confidence that it is practical to implement, secure against plausible threats and serves the interest of Convex users and society as a whole.
+In the longer term, we will implement decentralised governance. This will happen once we have sufficient confidence that it is practical to implement, secure against plausible threats and fully serves the interest of Convex users and society as a whole.
