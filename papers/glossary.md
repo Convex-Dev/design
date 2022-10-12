@@ -183,12 +183,12 @@ This is a necessary feature of Convex to create the right incentives to utilise 
 
 Data or code is considered to be "on-chain" if is contained within or affects the current State of the CVM.
 
-On-chain data is the *only* information that is visible to the CVM. It can be accessed and used by Actors, e.g. as part of the management of smart contracts and digital assets.
-
-As a general principle, on-chain data should be kept to the *absolute minimum necessary*. This is because:
+On-chain data is the *only* information that is visible to the CVM. It can be accessed and used by Actors, e.g. as part of the management of smart contracts and digital assets. As a general principle, on-chain data should be kept to the *absolute minimum necessary*. This is because:
 
 - It has a real cost (in terms of both coins and memory)
 - It is effectively public information so should exclude any confidential or private information
+
+Note that while Convex is not technically a blockchain in the literal sense of a hash-linked chain of blocks, we still use "on-chain" informally to refer to data or code secured by the equivalent Ordering of blocks in Convex.
 
 ## Ordering
 
