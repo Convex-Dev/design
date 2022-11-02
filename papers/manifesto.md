@@ -8,17 +8,17 @@ Convex is a public decentralised network for real-time value exchange, designed 
 
 This manifesto outlines our beliefs and core principles.
 
-## Decentralised Value exchange
+## Decentralised Economic Systems
 
-**The primary purpose of Convex is to facilitate value exchange: interactions where economic participants come to an agreement where they gain something of value from each other.**
+**The primary purpose of Convex is to facilitate economic systems: interactions where participants come to agreements where they gain something of value from each other.**
 
-Done properly, value exchange is a "win-win" where participants are each better off than they were before the exchange. Generally, value exchange is a net good that should be encouraged. 
+Done properly, economic systems enabling value exchange is a "win-win" where participants are each better off than they were before the exchange. As such, value exchange is a net good that should be encouraged. 
 
 We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a society etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
 
 ## Self Sovereignty
 
-**Participants must be empowered to act as self-sovereign economic agents: they must be allowed to transact freely with others without prior restraint by third parties**
+**Participants must be empowered to act as self-sovereign agents: they must be allowed to transact freely with others without prior restraint by third parties**
 
 We believe that being able to participate in the economy is a fundamental right. This principle is critical so that people are able to act freely in the economy without being excluded.
 
@@ -154,7 +154,7 @@ As long as protocol rules are followed, Peer Operators are free to customise the
 
 A native currency is required as a utility token so that that those who provide resources to the network can be fairly compensated, in an automatic way, as part of the network protocol. It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
 
-The Convex Coin is the native currency of the Convex network, and has a fixed maximum supply of `1,000,000,000,000,000,000` units. For convenience, we designate the quantity `1,000,000,000` as `1 Convex Gold`, i.e. the maximum supply is one billion Convex Gold, each of which can be subdivided one billion times.
+The Convex Coin is the native currency of the Convex network, and has a fixed maximum supply of `1,000,000,000,000,000,000` basic units. For convenience, we designate the quantity `1,000,000,000` as `1 Convex Gold`, i.e. the maximum supply is one billion Convex Gold, each of which can be subdivided one billion times.
 
 A protocol defined native currency is also important as a means to regulate usage of the network. If transactions were free in a public permissionless network, nothing would prevent a malicious actor from unfairly flooding the network with malicious transactions and preventing genuine users from using it.
 
