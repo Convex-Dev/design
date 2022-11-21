@@ -6,7 +6,7 @@ Decentralised economic systems depend upon peer-to-peer value exchange involving
 
 Value exchange within such systems is protected at the protocol level by cryptographic keys that can be issued and managed on a **self-sovereign basis**. With these capabilities in place, efficient and secure transactions between any participants become possible without any dependency on centralised authorities or intermediaries.
 
-However, existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to various security issues and high transaction costs. Early implementations based on Blockchains successfully demonstrated the possibilities of decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve. As a result, blockchain technology has **not yet been widely adopted** in the economy as a whole.
+However, existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to various security issues and high transaction costs. Early implementations based on blockchains successfully demonstrated the possibilities of decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve. As a result, blockchain technology has **not yet been widely adopted** in the economy as a whole.
 
 Convex (CONVergent EXecution) is a decentralised network for the Internet of Value that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a conflict-free replicated data type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
 
@@ -43,7 +43,7 @@ We envision a system that enables value exchange while solving the problems of t
 
 The seven key properties that are essential to this vision are that it must be:
 
-* **Global** - a single, global network for everybody, without artificial boundaries. Potential is maximised when everyone can transact with everyone else.
+* **Global** - a single, global network for everybody, without artificial boundaries. Potential is maximised when everyone can transact with everyone else with a shared global state.
 * **Open** - a decentralised, technology independent system where anyone can participate without asking for permission. No barriers to entry.
 * **Automated** - able to support atomic, end-to-end transactions that are reliably executed using trusted and reliable smart contracts.
 * **Secure** - protecting against all types of security threats so that users can be confident of the safety of their digital assets and transactions.
@@ -142,7 +142,7 @@ We summarise these areas below:
 
 Convex, like other decentralised systems, depends upon a consensus algorithm to ensure that everyone agrees on a single version of the truth - this is a precondition for any decentralised economic system that needs to enforce ownership of digital assets.
 
-Convex allows **Blocks** consisting of multiple transactions to be submitted to the network. In contrast to traditinoal blockchains, the blocks are not linked to previous blocks - there is no "chain" as such. Relaxing this requirement enables Convex to handle new block submissions concurrently, significantly improving performance.
+Convex allows **Blocks** consisting of multiple transactions to be submitted to the network. In contrast to traditional blockchains, the blocks are not linked to previous blocks - there is no "chain" as such. Relaxing this requirement enables Convex to handle new block submissions concurrently, significantly improving performance.
 
 The role of the consensus algorithm is to create an **Ordering** of blocks. A stable order solves the famous "double spend" problem by ensuring that only the first transaction is able to spend any given funds or assets. Any later transaction that attempts to spend the same funds will fail.
 
