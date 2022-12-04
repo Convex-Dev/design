@@ -1132,7 +1132,7 @@ Convex uses cryptographic primitives for the following functions:
   * For every Belief shared by a Peer on the gossip network
 * Cryptographic Hashes (SHA3-256)
   * For every Cell which forms part of a Decentralised Data Value, a hash of its byte encoding is computed for storage, identity, indexing and verification purposes. This is effectively equal to the VID.
-  * For every key value used in a map data structure, its hash is computed (if necessary)
+  * For every key used in a hash map data structure, its hash is computed (if necessary)
 * Standard approaches used to store and protect keys in common key file formats (e.g. .pem, .pfx)
 
 As an engineering principle, Convex only uses trusted implementations of cryptographic algorithms in well tested libraries (currently Bouncy Castle, and the cryptographic routines available as standard in the JVM). There is no need to "roll our own" with respect to fundamental crypto algorithms.
