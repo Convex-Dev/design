@@ -173,7 +173,7 @@ Convex implemented a novel storage scheme, specifically designed to support the 
 * **Smart References** - references to data that can be lazily loaded and verified (via CAS), allowing just a small, required subset of data to be accessed on demand.
 * **Orthogonal Persistence** - DDVs used in Convex (such as the CVM state) are stored in a virtual database which may be much larger than main memory and is completely transparent to the user. This opens up opportunities for future scalability and sophisticated Actors capable of working with large databases.
 * **Novelty Detection** - The design of the storage system enables Convex to detect *novel* information when it is written to storage. This is important to reduce bandwidth requirements: only novel information will typically need to be broadcast to the Peer network.
-* **Proofed Persistence** - Certain proofs relating the the validation of data are persisted along with the data itself. This is an important optimisation: Entire large data structures can be verified in O(1) time by checking the cached proof.
+* **Proofed Persistence** - Certain proofs relating to the validation of data are persisted along with the data itself. This is an important optimisation: Entire large data structures can be verified in O(1) time by checking the cached proof.
 
 An important feature *excluded* from the storage system is that of "update". Once written, data values are immutable and cannot be changed. This limitation is appropriate given that keys are cryptographic hashes of value encodings: finding a different data value that maps to the same key would require breaking SHA3-256. However, this exclusion is also an advantage: it reduces the need for more complex database features such as index updates 
 
