@@ -25,4 +25,8 @@ Rewards are divided as follows:
 
 ## Slashing
 
-TODO
+TODO: verify slashing conditions.
+
+Question: is delegated stake subject to slashing or not?
+
+## Adding and removing Stake
