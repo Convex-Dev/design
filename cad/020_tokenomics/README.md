@@ -1,12 +1,21 @@
 #Tokenomics
 
+## IMPORTANT NOTE
+
+This repository discusses hypothetical tokenomic specification and design decisions relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, 
+
+The information contained in this repository is provided on an "as is" basis for informational and discussion purposes only, with no guarantees of completeness, accuracy, usefulness or timeliness.
+
+This does not in any way constitute financial advice. Participants in the ecosystem must take their own professional advice regarding any legal or financial issues.  
+
 ## Overview
 
 Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for the
 
+
 ## Design Objectives
 
-The Tokenomic model has been designed with the following objectives
+The tokenomic model has been designed with the following objectives:
 
 ### Utility Token
 
@@ -24,17 +33,38 @@ We apply a capped maximum supply so that the value of the Convex Coin is not sub
 
 We wish to provide a degree of assurance to coin holders that their holdings will not be diluted by large issuance of coins at a low price. 
 
+### Equitable rewards for contribution
+
+We must ensure that coins are distributed fairly, on the basis of making contributions to the Convex ecosystem. While there are many ways to contribute, we consider three categories of participants essential to reward fairly:
+
+- **Contributors** : Those who help build the ecosystem, whether through contributions to Convex itself of building value in the broader ecosystem.
+- **Coin Purchasers** : Those who help fund the development of Convex, by purchasing newly issued Convex Coins
+- **Peer Operators**: Those who provide the infrastructure to operate the network on a decentralised basis
+
 ### DoS prevention
 
 It is necessary to protect the network against the risk of DoS attacks enabled by flooding the network with unnecessary transactions, hence impeding the ability of regular users to transact normally and imposing unfair costs on peer operators.
 
 ### Sustainability
 
-In the long term, the tokenomics should converge towards a stable steady state equilibrium, where the pricing of transactions is fair and balances the cost of providing services and infrastructire for the netwrk
+In the long term, the tokenomics should converge towards a stable steady state equilibrium, where the pricing of transactions is fair and balances the cost of providing services and infrastructure for the network
 
 
 
 ## Solution Specification
+
+### Overview
+
+The following overall tokenomic flows are possible:
+
+- **Genesis** : The complete coin supply is generated and placed into governance accounts which are initially considered "unissued"
+- **Issuance** : Coins are issued to either **Contributors** or **Coin Purchasers**
+- **Transfers** : Holders of coins may freely transfer coins between accounts. These accounts may include autonomous actor accounts as well as external users.
+- **Memory Accounting** : Coins may be exchanged for memory on the Global State. The memory accounting pool is considered a special governance account. See the Memory Accounting CAD for more details.
+- **Transaction Fees** : Coins are taken from users who commit transactions to the network, and held in a peer reward pool for subsequent distribution to Peers. See the Transactions and Juice Accounting CAD for more details.
+- **Peer Rewards** : **Peer Operators** may claim a share of the peer reward pool as they participate in running the network. See the Peer Staking CAD for more details. 
+ 
+
 
 ### Coin Supply
 
@@ -46,12 +76,47 @@ The Network must treat Convex Coins and coppers identically, i.e. the implementa
 
 Note: The maximum supply is chosen so that coin balances can be comfortably expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
 
-### Top Level Coin Allocation
+### Genesis
 
-The Network MUST
+#### Top Level Coin Allocation
+
+The Network MUST divide the total initial supply of Convex Coins into two quantities:
+
+- 75% for Coin Purchasers via the Release Curve
+- 25% for the Convex Foundation's reserve
+
+### Release Curve
+
+Coin purchases MUST be priced in fiat currency or equivalent, consistent with the Release Curve defined in this section.
+
+The price of a Coin on the release curve is defined as `$100 * x / (1-x)` where `x` is the proportion of coins released out of the total allocation for coin purchasers, and `$` represents United States dollars or equivalent currency.
+
+Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn` 
+
+The Release Curve formula MAY be adjusted in the event of significant economic events affecting the relative value of fiat currencies used (e.g. sustained high rates of inflation). The Foundation MUST consult with the ecosystem and provide a robust rationale for any such changes.
+
+To account for transaction costs, effective financial management or purchaser convenience, the Foundation MAY group the release of some coins into rounds, provided that such round MUST be broadly consistent with the overall Release Curve.  
 
 
+### Coin Purchases
 
+The 75% allocation for Coin Purchasers MUST be distributed on the basis of purchases of coins in a manner consistent with the Release Curve.
+
+The distribution MUST be administered by the Convex Foundation, or an entity acting on its behalf in accordance with relevant local regulations.
+
+Coins purchases MUST be delivered to purchasers only after the release of the Main Network.
+
+Coin purchasers MUST meet all relevant regulatory, legal and other requirements that may be defined to ensure that they are permitted to purchase Convex coins in their respective jurisdictions.
+
+The Convex Foundation SHOULD offer coins on an equal, non-discriminatory basis to any Coin Purchaser that meets the necessary criteria.
+
+The Convex Foundation MAY place restrictions on the rate that coins are distributed to early purchasers, giving consideration to the potential impact of large numbers of coins being issued at the same time.
+
+In the long term, distribution of coins from coin purchasers MAY be operated on a fully decentralised basis, if technology and decentralised governance capabilities prove sufficiently robust to enable such a system.
+
+The funds raised from coin purchases MUST be used in accordance with the objectives of the Foundation. For example, these may be used to fund ongoing development of the network, invest in key ecosystem initiatives, and as an incentive to reward those who contribute to the Convex ecosystem.
+
+The funds raised SHOULD be managed as a long term fund by the Foundation to ensure the development of the network can be funded on a sustainable ongoing basis.
 
 
 ## Other considerations
@@ -63,3 +128,6 @@ Testnets (i.e. any Convex based network other than the Main Network) MAY alter o
 Test networks MAY implement a system of distributing coins for testing purposes, e.g. a faucet which automatically issues testnet coins to users.
 
 Participants in the ecosystem SHOULD NOT conduct any economically significant activity on test networks, with the understanding that they have no assurance of the tokenomic model or goverance over such networks, and may face significant security or legal risks if they do so.
+
+### Disaster Recovery
+
