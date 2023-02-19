@@ -125,9 +125,10 @@ The funds raised SHOULD be managed as a long term fund by the Foundation to ensu
 
 Testnets (i.e. any Convex based network other than the Main Network) MAY alter or ignore any aspect of the tokenomics for testing, development or experimental purposes. Indeed, this is encouraged for the purposes of research and learning.
 
-Test networks MAY implement a system of distributing coins for testing purposes, e.g. a faucet which automatically issues testnet coins to users.
+Test networks MAY implement a system of distributing coins for testing purposes, e.g. a "faucet" which automatically issues testnet coins to users.
 
-Participants in the ecosystem SHOULD NOT conduct any economically significant activity on test networks, with the understanding that they have no assurance of the tokenomic model or goverance over such networks, and may face significant security or legal risks if they do so.
+Participants in the ecosystem SHOULD NOT conduct any economically significant activity on test networks, with the understanding that they have no assurance of the tokenomic model or governance over such networks, and may face significant security or legal risks if they do so.
 
 ### Disaster Recovery
 
+In the event of a high severity event that substantially affects overall tokenomics, the Foundation MAY take remedial action, up to and including requiring a mandatory network update to fix the issue. Such action will only be taken as a last resort, and shall be done in a manner that minimises the impact on legitimate coin holders.
