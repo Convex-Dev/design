@@ -33,6 +33,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD17](cad/017_peerops)      | Peer Operations                  | Pending    | mikera
 | [CAD18](cad/018_scheduler)    | Scheduler                        | Pending    | mikera
 | [CAD19](cad/019_assets)       | Asset Model                      | Draft      | mikera
+| [CAD20](cad/020_tokenomics)   | Tokenomics                       | Draft      | mikera
 
 ## Convex Project Portfolio
 
