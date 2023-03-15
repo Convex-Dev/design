@@ -16,13 +16,13 @@ Importantly, CPoS is a "leaderless" approach that allows multiple Peers to submi
 
 Convex augments the CPoS algorithm with an execution engine and storage system - the **Convex Virtual Machine (CVM)**. Building on the lambda calculus, Convex provides immutable persistent data structures and content addressable storage. 
 
-Combined with the consensus algorithm, the CVM provides a fully decentralised, global computer capable of executing arbitrary smart contracts with decentralised ownership and security.
+Combined with the consensus algorithm, the CVM provides a fully decentralised, global computer capable of executing arbitrary smart contracts with decentralised ownership and security. 
 
 ## Context
 
 ### Towards a Digital Economy
 
-Towards the end of the 20th Century, the foundational ideas were created for the Digital Economy. The start of the Information Age saw a wealth of innovation, as significant sectors of economic activity moved to the Internet:
+Towards the end of the 20th Century, the foundational ideas were created for the digital economy. The start of the information age saw a wealth of innovation, as significant sectors of economic activity moved to the Internet:
 
 * Online shops and marketplaces were developed, some of which became giant businesses (Amazon)
 * Efficient access to information (Google)
