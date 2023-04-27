@@ -80,6 +80,16 @@ Giving an initial memory price of ~1 Convex Gold / MB
 
 TODO: Revise this based on updated estimates
 
+### Pool Growth
+
+The memory trading Pool is automated to grow at a fixed rate (currently 1mb per day).
+
+This is for the following reasons:
+
+- Creates additional memory supply over time, reflecting improved storage and peer capabilities
+- Ensures there is no hard memory supply limit that might otherwise prevent futire growth
+- Reduces the incentive for memory hoarding, since it will tend to penalise holders of excess memory allowances
+
 ## Incentives
 
 ### Incentive to use memory carefully
