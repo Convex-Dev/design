@@ -38,4 +38,4 @@ Peers MUST maintain a copy of the current consensus State.
 
 Peers MAY keep the State in durable storage, and retain only partial elements of the State in working memory. This behaviour may be required if the Peer is memory-constrained and the State is large.
 
-Peers SHOULD retain past instances of the State. This may be necessary for analytical, query or search purposes.
+Peers SHOULD retain past instances of the State. This may be valuable for analytical, query or search purposes.
