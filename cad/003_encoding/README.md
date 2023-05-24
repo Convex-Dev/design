@@ -137,13 +137,25 @@ The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` re
 
 Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
 
-### `0x09` Long
+### `0x10` - `0x18` Long
 
 ```Encoding
-0x09 <VLC Long>
+0x1n <n bytes of numeric data>
 ```
 
-A Long Value is encoded by the Tag byte followed by a VLC Encoding of the 64-bit value.
+A Long Value is encoded by the Tag byte followed by `n` bytes representing the signed 2's complement  numeric value of the Long. The Long must be represented in the minimum possible number of bytes (can be 0 additional bytes for the specific value `0`).
+
+### `0x19` Integer (BigInt)
+
+```Encoding
+0x19 <VLC Length of Integer = n> <n bytes of data>
+```
+
+An Integer is represented by the Tag byte followed by the VLC encoded length of the Integer in bytes. 
+
+The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long).
+
+With the eception of the Tag byte, The encoding of an Integer is defined to be exactly equal to a Blob with `n` bytes.
 
 ### `0x0c` Character
 
@@ -184,32 +196,23 @@ An Address Value is encoded by the Tag byte followed by a VLC Encoding of the 64
 
 Since Addresses are allocated sequentually from zero (and Accounts can be re-used), this usually results in a short Encoding.
 
-### `0x22` Signature
-
-```Encoding
-0x21 <64 bytes Ed25519 signature>
-```
-
-A Signature Value is encoded by the Tag byte followed by the 64 bytes Ed25519 Signature
-
-
 ### `0x30` String
 
 ```Encoding
-If String is 1024 Characters or less:
+If String is 4096 UTF-8 bytes or less:
 
-0x30 <VLC Length = n> <2*n bytes UTF-16 Characters>
+0x30 <VLC Length = n> <n bytes UTF-8 data>
 
-If String is more than 1024 Characters:
+If String is more than 4096 Bytes:
 
 0x30 <VLC Length = n> <Child String Value>(repeated 2-16 times)
 ```
 
-Every String Encoding starts with the Tag byte and a VLC-encoded Long length.
+Every String Encoding starts with the Tag byte and a VLC-encoded length.
 
 Encoding then splits dpeending on the String length `n`.
-- If 1024 characters or less, the UTF16 characters of the String are encoded directly (`n*2` bytes total)
-- If more than 1024 charcters, the String is broken up into a tree of child Strings, where each child except the last is the maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
+- If 4096 characters or less, the UTF-8 bytes of the String are encoded directly (`n` bytes total)
+- If more than 4096 bytes, the String is broken up into a tree of child Strings, where each child except the last is the maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
 
 Because child strings are likely to be non-embedded (because of Encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large String will have a top level Cell Encoding of a few hundred bytes, allowing for a few child Refs and a (perhaps Embedded) final child. 
 
@@ -217,6 +220,8 @@ Importantly, this design allows:
 - Arbitrary length Strings to be encoded, while still keeping each Cell Encoding within a fixed size
 - Structural sharing of tree nodes, giving O(log n) update with path copying
 - Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 1024 characters.
+
+Note with the exception of the Tag byte, String encoding is exactly the same as a Blob
 
 ### `0x31` Blob
 
