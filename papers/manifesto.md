@@ -20,7 +20,7 @@ We define value broadly: it may be represented through currency, information, ow
 
 **Participants must be empowered to act as self-sovereign agents: they must be allowed to transact freely with others without prior restraint by third parties**
 
-We believe that being able to participate in the economy is a fundamental right. This principle is critical so that people are able to act freely in the economy without being excluded.
+We believe that being able to participate in the economy is a fundamental right. This principle is critical so that people can act freely in the economy without being excluded.
 
 While we ensure the possibility for participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
 
