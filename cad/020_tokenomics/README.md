@@ -1,4 +1,4 @@
-#Tokenomics
+# Tokenomics
 
 ## IMPORTANT NOTE
 
