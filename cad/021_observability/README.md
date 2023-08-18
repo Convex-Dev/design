@@ -28,8 +28,46 @@ The observability model is opt-in from the perspective of peer operators. Peer o
 
 ### Overview
 
-### A
+The following topics will be available as observability hooks:
+- Client Transactions
 
+### Client Transactions
+
+Client transactions are transactions that are handled on behalf of a client from a specific peer.
+
+The following events related to client transactions will be available
+ - Request (when the peer accepts a transaction from a client)
+ - Response (when the peer retuens the result to the client)
+
+The primary key for transactions should be regarded as (Peer Key, Transaction ID, Event type)
+
+### Ordering events
+
+Ordering events are any time a peer recieves an updated ordering, directly or indirectly, from another Peer. 
+
+Important fields:
+- `peer` = Peer public key
+- `hash` = Hash of ordering (this can deduplicate identical orderings)
+- `cps` = Consensus points (including ordering length)
+- `ts` = Timestamp (at which Ordering validated by peer)
+
+### Peer status change
+
+Peer status changes are any time a Peer has an update in the global state:
+
+- Peer added
+- Peer removed
+- Peer stake change
+- Peer metadata change
+
+### CVM Log Events
+
+CVM log events are events emitted via the CVM `log` instruction.
+
+As this is an application specific `log` capability, it is likely that observers will want to filter this event stream for events of particular interest. Examples might be:
+- DAO votes
+- Token trades
+- Auction bids
 
 ## Other considerations
 
