@@ -51,6 +51,10 @@ Important fields:
 - `cps` = Consensus points (including ordering length)
 - `ts` = Timestamp (at which Ordering validated by peer)
 
+### Consenus Events
+
+Events related to consenus update
+
 ### Peer status change
 
 Peer status changes are any time a Peer has an update in the global state:
