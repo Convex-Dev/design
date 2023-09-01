@@ -73,6 +73,16 @@ As this is an application specific `log` capability, it is likely that observers
 - Token trades
 - Auction bids
 
+### Performance Stats
+
+Peer performance stats detail live performance metrics from a peer. Fields include:
+
+- Thread-based CPU utilisation (time not blocked)
+- Internal queue sizes (and total capacity)
+- Rates of events per second
+
+Default is to produce one performance record every second during peer operations
+
 ## Observability Consumers
 
 ### Kafka / Strimzi
