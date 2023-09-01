@@ -73,6 +73,25 @@ As this is an application specific `log` capability, it is likely that observers
 - Token trades
 - Auction bids
 
+## Observability Consumers
+
+### Kafka / Strimzi
+
+This Consumer works on the following basis:
+
+- Events are serialised as JSON
+- Events are posted to a Kafka queue via Strimzi (over https:)
+- There is some buffering at the client side
+- Different events are normally routed to different Kafka topics (configurable)
+
+### NOP Consumer
+
+The NOP consumer ignores events, and produces no output.
+
+It has the advantage of near-zero overhead for Peer operators.
+
+The NOP Consumer is the default, unless come other Consumer is specifcied.
+
 ## Other considerations
 
 ### End user access
