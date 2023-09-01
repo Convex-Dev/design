@@ -77,6 +77,8 @@ As this is an application specific `log` capability, it is likely that observers
 
 ### Kafka / Strimzi
 
+The Kafka consumer provides a general purpose observability framework
+
 This Consumer works on the following basis:
 
 - Events are serialised as JSON
