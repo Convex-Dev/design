@@ -83,6 +83,19 @@ Peer performance stats detail live performance metrics from a peer. Fields inclu
 
 Default is to produce one performance record every second during peer operations
 
+### Message Events
+
+Message events are low level peer protocol messages.
+
+Key fields:
+- Event type "SND" or "RCV"
+- Timestamp
+- Remote address / port
+- Message type
+- Length
+
+
+
 ## Observability Consumers
 
 ### Kafka / Strimzi
