@@ -89,6 +89,13 @@ Implementations MUST recognise an Invalid Encoding, and in particular:
 
 Implementations MUST be able to produce the unique Valid Encoding for any Cell.
 
+### Cell life-cycle
+
+Cells may be constructed in 3 ways:
+- Created during local processing
+- Received as external input and decoded (will already have encoding)
+- Loaded from storage (will have encoding, hash, and storage flags)
+
 ## Encoding Format
 
 ### Tag Byte
