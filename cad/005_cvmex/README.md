@@ -166,11 +166,25 @@ Note that in the compiler, `def` takes metadata from its value argument in the c
 
 ### `0x40` - `0x7f` Special
 
-Special Ops perform the computation of a Result based on the current Context, loeading it into the Result Register. Special Ops are high performance ways to make certain information in the Context available to CVM Code.
+Special Ops perform the computation of a Result based on the current Context, loading it into the Result Register. Special Ops are high performance ways to make certain information in the Context available to CVM Code.
 
 #### `0x40 - *juice*`
 
-Gets the current Juice available in the Context. 
+Gets the current Juice count in the Context. 
+
+#### `0x41 - *caller*`
+
+Gets the Caller for the current context, defined as the Address of the Account that made the enclosing `(call ...)` invocation. 
+
+Caller is `nil` for top level execution of a user transaction (i.e. there was no enclosing caller).
+
+Normally, `*caller*` should be used to perform access control checks within an actor or smart contract, since it determines which account made the request.
+
+#### `0x42 - *address*`
+
+The Address of the currently executing Account. `*address*` may vary within a single transaction in the case where execution control is transferred between accounts, e.g. with `call` or `eval-as`.
+
+Normally, `*address*` should be passed as an argument to function that check for access control rights
 
 #### TODO - complete Specials
 
