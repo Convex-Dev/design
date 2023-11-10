@@ -16,7 +16,7 @@ As it is to transfer a set of numbered NFTs:
 
 `(asset/transfer [asset.nfts #{101 102 105}] destination-address)`
 
-Why is this important?
+So... why is this important?
 
 - It reduces the number of APIs that developers must learn: instead of having separate APIs for fungible token, NFTs, game items etc. we offer a single unified API.
 - It makes it possible to write *generic* smart contracts that can work with any type of asset.
