@@ -2,13 +2,13 @@
 
 ## Abstract
 
-Decentralised economic systems depend upon peer-to-peer value exchange involving digital assets and services, facilitated by smart contracts. In the long term, we can foresee an **Internet of Value** where a significant proportion of economic activity is enabled by decentralised networks with very low transaction costs.
+Decentralised economic systems enable peer-to-peer value exchange involving digital assets and services, facilitated by smart contracts. In the long term, we can foresee an **Internet of Value** where a significant proportion of economic activity is enabled by open economic systems with low transaction costs and free from centralised control.
 
 Value exchange within such systems is protected at the protocol level by cryptographic keys that can be issued and managed on a **self-sovereign basis**. With these capabilities in place, efficient and secure transactions between any participants become possible without any dependency on centralised authorities or intermediaries.
 
 However, existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to various security issues and high transaction costs. Early implementations based on blockchains successfully demonstrated the possibilities of decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve. As a result, blockchain technology has **not yet been widely adopted** in the economy as a whole.
 
-Convex (CONVergent EXecution) is a decentralised network for the Internet of Value that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a conflict-free replicated data type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
+Convex (CONVergent EXecution) is an engine for open economic systems that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a conflict-free replicated data type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
 
 The CPoS algorithm solves the "double spend" problem by implementing a continuous *decentralised sort* of transactions that enter the network. Once an ordering of transactions is confirmed up to some position, it is stable and immutable from the perspective of all participants, thus preventing double spend and transaction rollback.
 
