@@ -16,7 +16,7 @@ As it is to transfer a set of numbered NFTs:
 
 `(asset/transfer [asset.nfts #{101 102 105}] destination-address)`
 
-Why is this important?
+So... why is this important?
 
 - It reduces the number of APIs that developers must learn: instead of having separate APIs for fungible token, NFTs, game items etc. we offer a single unified API.
 - It makes it possible to write *generic* smart contracts that can work with any type of asset.
@@ -24,7 +24,7 @@ Why is this important?
 
 We therefore propose the following objectives:
 
-- The Asset Model should be able to express all types of on-chain digital assets (fungible tokens, security tokwns, stablecoins, NFTs, voting rights etc.)
+- The Asset Model should be able to express all types of on-chain digital assets (fungible tokens, security tokens, stablecoins, NFTs, voting rights etc.)
 - There should be a standard API for users that works with all types of assets in a generic way
 - There should be a standard SPI that allows for flexibility in underlying asset implementations - in particular it should be possible to create new kinds of digital assets and new rules / behaviours without changing the user level API
 

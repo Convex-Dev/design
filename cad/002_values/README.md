@@ -6,6 +6,10 @@ Convex depends on a consistent representation of information values that are use
 
 Fundamentally, all computing is dependent on the representation of information values (alongside the specification of programs that work with these values). This is particularly important in a decentralised context, where different systems must share and come to consensus over such values. We therefore need a consistent and meaningful definition of all such values.
 
+We want data types for two primary purposes:
+- Data on the Convex consensus network as part of the CVM
+- Off-chain data in broader decentralised applications (the "Data Lattice")
+
 Functional programming languages such as Clojure, Haskell and Scala have shown the effectiveness of **immutable** values expressed as persistent data structures. This is perhaps best illustrated with a simple example:
 
 ```clojure
