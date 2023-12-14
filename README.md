@@ -35,6 +35,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD19](cad/019_assets)        | Asset Model                      | Draft      | mikera
 | [CAD20](cad/020_tokenomics)    | Tokenomics                       | Draft      | mikera
 | [CAD21](cad/021_observability) | Observability                    | Draft      | mikera
+| [CAD22](cad/022_trustmon)      | Trust Monitors                   | Draft      | mikera
 
 ## Convex Project Portfolio
 
