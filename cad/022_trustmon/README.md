@@ -45,7 +45,7 @@ We wish to allow trust monitors to be widely and cheaply used. As such, they sho
 
 ### Trust Monitor Reference
 
-A trust monitor MUST be referenced as an account address with an optional scope.
+A trust monitor SHOULD be referenced as an account address with an optional scope.
 
 Examples:
 
@@ -57,6 +57,8 @@ Examples:
 The target account SHOULD exist. Attempts to use a trust monitor with a non-existent account are possible but likely to error.
 
 The target account MAY be a user account.
+
+The reference MAY be `nil`, which behaves as a trust monitor that never provides any authorisation.
 
 ### `check-trusted?` callable function
 
