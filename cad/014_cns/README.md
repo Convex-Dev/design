@@ -15,3 +15,27 @@ Similar to DNS on the Internet, there is a need for a naming which system which 
 Nothing in Convex requires the use of CNS. It must be possible to create working systems on the CVM without relying on CNS.
 
 Alternative CNS implementations must be possible, with a different CNS root.
+
+## Specification
+
+### CNS paths
+
+Record in CNS MUST be specified specified by a path. 
+
+Paths can be represented in at least two forms:
+
+- A dot delimited symbol e.g. `convex.asset`
+- A vector or strings e.g. `["convex" "asset"]`
+
+Rationale: Dot delimited symbols are preferred for conciseness and human readability, whereas a vector of strings is more convenient and efficient for internal database representation. 
+
+### CNS Records
+
+A CNS record is a logical entry in CNS.
+
+A CNS record MUST contain the following values:
+- **Address** : The entity referred to be the CNS record, which SHOULD be an address or a scoped reference e.g/ `[#45 :some-key]`
+- **Controller** : The controller that enables access to update the CNS record, which SHOULD be a valid trust monitor
+- **Metadata** : Optional metadata attached to the CNS Record
+
+Any of the three logical values MAY be `nil`
