@@ -1,14 +1,14 @@
 # The Convex Manifesto - DRAFT
 
-We are building fair, inclusive, efficient, diverse and sustainable economic systems based on decentralised technology for the 21st century and beyond.
+We are building open economic systems based on decentralised technology for the 21st century and beyond.
 
-The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Monopolistic organisations hold undue power, exploiting centralised control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary costs. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Monopolistic organisations hold undue power, exploiting centralised control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
 
-Convex is a public decentralised network for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world.
+Convex is a public decentralised system for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
 
 This manifesto outlines our beliefs and core principles.
 
-## Decentralised Economic Systems
+## Open Economic Systems
 
 **The primary purpose of Convex is to facilitate economic systems: interactions where participants come to agreements where they gain something of value from each other.**
 
