@@ -90,7 +90,7 @@ Transparent operation is essential for open economic systems to thrive. Data sho
 
 We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate psudonymously is important to allow individual privacy to be protected, while still providing transparency at the system level.
 
-## Negligible Costs
+## Cost Effectiveness
 
 **Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However, they should fairly compensate providers of infrastructure and services.**
 
@@ -98,7 +98,7 @@ High transaction costs are a curse. They represent friction that prevents useful
 
 At the same time, it would be impractical and unfair to make transaction costs exactly zero: someone must provide real resources to operate and secure the network. Operators should be fairly compensated for the services they provide, and it is right that the users incurring these costs should pay for them.
 
-We solve this dilemma this by making Convex scalable and efficient: being able to support a large number of transactions with low underlying infrastructure requirements results in low costs per transaction. We furthermore design the protocol so that this low cost is passed on to users.
+We solve this dilemma by making Convex scalable and efficient: being able to support a large number of transactions with low underlying infrastructure requirements results in low costs per transaction. We furthermore design the protocol so that this low cost is passed on to users.
 
 Convex transaction costs include both immediate processing costs (network and CPU) and long term storage costs. Both are accounted for automatically in the CVM, via juice accounting and memory accounting respectively.
 
