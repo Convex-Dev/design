@@ -82,6 +82,14 @@ Furthermore, programmability allows for innovation in terms of new types of digi
 
 Because it is impossible to anticipate the full scope of potential future innovation in advance, Convex provides for general purpose, Turing-complete programming languages on the Convex Virtual Machine (CVM).
 
+## Transparency
+
+**The operation of open economic systems should be transparent to all participants**
+
+Transparent operation is essential for open economic systems to thrive. Data should be available to all to enable better decisions making and allow indepent audits to ensure trust and accountability.
+
+We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate psudonymously is important to allow individual privacy to be protected, while still providing transparency at the system level.
+
 ## Negligible Costs
 
 **Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However, they should fairly compensate providers of infrastructure and services.**
@@ -144,7 +152,7 @@ In particular, the Convex network protocol must treat all user transactions equa
 
 **Anyone may operate a Peer on the network, subject only to following protocol rules**
 
-As a decentralised network, anyone should be permitted to operate a Peer on the network and participate in maintaining the secure consensus.
+As a decentralised network, anyone should be permitted to operate a Convex Peer and participate in maintaining the secure consensus of the network.
 
 Provided that protocol rules are followed, Peer Operators are free to customise the software and services they operate as they wish. This might include value added services for users, high end analytics capabilities, performance optimisations etc. 
 
