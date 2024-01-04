@@ -6,8 +6,7 @@ This repository is dedicated to Convex Design and Documentation
 
 - [Convex Manifesto](papers/manifesto.md)
 - [Convex White Paper (Draft)](papers/convex-whitepaper.md)
-- [Ecosystem Projects](ecosystem)
-
+- [Ecosystem Projects](ecosystem/index.md)
 ## Current CADs
 
 Convex Architecture Documents (CADs) are defined for standards relating to the Convex network and ecosystem, in a manner inspired by Internet RFCs.
