@@ -10,7 +10,7 @@ For projects and apps intended for end users
 | ------------------           | ------------------------------------------------------------ | ----------------  | -----------------
 | Prediction Markets           | AMM based prediction market supporting arbitrary oracles     | Proof of concept  | [Source](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/cvx/lab/prediction-market.cvx)   
 | P2P Payments                 | User owned P2P payment network                               | Pre-launch startup   | [Paisley Website](https://www.paisley.io/)
-| Block Game       | A Minecraft inspired voxel game running on the CVM                         | Demo           | [Github](https://github.com/mikera/blockgame)
+| Block Game       | A Minecraft inspired voxel game running on the CVM                       | Demo           | [Github](https://github.com/mikera/blockgame)
 
 ## Tools and utilities
 
@@ -18,7 +18,8 @@ For projects and tools targeted at developers or power users
 
 | Title                        | Summary                                                      | Status            | Link(s)     
 | ------------------           | ------------------------------------------------------------ | ----------------  | -----------------
-| Decentralised ID             | Self Sovereign ID - verifibly registry (W3C DID Standard)    | Beta              | [Source](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/cvx/convex/did.cvx))   
+| Decentralised ID             | Self Sovereign ID - verifibly registry (W3C DID Standard)    | Working Beta      | [Source](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/cvx/convex/did.cvx))   
+| convex.cljc                  | Comprehensive Clojure-based Convex toolkit                   | Working Beta      | [Source](https://github.com/Convex-Dev/convex.cljc)   
 
 ## Integrations
 
