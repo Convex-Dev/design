@@ -1,14 +1,14 @@
 # The Convex Manifesto - DRAFT
 
-We are building fair, inclusive, efficient, diverse and sustainable economic systems based on decentralised technology for the 21st century and beyond.
+We are building open economic systems based on decentralised technology for the 21st century and beyond.
 
-The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Monopolistic organisations hold undue power, exploiting centralised control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary costs. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monoplistic control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
 
-Convex is a public decentralised network for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world.
+Convex is a public decentralised system for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
 
 This manifesto outlines our beliefs and core principles.
 
-## Decentralised Economic Systems
+## Open Economic Systems
 
 **The primary purpose of Convex is to facilitate economic systems: interactions where participants come to agreements where they gain something of value from each other.**
 
@@ -82,7 +82,15 @@ Furthermore, programmability allows for innovation in terms of new types of digi
 
 Because it is impossible to anticipate the full scope of potential future innovation in advance, Convex provides for general purpose, Turing-complete programming languages on the Convex Virtual Machine (CVM).
 
-## Negligible Costs
+## Transparency
+
+**The operation of open economic systems should be transparent to all participants**
+
+Transparent operation is essential for open economic systems to thrive. Data should be available to all to enable better decisions making and allow indepent audits to ensure trust and accountability.
+
+We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate psudonymously is important to allow individual privacy to be protected, while still providing transparency at the system level.
+
+## Cost Effectiveness
 
 **Transaction costs should be negligible: they should not be a significant factor in user decisions whether or not to transact. However, they should fairly compensate providers of infrastructure and services.**
 
@@ -90,7 +98,7 @@ High transaction costs are a curse. They represent friction that prevents useful
 
 At the same time, it would be impractical and unfair to make transaction costs exactly zero: someone must provide real resources to operate and secure the network. Operators should be fairly compensated for the services they provide, and it is right that the users incurring these costs should pay for them.
 
-We solve this dilemma this by making Convex scalable and efficient: being able to support a large number of transactions with low underlying infrastructure requirements results in low costs per transaction. We furthermore design the protocol so that this low cost is passed on to users.
+We solve this dilemma by making Convex scalable and efficient: being able to support a large number of transactions with low underlying infrastructure requirements results in low costs per transaction. We furthermore design the protocol so that this low cost is passed on to users.
 
 Convex transaction costs include both immediate processing costs (network and CPU) and long term storage costs. Both are accounted for automatically in the CVM, via juice accounting and memory accounting respectively.
 
@@ -144,7 +152,7 @@ In particular, the Convex network protocol must treat all user transactions equa
 
 **Anyone may operate a Peer on the network, subject only to following protocol rules**
 
-As a decentralised network, anyone should be permitted to operate a Peer on the network and participate in maintaining the secure consensus.
+As a decentralised network, anyone should be permitted to operate a Convex Peer and participate in maintaining the secure consensus of the network.
 
 Provided that protocol rules are followed, Peer Operators are free to customise the software and services they operate as they wish. This might include value added services for users, high end analytics capabilities, performance optimisations etc. 
 
