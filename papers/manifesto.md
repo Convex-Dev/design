@@ -2,7 +2,7 @@
 
 We are building open economic systems based on decentralised technology for the 21st century and beyond.
 
-The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Monopolistic organisations hold undue power, exploiting centralised control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monoplistic control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
 
 Convex is a public decentralised system for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
 
