@@ -30,7 +30,7 @@ We therefore propose the following objectives:
 
 ### Efficiency
 
-The Asset Model should allow efficient and simple implementations to minimise transaction costs and memory usage. If digital assets are to be widely accepted as a part of economic value exchange, it is essential that the are efficient and offer low transaction costs compared to alternatives.
+The Asset Model should allow efficient and simple implementations to minimise transaction costs and memory usage. If digital assets are to be widely accepted as a part of economic value exchange, it is essential that they are efficient and offer low transaction costs compared to alternatives.
 
 
 
