@@ -16,6 +16,10 @@ For projects and apps intended for end users
 
 For projects and tools targeted at developers or power users
 
+| Title                        | Summary                                                      | Status            | Link(s)     
+| ------------------           | ------------------------------------------------------------ | ----------------  | -----------------
+| Decentralised ID             | Self Sovereign ID - verifibly registry (W3C DID Standard)    | Beta              | [Source](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/cvx/convex/did.cvx))   
+
 ## Integrations
 
 For projects or initiatives that integrate Convex with other solutions (e.g. SaaS services)
