@@ -6,6 +6,8 @@ This document details general design and engineering principles deployed in the 
 
 Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
 
+We SHOULD use existing, proven algorithms and cryptography wherever practically possible: there is no need to reinvent the wheel in crypto.
+
 ## Favour Simplicity
 
 Especially in API design, there may be a tendency to want to add new features for user convenience, e.g. additional optional arguments for core functions.
@@ -37,7 +39,7 @@ This principle also applies to error conditions. We can permissibly turn a failu
 
 ## Values are Immutable
 
-We adopt immutability as a standard principle for all Values in Convex. Immutability is important for several reasons:
+We adopt immutability as a standard principle for all values in Convex. Immutability is important for several reasons:
 
 - Enables hash codes to be used for value identity (value IDs) - essential for content-addressable storage
 - Enables structural sharing in persistent data structures
@@ -62,7 +64,9 @@ Where CVM input may be effectively unbounded (e.g. the size of data structures s
 
 ## Avoid Scope Creep
 
-Convex is designed to faclitate on-chain transactions and smart contracts between multiple participants, providing foundational capabilities for the Internet of Value. Many types of software are a poor fit for a publicly accessible on-chain network such as Convex, e.g. text processing or data analytics. We SHOULD NOT add features n complexity to support use cases that do not belong on Convex in the first case.
+Convex is designed to faclitate on-chain transactions and smart contracts between multiple participants, providing foundational capabilities for open economic systems: the Internet of Value. 
+
+Many types of software are a poor fit for a publicly accessible on-chain network such as Convex, e.g. text processing or data analytics. We SHOULD NOT add features and complexity to support use cases that do not belong on Convex in the first case.
 
 ## Apply Judgement
 
