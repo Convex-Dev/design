@@ -6,7 +6,7 @@ In which some relevant ideas an maximising value are noted.
 
 1. Economics is the study of choice
 1. Economic actors make decisions and take decisions based on preferences
-1. Value is, ultimately, a measure of how preferences are satisfied
+1. Value is, ultimately, a measure of how preferences are satisfied - money is the medium to quantify preferences
 1. Value exchange is when two or more agents choose to interact
 1. Both parties can gain from this exchange (fish vs. bread)
 1. A barter system can exist purely on the basis of mutual exchange
@@ -20,21 +20,22 @@ In which some relevant ideas an maximising value are noted.
 1. Some inherent risk in money
 	- Default / credit risk
 	- Is the promise worth anything?
+	- Short-term consequences from changes in money supply
 1. Solves double coincidence of wants if widely accepted
 
 ## On Equity
 
 1. Law of diminishing marginal utility 
-	- A pound in the hand of someone relatively poor does more good than in the hands of a billionaire
+	- A pound in the hand of someone poor does more good than in the hands of a billionaire i.e., catching-up growth 
 	- In line with natural intuition, this suggest a more equal income distribution is better
 1. Hard to compare value across individuals:
 	- Rawlsian approach is maximin (only thing that matters is the utility of the poorest) - but this means that the average can still be just as bad and there is no ethical value in improving the average at all
 	- Maximum expected utility could imply equal income distribution is optimal - but only if the total wealth was fixed, everyone had same weight and utility curves and everyone had the same preferences. Not realistic!
-	- Incentives: If you want to maximise overall wealth, it requires individual to choose to put in effort, and this requires an income gradient assuming effort is otherwise costly
+	- Incentives: If you want to maximise overall wealth, it requires individuals to choose to put in effort, and this requires an income gradient assuming effort is otherwise costly
 	- Free choice means that people will choose trade-offs differently (e.g. income vs leisure vs family). This is OK!
 1. Balanced conclusion: we should redistribute to maximise expected utility, which means a mix of redistribution and incentives
 1. Sources of wealth:
-	- Luck (e.g. born in an advanced economy, good genetics)
+	- Luck (e.g. born in an advanced economy, good genetics, the lottery)
 	- Effort (paid work, study, entrepreneurship)
 	- Theft
 1. Only effort is virtuous and deserves reward
@@ -50,7 +51,7 @@ In which some relevant ideas an maximising value are noted.
 	- Monopolies are theft (structurally extracting value from consumers via high prices, and suppliers with lower prices)
 	- Land ownership is (potentially) theft (Georgist view) - restricting others from the use of common land
 3. Theft might be justified in many cases
-	- e.g. some amount of pollution might be optimal if benefits are high
+	- Example: some amount of pollution might be optimal if benefits are high
 	- However: compensatory value must be paid (e.g. Pigouvian tax)
 	
 ## Transaction Costs
@@ -96,5 +97,6 @@ In which some relevant ideas an maximising value are noted.
 	- Security and protection of rights
 	- Justice
 	- Fair governance
+	- Infrastructure
 
 
