@@ -33,6 +33,12 @@ As far as possible, security should include multiple levels of protection so tha
 
 ## Specification
 
+### Peer Usage
+
+Peers SHOULD obtain a key from a secure key store at startup, and use this key for the duration of live operations where signatures using the peer's private key are required (for example signing their latest CPoS ordering).
+
+Peers SHOULD NOT persist or otherwise export the obtained key in any way to external files or storage. Any unencrypted copies of the private key should be considered as a major security risk.
+
 ### PKS #12
 
 A key store for Convex MAY use the PKS #12 standard for key storage. This standard is well established, is supported by many tools, and provides effective security if used correctly.
