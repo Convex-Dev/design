@@ -15,11 +15,19 @@ This CAD outlines standards and principles for the use of such key stores.
 
 ### Use of existing standards
 
-We do not wish to create new standards for key storage and security, and prefer to use existing, proven methods.
+We avoid creating new standards for key storage and security, and prefer to use existing, proven methods.
+
+Key reasons for this include:
+- Security / reliability of well designed existing standards
+- Compatibility with external tools
+- Minimise risk that important key stores may be unreadable opr inaccessible in the future
+- No point wasting effort reinventing wheels
 
 ### Convenient use
 
-Key security should not be hard for users to do correctly.
+Cryptographic keys need to be easy to use for users, while providing sufficient security. 
+
+In particular, key security should not be hard for users to do correctly. We do not want users to compromise security for "convenience".
 
 ### Sensible defaults
 
@@ -29,7 +37,11 @@ Any user decision that weakens security should come with clear warnings and requ
 
 ### Multiple levels of security
 
-As far as possible, security should include multiple levels of protection so that a mistake or vulnerability in one level does not immediately lead to a major security compromise.
+As far as possible, security should include multiple levels of protection so that a mistake or vulnerability in one level does not immediately lead to a major security compromise. Levels of security anticipated include:
+- Key stores should be private files inaccessible to aunauthorised users
+- Key stores should be encrypted, so that obtaining the file does not provide access to the key
+- Decryption passwords should not be stored anywhere on the machine
+- After decryption, private keys are only kept in memory for immediate use
 
 ## Specification
 
