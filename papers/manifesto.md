@@ -36,7 +36,7 @@ We note that centralised systems are not a good solution: large organisations an
 
 We will never use technology or services that are ecologically unjustifiable. Among other things, this rules out Proof of Work (PoW) as an acceptable consensus mechanism.  
 
-Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
+Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. CPoS also maintains the same (to a lesser degree) computational advantage over PoS and other consensus networks whose designs neglect crucial sustainability considerations. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
 
 Because Convex is an open, decentralised system, it is not possible for us to directly ensure that value exchange conducted on top of Convex is fully sustainable. However, we hope for a world where all economic activity is conducted on a sustainable basis, and Convex will make important contributions towards that goal.
 
