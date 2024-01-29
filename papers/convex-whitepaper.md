@@ -142,9 +142,9 @@ We summarise these areas below:
 
 Convex, like other decentralised systems, depends upon a consensus algorithm to ensure that everyone agrees on a single version of the truth - this is a precondition for any decentralised economic system that needs to enforce ownership of digital assets.
 
-Convex allows **Blocks** consisting of multiple transactions to be submitted to the network. In contrast to traditional blockchains, the blocks are not linked to previous blocks - there is no "chain" as such. Relaxing this requirement enables Convex to handle new block submissions concurrently, significantly improving performance.
+Convex allows transactions to be submitted to the network at any time, grouped into blocks by individual peers. In contrast to traditional blockchains, the blocks are not linked to previous blocks - there is no "chain" as such. Relaxing this requirement enables Convex to handle new block submissions from multiple peers concurrently, significantly improving performance.
 
-The role of the consensus algorithm is to create an **Ordering** of blocks. A stable order solves the famous "double spend" problem by ensuring that only the first transaction is able to spend any given funds or assets. Any later transaction that attempts to spend the same funds will fail.
+The role of the consensus algorithm is to create an **ordering** of blocks. A stable order solves the famous "double spend" problem by ensuring that only the first transaction is able to spend any given funds or assets. Any later transaction that attempts to spend the same funds will fail.
 
 The algorithm operates by implementing a novel variant of a **Conflict-free Replicated Data Type** (CRDT), which can be proven to converge to a stable consensus through a few rounds of random gossip between Peers. This approach is efficient, robust to temporary failures, and provably secure even in the presence of malicious or faulty peers (i.e., it is "Byzantine Fault Tolerant" under reasonable security assumptions).
 
@@ -152,16 +152,16 @@ The Convex consensus algorithm also makes use of **Proof of Stake**, a mechanism
 
 ### Execution Engine
 
-Convex implements a full virtual machine for smart contracts, the **Convex Virtual Machine (CVM)**, designed to facilitate digital economic transactions. Given an initial State and an ordering of Blocks (and therefore transactions) from the consensus algorithm, the CVM can process the transactions and compute a new updated State. The latest state contains information of interest to users of the Convex network, in particular the record of ownership of digital assets.
+Convex implements a full virtual machine for smart contracts, the **Convex Virtual Machine (CVM)**, designed to facilitate digital economic transactions. Given an initial CVM state and an ordering of blocks (and therefore transactions) from the consensus algorithm, the CVM can process the transactions and compute a new updated State. The latest state contains information of interest to users of the Convex network, in particular the record of ownership of digital assets.
 
-The CVM has the capability to execute arbitrary, Turing-complete **smart contracts** which in turn can be used to express the logic of digital assets and decentralised applications.
+The CVM has the capability to execute arbitrary programs. Some programs may be fully autonomous, which we term **actors*. These are typically used to implement Turing-complete **smart contracts** which in turn can be used to express the logic of digital assets and decentralised applications.
 
-Importantly, the CVM operates on a **Global State** - execution of Blocks and Transactions (once these are in consensus) is equivalent to creating a new state through a state transition function.
+Importantly, the CVM operates on a **global state** - execution of transactions (once these are in consensus) is equivalent to creating a new state through a state transition function.
 
 Some particular innovations of interest to facilitate the development of decentralised applications:
 
 * **Decentralised Data Values (DDVs)** - A system of data types and structures enabling efficient and secure replication of data across the Convex network, and supporting the implementation of the CVM. The CVM works with a wide variety of data types enabling construction of powerful applications with optimised performance. 
-* **Convex Lisp** - A powerful language where CVM code is itself expressed as Decentralised Data Values. The compiler itself executes on-chain - giving developers and Actors the power to construct, compile and deploy new actors on-chain without external tools. This enables systems of on-chain MetaActors - actors who can autonomously create and manage other actors.
+* **Convex Lisp** - A powerful language where CVM code is itself expressed as decentralised data. The compiler itself executes on-chain - giving developers and Actors the power to construct, compile and deploy new actors on-chain without external tools. This enables systems of on-chain "meta actors" - actors who can autonomously create and manage other actors.
 * **Scheduled Execution** - The protocol allows for deterministic execution of Actor code at any future point in time. This allows for more advanced, time-based processes to be implemented on chain (without such a feature, smart contracts would need external systems and events to trigger execution at specific times, such as the Ethereum Alarm Clock )
 * **Execution Worlds** - Each account on the network (external user or Actor) is granted a secure, scriptable code execution environment with its own database. This enables highly interactive use of the CVM by advanced users.
 
@@ -177,7 +177,7 @@ Convex implemented a novel storage scheme, specifically designed to support the 
 
 An important feature *excluded* from the storage system is that of "update". Once written, data values are immutable and cannot be changed. This limitation is appropriate given that keys are cryptographic hashes of value encodings: finding a different data value that maps to the same key would require breaking SHA3-256. However, this exclusion is also an advantage: it reduces the need for more complex database features such as index updates 
 
-The database engine itself is called Etch. Etch is an embedded database engine optimised for these specific requirements. We believe that building a customised engine is a worthwhile investment, because of the specific feature requirements and performance improvements possible.  Etch is at least an order of magnitude faster than using more traditional, general purpose databases.
+The database engine itself is called Etch. Etch is an embedded database engine optimised for these specific requirements. We believe that building a customised engine is a worthwhile investment, because of the specific feature requirements and performance improvements possible. Etch is at least an order of magnitude faster than using more traditional, general purpose databases.
 
 The Storage System supports optional garbage collection for Peers that wish to compact storage size. A Peer is only required to maintain the current state, and a short history sufficient to participate in the consensus algorithm. Of course, Peers may choose to retain additional information for historical analysis.
 
@@ -194,16 +194,16 @@ This growing demand for storage space presents a significant problem.
 
 Convex implements a novel solution of Memory Accounting to help manage the problem.
 
-- Each user is given a Memory Allowance, which is a fully fledged second native currency on the Convex Network
-- Memory Allowance is consumed when on-chain storage is allocated, and released when stored objects are deleted (this can be efficiently tracked by careful integration with the storage subsystem)
-- A automated Memory Exchange Actor is provided that maintains a pool of liquidity with memory available for users to purchase. This regulates the maximum size of the on-chain state based on supply and demand. This pool can be increased over time to allow for reasonable state growth, improvements in technology and to discourage hoarding.
+- Each user is given a **memory allowance**, which is a fully fledged second native currency on the Convex Network
+- Memory allowance is consumed when on-chain storage is allocated, and released when stored objects are deleted (this can be efficiently tracked by careful integration with the storage subsystem)
+- A automated "memory exchange" is provided that maintains a pool of liquidity with memory available for users to purchase. This regulates the maximum size of the on-chain state based on supply and demand. This pool can be increased over time to allow for reasonable state growth, improvements in technology and to discourage hoarding.
 - By this mechanism, a fair market price for memory is established that creates an economic incentive for efficient memory usage.
 
 ## Technical Description
 
 ### Design Rationale
 
-It is worth reflecting on the logic behind the design of Convex; this logic has driven the majority of key design decisions for constructing the Convex system.  Convex can be categorised as Decentralised Ledger Technology (DLT).
+It is worth reflecting on the logic behind the design of Convex; this logic has driven the majority of key design decisions for constructing the Convex system. Convex can be categorised as a new type of Decentralised Ledger Technology (DLT).
 
 Convex works on the principle of proving a globally shared state on a permissionless decentralised network which executes instructions (transactions) on behalf of users: a "public computer" that everyone can access but where nobody has absolute control. 
 
@@ -217,7 +217,7 @@ Because we wish to ensure openness and avoid the issue of centralised control ov
 
 This ideal of decentralisation presents the problem that some actors in the system may be malicious. They may be actively attempting to defraud other actors - a significant problem when valuable digital assets are at stake. Furthermore, even if not malicious, software or hardware failures can potentially disrupt the system. We therefore require the property of **Byzantine Fault Tolerance** - which can be informally characterised as resistance of the consensus mechanism to malicious attacks and failures. Theoretical results (e.g. the seminal work by Leslie Lamport) have demonstrated that such consensus requires 2/3 of participants to be good actors - that is, Byzantine Fault Tolerance is possible to achieve as long as no more than 1/3 of actors are malicious or faulty. We would like the Internet of Value to operate with a consensus algorithm that achieves this theoretical optimum level of security.
 
-What is the nature of Digital Assets, and what is necessary to implement them?  For assets to be meaningful, they must obey rules. Ownership is the most obvious example; only the owner of an asset should be able to use it in an economic transaction. Other rules may also apply: for example a financial option may includ a right to "exercise" the option in exchange for some other underlying asset. Since assets only have value if owners trust that their rules will be enforced, we need a system of encoding and executing these rules in an automated, verifiable way as part of the decentralised protocol - such rules must be implemented as **smart contracts**. 
+What is the nature of digital assets, and what is necessary to implement them?  For assets to be meaningful, they must obey rules. Ownership is the most obvious example; only the owner of an asset should be able to use it in an economic transaction. Other rules may also apply: for example a financial option may includ a right to "exercise" the option in exchange for some other underlying asset. Since assets only have value if owners trust that their rules will be enforced, we need a system of encoding and executing these rules in an automated, verifiable way as part of the decentralised protocol - such rules must be implemented as **smart contracts**. 
 
 While it would be possible to create a simple system of smart contracts that tackle many useful applications without full programmability, the Internet of Value calls for extensibility to new forms of assets that may not be originally anticipated by the designers of the network. We therefore require a **Turing complete** smart contract execution model (capable of performing any computation) if we are to avoid the risk of future limitations preventing important digital asset classes from being created.
 
@@ -231,11 +231,11 @@ The remainder of this White Paper describes the technical implementation of Conv
 
 ### A note on Values
 
-As a distributed information system, Convex must deal with the representation of data. We therefore rely frequently on the definition of a Decentralised Data Value (DDV) which has the following properties:
+As a distributed information system, Convex must deal with the representation of data. We therefore rely frequently on the definition of a **Decentralised Data Value** (DDV) which has the following properties:
 
 - It is immutable: the information content cannot be changed once constructed
-- It has a unique canonical Encoding as a sequence of bytes, which is used for both network transmission and storage
-- It can be assigned a unique Value ID (VID) which is defined as the SHA3-256 cryptographic hash of the value's Encoding. This serves multiple purposes, most importantly for cryptographic verification and as a key for various data structures (e.g. hash maps and Content Addressable Storage).
+- It has a unique canonical encoding as a sequence of bytes, which is used for both network transmission and storage
+- It can be assigned a unique **Value ID** (VID) which is defined as the SHA3-256 cryptographic hash of the value's Encoding. This serves multiple purposes, most importantly for cryptographic verification and as a key for various data structures (e.g. hash maps and content addressable storage).
 - Other DDVs can be recursively nested inside - in essence forming a Merkle Tree, which becomes a Merkle Directed Acyclic Graph (DAG) with structural sharing of identical children.
 
 Where we refer to "value" or "data value" in this document, we are generally referring to DDVs.
@@ -246,36 +246,36 @@ Where we refer to "value" or "data value" in this document, we are generally ref
 
 Convex defines the set of actors that participate in the consensus algorithm as **Peers** in the Network.
 
-Anyone may operate a Peer by providing an economic **Stake** in Convex Coins. The size of the Peer Stake determines the relative voting power of the Peer in the consensus algorithm.  Stake is locked up and may be forfeited if bad behaviour is provably detected. Stake could also be appropriated by malicious actors if the Peer does not maintain strong security for their system (in particular the security of the Peer's private key). Requiring a Stake is therefore a key aspect of the economic incentive for Peers to maintain the security of the network.
+Anyone may operate a peer by providing an economic **Stake** in Convex Coins. The size of the peer stake determines the relative voting power of the Peer in the consensus algorithm.  Stake is locked up and may be forfeited if bad behaviour is provably detected. Stake could also be appropriated by malicious actors if the Peer does not maintain strong security for their system (in particular the security of the peer's private key). Requiring a stake is therefore a key aspect of the economic incentive for peers to maintain the security of the network.
 
-As a reward for helping to operate and secure the network, Peers are entitled to a share of fees for transactions executed on the network, plus other incentive pools. Their reward is proportional to Peer stake, creating another positive incentive for Peers to provide more Stake and greater security.
+As a reward for helping to operate and secure the network, Peers are entitled to a share of fees for transactions executed on the network, plus other incentive pools. Their reward is proportional to peer stake, creating another positive incentive for Peers to provide more Stake and greater security.
 
 #### State
 
-The key task of the Peer Network is to securely store and update the **Global State**.
+The key task of the peer network is to securely store and update the **global state**.
 
-The State represents the complete information in the CVM at any point in time. The Convex Network operates as a globally replicated state machine, where new updates cause changes to the current State. Updates are defined on a globally consistent basis according to the sequence of transactions confirmed through the Consensus algorithm.
+The state represents the complete information in the CVM at any point in time. The Convex Network operates as a globally replicated state machine, where new updates cause changes to the current State. Updates are defined on a globally consistent basis according to the sequence of transactions confirmed through the CPoS consensus algorithm.
 
-The latest State of the CVM network after all verified Transactions in consensus have been executed is called the **Consensus State**.
+The latest state of the CVM network after all verified transactions in consensus have been executed is called the **consensus state**.
 
-The State is represented as an immutable Decentralised Data Value (DDV) that includes:
+The state is represented as an immutable decentralised data value that includes:
 *	All Account information and balances
 *	All Actor code, static information and current state
 *	All information relating to active Peers and staking
 *	Global information (such as the latest Block timestamp)
 
-Since it is a DDV, it follows that a State is a Merkle DAG, and has a unique Value ID (VID). This means that if two Peers compute a State update and announce the VIDs, it is possible to validate immediately if they computed the same resulting State.
+Since it is a DDV, it follows that a state is a Merkle DAG, and has a unique value ID (VID). This means that if two peers compute a state update and announce the VIDs, it is possible to validate immediately if they computed the same resulting state.
 
 #### Transactions and Blocks
 
-A **Transaction** is an instruction by any network participant (typically users of Client applications) to affect an update in the Consensus State. Transactions are digitally signed to ensure that they can only update the Consensus State if they are authorised for the holder of the corresponding private key.
+A **transaction** is an instruction by any network participant (typically users of Client applications) to affect an update in the Consensus State. Transactions are digitally signed to ensure that they can only update the Consensus State if they are authorised for the holder of the corresponding private key.
 
-Transactions are grouped into **Blocks**, which contain an ordered sequence of Transactions and some additional metadata (most importantly a Block timestamp).
+Transactions are grouped into **blocks**, which contain an ordered sequence of Transactions and some additional metadata (most importantly a Block timestamp).
 
-The inclusion of Transactions in Blocks is at the discretion of the Peer to which they are submitted. Users may choose any Peer, but normally should prefer to submit transactions to a Peer that they trust to behave correctly, since this discretion could be abused by the receiving Peer:
+The inclusion of transactions in blocks is at the discretion of the Peer to which they are submitted. Users may choose to utilise any peer for this purpose, but normally should prefer to submit transactions to a peer that they trust to behave correctly, since this discretion could be abused by the receiving peer:
 
-- The Peer could ignore a Transaction and neglect to propose it for consensus
-- The Peer could insert its own Transaction(s) before the user's transaction, potentially executing a front running attack 
+- The peer could ignore a transaction and neglect to propose it for consensus
+- The peer could insert its own transaction(s) before the user's transaction, potentially executing a front running attack 
 
 
 #### Reduction to the Ordering Problem
@@ -284,17 +284,17 @@ Consensus in a decentralised state machine can trivially be achieved with the co
 
 * Agreement on some initial genesis State: `S[0]`
 * Consensus over the complete ordering of Blocks of transactions `B[n]` 
-* A deterministic State Transition Function, which updates the State according to the Transactions contained in a Block: `S[n+1] = f(S[n],B[n])`
+* A deterministic **state transition function**, which updates the State according to the transactions contained in a Block: `S[n+1] = f(S[n],B[n])`
 
-This construction reduces the problem of generalised consensus to the problem of determining consensus over Block ordering. The CVM execution environment provides the State Transition Function, which is orthogonal to the consensus algorithm but provides the deterministic computations to compute the new Consensus State (given any Ordering of Blocks in consensus).
+This construction reduces the problem of generalised consensus to the problem of determining consensus over Block ordering. The CVM execution environment provides the state transition function, which is orthogonal to the consensus algorithm but provides the deterministic computations to compute the new consensus state (given any ordering of blocks in consensus).
 
-We define the **Consensus Point** to be the number of Blocks confirmed by the consensus algorithm in the Ordering, and the Consensus State is correspondingly the State obtained after applying the State Transition Function up to the Consensus Point.
+We define the **Consensus Point** to be the number of Blocks confirmed by the consensus algorithm in the ordering, and the consensus state is correspondingly the state obtained after applying the state transition function up to the consensus point.
 
-The hard problem that the consensus algorithm needs to solve is determining the **Ordering** of Blocks given the potential presence of malicious actors who may seek to profit by changing the order of transactions (e.g., a "Double Spend" attack). 
+The hard problem that the consensus algorithm needs to solve is determining the **ordering** of blocks given the potential presence of malicious actors who may seek to profit by changing the order of transactions (e.g., a "Double Spend" attack). 
 
 #### Block proposals
 
-Convex block proposals differ from Traditional blockchain solutions.  The latter have focused on mechanisms to determine which participant gains the right to propose the next block, which includes a hash of the previous block in order to extend a linked chain of blocks. This was the basis for the original Bitcoin Proof of Work algorithm (which used the ability to mine cryptographic hashes as the basis for allowing a miner to publish a block and claim the corresponding block reward).
+Convex block proposals differ from traditional blockchain solutions.  The latter have focused on mechanisms to determine which participant gains the right to propose the next block, which includes a hash of the previous block in order to extend a linked chain of blocks. This was the basis for the original Bitcoin Proof of Work algorithm (which used the ability to mine cryptographic hashes as the basis for allowing a miner to publish a block and claim the corresponding block reward).
 
 Other approaches involving selecting a "leader" to publish a new block have some notable problems:
 
@@ -313,30 +313,30 @@ An Ordering includes all Blocks up to the current Consensus Point.  A Peer may p
 
 #### Convergent Consensus
 
-Convex uses a variant of Convergent Replicated Data Types (CRDTs), ensuring that the Network converges to Consensus. CRDTs have the provable property of Eventual Consistency. All nodes eventually agree on the same value of an Ordering up to the agreed Consensus Point.
+Convex uses a variant of Convergent Replicated Data Types (CRDTs), ensuring that the network converges to consensus. CRDTs have the provable property of eventual consistency. All nodes eventually agree on the same value of an ordering up to the agreed consensus point.
 
 The CRDT is implemented through:
 
 * A  **Belief** data structure, which represents a Peer's view of consensus across the whole Network, including the latest Block Orderings from other Peers
 * A **Belief Merge Function**, which:
-  * Combines any two (or more) Beliefs to create an updated Belief
-  * Is idempotent, commutative and associative with respect to the merging of other Beliefs
+  * Combines any two (or more) beliefs to create an updated belief
+  * Is idempotent, commutative and associative with respect to the merging of other beliefs
 
-This effectively forms a *join-semilattice* for each Peer, and satisfies the conditions required for a CRDT. Repeated applications of the Belief Merge Function on Beliefs propagated by Peers automatically results in convergence to a stable consensus.
+This effectively forms a *join-semilattice* for each peer, and satisfies the conditions required for a CRDT. Repeated applications of the Belief Merge Function on Beliefs propagated by peers automatically results in convergence to a stable consensus.
 
-Digital signatures ensure that Peers can only validly update that part of the overall Belief structure that represents their *own* proposals. No Peer can impersonate another Peer and full cryptographic security is maintained throughout the operation of the consensus algorithm.
+Digital signatures ensure that peers can only validly update that part of the overall Belief structure that represents their *own* proposals. No peer can impersonate another Peer and full cryptographic security is maintained throughout the operation of the consensus algorithm.
 
-The Ordering of one or more other Peers could be removed by from the Belief of a malicious Peer, perhaps in an attempt to censor transactions. However, this will be an ineffective attack against the Network; the unchanged Ordering relayed via other Peers will ultimately be merged into the stable Consensus.
+The Ordering of one or more other peers could be removed by from the Belief of a malicious peer, perhaps in an attempt to censor transactions. However, this will be an ineffective attack against the Network; the unchanged ordering relayed via other peers will ultimately be merged into the stable consensus.
 
 #### Stake-weighted voting
 
 During the convergence process conflicts in proposed block Orderings from different Peers are resolved by a system of convergent stake-weighted voting. [A diagram would be really helpful here] At each belief merge step, peers compute the total share of stake voting for each proposed block in the next position after the current Consensus Point. Peers have a view of the Orderings proposed by all other Peers. 
 
-Stake-weighted voting is applied iteratively to future proposed blocks, but only counting the votes by peers that have supported the winning Ordering up to this point.  Supporting a minority Block causes Peers to be temporarily excluded from the considered vote in following blocks. Peers that vote for orderings inconsistent with the majority cannot influence the ordering of any subsequent blocks.
+Stake-weighted voting is applied iteratively to future proposed blocks, but only counting the votes by peers that have supported the winning ordering up to this point. Supporting a minority block causes peers to be temporarily excluded from the considered vote in following blocks. Peers that vote for orderings inconsistent with the majority cannot influence the ordering of any subsequent blocks.
 
-Once the overall winning ordering has been determined, any Peer can append any new Blocks it wishes to propose,  adopting this Ordering as its own proposal. This ordering is signed and incorporated into the Peer's own Belief, which is then propagated onwards to other Peers.
+Once the overall winning ordering has been determined, any peer can append any new Blocks it wishes to propose, adopting this ordering as its own proposal. This ordering is signed and incorporated into the pPeer's own belief, which is then propagated onwards to other peers.
 
-As an illustration, consider three Peers that are initially in consensus with respect to an Ordering of Blocks `XXXX` but peers `A` and `B` propose new Blocks `Y` and `Z`:
+As an illustration, consider three Peers that are initially in consensus with respect to an ordering of blocks `XXXX` but peers `A` and `B` propose new blocks `Y` and `Z`:
 
 ```
 Peer A: (stake 20) ordering = XXXXY
@@ -344,7 +344,7 @@ Peer B: (stake 30) ordering = XXXXZ
 Peer C: (stake 40) ordering = XXXX
 ```
 
-Peer `C` observes the orderings of Peer `A` and `B` (after propagation of beliefs). It sees two conflicting proposals, but because Peer `B` has the higher stake it takes this ordering first. It then appends the other Block it has observed:
+Peer `C` observes the orderings of peer `A` and `B` (after propagation of beliefs). It sees two conflicting proposals, but because Peer `B` has the higher stake it takes this ordering first. It then appends the other Block it has observed:
 
 ```
 Peer A: (stake 20) ordering = XXXXY
@@ -352,7 +352,7 @@ Peer B: (stake 30) ordering = XXXXZ
 Peer C: (stake 40) ordering = XXXXZY (updated)
 ```
 
-Peer `A` now observes the orderings of the other Peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-20 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
+Peer `A` now observes the orderings of the other peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-20 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
 
 ```
 Peer A: (stake 20) ordering = XXXXZY (updated)
@@ -368,7 +368,7 @@ Peer B: (stake 30) ordering = XXXXZY (updated)
 Peer C: (stake 40) ordering = XXXXZY 
 ```
 
-This procedure provably converges to a single ordering.  Any situation where Peers are voting for different blocks (in any position) is unstable. It will converge towards one outcome, since Peers will switch to an Ordering calculated to have a slight majority. After a few rounds of belief propagation, all good Peers will align on the same ordering.
+This procedure provably converges to a single ordering.  Any situation where peers are voting for different blocks (in any position) is unstable. It will converge towards one outcome, since peers will switch to an ordering calculated to have a slight majority. After a few rounds of belief propagation, all good Peers will align on the same ordering.
  
 #### Stability
 
@@ -1100,24 +1100,24 @@ The memory size is persisted in the Storage System as part of the header informa
 
 #### Memory Accounting impact
 
-The memory accounting subsystem is designed so that it always has a minimal effect on CVM state size, even though it causes changes in the CVM state (consumption of allowances etc.). This limits any risk of state growth size from the Memory Accounting itself.
+The memory accounting subsystem is designed so that it always has a minimal effect on CVM state size, even though it causes changes in the CVM state (consumption of allowances etc.). This limits any risk of state growth size from the memory accounting itself.
 
-This is achieved mainly by ensuring that state changes due to Memory Accounting cause no net Cell allocations: at most small embedded fields within existing Cells are updated (specifically balances and allowances stored within Accounts). 
+This is achieved mainly by ensuring that state changes due to Memory Accounting cause no net Cell allocations: at most small embedded fields within existing cells are updated (specifically balances and allowances stored within Accounts). 
 
 #### Performance characteristics
 
-Memory Accounting is `O(1)` for each non-embedded Cell allocated, with a relatively small constant. This would appear to be asymptotically optimal for any system that performs exact memory accounting at a fine-grained level.
+Memory Accounting is `O(1)` for each non-embedded cell allocated, with a relatively small constant. This would appear to be asymptotically optimal for any system that performs exact memory accounting at a fine-grained level.
 
 This achievement is possible because:
 
-- The Memory Size is computed incrementally and cached for each Cell.
-- The number of child cells for each Cell is itself bounded by a small constant
+- The memory size is computed incrementally and cached for each cell.
+- The number of child cells for each cell is itself bounded by a small constant
 - Memory Size computation is usually lazy, that is it is not performed unless required
-- The immutable nature of Convex Cell values means that there is never a need to update Memory Sizes once cached
+- The immutable nature of Convex cell values means that there is never a need to update memory sizes once cached
 
 #### Accounting for computational costs
 
-The direct computational cost of performing this Memory Accounting is factored in to the juice cost of operations that perform new Cell allocations. This compensates Peer operators for the (relatively small) overhead of performing Memory Accounting.
+The direct computational cost of performing this memory accounting is factored in to the juice cost of operations that perform new cell allocations. This compensates Peer operators for the (relatively small) overhead of performing memory accounting.
 
 The storage cost is, of course, handled by the general economics of the Memory Accounting model and pool trading.
 
@@ -1126,9 +1126,9 @@ The storage cost is, of course, handled by the general economics of the Memory A
 Convex uses cryptographic primitives for the following functions:
 
 * Digital Signature (Ed25519)
-  * For every Transaction submitted by a Client
-  * For every Block proposed by a Peer for consensus
-  * For every Ordering constructed and shared by a Peer
+  * For every Transaction submitted by a client
+  * For every Block proposed by a peer for consensus
+  * For every Ordering constructed and shared by a peer
   * For every Belief shared by a Peer on the gossip network
 * Cryptographic Hashes (SHA3-256)
   * For every Cell which forms part of a Decentralised Data Value, a hash of its byte encoding is computed for storage, identity, indexing and verification purposes. This is effectively equal to the VID.
