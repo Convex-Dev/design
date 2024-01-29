@@ -70,3 +70,27 @@ Users SHOULD be warned if they use an empty / blank passwords. Implementations M
 Password input SHOULD be via appropriate mechanisms that protect password privacy , e.g. via a secure password TTY prompt that disables echoing.
 
 Implementations SHOULD clear memory for any passwords immediately after they are used. For example, zeroing memory in a character array.
+
+### PEM Export
+
+Convex implemetations SHOULD support Ed25519 private key export in encyrpted PEM format.
+
+Implementations should use at least 4096 iterations for encryptions, as well as advising users to choose a strong password
+
+The encryped format in ASN.1 form SHOULD resemble the following:
+
+```
+U.P.SEQUENCE {
+   U.P.SEQUENCE {
+      U.P.OBJECTIDENTIFIER 1.2.840.113549.1.12.1.5 (PKCS #12 Password Based Encryption With SHA-1 and 128-bit RC2-CBC)
+      U.P.SEQUENCE {
+         U.P.OCTETSTRING 98d43621377dbe5377fc5cf424f0da80b38c0966
+         U.P.INTEGER 0x0400 (1024 decimal)
+      }
+   }
+   U.P.OCTETSTRING 773a34486cbd07b92dc597e9b96b8e556ea44eaaff4e167333552543ec18a66738362e699fc5655f3b8a26ad17fbd011186f2589bc316e32
+}
+
+```
+
+
