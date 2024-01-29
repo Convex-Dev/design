@@ -8,7 +8,7 @@ Value exchange within such systems is protected at the protocol level by cryptog
 
 However, existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to various security issues and high transaction costs. Early implementations based on blockchains successfully demonstrated the possibilities of decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve. As a result, blockchain technology has **not yet been widely adopted** in the economy as a whole.
 
-Convex (CONVergent EXecution) is an engine for open economic systems that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a conflict-free replicated data type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
+Convex (CONVergent EXecution) is an engine for open economic systems that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a Conflict-free Replicated Data Type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
 
 The CPoS algorithm solves the "double spend" problem by implementing a continuous *decentralised sort* of transactions that enter the network. Once an ordering of transactions is confirmed up to some position, it is stable and immutable from the perspective of all participants, thus preventing double spend and transaction rollback.
 
@@ -330,11 +330,11 @@ The Ordering of one or more other Peers could be removed by from the Belief of a
 
 #### Stake-weighted voting
 
-During the convergence process conflicts in proposed block Orderings from different Peers are resolved by a system of convergent stake-weighted voting. [A diagram would be really helpful here] At each Belief Merge step, Peers compute the total share of stake voting for each proposed Block in the next position after the current Consensus Point. Peers have a view of the Orderings proposed by all other Peers. 
+During the convergence process conflicts in proposed block Orderings from different Peers are resolved by a system of convergent stake-weighted voting. [A diagram would be really helpful here] At each belief merge step, peers compute the total share of stake voting for each proposed block in the next position after the current Consensus Point. Peers have a view of the Orderings proposed by all other Peers. 
 
-Stake-weighted voting is applied iteratively to future proposed Blocks, but only counting the votes by Peers that have supported the winning Ordering up to this point.  Supporting a minority Block causes Peers to be temporarily excluded from the considered vote in following Blocks. Peers that vote for Orderings inconsistent with the majority cannot influence the Ordering of any subsequent Blocks.
+Stake-weighted voting is applied iteratively to future proposed blocks, but only counting the votes by peers that have supported the winning Ordering up to this point.  Supporting a minority Block causes Peers to be temporarily excluded from the considered vote in following blocks. Peers that vote for orderings inconsistent with the majority cannot influence the ordering of any subsequent blocks.
 
-Once the overall winning Ordering has been determined, any Peer can append any new Blocks it wishes to propose,  adopting this Ordering as its own proposal. This Ordering is signed and incorporated into the Peer's own Belief, which is then propagated onwards to other Peers.
+Once the overall winning ordering has been determined, any Peer can append any new Blocks it wishes to propose,  adopting this Ordering as its own proposal. This ordering is signed and incorporated into the Peer's own Belief, which is then propagated onwards to other Peers.
 
 As an illustration, consider three Peers that are initially in consensus with respect to an Ordering of Blocks `XXXX` but peers `A` and `B` propose new Blocks `Y` and `Z`:
 
@@ -344,7 +344,7 @@ Peer B: (stake 30) ordering = XXXXZ
 Peer C: (stake 40) ordering = XXXX
 ```
 
-Peer `C` observes the orderings of Peer `A` and `B` (after propagation of Beliefs). It sees two conflicting proposals, but because Peer `B` has the higher stake it takes this Ordering first. It then appends the other Block it has observed:
+Peer `C` observes the orderings of Peer `A` and `B` (after propagation of beliefs). It sees two conflicting proposals, but because Peer `B` has the higher stake it takes this ordering first. It then appends the other Block it has observed:
 
 ```
 Peer A: (stake 20) ordering = XXXXY
@@ -352,7 +352,7 @@ Peer B: (stake 30) ordering = XXXXZ
 Peer C: (stake 40) ordering = XXXXZY (updated)
 ```
 
-Peer `A` now observes the Orderings of the other Peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-20 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
+Peer `A` now observes the orderings of the other Peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-20 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
 
 ```
 Peer A: (stake 20) ordering = XXXXZY (updated)
@@ -360,7 +360,7 @@ Peer B: (stake 30) ordering = XXXXZ
 Peer C: (stake 40) ordering = XXXXZY 
 ```
 
-Peer `B` now observes the Orderings. It sees everyone agreed on block `Z`, and a 60-0 vote in favour of Block `Y` next. It therefore adopts this winning Ordering as its own:
+Peer `B` now observes the orderings. It sees everyone agreed on block `Z`, and a 60-0 vote in favour of Block `Y` next. It therefore adopts this winning ordering as its own:
 
 ```
 Peer A: (stake 20) ordering = XXXXZY 
@@ -368,70 +368,70 @@ Peer B: (stake 30) ordering = XXXXZY (updated)
 Peer C: (stake 40) ordering = XXXXZY 
 ```
 
-This procedure provably converges to a single Ordering.  Any situation where Peers are voting for different Blocks (in any position) is unstable. It will converge towards one outcome, since Peers will switch to an Ordering calculated to have a slight majority. After a few rounds of Belief propagation, all good Peers will align on the same Ordering.
+This procedure provably converges to a single ordering.  Any situation where Peers are voting for different blocks (in any position) is unstable. It will converge towards one outcome, since Peers will switch to an Ordering calculated to have a slight majority. After a few rounds of belief propagation, all good Peers will align on the same ordering.
  
 #### Stability
 
-The Belief Merge procedure outlined above has many desirable stability properties even in the presence of some proportion of malicious adversaries (Bad Peers). Some of these are listed below:
+The belief merge procedure outlined above has many desirable stability properties even in the presence of some proportion of malicious adversaries (which are considered "bad peers"). Some of these are listed below:
 
 ##### 51% Stability with Good Peer Majority
 
-If more than 50% of Peers adopt the same Ordering, this majority consists entirely of Good Peers and they are mutually aware of each other's agreement, then the Ordering is provably stable no matter what any adversaries subsequently attempt, since the adversaries cannot cause any Good Peer to change their vote.
+If more than 50% of peers adopt the same ordering, this majority consists entirely of good peers and they are mutually aware of each other's agreement, then the ordering is provably stable no matter what any adversaries subsequently attempt, since the adversaries cannot cause any good peer to change their vote.
 
 ##### 51% Stability with Rapid Propagation
 
 Assuming that:
-- More than 50% of Peers (some of which may be Bad Peers) adopt the same ordering
-- less than 50% of all Peers are Bad Peers
-- Beliefs are propagated quickly to all other Peers (at least before the next round of Belief Merges)
-Then the Ordering will be provably stable since a majority of Good Peers will adopt the same Ordering during the next Belief Merge.
+- More than 50% of peers (some of which may be Bad Peers) adopt the same ordering
+- less than 50% of all peers are bad peers
+- Beliefs are propagated quickly to all other peers (at least before the next round of belief merges)
+Then the ordering will be provably stable since a majority of good peers will adopt the same Ordering during the next belief merge.
 
 ##### 67% Stability vs. Irrelevant Alternatives
 
 Assuming that:
 
-1. At least 2/3 of all Peers are aligned in proposing the same Ordering, and are aware of each other's Orderings
+1. At least 2/3 of all Peers are aligned in proposing the same Ordering, and are aware of each other's orderings
 2. Less than 1/3 of Peers (by Staked voting weight) are Bad Peers, the remainder (>2/3) are Good Peers 
-3. Bad Peers may collude arbitrarily, but do not have a Belief propagation speed advantage (on average) relative to Good Peers 
-4. Non-aligned Good Peers do not initially have any significant support for any conflicting ordering.
+3. Bad Peers may collude arbitrarily, but do not have a Belief propagation speed advantage (on average) relative to good peers 
+4. Non-aligned good peers do not initially have any significant support for any conflicting ordering.
 
-Then the Ordering is provably stable, since: 
+Then the ordering is provably stable, since: 
 
-- By (1) and (2), the number of Good Peers within in the aligned set of Peers must strictly outweigh the Bad Peers.
-- Whatever the Bad Peers do (including switching from being in the aligned group to supporting a new conflicting Ordering), their new Ordering will still be outweighed by the Good Peers which are already in alignment
-- Therefore, the initially aligned Good Peers will win 50%+ majority with Good Peers, since they will win a propagation race by sharing their Beliefs which will bring the majority of remaining non-aligned Good Peers as per assumption (3)
+- By (1) and (2), the number of good peers within in the aligned set of peers must strictly outweigh the Bad Peers.
+- Whatever the bad peers do (including switching from being in the aligned group to supporting a new conflicting ordering), their new ordering will still be outweighed by the Good Peers which are already in alignment
+- Therefore, the initially aligned Good Peers will win 50%+ majority with good peers, since they will win a propagation race by sharing their beliefs which will bring the majority of remaining non-aligned good peers as per assumption (3)
 
 ##### 75% Stability vs. powerful adversaries
 
-Assuming that 75% of Peers are aligned in proposing the same Ordering, and are aware of each other's orderings, the Ordering is stable as long as less than 25% of Peers are Bad Peers.
+Assuming that 75% of peers are aligned in proposing the same ordering, and are aware of each other's orderings, the ordering is stable as long as less than 25% of Peers are Bad Peers.
 
 This hold true even against powerful adversaries with capabilities such as:
-- Ability to temporarily isolate and trick non-aligned Peers into adopting a conflicting Proposal
-- Ability to censor or delay arbitrary messages on the network (as long as at least one Belief propagation path eventually exists between any pair of Good Peers) 
-- Ability to delay the activity of any Good Peer
+- Ability to temporarily isolate and trick non-aligned Peers into adopting a conflicting proposal
+- Ability to censor or delay arbitrary messages on the network (as long as at least one Belief propagation path eventually exists between any pair of good peers) 
+- Ability to delay the activity of any good peer
 
-[What if a single Bad Peer holds a majority of the Stake, say 70%, can it take full control of the Consensus?  Is this a governance issue?]
+[What if a single bad peer holds a majority of the stake, say 70%, can it take full control of the consensus?  Is this a governance issue?]
 
 #### Determining consensus
 
-Even after a stable Ordering is observed, Consensus must be confirmed. This is achieved through a decentralised implementation of a 2-phase commit.
+Even after a stable ordering is observed, consensus must be confirmed. This is achieved through a decentralised implementation of a 2-phase commit.
 
-Once a 2/3 threshold of Peers are observed by any Peer to be aligned on the same Ordering up to a certain Block number, the Peer marks and communicates this number as a **Proposed Consensus Point (PCP)**. The Peers propagate this PCP as part of their next published Belief, attached to their Ordering.
+Once a 2/3 threshold of peers are observed by any Peer to be aligned on the same Ordering up to a certain Block number, the peer marks and communicates this number as a **Proposed Consensus Point (PCP)**. The Peers propagate this PCP as part of their next published belief, attached to their ordering.
 
-Once a 2/3 threshold of Peers are observed to have the same Proposed Consensus Point with the same Ordering, this value is confirmed by the Peer as the new **Consensus Point (CP)**. From this point on, Good Peers will consider the Consensus final.
+Once a 2/3 threshold of peers are observed to have the same proposed consensus point with the same ordering, this value is confirmed by the peer as the new **Consensus Point (CP)**. From this point on, Good Peers will consider the Consensus final.
 
 Consensus is **guaranteed** providing:
 
-- A stable Ordering is reached where a majority of Peers consistently propose the same Ordering
-- At least 2/3 of Stake is held by Good Peers that are active in the network
+- A stable ordering is reached where a majority of peers consistently propose the same ordering
+- At least 2/3 of stake is held by good peers that are active in the network
 
-This follows from the fact that given a majority for a stable Ordering, all Good Peers will eventually adopt the same Ordering and therefore the Network will pass both the Proposed Consensus and Consensus thresholds.
+This follows from the fact that given a majority for a stable ordering, all good peers will eventually adopt the same ordering and therefore the network will pass both thresholds.
 
 #### Illustration
 
-Consider a case where all peers A, B, C, D and E initially agree on a Consensus Ordering (labelled `o`). At this point, peer B receives a set of new Transactions, composes these into a Block and produces a Belief with an updated Ordering (`x`), including the new proposed Block. Initially, this is unknown to all other Peers. 
+Consider a case where all peers A, B, C, D and E initially agree on a consensus ordering (labelled `o`). At this point, peer B receives a set of new transactions, composes these into a block and produces a belief with an updated ordering (`x`), including the new proposed Block. Initially, this is unknown to all other peers. 
 
-We can visualise this initial situation as a Matrix, where each row is the Belief held by one peer, and each column represents the latest signed Ordering observed by each peer from another peer. Each Peer also has knowledge of the current Consensus defined by `o`, which is also its Proposed Consensus.
+We can visualise this initial situation as a matrix, where each row is the belief held by one peer, and each column represents the latest signed ordering observed by each peer from another peer. Each Peer also has knowledge of the current consensus defined by `o`, which is also its proposed consensus.
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -509,18 +509,18 @@ In more complex cases:
 
 At first glance, the Convex consensus algorithm might be considered impractical because of the scale of data structures being shared. Consider a plausible high volume operating scenario:
 
-* n = 1,000 Peers active in the network
-* r = 10 new Blocks per second
-* s = 10k of data for each Block (around 100 Transactions)
-* o = 1,000,000,000 Blocks of transactions in the each Ordering (a few years of blocks)
+* n = 1,000 peers active in the network
+* r = 10 new blocks per second
+* s = 10k of data for each block (around 100 Transactions)
+* o = 1,000,000,000 Blocks of transactions in the each ordering (a few years of blocks)
 
-Each Peer would theoretically be holding ~100 *petabytes* of information for their Belief, which would need to be transmitted in each propagation round, requiring a bandwidth in the order of many *exabytes* per second. Clearly this is not practical given current hardware or network capacity.  Convex exploits powerful techniques to maximise efficiency:
+Each peer would theoretically be holding ~100 *petabytes* of information for their Belief, which would need to be transmitted in each propagation round, requiring a bandwidth in the order of many *exabytes* per second. Clearly this is not practical given current hardware or network capacity.  Convex exploits powerful techniques to maximise efficiency:
 
-* Beliefs are represented as Decentralised Data Values that support **structural sharing**: identical values or subtrees containing identical values need only be stored once. Since Orderings are identical up to the Consensus Point, these can be de-duplicated almost perfectly.
+* Beliefs are represented as Decentralised Data Values that support **structural sharing**: identical values or subtrees containing identical values need only be stored once. Since orderings are identical up to the consensus point, these can be de-duplicated almost perfectly.
 * Peers are only required to actively maintain Block data for a limited period of time (e.g. 1 day of storage would be less than 10GB in this case)
 * The Decentralised Data Values support usage where only the **incremental change** (or "Novelty") can be detected. 
 * The number of outgoing connections for each Peer is **bounded** to a small constant number of Peers that they wish to propagate to (typically around 10, but configurable on a per-peer basis)
-* Beliefs can be **selectively culled** to remove Orderings from Peers that have very low stakes and are irrelevant to consensus. This can be performed adaptively to network conditions if required: Peers may only need to consider the "long tail" of low staked Peers in rare situations where these are required to hit a consensus threshold or decide a close vote.
+* Beliefs can be **selectively culled** to remove orderings from peers that have very low stakes and are irrelevant to consensus. This can be performed adaptively to network conditions if required: Peers may only need to consider the "long tail" of low staked Peers in rare situations where these are required to hit a consensus threshold or decide a close vote.
 
 With these techniques, Peers only need to propagate the novelty they receive (in this example around 100k of Block data per second, plus some accounting and structural overhead) to a small number of other peers. Bandwidth required is therefore on the order of 1-10MB/s (allowing for overheads and a reasonable number of Peer connections), which is certainly practical for any modern server with decent network connectivity.
 
@@ -1061,25 +1061,25 @@ If a transaction has negative Memory Consumption, the memory allowance of the us
 
 #### Allowance transfers
 
-It is permissible to make an allowance transfer directly between Accounts. This is a practical decision for the following reasons:
+It is permissible to make an allowance transfer directly between accounts. This is a practical decision for the following reasons:
 
-- It enables Actors to automate management of allowances more effectively
-- It enables Accounts controlled by the same user to shift allowances appropriately
-- It avoids any need for resource-consuming "tricks" such as allocating Memory from one Account, and deallocating it from another to make an allowance transfer
-- It creates a potential for Memory Allowances to be handled as an asset by smart contracts
+- It enables actors to automate management of allowances more effectively
+- It enables accounts controlled by the same user to shift allowances appropriately
+- It avoids any need for resource-consuming "tricks" such as allocating Memory from one account, and deallocating it from another to make an allowance transfer
+- It creates a potential for memory allowances to be handled as an asset by smart contracts
 
 
 #### Actor Considerations
 
-All Accounts, including Actors, have a Memory Allowance. However, in most cases Actors have no need for a Memory Allowance because and memory consumption will be accounted for against a User account that was the Origin of a transaction.
+All Accounts, including actors, have a memory allowance. However, in most cases actors have no use for a memory allowance: any memory consumed during interaction with an actor will be accounted for via the user account account that originated the transaction.
 
-The exception to this is with scheduled execution, where an Actor itself may be the Origin for a transaction.
+One exception to this is with scheduled execution, where an actor itself may be the origin for a transaction.
 
-Actor developers may include a capability to reclaim Memory allowances from an Actor (e.g. transferring it to a nominated User Account). This is optional, but without this there may be no way to ever utilise an allowance held within an Actor (either because a scheduled transaction obtained a Memory refund, or because an allowance transfer was made to the Actor).
+Actor developers may include a capability to reclaim memory allowances from an Actor (e.g. transferring it to a nominated user account). This is optional, but without this there may be no way to ever utilise an allowance held within an actor (either because a scheduled transaction obtained a memory refund, or because an allowance transfer was made to the actor).
 
 #### Memory Exchange trading
 
-The Memory Exchange is a simple Automated Market Maker, allowing users to buy and sell memory allowances at any time from a Memory Pool. The price of memory in the Pool will automatically adjust to find an equilibrium between supply and demand.
+The Memory Exchange is a simple Automated Market Maker (AMM), allowing users to buy and sell memory allowances at any time from a Memory Pool. The price of memory in the pool will automatically adjust to find an equilibrium between supply and demand.
 
 #### New Memory Release
 
