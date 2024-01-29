@@ -368,7 +368,7 @@ Peer B: (stake 30) ordering = XXXXZY (updated)
 Peer C: (stake 40) ordering = XXXXZY 
 ```
 
-This procedure provably converges to a single ordering.  Any situation where peers are voting for different blocks (in any position) is unstable. It will converge towards one outcome, since peers will switch to an ordering calculated to have a slight majority. After a few rounds of belief propagation, all good Peers will align on the same ordering.
+This procedure provably converges to a single ordering.  Any situation where peers are voting for different blocks (in any position) is unstable. It will converge towards one outcome, since peers will switch to an ordering calculated to have a slight majority. After a few rounds of belief propagation, all good peers will align on the same ordering.
  
 #### Stability
 
@@ -657,7 +657,7 @@ A moderately high branching factor (typically 16) is used. This is important bec
 * It reduces the number of hashes that need to be computed (a performance bottleneck in some cases)
 * There is a certain elegance and minor performance benefit in being able to index the tree using hex digits
 
-CVM data structures are used widely throughout the whole Convex implementation: For example the ordering of blocks in the CPoS algorithm is internally implemented as a Vector. 
+CVM data structures are used widely throughout the whole Convex implementation: For example the ordering of blocks in the CPoS algorithm is internally implemented as a vector. 
 
 ##### Syntax Objects
 
@@ -669,14 +669,14 @@ Metadata may be an arbitrary Map, but typically would include such things as:
 * Documentation
 * Information generated through macro expansion
 
-Syntax Objects are inspired by Racket, and are generally used for code generation and compilation, although they are also available for use in regular CVM code if desired. They are marginally more efficient than storing a value and metadata as two separate fields in a Map, for example.
+Syntax objects are inspired by Racket, and are generally used for code generation and compilation, although they are also available for use in regular CVM code if desired. They are marginally more efficient than storing a value and metadata as two separate fields in a Map, for example.
 
-The primary usages of Syntax Objects within the CVM are:
+The primary usages of syntax objects within the CVM are:
 
-* Allowing metadata to be attached to values (e.g., documentation for Actor functions)
+* Allowing metadata to be attached to values in account environments (e.g., documentation for actor functions)
 * Supporting the implementation of the Convex Lisp compiler and macro system
 
-NOTE: In the future, Syntax Objects may be extended to implement a gradual type system such as seen in Typed Racket. Racket has demonstrated the value of Syntax Objects in helping to support future language evolution.
+NOTE: In the future, syntax objects may be extended to implement a gradual type system such as seen in Typed Racket. Racket has demonstrated the value of syntax objects in helping to support future language evolution.
 
 ##### Nil
 
