@@ -352,7 +352,7 @@ Peer B: (stake 30) ordering = XXXXZ
 Peer C: (stake 40) ordering = XXXXZY (updated)
 ```
 
-Peer `A` now observes the Orderings of the other Peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-30 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
+Peer `A` now observes the Orderings of the other Peers. Since there is still a conflict, it calculates the vote for each ordering and sees that there is a 70-20 vote in favour of having block `Z` first (and a 40/0 vote in favour of block `Y` next). It therefore adopts same the same Ordering as proposed by Peer `C`.
 
 ```
 Peer A: (stake 20) ordering = XXXXZY (updated)
@@ -431,7 +431,7 @@ This follows from the fact that given a majority for a stable Ordering, all Good
 
 Consider a case where all peers A, B, C, D and E initially agree on a Consensus Ordering (labelled `o`). At this point, peer B receives a set of new Transactions, composes these into a Block and produces a Belief with an updated Ordering (`x`), including the new proposed Block. Initially, this is unknown to all other Peers. 
 
-We can visualise this initial situation as a Matrix, where each row is the Belief help by one peer, and each column represents the latest signed Ordering observed by each peer from another peer. Each Peer also has knowledge of the current Consensus defined by `o`, which is also its Proposed Consensus.
+We can visualise this initial situation as a Matrix, where each row is the Belief held by one peer, and each column represents the latest signed Ordering observed by each peer from another peer. Each Peer also has knowledge of the current Consensus defined by `o`, which is also its Proposed Consensus.
 
 ```
   ABCDE  Consensus   Proposed Consensus
@@ -867,7 +867,7 @@ The storage system is also used to facilitate serialisation and transport of dat
 
 Storage is constructed out of Cells. 
 
-In most cases, a Cell is an entity that represents an Value in the CVM Informational Model. Normally there is a 1-1 mapping between Cells and CVM Values, however there are some exceptions:
+In most cases, a Cell is an entity that represents a Value in the CVM Informational Model. Normally there is a 1-1 mapping between Cells and CVM Values, however there are some exceptions:
 
 - For larger data structures a tree of Cells may be necessary - this is because we need to place a fixed upper bound on the size of each cell.
 - Small data values do not require a whole Cell, since it is more efficient to embed them directly within a larger Cell.
