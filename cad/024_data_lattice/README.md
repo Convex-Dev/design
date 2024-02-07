@@ -43,3 +43,25 @@ The Data Lattice provides the following capabilities:
 - **Garbage Collection**: Stores can be garbage collected to reduce resource requirements at any time, simply by specifying which data is required to be maintained ("pinning"). This facilitates better operational management and allows flexible control by data lattice providers regarding what data they are interested in preserving or hosting.
 
 - **Access Control**: data lattice hosts may optionally impose whatever access controls they require for governance, security or privacy purposes.
+
+## Reference Implementation
+
+The Data Lattice reference implementation contains two key components:
+
+### Etch
+
+Etch is the storage subsystem utilised by Convex, which is specialised for efficient storage of content addressable Merkle Trees. 
+
+### REST API
+
+The Data Lattice rest API provides key data lattice capabilities:
+
+- Insert data
+- Retrieve data
+- Pin / unpin data
+- Access controls
+- Replication
+
+## Specification
+
+TODO: Elaborate
