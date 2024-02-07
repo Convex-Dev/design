@@ -131,18 +131,6 @@ Note: VLC Counts are the same as VLC Integers, except that they are unsigned. Ha
 
 The single byte `0x00` is the encoding for  `nil` value.
 
-### `0x01` Byte
-
-```
-Encoding:
-0x01 <Byte>
-
-Where:
-- <Byte> is a single byte value
-```
-
-A Byte value is representation naturally, with the byte value following the Tag byte `0x01`.
-
 ### `0xb0` - `0xb1` Boolean
 
 ```
@@ -162,6 +150,8 @@ Note: These Tags are chosen to aid human readability, such that the first hexade
 ```
 
 A small integer value is encoded by the Tag byte followed by `n` bytes representing the signed 2's complement  numeric value of the Integer. The integer must be represented in the minimum possible number of bytes (can be 0 additional bytes for the specific value `0`).
+
+Note: The value zero is conveniently encoded in this scheme as the single byte `0x10`
 
 ### `0x19` Integer (BigInt)
 
