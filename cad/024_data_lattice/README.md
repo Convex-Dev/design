@@ -2,9 +2,7 @@
 
 ## Overview
 
-Convex maintains data as part of the operation of the CVM (on-chain). It is possible to build decentralised solutions using these capabilities alone which we call a "pure dApp". 
-
-While this approach is sufficient for many use cases, more sophisticated decentralised applications are likely to require additional data sources (off-chain). We call such applications "hybrid dApps".
+Convex maintains data as part of the operation of the CVM (on-chain). It is possible to build decentralised solutions using these capabilities alone which we call a "pure dApp". This approach is sufficient for many use cases, however more sophisticated decentralised applications are likely to require additional data sources (off-chain). We call such applications "hybrid dApps".
 
 While off-chain data can be provided in many different ways, including via tradition Web 2.0 server infrastructure, there is a compelling case for a more powerful decentralised storage solution to support hybrid dApps on Convex
 
