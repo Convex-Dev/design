@@ -253,7 +253,7 @@ If Blob is more than 4096 bytes:
 0x31 <VLC Count = n> <Child Blob Value>(repeated 2-16 times)
 ```
 
-Every Blob encoding starts with the Tag byte and a VLC-encoded Long length.
+Every Blob encoding starts with the Tag byte and a VLC-encoded length.
 
 Encoding then splits depending on the Blob length `n`.
 - If 4096 bytes or less, the bytes of the Blob are encoded directly (`n*2` bytes total)
@@ -272,9 +272,9 @@ Importantly, this design allows:
 0x32 <VLC Count = n> <n bytes UTF-8 String>
 ```
 
-A Symbol is encoded with the Tag byte, a VLC Symbol length `n`, and `n` bytes of UTF-8 encoded characters.
+A Symbol is encoded with the Tag byte, a VLC Count length `n`, and `n` bytes of UTF-8 encoded characters.
 
-The Symbol must have a length of 1-64 UTF-16 characters (TODO: may change to UTF-8)
+The Symbol MUST have a length of 1-128 UTF-8 bytes
 
 ### 0x33 Keyword
 
@@ -282,9 +282,9 @@ The Symbol must have a length of 1-64 UTF-16 characters (TODO: may change to UTF
 0x32 <VLC Count = n> <n bytes UTF-8 String>
 ```
 
-A Keyword is encoded with the Tag byte, a VLC Symbol length `n`, and `n` bytes of UTF-8 encoded characters.
+A Keyword is encoded with the Tag byte, a VLC Count length `n`, and `n` bytes of UTF-8 encoded characters.
 
-The Keyword must have a length of 1-64 UTF-16 characters (TODO: may change to UTF-8)
+The Keyword MUST have a length of 1-128 UTF-8 bytes
 
 ### 0x80 Vector
 
