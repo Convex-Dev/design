@@ -2,7 +2,7 @@
 
 ## Overview
 
-Trust Monitors are composable, secure, on-chain authorisation modules that can be use to define arbitrary access rules for smart contracts, digital assets and other capabilities needed for open economic systems.
+Trust Monitors are composable, secure, on-chain authorisation modules that can be used to define arbitrary access rules for smart contracts, digital assets and other capabilities needed for open economic systems.
 
 The core idea is that a Trust Monitor can grant or deny access based on three parameters:
 
