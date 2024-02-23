@@ -8,7 +8,7 @@ The Convex Virtual Machine (CVM) execution operates as a pure, deterministic Sta
 State' = f (State, Block)
 ```
 
-Under this model, the latest Consensus State can always be reconstructed given both:
+Under this model, the latest consensus state can always be reconstructed given both:
 
 - A initial State
 - All Blocks between the initial State and the current consenus point
@@ -155,14 +155,23 @@ Logical Structure:
 
 The `Def` Op defines the value of a Symbol in the current Context's Environment.
 
-The parameter (`SymOrSyntax`) must be either a Symbol or a Syntax Object containing a Symbol value. This restriction is enforced by Op validation.
+The parameter (`SymOrSyntax`) MUST be either a Symbol or a Syntax Object containing a Symbol value. This restriction is enforced by Op validation.
 
 If a Syntax Object is provided for `SymOrStnax`, metadata from the Syntax Object is stored for the contained Symbol in current Context's Environment Metadata. Otherwise, any existing Metadata is unchanged.
 
+If `ValueOp` is `nil`, the definition MUST be created or updated in the environment but the existing value in the environment (if any) will be unchanged. 
+
 Note that in the compiler, `def` takes metadata from its value argument in the compiler and adds it to the Symbol if provided, hence the subtle difference:
 
-(def a (syntax 1 {:foo true})) defines a Syntax value
-(def b ^{:foo true} 1) defines the value 1 (with metadata on a)
+```
+;; defines a Syntax value
+(def a (syntax 1 {:foo true})) 
+
+;; defines the value 1 (with metadata on a)
+(def b ^{:foo true} 1) 
+```
+
+The compiler also interprets a `def` with only on argument as having a `ValueOp` equal to `nil`. This is is useful for forward definitions (e.g. as used in the core macro `declare`)
 
 ### `0x40` - `0x7f` Special
 
@@ -174,15 +183,17 @@ Gets the current Juice count in the Context.
 
 #### `0x41 - *caller*`
 
-Gets the Caller for the current context, defined as the Address of the Account that made the enclosing `(call ...)` invocation. 
+Gets the Caller for the current context, defined as the address of the account that made the enclosing `(call ...)` invocation. 
 
-Caller is `nil` for top level execution of a user transaction (i.e. there was no enclosing caller).
+`*caller*` is `nil` for top level execution of a user transaction (i.e. there was no enclosing caller).
 
-Normally, `*caller*` should be used to perform access control checks within an actor or smart contract, since it determines which account made the request.
+Normally, `*caller*` SHOULD be used to perform access control checks within an actor or smart contract, since it determines which account made the request.
 
 #### `0x42 - *address*`
 
-The Address of the currently executing Account. `*address*` may vary within a single transaction in the case where execution control is transferred between accounts, e.g. with `call` or `eval-as`.
+`*address*` returns the address of the currently executing account.
+
+The Address of the currently executing Account. `*address*` MAY vary within a single transaction in the case where execution control is transferred between accounts, e.g. with `call` or `eval-as`.
 
 Normally, `*address*` should be passed as an argument to function that check for access control rights
 
@@ -190,11 +201,11 @@ Normally, `*address*` should be passed as an argument to function that check for
 
 ## Op Execution
 
-When executed in a given Context, every Op must do exactly one of the following:
+When executed in a given Context, every Op MUST do exactly one of the following:
 
-- Completes normally with some resulting Value loaded into the Context's Result Register
-- Throw an Exception, which may be caught an handled by the CVM at appropriate points (recur, return etc.)
+- Complete normally with some resulting value loaded into the Context's Result Register
 - Throw an Error, which is never caught and results in the failure of the whole transaction
+- Throw a special Exceptional value, which is handled by the CVM in special ways to implement control flow (`recur`, `return` etc.)
 
 
 

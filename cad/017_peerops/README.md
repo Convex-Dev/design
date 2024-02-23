@@ -2,22 +2,22 @@
 
 ## Overview
 
-Operating a Peer is an important resposibility in the Convex Network. 
+Operating a Peer is an important responsibility in the Convex Network. 
 
-Anyone can run a Peer, and they are resposible for maintaining the Conensus of the Network. However, most users of the Convex Network do not need to run a Peers - they connect to Peers via Clients of the network that submit Transactions and query information on their Behalf
+Anyone can run a Peer, and they are responsible for maintaining the Consensus of the Network. However, most users of the Convex Network do not need to run a Peers - they connect to Peers via Clients of the network that submit Transactions and query information on their Behalf
 
-This document primarily conntains recommendations for Peer Operators
+This document primarily contains recommendations for Peer Operators
 
 ## Requirements
 
 Running a Peer requires:
 
 - An Internet-connected Server
-- At least 100 MBits/sec continous bandwidth
+- At least 100 MBits/sec continuous bandwidth
 - A modern processor with at least 8 dedicated Cores
 - At least 8 GB RAM (32 Gb Recommended)
 - At least 2 TB fast Storage (NVMe Recommended)
-- A secure modern operatong system (Linux recommended) with good support for memory mapped files
+- A secure modern operating system (Linux recommended) with good support for memory mapped files
 - Java 15 or above
 
 ## Installation
@@ -38,7 +38,7 @@ Peers SHOULD configure the number of concurrent outgoing Peer connections accord
 
 ### Network Partitions
 
-It may occur that the Peer becomes temporaily disconnected from the Peer Network.
+It may occur that the Peer becomes temporarily disconnected from the Peer Network.
 
 Peers are designed to automatically recover from temporary network failure and re-establish connections when possible. Peers with default configuration will periodically re-attempt to connect with other Peers randomly until connection with the Network is re-established.
 
@@ -60,7 +60,7 @@ Peers are required to post a Peer Stake to participate in consensus.
 
 A Convex Peer is designed to automatically manage P2P connections to the Network during normal operations. In most cases, assuming good network connectivity, a Peer should require no manual intervention to control connections to other Peers.
 
-### Ingoing Connections
+### Incoming Connections
 
 Peers treat incoming connections as regular Clients, i.e. they afford no particular special priviledges to incoming connections from other Peers. The purpose of this is to ensure that Bad Peers have no particular ability to influence a Peer that they connect to. 
 
@@ -69,7 +69,7 @@ Peers treat incoming connections as regular Clients, i.e. they afford no particu
 A Peer maintains a managed list of outgoing connections (i.e. connections to which they broadcast their Beliefs).
 
 Outgoing connections follow the following rules:
-- **Validated hosts**: Peers MUST only connect to Peers accesible on the network via the host address specified for the destination Peer in the current consensus, **or** if they are explicitly instructed to connect to a specific host address by the Peer Operator (e.g. when joining the Network). This minismises the chance of connecting to Bad Peers.
+- **Validated hosts**: Peers MUST only connect to Peers accesible on the network via the host address specified for the destination Peer in the current consensus, **or** if they are explicitly instructed to connect to a specific host address by the Peer Operator (e.g. when joining the Network). This minimises the chance of connecting to Bad Peers.
 - **Random elimination**: Peers SHOULD eliminate connections at random for low-staked Peers. This allows the Peer network to stay dynamic, and give an opportunity for new Peers to be connected to
 - **Stake-weighted selection** Peers MUST connect to other Peers preferentially according to stake, so that Bad Peers do not have a significant chance of isolating a Peer
 - **Target connection count**: Peers should attempt to maintain a number of outgoing connections to Peers as configured by the Peer Operator. This allows Peer Operators to control their bandwidth usage.
@@ -80,7 +80,7 @@ Peers SHOULD NOT reveal their current outgoing connection list to external parti
 
 Storage management is at the discretion of the Peer Operator.
 
-Peer Operators SHOULD arrange for periodic garbage collection of the Etch Store, if they do not have another reason to keep historicl data (e.g. for analytics).
+Peer Operators SHOULD arrange for periodic garbage collection of the Etch Store, if they do not have another reason to keep historical data (e.g. for analytics).
 
 ## Logging and Analytics
 
