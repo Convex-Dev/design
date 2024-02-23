@@ -57,7 +57,7 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 
 ## Contributing
 
-Contributions to this repository are welcome. Contributors may clarify existing design documents, or propose new formal specification changes to Convex by opening issues.
+Contributions to this repository are welcome. Contributors may clarify existing design documents, or propose new formal specification changes to Convex by opening issues or pull requests.
 
 For questions and broader discussions, please join the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
 
