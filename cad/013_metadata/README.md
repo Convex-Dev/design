@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CVM provides facility for attaching a metadata map to a defined symbol. The purpose of metadata is to provide any information on a defined symbol regardless of the
+The CVM provides a powerful facility for attaching a metadata map to a defined symbol. The purpose of metadata is to provide any information on a defined symbol regardless of the
 concrete value this symbol holds.
 
 Some metadata information, if specified, MUST follow a particular structure for external purposes. For instance, this CAD describes how to document a symbol by following an
