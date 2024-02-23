@@ -1,6 +1,6 @@
 # Data Lattice
 
-## Overview
+## Overview 
 
 Convex maintains data as part of the operation of the CVM (on-chain). It is possible to build decentralised solutions using these capabilities alone which we call a "pure dApp". This approach is sufficient for many use cases, however more sophisticated decentralised applications are likely to require additional data sources (off-chain). We call such applications "hybrid dApps".
 
@@ -12,7 +12,7 @@ Here are some of the key reasons data storage and processing extrinsic to Convex
 
 1. Scalability: Blockchains inherently have limits on computational capacity and data throughput. Storing and analysing large data sets is inefficient on-chain. Off-chain resources can horizontally scale to demand.
 
-2. Privacy: Sensitive data like healthcare records or personal information requires restricted access. Public blockchains provide transparency but not confidentiality. Off-chain systems support encryption and fine-grained access control.
+2. Privacy: Sensitive data as with healthcare records or personal information requires restricted access. Public blockchains provide transparency but not confidentiality. Off-chain systems support encryption and fine-grained access control.
 
 3. Speed & Responsiveness: DLTs feature lengthy settlement finality and limited transactions per second. This hinders uses needing real-time data flow like messaging or IoT monitoring. Off-chain networks have fewer limits reacting to data changes. 
 
