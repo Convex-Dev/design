@@ -168,7 +168,7 @@ This is actually the largest proportion of the computational work done by peers 
 
 ## Conclusion and future work
 
-Engineering high-performance systems is a challenge, and we're proud of the great work to get Convex so far as we move towards the main network launcha.
+Engineering high-performance systems is a challenge, and we're proud of the great work to get Convex so far as we move towards the main network launch.
 
 In the future, we expect to continue to improve performance and innovate in this domain. Key ideas include:
 - Support for subnets, enabling work to be performed separately from the main CVM Global State. This is a "Later 2" approach that has some drawbacks (mainly, being disconnected from atomic updates to the Global state) but may support some use cases that wish to operate more independently and only occasionally sync up with the Global State using techniques such as state channels.
