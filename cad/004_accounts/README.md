@@ -73,6 +73,24 @@ Each valid address MUST have precisely one account record in the global state.
 
 If a state transition causes an update to information in the account record (e.g. changing a definition in the environment), the new state MUST reflect the account update.
 
+The account record (`AccountStatus` in the standard reference implementation) MUST be a valid CVM Record data structure with Keyword keys as follows:
+- `:sequence` - sequence number of the account, initally `0`
+- `:key` - account key, may be `nil` to indicate an actor, otherwise a 32 byte Blob representing an Ed25519 public key
+- `:balance` - integer balance of the account in Convex copper coins
+- `:allowance` - unused memory allowance of the account, normally `0` but may be higher (e.g. if a memory accounting refund occured)
+- `:holdings` - map of holdings of the account, attributed to any other accounts which have utilised `set-holding` (e.g. token actors)
+- `:controller` - a controller account, which has the power to issue commands for this account (e.g. `eval-as`)
+- `:environment` - a map of symbols to defined values in the account, initially `{}`
+- `:metadata` - a map of symbols to metadata for values defined in the account, if any. Initially `{}`
+
+### Sequence Number
+
+The sequence number MUST indicate the number of transactions which have been executed for this account.
+
+The sequence number MUST be `0` for a new account, or any account for which transactions have never been previously executed (e.g. an immutable actor)
+
+The sequence number MUST increase by `1` for each correctly signed transaction executed.
+
 ### Account Key
 
 Each account MAY have a single account key.
@@ -86,4 +104,28 @@ The account key SHOULD represent a valid Ed25519 public key for which the owner 
 The CVM MUST NOT process transactions for an account unless the Ed25519 digital signature on the transaction can be verified with the account key. See CAD10 for more details.
 
 The account key MAY be changed by a controller of the account to a new account key, or set to `nil`.
+
+### Balance
+
+The balance field MUST be a non-negative integer indicating the number of Convex copper coins controlled directly by the account.
+
+### Allowance
+
+The allowance field MUST be a non-negative integer indicating the number of bytes of unused memory allowance held by the account.
+
+### Holdings
+
+The holdings field MUST be a BlobMap representing a mapping of Address to holding values. 
+
+Holding values SHOULD be meaningfully defined by the respective address that set them.
+
+### Controller
+
+The controller field MAY be any CVM value, including `nil` 
+
+If set to a specific Address, the CVM MUST regard that address as a controller
+
+Otherwise, the CVM MUST regard any non-`nil` value in this field as defining a trust monitor, and check as if called with `(call controller (check-trusted? <caller> :control <account-address>))`
+
+If another account is defined as a controller, it MUST be able to control the account in its entirely, including use of `eval-as`.
 
