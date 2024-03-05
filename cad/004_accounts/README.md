@@ -129,3 +129,19 @@ Otherwise, the CVM MUST regard any non-`nil` value in this field as defining a t
 
 If another account is defined as a controller, it MUST be able to control the account in its entirely, including use of `eval-as`.
 
+## Environment
+
+The environment field MUST be a map of Symbols to defined values in the account.
+
+The environment field must be `{}` when initially created.
+
+## Metadata
+
+The metadata field MUST be a map of Symbols to defined metadata in the account.
+
+The metadata field must be `{}` when initially created.
+
+CVM operations MAY set values in the environment without setting equivalent values in the metadata. This is primarily for efficiency purposes, as most enviornment values do not require metadata.
+
+
+
