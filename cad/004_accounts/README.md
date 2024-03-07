@@ -2,9 +2,11 @@
 
 ## Overview
 
-Accounts are a fundamental construct in Convex - they are logical records in the CVM State that are either securely controlled by an external User, or operate as autonomous actors. 
+Accounts are a fundamental construct in Convex - they are logical records in the CVM State that are either securely controlled by an external user, or operate as autonomous actors. 
 
-Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the User's account from unauthorised access.
+Accounts are identified with an address, which are sequentially allocated in the form `#1567`
+
+Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the User's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If an account is not able to accept external transactions, it's public key is set to `nil`.
 
 Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, accounts will probably constitute over 99% of the CVM State size - there isn't much else apart from data structure to support peers managing consensus and a little network-global data.
 
@@ -22,13 +24,13 @@ Addresses are also typically used as the index for data structures that track ow
 
 ### User Accounts
 
-A user account is an account with a public account key set, which is used to validate the digital signature of transactions. The associated private yey is assumed to be under the secure control of an external user. 
+A user account is an account with a public key defined, which is used to validate the digital signature of transactions. The associated private key is assumed to be under the secure control of an external user. 
 
 A user account is considered the origin account during the execution of any transaction submitted for this account.
 
 ### Actor Accounts
 
-An actor account is an account with no account key.
+An actor account is an account with no public key.
 
 Actors do nothing on their own (with some limited execptions e.g. scheduled operations). They need to be invoked by other accounts, e.g. a user will typically `call` an exported actor function from their own account. 
 
@@ -36,7 +38,7 @@ Actors do nothing on their own (with some limited execptions e.g. scheduled oper
 
 Each account can be considered as a small, lightweight lisp machine! It has its own programmable environment, and can be interacted with via transactions (write) or queries (read-only).
 
-There's not much limit on what can be done with this capability. You can control an account with a REPL, use it to script various on-chain operations, use it as a temporary environment for on-chain smart contract development etc.
+There's no limit on what can be done with this capability, as the CVM provides a fully Truring complete programming environment. You can control an account with a REPL, use it to script various on-chain operations, use it as a temporary environment for on-chain smart contract development etc.
 
 ### Controllers
 
