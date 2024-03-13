@@ -65,7 +65,7 @@ It is recommended consulting the broader community first before preparing propos
 
 ## License
 
-Copyright 2021-23 Convex Foundation (UK) and contributors.
+Copyright 2020-24 Convex Foundation (UK) and contributors.
 
 Contributors retain copyright in their contributions, but agree that the Convex Foundation may freely distribute these contributions under any license of its choice.
 
