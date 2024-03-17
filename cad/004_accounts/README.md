@@ -2,9 +2,11 @@
 
 ## Overview
 
-Accounts are a fundamental construct in Convex - they are logical records in the CVM State that are either securely controlled by an external User, or operate as autonomous actors. 
+Accounts are a fundamental construct in Convex - they are logical records in the CVM State that are either securely controlled by an external user, or operate as autonomous actors. 
 
-Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the User's account from unauthorised access.
+Accounts are identified with an address, which are sequentially allocated in the form `#1567`
+
+Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the User's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If an account is not able to accept external transactions, it's public key is set to `nil`.
 
 Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, accounts will probably constitute over 99% of the CVM State size - there isn't much else apart from data structure to support peers managing consensus and a little network-global data.
 
@@ -22,13 +24,13 @@ Addresses are also typically used as the index for data structures that track ow
 
 ### User Accounts
 
-A user account is an account with a public account key set, which is used to validate the digital signature of transactions. The associated private yey is assumed to be under the secure control of an external user. 
+A user account is an account with a public key defined, which is used to validate the digital signature of transactions. The associated private key is assumed to be under the secure control of an external user. 
 
 A user account is considered the origin account during the execution of any transaction submitted for this account.
 
 ### Actor Accounts
 
-An actor account is an account with no account key.
+An actor account is an account with no public key.
 
 Actors do nothing on their own (with some limited execptions e.g. scheduled operations). They need to be invoked by other accounts, e.g. a user will typically `call` an exported actor function from their own account. 
 
@@ -36,30 +38,30 @@ Actors do nothing on their own (with some limited execptions e.g. scheduled oper
 
 Each account can be considered as a small, lightweight lisp machine! It has its own programmable environment, and can be interacted with via transactions (write) or queries (read-only).
 
-There's not much limit on what can be done with this capability. You can control an account with a REPL, use it to script various on-chain operations, use it as a temporary environment for on-chain smart contract development etc.
+There's no limit on what can be done with this capability, as the CVM provides a fully Truring complete programming environment. You can control an account with a REPL, use it to script various on-chain operations, use it as a temporary environment for on-chain smart contract development etc.
 
 ### Controllers
 
-Optionally, an account may define a controller, giving the ability to one or more other accounts to control the account. 
+Optionally, an account may define a controller, giving the ability to one or more other accounts to control the account. The controller may be a specific address of another account, or a trust monitor that permits access to an arbitrary set of accounts that may be defined in code (e.g. accounts authorised by a governance actor or DAO). 
 
-This is a powerful capability. A Controller Account can be used, for example, to give "root" Access to an Actor so that it can be upgraded or fixed after deployment.
+This is a powerful capability. A controller account can be used, for example, to give "root" access to an actor so that it can be upgraded or debugged after deployment.
 
-It is also a risk: Users SHOULD NOT set a Controller for any Account they wish to keep secure unless:
+It is also a risk: Users SHOULD NOT set a Controller for any higgh value account they wish to keep secure unless:
 - They know exactly what they are doing
-- They fully trust the Account(s) they are giving control access to.
+- They fully trust the account(s) they are giving controller access to.
 
 ### Recycling Accounts
 
-It is possible to recycle old accounts, perhaps even selling them! This is likely to be cheaper and more efficient than creating a new Account, since it will save memory. It also helps keep the CVM state smaller overall.
+It is possible to recycle old accounts, perhaps even selling them! This is likely to be cheaper and more efficient than creating a new account, since it will save memory. It also helps keep the CVM state smaller overall.
 
 An example procedure for doing this securely is:
 - Transfer away any digital assets or other access control rights you want to keep
-- Set the Controller to `nil`
-- Delete unwanted definitions fro the Account with `*undef*`
+- Set the controller to `nil`
+- Delete unwanted definitions fro the account's environment with `undef`
 - Especially, it is important to delete:
   - any exported functions that might be called externally
-  - The `*schedule-start*` value, which may enable Scheduled Operations
-- Set the Account Key to the Public Key of the new Owner
+  - The `*schedule-start*` value, which may enable scheduled operations
+- Set the account public key to the public key of the new owner
 
 With this method, accounts may be re-used by different individuals, with the secure knowledge that the previous owner(s) no longer have any control over the account. 
 

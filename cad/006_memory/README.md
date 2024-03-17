@@ -29,7 +29,7 @@ The Memory Size includes:
 
 - The size of the encoding of the Cell in bytes
 - The total size of all child Cells, (e.g. if the object is a data structure)
-- An allowance for indexing and storage overheads (currently set to a fixed estimate of 64 bytes)
+- An allowance for indexing and storage overheads (currently set to a fixed estimate of 64 bytes per complete non-embedded cell)
 
 ### Consumption
 
