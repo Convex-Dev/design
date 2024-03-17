@@ -46,6 +46,11 @@ e.g. assuming the key is rotated in the first transaction for account `#1234`, t
 ## Test Vectors
 
 Seed Phrase: `hold round save brand meat deposit armed idea taste reunion silent pair estate ladder copper`
+
+Passphrase: `test`
+
 BIP39 Seed: `d46c4e60d0137e7ee0acc8b836d76d9a0458705caa128899709f576bade690b3c7cba49ece50a211193b9eb7803be49d02c8ddae02c3b88790ac17fa72f219a6`
+
 Derivation path: `m/44/888/1234/0/1`
+
 Ed25519 Private key seed: `2172bb864deb4f978ad6360beefe205d38a6839c011dc4f37592769007c8321f`
