@@ -38,6 +38,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD22](cad/022_trustmon)      | Trust Monitors                   | Draft      | mikera
 | [CAD23](cad/023_keystore)      | Local Key Store                  | Draft      | mikera
 | [CAD24](cad/024_data_lattice)  | Data Lattice                     | Draft      | mikera
+| [CAD25](cad/025_wallet)        | Wallet                           | Draft      | mikera
 
 ## Convex Project Portfolio
 
