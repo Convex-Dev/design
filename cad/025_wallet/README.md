@@ -1,14 +1,25 @@
-# Convex Wallet
+# Convex HD Wallets
 
 ## Overview 
 
-Convex requires Ed25519 key pairs to sign transactions and provide account security.
+Convex requires Ed25519 key pairs for users to sign transactions and provide account security.
 
-Any valid Ed25519 key pauir will work with Convex, however it is helpful to generate key pairs in a way that is:
+Any valid Ed25519 key pair will work with Convex, however it is helpful for wallets to generate key pairs in a way that is:
+- Able to produce a large number of hierarchical, deterministic key pairs from a single root key
 - Easy for users to understand and manage
 - Compatible with existing wallet standards
 
-## Generation
+## Seed Phrases
+
+Wallets SHOULD allow for seed generation accounting to the [BIP39 standard](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
+
+As such, wallets can be restored completely using the combination of:
+- A mnemonic seed phrase such as `share resource quantum rely train chicken they plug amazing`
+- A passphrase (considered optional, if not provided acts as the empty string `""`)
+
+A BIP39 seed, consisting of 64 bytes, SHOULD be created from the seed phase and passphrase according to BIP39 
+
+## Key Derivation
 
 Wallets SHOULD generate Ed25519 key pairs in accordance with the BIP43 / BIP44 standard, in the format:
 
@@ -18,7 +29,7 @@ Note: `888` is a placeholder coin type for the Convex Coin until confirmed in SL
 
 If the address is not known at the time of key generation, wallets SHOULD generate a temporary key pair, and rotate the public key of the account to the above once the address is known.
 
-Keys SHOULD be derived according to [SLIP-0010](https://github.com/satoshilabs/slips/blob/master/slip-0010.md), which produces Ed25519 key pairs in a manner compatible with BIP32 / BIP32 
+Keys SHOULD be derived according to [SLIP-0010](https://github.com/satoshilabs/slips/blob/master/slip-0010.md), which produces Ed25519 key pairs in a manner compatible with BIP32 / BIP39 
 
 Note: Ed25519 key generation with SLIP-0010 is assumed to use hardened key generation by default, as this is the only option supported for Ed25519.
 
