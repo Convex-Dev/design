@@ -52,6 +52,20 @@ Call Transaction are primarily intended for efficient execution of Smart Contrac
 
 ## General Handling
 
+### Results
+
+Transaction results MUST be returned in a `Result` record which contains the following fields:
+- `:id` - the message ID of the transaction to correlate with the client
+- `:result` - the final result of the transaction (will be the error message if an error occurred)
+- `:error` - the error code (MUST `nil` if no error occurred, otherwise can be any Keyword)
+- `:info` - a Map of information reported by the peer to the client, which SHOULD include:
+ - `:trace` - an error trace, which is a vector of stack messages if an error occurred
+ - `:eaddr` - the Address of execution where the error was raised
+ - `:mem` - Integer amount of memory consumed by the transaction (may be omitted if zero, may be negative for a refund)
+ - `:fee` - Total fee paid, including memory cost
+
+An an optimisation, peers MAY avoid creating result records if they have no requirement to report results back to clients.
+
 ## Peer Responsibilities
 
 Peers are generally expected to be responsible for validating and submitting legitimate transactions for consensus on behalf of their Clients.
