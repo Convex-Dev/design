@@ -43,6 +43,12 @@ Wallets SHOULD use the sequence number of the transaction used to rotate the key
 
 e.g. assuming the key is rotated in the first transaction for account `#1234`, the derivation path is `m/44/888/1234/0/1`
 
+## Account linkage
+
+An app SHOULD remember the user's addresses and which key pair it is associated with.
+
+An app MAY query the known addresses and attempt to find a compatible key pair from the user's wallet.
+
 ## Test Vectors
 
 Seed Phrase: `hold round save brand meat deposit armed idea taste reunion silent pair estate ladder copper`
