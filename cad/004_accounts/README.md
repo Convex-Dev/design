@@ -50,6 +50,8 @@ It is also a risk: Users SHOULD NOT set a Controller for any higgh value account
 - They know exactly what they are doing
 - They fully trust the account(s) they are giving controller access to.
 
+dApps MAY set an account controller to be used as an account recovery mechanism, with the ability to reset the account's public key in the case that access to the original key pair is lost. A possible implementation is to use a time locked smart contract that updates the account after some delay, that can be cancelled in the case of a suspected attack or if the original key is found again.
+
 ### Recycling Accounts
 
 It is possible to recycle old accounts, perhaps even selling them! This is likely to be cheaper and more efficient than creating a new account, since it will save memory. It also helps keep the CVM state smaller overall.
