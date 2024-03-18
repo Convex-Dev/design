@@ -71,14 +71,12 @@ Actor developers may include a capability to reclaim Memory allowances from an A
 
 The Memory Pool employs a simple Automated Market Maker, allowing users to buy and sell Memory Allowances at any time.
 
-The Memory Pool liquidity is initially set at network initialisation to be:
+The Memory Pool liquidity is initially set at network genesis to be:
 
-- 1,000,000,000 bytes of Memory Allowance (~1 GB)
+- 1,000,000 bytes of Memory Allowance (~1 MB)
 - 1,000 Convex Gold
 
-Giving an initial memory price of ~1 Convex Gold / MB
-
-TODO: Revise this based on updated estimates
+Giving an initial memory price of approx. 1 Convex Gold / KB
 
 ### Pool Growth
 
@@ -87,7 +85,7 @@ The memory trading Pool is automated to grow at a fixed rate (currently 1mb per 
 This is for the following reasons:
 
 - Creates additional memory supply over time, reflecting improved storage and peer capabilities
-- Ensures there is no hard memory supply limit that might otherwise prevent futire growth
+- Ensures there is no hard memory supply limit that might otherwise prevent future growth
 - Reduces the incentive for memory hoarding, since it will tend to penalise holders of excess memory allowances
 
 ## Incentives
@@ -100,7 +98,7 @@ Well designed Actors should avoid allocating too much Memory when called by User
 
 Any user who executes a transaction that releases memory will get a refund, so the system creates an incentive to remove data that is no longer useful or important.
 
-Most trivially, users have an incentive to clean up their own data in their environment. If there is no longer any requirement for such data to be on-chain, it can be deleted at the user's discretion. This is a relatively safe thing to do if the user has appropriate backups: Data in the user's own enviornment can always be restored at a later date.
+Most trivially, users have an incentive to clean up their own data in their environment. If there is no longer any requirement for such data to be on-chain, it can be deleted at the user's discretion. This is a relatively safe thing to do if the user has appropriate backups: Data in the user's own environment can always be restored at a later date.
 
 More subtly, this system creates a incentive for users to call Actors in ways that cause these actors to release memory in the Actor's environment, and thus gain the benefit of the refund. Some examples:
 
