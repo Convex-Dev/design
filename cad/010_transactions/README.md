@@ -2,15 +2,15 @@
 
 ## Overview
 
-Transactions are instructions to the Convex Network submitted by Users
+Transactions are instructions to the Convex Network submitted by users.
 
 ## Transaction Types
 
 ### Transfer
 
-A Transfer Transaction causes a transfer of Convex Coins from a Source Account to a Destination Account
+A Transfer Transaction causes a transfer of Convex Coins from an origin account to a destination account
 
-A Transfer Transaction MUST specify a Long value Amount to transfer
+A Transfer Transaction MUST specify a Long value amount to transfer
 
 The Source Account MUST be the Origin Account for the Transaction, i.e. transfers can only occur from the Account which has the correct Digital Signature
 
@@ -68,22 +68,22 @@ An an optimisation, peers MAY avoid creating result records if they have no requ
 
 ## Peer Responsibilities
 
-Peers are generally expected to be responsible for validating and submitting legitimate transactions for consensus on behalf of their Clients.
+Peers are generally expected to be responsible for validating and submitting legitimate transactions for consensus on behalf of their clients.
 
-Peers MUST submit legitimate transaction for consensus, unless they have a reason to believe the transaction is invalid or illegitimate.
+Peers MAY define their own terms for allowing a client to use their services. 
 
-Peers SHOULD submit transactions in the order that they are received from any single Client. Failure to do so is likely to result in Sequence errors and potential economic cost for the Peers.
+Peers SHOULD submit legitimate transaction for consensus, unless they have a reason to believe the transaction is invalid or illegitimate.
 
-Peers MUST validate the digital signature of Transactions they include in a Block. Failure to do so is likely to resulting in automatic slashing.
+Peers SHOULD submit transactions in the order that they are received from any single client. Failure to do so is likely to result in sequence errors and potential economic cost for the peers.
+
+Peers SHOULD validate the digital signature of transactions they include in a block. Failure to do so is likely to result in penalities (at a minimum, paying the fees for the invalid transaction) 
 
 Peers MAY reject transactions that do not appear to be legitimate, in which case the Peer SHOULD return a Result to the Client submitting the transaction indicating the reason for rejection. Some examples where this may be appropriate:
-- Any Transaction that has an obviously invalid Sequence Number (less than that required for the current Consensus State)
-- A Transaction that has a future Sequence number (greater than would be valid for the current consensus), and the Peer is unaware of any previous in-flight transactions from the Client that would make this valid.
-- A Transaction that appears too expensive for the Origin Account for which it is submitted to execute (a very large transaction size or a large transfer that would be likely to fail)
-- An Account or Client has been blacklisted by the Peer for previous bad behaviour
+- Any transaction that has an obviously invalid sequence number (less than that required for the current Consensus State)
+- A transaction that has a future Sequence number (greater than would be valid for the current consensus), and the Peer is unaware of any previous in-flight transactions from the Client that would make this valid.
+- A transaction that appears too expensive for the origin account for which it is submitted to execute (a very large transaction size or a large transfer that would be likely to fail)
+- An account or client has been blacklisted by the Peer for previous bad behaviour
 
+## Signatures
 
-
-## Signatues
-
-All Transactions MUST be signed by the Account Key of the Account for which the User submits the Transaction
+All valid transactions MUST be signed by the account key of the account for which the user submits the transaction. The relevant account key is the one that is set in the CVM state at the time the transaction is executed.
