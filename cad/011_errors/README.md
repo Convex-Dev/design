@@ -81,6 +81,10 @@ In particualar, a `:CAST` Error SHOULD be thrown whenever an attempt is made to 
 
 A `:NOBODY` Error should be thrown whenever an attempt is made to access an Account that does not exist. 
 
+### `:SYNTAX`
+
+A `:SYNTAX` Error incdicates a syntax error in code during expansion or compilation. 
+
 ### `:STATE`
 
 A `:STATE` Error SHOULD be thrown when an operation is attempted that would possibly be legal, but fails in the current situation because of some information in the current CVM State not permitting it.
