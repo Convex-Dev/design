@@ -31,6 +31,30 @@ It is possible (though *not usually recommended*, for obvious security and risk 
 
 Examples below are suitable for execution at a Convex Lisp REPL.
 
+## Expressions and Forms
+
+Convex Lisp code operates through the evaluation of expressions. Expressions are represented as CVM data structured as a "form" - a data value that represents code. In this sense "code is data" because the language is represented in its own data structures. This property is sometimes termed **homoiconicity*.
+
+Typically, a form is a List where the first element represents the operation and the following elements represent arguments, e.g.:
+
+```clojure
+(operation arg1 arg2 .... argN)
+```
+
+Each element it itself a form - so forms can be nested to construct more complex expressions.
+
+At the lowest level, forms will be a single (non-compound) data value that does not contain any further elements. These are sometimes called "atoms":
+
+```clojure
+;; the following are all atomic forms
+
+1
+
+hello
+
+"This is a string"
+```
+
 ## Values and data types
 
 Convex Lisp provides a rich set of data types suitable for general purpose development. These include:
@@ -72,7 +96,9 @@ Blobs can be easily constructed as literals by prefixing `0x` to a hexadecimal r
 => 2
 ```
 
-### Data structures
+### Data Structures
+
+#### Vectors
 
 Vectors are the most basic data structure, representing an indexed sequence of elements. They can be constructed by square brackets `[ ... ]` or with the core function `vector` 
 
@@ -82,6 +108,28 @@ Vectors are the most basic data structure, representing an indexed sequence of e
 
 (vector true 0x1234 "Hello")
 => [true 0x1234 "Hello"]
+```
+
+#### Lists
+
+Lists are sequential data structures most commonly used for expressing Convex Lisp code. They are representuing be surrounding zero or more elements with regular parentheses `( )`. Because they are interpreted as code, if you want to construct a list literal you must quote it to suppress evaluations with `'( )` or use the constructor function `list`
+
+```clojure
+;; Note single quote symbol needed to produce a literal List
+'(1 2 3)
+=> (1 2 3)
+
+;; This also works
+(quote (1 2 3))
+=> (1 2 3)
+
+;; This fails, because it gets interpreted as a function application, and "1" isn't a function!
+(1 2 3)
+=> Exception: :CAST Can't convert value of type Integer to type Function
+
+;; List constructor is also useful, especially if you want to compute elements to be the result of some expression 
+(list 1 2 (+ 1 2))
+=> (1 2 3)
 ```
 
 ### Keywords
@@ -117,7 +165,7 @@ bar
 => [1 2 3]
 ```
 
-You may want to use a Symbol as a value without performing any lookup. In this case, you need need to **quote** the Symbol, so that the symbol itself will be returned (rather than the value that it refers to). This can be done in two ways:
+It is sometimes useful to use a Symbol as a value in itself (without performing any lookup). In this case, it is possible to **quote** the Symbol, so that the symbol itself will be returned (rather than the value that it refers to). This can be done in two ways:
 
 ```clojure
 ;; Quoting with the single quotation mark
@@ -129,9 +177,7 @@ You may want to use a Symbol as a value without performing any lookup. In this c
 => foo
 ```
 
-If in doubt whether to use Symbols or Keywords, the following may be helpful:
-- Symbols are best used in core where you are referring to values defined in the current environment (e.g. using `def`)
-- Keywords are best when you want to use them as keys in data structures or literal / constant values since they do not require quoting for such usage
+
 
 ## Functions
 
@@ -260,14 +306,135 @@ There are special Double literals for NaN and +/- Infinity. Applications using D
  => ##-Inf
  ```
 
+## Equality and comparisons
+
+### Value equality
+
+The `=` function tests for equality between any values, returning a Boolean that is `true` if and only if all values are equal:
+
+```clojure
+(= 123 123)
+=> true
+
+(= :foo "foo")
+=> false
+```
+
+Value equality in Convex Lisp is **strict** and corresponds exactly with identity of CVM values (i.e. they must have the same encoding and Value Id)
+
+### Numerical equality
+
+The `==` function tests for numerical equality. This is *less strict* than `=`. In particular it should be noted that Integers and Doubles can be numerically equal while not being identical CVM values (i.e. equality according to `=`)
+
+```clojure
+(= 1 1.0)
+=> false
+ 
+(== 1 1.0)
+=> true
+```
+
+### Numerical comparison
+
+The `<`, `>`, `<=` and `>=` symbols perform numerical comparison in the conventional fashion. Note that they support variable arities and mixtures of numerical types:
+
+```clojure
+(< 1 3)
+=> true
+
+(>= 2.0 2)
+=> true
+
+(> 10 2 4.3)
+=> false
+```
+
+## The `nil` value
+
+The value `nil` is an important special value. Its usage may depend on context: it is typically used to mean "no answer" or "not found".
+
+Frequently, it is used to indicate when something is not found in a data structure, e.g.
+
+```
+;; Trying to `get` a value from a map for a key that does not exist.
+(get {:foo 1, :bar 2} :baz)
+=> nil
+```
+
+When passed to functions that expect a data structure, `nil` usually indicates an empty data structure:
+
+```clojure
+;; Concatenating vectors with `nil`
+(concat [1 2] nil [3 4])
+=> [1 2 3 4]
+
+;; Intersecting sets with `nil`
+(intersection nil #{1 2 3})
+ => #{}
+
+;; Merging maps with `nil` leaves then unchanged
+(merge {:foo 1} nil)
+=> {:foo 1}
+
+;; `nil` is considered to be `empty?`
+(empty? nil)
+=> true
+```
+
+NOTE: while `nil` may behave like an empty data structure in some contexts, it is a distinct value from the empty data structures (`[]` `()` `{}` and `#{}`). None of these values should be considered equal to each other. In particular, functions that are expected to return a data structure should normally produce an empty data structure rather than `nil` if they succeed.
+
+When used in conditional expressions, `nil` is considered as `false` (see section on conditional expressions for more details)
+
+When used in JSON-like data structures, `nil` may be considered to map to the JSON value `null`.
+
+
+## Conditional Expressions
+
+### `if` macro
+
+The most common form of conditional expression is the `if` macro, which evaluates the first (test) expression to determine whether the second (true) or third (false) expression should be evaluated to determine the final result.
+
+```clojure
+(if true
+  "This will be the result"
+  "This will never happen")
+```
+
+The `false` branch may be omitted, in which case the result will be `nil`
+
+### `cond` special form
+
+If multiple test expressions are required, the `cond` special form allows this, returning the result for the first conditional expression matched (or an optional default expression if none match).
+
+```clojure
+(def a 13)
+
+(cond
+  (< a 10) "a is too small")
+  (> a 20) "a is too big")
+  "a is just right")
+```
+
+NOTE: The `if` macro expands to a `cond` expression in the standard Convex Lisp implementation. Using `cond` may be mildly more efficient in performance sensitive code, as it avoids one additional step of macro expansion. 
+
+### Truthiness
+
+In conditional expressions, results are determined by whether the evaluation of a test expression is "truthy" (like `true`) or "falsey" (like `false`).
+
+The rule is simple:
+- `false` or the value `nil` are considered "falsey"
+- `true` or *any other value* are considered "truthy"
+
+NOTE: A key reason for this is for convenience and simplifying code: `(if (not (nil? (lookup-thing a b))) ...)` can often become `(if (lookup-thing a b) ...)`. This is consistent with behaviour in other Lisps, where it is frequently referred to as "nil-punning". 
+
 ## Other syntax
 
 ### Whitespace
 
-The Convex Lisp reader does not distinguish between different types of whitespace. Any number of tabs, spaces and new lines are all considered equivalent. Developers may find this useful for formatting source code for better readability.
+The Convex Lisp reader does not distinguish between different types of whitespace. Any number of tabs, commas, spaces and new lines are all considered equivalent. Programmers may find this useful for formatting source code for better readability.
 
 ```clojure
-(+ 3 4)
+(+ 3,4)
 => 7
 
 ( + 3 4 )
@@ -307,9 +474,71 @@ The reader macro `#_` can be used to instruct the reader to ignore any single fo
  => 6
 ```
 
+## Metadata
+
+Convex Lisp supports metadata on any value. When metadata is applied to a value, it creates a Syntax object, which wraps both the metadata and the annotated value.
+
+The `^` symbol may be used to add metadata to a value and create a Syntax object, or you can use the `syntax` function to construct one:
+
+```clojure
+;; A syntax object adding a metadata map to a vector (Note the quote: compilation would otherwise strip the metadata)
+(quote ^{:foo "This is a metadata value"} [1 2 3])
+=> ^{:foo "This is a metadata value"} [1 2 3]
+
+;; The `syntax` core function can be used to construct the same syntax object as above
+(syntax [1 2 3] {:foo "This is a metadata value"})
+=> ^{:foo "This is a metadata value"} [1 2 3]
+
+;; Metadata can be empty
+(syntax [1 2 3])
+ => ^{} [1 2 3]
+
+;; A keyword can be used as a shortcut to set a single metadata flag to true
+```clojure
+(= ^:mark [1] ^{:mark true} [1])
+ => true
+```
+
+Syntax objects can be wrapped and unwrapped with `syntax`, `meta` and `unsyntax`:
+
+```clojure
+;; Unwrap the value from a syntax object
+(unsyntax (syntax [1 2 3] {:some :metadata})
+=> [1 2 3]
+
+;; Unwrap the metadata from a syntax object
+(meta (syntax [1 2 3] {:some :metadata}))
+ => {:some :metadata}
+```
+
+Metadata can be attached to any definition in the environment:
+
+```clojure
+;; Define a symbol with metadata
+(def myval ^{:level 12} [1 2 3])
+
+;; Lookup metadata for a symbol 
+(lookup-meta 'myval)
+ => {:level 12}
+```
+
+Key use cases for metadata:
+
+- Control **behaviour of definitions** in the environment e.g.:
+ - The `:callable?` metadata tag indicates a callable actor function
+ - The `:static` metadata tag indicates a definition that should be inlined by the compiler
+- Provide **on-chain documentation** for key functions, conventionally stored under the `:doc` field of metadata
+- Allow custom expansion / compilation logic for DSLs, e.g. type annotations
+
+```clojure
+;; example of accessing documentation metadata via the `doc` macro
+(doc count)
+ => {:description "Returns the number of elements in the given collection, blob, or string.",:signature [{:return Long,:params [coll]}],:errors {:CAST "If the argument is not a countable object."},:examples [{:code "(count [1 2 3])"}]}
+```
+
 ## The Reader
 
-The Convex Lisp Reader is a software component that converts UTF8 strings into CVM data structures.
+The Convex Lisp Reader is a software component that converts UTF-8 strings into CVM data structures.
 
 E.g. the String "(+ 1 2 3)" is converted by the Reader into the list `(+ 1 2 3)`containing 4 elements  where the first element is the Symbol `+` and the following elements are Integers.
 
@@ -318,4 +547,28 @@ The Reader is **not available on chain** - it is intended for use in tools that 
 The reader syntax in the `convex-core` reference implementation is available as a [ANTLR Grammar](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/antlr4/convex/core/lang/reader/antlr/Convex.g4)
 
 NOTE: Use of the Reader is not mandatory: it is possible to construct Convex Lisp forms programmatically (or even directly build pre-compiled CVM Ops)  rather than parsing a String via the Reader. This may offer marginal performance benefits in some applications, e.g. JVM based systems that need to construct a large number of transactions.
+
+## Coding Conventions
+
+The following conventions are recommended and/or generally utilised in Convex Lisp libraries:
+
+### Hyphenation
+
+Hyphens are generally preferred for symbol names, e.g. `do-something` (rather than `do_something` or `doSomething`). This makes no difference to the CVM, but is primarily done for consistency with other Lisp based languages.
+
+### Constant naming
+
+Prefer capitalised names like `PRICE` for global configuration variables and constants. This is to differentiate clearly from local, temporary or dynamically changing values.
+
+### Keywords vs. Symbols
+
+If in doubt whether to use Symbols or Keywords, the following may be helpful:
+- Symbols are best when referring to values defined in the current environment (e.g. using `def`)
+- Keywords are best as keys in data structures or literal / constant values since they do not require quoting for such usage
+
+### Clojure Consistency
+
+Where possible, coding style should be consistent with Clojure which shares a very similar syntax to Convex Lisp.
+
+The [Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide) may be informative.
 
