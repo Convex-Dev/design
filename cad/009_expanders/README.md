@@ -17,7 +17,7 @@ Forms are code represented as data, in the manner of Lisp, e.g. a List
 
 `(+ 1 2)`
 
-Where the list contains the Symbol ` ``+` followed by the Long values `1` and `2`.
+Where the list contains the Symbol `+` followed by the Long values `1` and `2`.
 
 ### Expanders
 
@@ -26,10 +26,10 @@ Expanders are functions that transform code as a Convex Lisp form into a replace
 `(fn [x e] ....)`
 
 Where:
-- `x` is the Form to be transformed
-- `e` is a Continuation Expander, i.e. another Expander which may be called recursively to expand further forms.
+- `x` is the form to be transformed
+- `e` is a continuation expander, i.e. another expander which may be called recursively to expand further forms.
 
-Expanders stored in the environment MUST have the metadata `{:expander true}` set in order to be recognised as Expanders by the compiler Expansion Phase.
+Expanders stored in the environment MUST have the metadata `{:expander true}` set in order to be recognised as expanders by the compiler Expansion Phase.
 
 Typically an Expander will:
 - Perform some specialised code expansion

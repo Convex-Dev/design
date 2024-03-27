@@ -188,11 +188,13 @@ A Double value is encoded as the Tag byte followed by 8 bytes standard represent
 ```Encoding
 0x20 <32 bytes Value ID>
 ```
-A Reference is encoded as the Tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value).
+A Reference is encoded as the Tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
 
-Refs encodings are special for a number of reasons:
-- They are not themselves cell values, rather they represent a reference to a cell
-- They MUST be used as substitutes for child values contained within other cell encodings, whenever the child is not embedded
+Ref encodings are used as substitutes for child values contained within other cell encodings subject to the following rules:
+- They MUST be used  whenever the child is not embedded. 
+- They MUST NOT be used when the child cell is embedded. 
+
+These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two versions, one with an embedded child and the other with a Ref).
 
 ### `0x21` Address
 

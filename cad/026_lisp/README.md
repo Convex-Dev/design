@@ -525,7 +525,7 @@ Metadata can be attached to any definition in the environment:
 Key use cases for metadata:
 
 - Control **behaviour of definitions** in the environment e.g.:
- - The `:callable?` metadata tag indicates a callable actor function
+ - The `:callable` metadata tag indicates a callable actor function
  - The `:static` metadata tag indicates a definition that should be inlined by the compiler
 - Provide **on-chain documentation** for key functions, conventionally stored under the `:doc` field of metadata
 - Allow custom expansion / compilation logic for DSLs, e.g. type annotations
