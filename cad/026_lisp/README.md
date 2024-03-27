@@ -250,6 +250,36 @@ Functions can also support fully variadic arguments using the `&` symbol precedi
 => 2.5  
 ```
 
+### Higher order functions
+
+Higher order functions are functions that themselves take functions as arguments. This is fully supported on the CVM, and often results in cleaner, more robust code than would be achieved with equivalent imperative programming style.
+
+A good example is `map`, which applies a function to all elements of a collection, avoiding the need for an explicit loop:
+
+```clojure
+;; The inc function simply increments an Integer value
+(inc 7)
+=> 8
+
+;; map can be used with inc to increment all elements of a collection
+(map inc [1 2 3 4])
+=> [2 3 4 5]
+```
+
+Another very useful higher order function is `reduce`, which can be used to sequentially apply a function to create an accumulated result:
+
+```clojre
+(defn square [x] (* x x))
+
+(defn sum-of-squares [coll]
+  (reduce (fn [acc x] (+ acc (square x)))  ; Function to add squares to an accumulator
+          0.0                              ; initial accumulator value
+          coll))                           ; the collection argemnet to reduce over
+          
+(sum-of-squares [1 2 3 4 5])          
+=> 55.0           
+```
+
 ### Anonymous functions
 
 Sometimes, it can be convenient to create a function without storing it against a symbol in the environment. This can be done with the `(fn [...] ...)` anonymous function constructor.
