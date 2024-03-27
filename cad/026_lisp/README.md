@@ -274,7 +274,7 @@ Another very useful higher order function is `reduce`, which can be used to sequ
 (defn sum-of-squares [coll]
   (reduce (fn [acc x] (+ acc (square x)))  ; Function to add squares to an accumulator
           0.0                              ; initial accumulator value
-          coll))                           ; the collection argemnet to reduce over
+          coll))                           ; the collection argument to reduce over
           
 (sum-of-squares [1 2 3 4 5])          
 => 55.0           
@@ -282,14 +282,29 @@ Another very useful higher order function is `reduce`, which can be used to sequ
 
 ### Anonymous functions
 
-Sometimes, it can be convenient to create a function without storing it against a symbol in the environment. This can be done with the `(fn [...] ...)` anonymous function constructor.
+It can sometimes be convenient to create a function without storing it against a symbol in the environment. This can be done with the `(fn [...] ...)` anonymous function constructor.
 
 ```clojure
-(reduce 
-  (fn [a b] (+ a (* b b)))
-  [0 1 2 3])
-=> 14
+(map 
+  (fn [x] (* x x x)) ; Anonymous function to cube a number
+  [0 1 2 3 4])
+=> [0 1 8 27 64]
 ```
+
+### Returning values
+
+A `return` expression can be used to return early from a function with a given result:
+
+```
+(defn foo [x]
+  (return (str x))            ; Early return with a result
+  (fail "Shouldn't happen"))  ; This line never gets executed
+  
+(foo 678)
+=> "678"
+```
+
+In the absence of a explicit `return`, the result of a function will be the result of the final expression executed.
 
 ## Floating point
 
