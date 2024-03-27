@@ -18,7 +18,7 @@ This CAD outlines the key elements of Convex Lisp. It is intended as an **introd
 - Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems 
 - Powerful **macro capabilities**, following the Expansion-passing Style developed by Dybvig, Friedman & Haynes
 - Automatic **memory management**, including [memory accounting](../006_memory)
-- Elegant **syntax** largely inspired by Clojure
+- Elegant **Lisp syntax** largely inspired by Clojure
 - **On-chain compiler** (smart contracts writing smart contracts....)
 
 ## Interactive development
@@ -27,9 +27,9 @@ Convex Lisp is designed to support *interactive usage*. By compressing the tradi
 
 Typically, developers will make use of a REPL (Read-Eval-Print-Loop) which executes expressions directly to return a result (and possibly also modifying the CVM state). REPLs can be used in local test environments, or directly on a deployed Convex network.
 
-It is possible (though *not usually recommended*, for obvious security and risk reasons) to enable REPL capabilities on live production code.
+It is possible (though *not usually recommended*, for obvious security and risk reasons) to enable REPL capabilities on live production code. This capability can be used to hot-fix and upgrade running CVM code.
 
-Examples below are suitable for execution at a Convex Lisp REPL.
+Examples given in this CAD are suitable for execution at a Convex Lisp REPL.
 
 ## Expressions and Forms
 
@@ -587,6 +587,8 @@ We believe the following features of Convex Lisp, among others, offer substantiv
 - **Extra Types**: A full range of general purpose value types including: Sets, literal Keywords, sorted BlobMaps, UTF-8 Strings, Blobs etc.
 - **Memory accounting**: Economic system for memory management. See [CAD006](../006_memory)
 - **Powerful macro capability**: ability to fully customise the language with expanders. See also [CAD009](../009_expanders)
+
+We hope that developers will find the tools provided in Convex Lisp a compelling solution as we continue to build open economic systems.
 
 
 

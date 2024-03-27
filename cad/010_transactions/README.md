@@ -4,17 +4,41 @@
 
 Transactions are instructions to the Convex Network submitted by users.
 
+Transactions SHOULD be instructions that a user wishes to see executed and reflected in the global state. Typical examples might be:
+- Transfer of a digital asset from one account to another
+- Executing a trade of one asset for another via a smart contract
+- Deploying or upgrading CVM code
+- Voting in a decentralised governance process 
+- Registering a hash that can be used to identify and validate off-chain content (e.g. on the [Data Lattice](../024_data_lattice) )
+
+The general lifecycle of a transaction is as follows:
+
+1. Client constructs a transaction containing the desired instruction to the network
+2. Client signs the transaction using a private Ed25519 key
+3. The signed transaction is submitted to a Peer
+4. The Peer incorporates the transaction into a Belief, which is propagated to the network
+5. The transaction is confirmed in consensus according to the CPoS algorithm
+6. The Peer computes the effect of the transaction on the CVM state, and any result(s)
+7. Peer returns a confirmed transaction result to the Client
+ 
+
+
 ## Transaction Types
+
+All signed transactions MUST contain at least the following fields:
+- An Ed25519 **digital signature**. This field is critical to ensure that the transaction is authorised by the holder of the correct private key
+- An Address specifying the **origin** account for the transaction. This is the account that will pay any transaction fees, and against which the digital signature will be checked for cryptographic security purposes.
+- A *sequence number* specifying the order in which the transaction must be run for the origin account. This MUST be *one more* than the total number of transactions executed for the origin account so far. i.e. the first sequence number accepted will be `1`, the next `2` etc. This field is critical to prevent replay attacks.
 
 ### Transfer
 
-A Transfer Transaction causes a transfer of Convex Coins from an origin account to a destination account
+A Transfer Transaction causes a transfer of Convex Coins from the origin account to a destination account
 
-A Transfer Transaction MUST specify a Long value amount to transfer
+A Transfer Transaction MUST specify an amount to transfer, as an integer.
 
 The Source Account MUST be the Origin Account for the Transaction, i.e. transfers can only occur from the Account which has the correct Digital Signature
 
-Both Account MUST be valid, otherwise the Transaction MUST fail
+Both Accounts MUST be valid, otherwise the Transaction MUST fail
 
 The Transaction MUST fail if any of the following are true:
 - The source Account has insufficient balance to pay for Transfer Transaction fees.
@@ -25,13 +49,17 @@ If the Transfer Transaction does not fail for any reason, then:
 - The Amount MUST be subtracted from the Source Account's Balance
 - The Amount MUST be added to the Destination Account's balance
 
-A transfer amount of zero will succeed, but is relatively pointless. Users SHOULD avoid submitting such transfers, unless they are willing to pay transaction fees simply to have this recorded in consensus.
+A transfer amount of zero will succeed, though this is relatively pointless. Users SHOULD avoid submitting such transfers, unless they are willing to pay transaction fees simply to have this recorded in consensus.
 
 ### Invoke
 
 An Invoke Transaction causes the execution of CVM Code
 
-An Invoke Transaction MUST include a payload of CVM Code
+An Invoke Transaction MUST include a payload of CVM Code. This may be either:
+- A pre-compiled CVM Op
+- A source code form that will be compiled and executed, as if using `eval`
+
+High volume users MAY consider pre-compilation of CVM code to avoid additional compilation juice fees.
 
 An Invoke Transaction MUST fail if:
 - The CVM Code is not valid for execution (e.g. a syntax error in compilation)
@@ -52,6 +80,16 @@ Call Transaction are primarily intended for efficient execution of Smart Contrac
 
 ## General Handling
 
+### Construction
+
+Clients MUST ensure the transaction is correctly constructed according to one of the transaction types defined in this CAD
+
+Clients MAY delegate transaction construction to another system. If this is done, care should be taken to ensure the transaction is correctly constructed (e.g. does not contain malicious code that has been inserted by a hacker)
+
+Clients MUST ensure that the sequence number on the transaction is correct. Failure to do so is likely to result in immediate transaction rejection, and possible blacklisting by Peers.
+
+Clients MUST ensure that they sign the transaction with the correct private key for the origin account. Failure to do so is likely to result in immediate transaction rejection, and possible blacklisting by Peers.
+
 ### Results
 
 Transaction results MUST be returned in a `Result` record which contains the following fields:
@@ -59,12 +97,15 @@ Transaction results MUST be returned in a `Result` record which contains the fol
 - `:result` - the final result of the transaction (will be the error message if an error occurred)
 - `:error` - the error code (MUST `nil` if no error occurred, otherwise can be any Keyword)
 - `:info` - a Map of information reported by the peer to the client, which SHOULD include:
+ - `:tx` - the 32-byte SHA3-256 hash of the signed transaction
+ - `:loc` - the location of the transaction in consensus, as a vector `[block-index transaction-index]`
  - `:trace` - an error trace, which is a vector of stack messages if an error occurred
  - `:eaddr` - the Address of execution where the error was raised
  - `:mem` - Integer amount of memory consumed by the transaction (may be omitted if zero, may be negative for a refund)
- - `:fee` - Total fee paid, including memory cost
+ - `:juice` - Execution juice for the transaction
+ - `:fee` - Total fee paid in Convex coppers, including memory cost
 
-An an optimisation, peers MAY avoid creating result records if they have no requirement to report results back to clients.
+An an optimisation, peers MAY avoid creating `Result` records if they have no requirement to report results back to clients.
 
 ## Peer Responsibilities
 

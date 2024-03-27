@@ -9,6 +9,7 @@ Macros are run at compile time, and can perform arbitrary code transformations. 
 - They can perform optimisations, e.g. pre-computing certain values at compile time
 - They can be used to extend the Convex Lisp language with new language constructs that would not be expressible as a regular function
 
+
 ## Key Components
 
 ### Forms
@@ -67,8 +68,44 @@ The initial expander executes the following logic when passed the parameters `[x
 - `*initial-expander*` is implemented in optimised Java for performance reasons. It is however possible to implement custom expanders in pure Convex Lisp.
 - Expanders MAY make use of tail recursion to avoid consuming CVM stack depth on multiple expansions, since the call to the Continuation Expander often occurs in tail position.
 
+## Process
 
+In the expansion phase of compilation, a source code form MUST be expanded according to the relevant expander (`*initial-expander*` by default)
 
+If the relevant expander is `e` and the source form is `x`, the expanded form is the result of calling `(e x e)`
+
+The expanded form SHOULD be a fully expanded form that will successfully compile in the current context, i.e. is valid code that requires no further expansion.   
+
+## Examples
+
+### Defining macros
+
+Macros can be defined with `defmacro` and are simple expanders that return a transformed form (which may then be subject to further expansion). The example below is a macro that converts a tree-like source form into an arithmetic operation that returns the size of the tree.
+
+```clojure
+;; A macro that counts the number of nodes in a nested tree data structure (including the parent)
+(defmacro tree-size [c]
+  (cond
+    (coll? c) (cons '+ 1 (map (fn [x] `(tree-size ~x) ) c))
+    :else 1))
+
+;; Using the macro is simple: just put in operation position (first element of list)
+(tree-size [1 2 [3 4]])
+=> 6
+
+;; this is the full macro expansion of the above example
+(expand '(tree-size [1 2 [3 4]]))
+ => (+ 1 1 1 (+ 1 1 1))
+
+;; This is a single stage of expansion
+(expand-1 '(tree-size [1 2 [3 4]]))
+ => (+ 1 (tree-size 1) (tree-size 2) (tree-size [3 4]))
+
+;; Note this works totally fine on source code forms, which are not executed.
+;; This wouldn't be possible with a regular function (you would need to quote the source code)
+(tree-size (count [1 2 3]))
+=> 6
+```
 
 
 

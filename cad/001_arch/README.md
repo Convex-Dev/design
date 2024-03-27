@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convex operates as a decentralised network of Peers, which verify and execute transactions submitted by Clients in decentralised consensus.
+Convex operates as a decentralised network of Peers, which verify and execute transactions submitted by Clients.
 
 ## Architecture Requirements
 
@@ -16,7 +16,9 @@ The network MAY suffer from temporary disconnection or interruption. Peers MUST 
 
 Peers MUST accept Belief update messages from at least one other Peer. Failure to do so will result in that Peer being unable to observe consensus.
 
-Peers SHOULD transmit their own Belief updates to at least one other Peer. Failure to do so will result in the Peer being unable to contribute its own transactions to network consensus.
+Peers MUST transmit their own Belief updates to at least one other Peer. Failure to do so will result in the Peer being unable to contribute its own transactions to network consensus.
+
+Peers SHOULD send and receive Beliefs from multiple randomly selected other peers, sufficient to ensure that the peer does not become isolated. Failure to do so may result in the peer being temporarily excluded or ejected from the main network if connectivity is insufficient.
 
 The Network SHOULD be configured in such a way that the sharing of Belief updates will ultimately propagate information from any Peer to any other Peer, i.e. the network graph transmission should be strongly connected. Failure to respect this property may result in Peers being unable to participate from consensus, in a manner similar to suffering from a network partition.
 
@@ -27,6 +29,8 @@ Clients are defined as any participating system that transacts or queries the Co
 Clients MUST connect to an active Peer in the Peer Network, either locally or to a remote Peer.
 
 Clients SHOULD ensure that the trust the Peer that they use to faithfully carry out queries or transactions on their behalf.
+
+Clients MAY validate important or high value transactions with multiple peers (in particular, that the transaction was successfully submitted and executed in consensus)
 
 Clients MAY connect to multiple Peers. This may be valuable if the Client wishes to verify information from multiple sources, e.g. to confirm the consensus state of the network.
 
