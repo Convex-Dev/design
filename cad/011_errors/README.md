@@ -61,7 +61,7 @@ Note that a function may allow a variable number of arguments with a parameter d
 
 ### `:ASSERT`
 
-An `:ASSERT` Error MAY be thrown whenever a precodition for some code is not satifisied. In many cases, a more specific Error message may be appropriate or informative (e.g. `:CAST` or `:STATE`.
+An `:ASSERT` Error MAY be thrown whenever a precondition for some code is not satisfied. In many cases, a more specific Error message may be appropriate or informative (e.g. `:CAST` or `:STATE`.
 
 The Core function `assert` throws an `:ASSERT` error if any of its conditions evaluates to `false`
 
@@ -73,9 +73,9 @@ This Error is useful because it is more specific than `:ARGUMENT` when working w
 
 ### `:CAST`
 
-A `:CAST` Error SHOULD be thrown whenever a Function is passed an argument that is of the wrong Type.
+A `:CAST` Error SHOULD be thrown whenever a function is passed an argument that is of the wrong type.
 
-In particualar, a `:CAST` Error SHOULD be thrown whenever an attempt is made to explicitly or implicitly convert a value to a different Type, but the conversion is not permitted. 
+In particular, a `:CAST` Error SHOULD be thrown whenever an attempt is made to explicitly or implicitly convert a value to a different Type, but the conversion is not permitted. 
 
 ### `:NOBODY`
 
@@ -83,7 +83,7 @@ A `:NOBODY` Error should be thrown whenever an attempt is made to access an Acco
 
 ### `:SYNTAX`
 
-A `:SYNTAX` Error incdicates a syntax error in code during expansion or compilation. 
+A `:SYNTAX` Error indicates a syntax error in code, typically during expansion or compilation. 
 
 ### `:STATE`
 
