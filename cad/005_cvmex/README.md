@@ -91,31 +91,44 @@ CVM Ops are language agnostic - while they might typically be compiled from Conv
 
 All Ops are defined with a one-byte OpCode that identifies the type of Op, and defines what additional data is associated with the Op.
 
-### `0x01` Constant
+### Constant
 
 ```
 Logical Structure:
-0x01 <Value>
+0xe0 <Value>
 ```
 
 The `Constant` Op loads a single CVM value into the Context's Result Register.
 
-### `0x02` Invoke
+### Invoke
 
 ```
 Logical Structure:
-0x02 [<FnOp1> <ArgOp1> <ArgOp2> ....]
+0xe1 [<FnOp1> <ArgOp1> <ArgOp2> ....]
 ```
 
 The `Invoke` Op recursively executes a sequence of child Ops, and if all these execute successfully invokes the Function provided by the Result of the first child Op, with the results of the following child Ops passed as arguments.
 
 The `Invoke` Op must throw a `:CAST` error if the first Op does not return a valid Function. Otherwise, the resulting Context will be the Context produced by execution of the Function.
 
-### `0x03` Do
+### Cond
 
 ```
 Logical Structure:
-0x02 [<Op1> <Op2> <Op3> ....]
+0xe2 [<TestOp1> <ResultOp1> <TestOp2> <ResultOp2> .... (optional ElseOp)]
+```
+
+The `Cond` Op implements conditional evaluation of child Ops, expreseed as `TestOpX ResultOpX` pairs followed by an option `ElseOp`.
+
+For each pair in sequence the `TestOp` is evaluated. If this evaluates to true value, then the result of `Cond` is produced by the corresponding `ResultOp` and no further Ops are executed. If false, execution proceeds immediately to the next pair of Ops.
+
+In the case that no test returns true then the result of `Cond` is the result of executing `ElseOp` if it is provided, otherwise a constant result of `nil` is returned.
+
+### Do
+
+```
+Logical Structure:
+0xe3 [<Op1> <Op2> <Op3> ....]
 ```
 
 The `Do` Op implements sequential execution of multiple child Ops.
@@ -124,33 +137,30 @@ Each child Op is executed in turn. It if succeeds, then execution continues to t
 
 The final result of `Do` is the result of executong the last child Op. In case no child Ops are provided, then `Do` returns a constant result of `nil`.
 
-### `0x04` Cond
+### Let
 
 ```
 Logical Structure:
-0x02 [<TestOp1> <ResultOp1> <TestOp2> <ResultOp2> .... (optional ElseOp)]
+0xe4 <Syms> [<Op1> <Op2> <Op3> ....]
 ```
 
-The `Cond` Op implements conditional evaluation of child Ops, expreseed as `TestOpX ResultOpX` pairs followed by an option `ElseOp`.
+The `Let` Op allows execution of a sequence of Ops with local bindings
 
-For each pair in sequence the `TestOp` is evaluated. If this evaluates to true value, then the result of `Cond` is produced by the corresponding `ResultOp` and no further Ops are executed. If false, execution proceeds immediately to the next pair of Ops.
-
-In the case that no test returns true then the result of `Cond` is the result of executing `ElseOp` if it is provided, otherwise a constant result of `nil` is returned. 
-
-### `0x05` Lookup
+### Loop
 
 ```
 Logical Structure:
-0x02 [<AddressOp> <SymOp>]
+0xe5 <Syms> [<Op1> <Op2> <Op3> ....]
 ```
 
-The `Lookup` Op performs lookup of a value for a Symbol in the current Context's Environment.
+The `Loop` Op allows execution of a sequence of Ops with local bindings similat to `Let`, except that it additionally serves as a target for `recur` allowing the construction of efficient looping constructs.
 
-### `0x06` Def
+
+### Def
 
 ```
 Logical Structure:
-0x02 [<SymOrSyntax> <ValueOp>]
+0xe6 [<SymOrSyntax> <ValueOp>]
 ```
 
 The `Def` Op defines the value of a Symbol in the current Context's Environment.
@@ -173,15 +183,31 @@ Note that in the compiler, `def` takes metadata from its value argument in the c
 
 The compiler also interprets a `def` with only on argument as having a `ValueOp` equal to `nil`. This is is useful for forward definitions (e.g. as used in the core macro `declare`)
 
-### `0x40` - `0x7f` Special
+### Lookup
 
-Special Ops perform the computation of a Result based on the current Context, loading it into the Result Register. Special Ops are high performance ways to make certain information in the Context available to CVM Code.
+```
+Logical Structure:
+0xe7 [<AddressOp> <SymOp>]
+```
 
-#### `0x40 - *juice*`
+The `Lookup` Op performs lookup of a value for a Symbol in the current Context's Environment.
+
+###  Special
+
+```
+Logical Structure:
+0xef <SpecialCode>
+```
+
+Where: `<SpecialCode>` is a byte indicating the special symbol as defined below.
+
+Special Ops allow fast access to key values in the current Context, loading these into the Result Register. Special Ops are high performance ways to make certain information in the Context available to CVM Code.
+
+#### `0x00 - *juice*`
 
 Gets the current Juice count in the Context. 
 
-#### `0x41 - *caller*`
+#### `0x01 - *caller*`
 
 Gets the Caller for the current context, defined as the address of the account that made the enclosing `(call ...)` invocation. 
 
@@ -189,7 +215,7 @@ Gets the Caller for the current context, defined as the address of the account t
 
 Normally, `*caller*` SHOULD be used to perform access control checks within an actor or smart contract, since it determines which account made the request.
 
-#### `0x42 - *address*`
+#### `0x02 - *address*`
 
 `*address*` returns the address of the currently executing account.
 
