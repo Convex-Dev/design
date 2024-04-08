@@ -49,7 +49,7 @@ The following are standard Error Codes that are recommended for use in the CVM. 
 
 ### `:ARGUMENT`
 
-An `:ARGUMENT` Error SHOULD be thrown whenever a Function is passed an argument that is of an allowable Type for some reason is invalid (usually in relation to other arguments). An example would be attempting to put `assoc` a non-Blob value into a BlobMap (which only accepts Blobs as keys).
+An `:ARGUMENT` Error SHOULD be thrown whenever a Function is passed an argument that is of an allowable Type for some reason is invalid (usually in relation to other arguments). An example would be attempting to put `assoc` a non-Blob value into a Index (which only accepts Blob-like values as keys).
 
 If the argument is definitely of the wrong Type (i.e. would never be valid in any situation) then a `:CAST` Error should be thrown instead.
 

@@ -288,19 +288,19 @@ The map may also be considered as a sequential collection of Map entries, where 
 
 Internally, a Map is structured an efficient tree indexed with the the Value ID of values in the Map. All entries will therefore be ordered by the Value ID of Map keys.
 
-#### BlobMap
+#### Index
 
-A BlobMap is a specialised form of Map where the keys are enforced to be Blobs.
+An Index is a specialised form of Map where the keys are enforced to be Blob-like values. Data is internally stored in an immutable persistent radix tree for efficient sorting and indexed access.
 
-BlobMaps have some advantages over regular Maps:
+Indexes have some advantages over regular Maps:
 
 - Entries are sorted according to the Blob keys (taken as unsigned, big-endian integers)
 - They support efficient slicing and indexing using Blob keys
 
-BlobMaps can be created using the core function `blob-map`
+Indexes can be created using the core function `index`
 
 ```
-(blob-map)
+(index)
 ```
 
 

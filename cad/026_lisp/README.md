@@ -629,7 +629,7 @@ We believe the following features of Convex Lisp, among others, offer substantiv
 - **Big Integer support**: arbitrary precisions integers are supported as standard, avoiding risks of overflow (e.g. 256-bit fixed words)
 - **Floating point support**: Full IEEE754 Double compatibility, which are more suitable than integer mathematics for many purposes
 - **Orthogonal Persistence**: storage is automatic, with no need to explicitly store data. Extremely large data structures are supported (including larger than machine memory) and are loaded when accessed on demand.
-- **Extra Types**: A full range of general purpose value types including: Sets, literal Keywords, sorted BlobMaps, UTF-8 Strings, Blobs etc.
+- **Extra Types**: A full range of general purpose value types including: Sets, literal Keywords, sorted Indexes, UTF-8 Strings, Blobs etc.
 - **Memory accounting**: Economic system for memory management. See [CAD006](../006_memory)
 - **Powerful macro capability**: ability to fully customise the language with expanders. See also [CAD009](../009_expanders)
 

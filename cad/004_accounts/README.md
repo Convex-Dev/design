@@ -119,7 +119,7 @@ The allowance field MUST be a non-negative integer indicating the number of byte
 
 ### Holdings
 
-The holdings field MUST be a BlobMap representing a mapping of Address to holding values. 
+The holdings field MUST be a Index representing a mapping of Address to holding values. 
 
 Holding values SHOULD be meaningfully defined by the respective address that set them.
 
