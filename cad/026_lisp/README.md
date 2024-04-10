@@ -4,17 +4,21 @@
 
 Convex Lisp is a general purpose, high level programming language for the Convex Virtual Machine (CVM), designed to facilitate effective construction of smart contracts, digital assets and open economic systems.
 
-This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide**: more detailed specifications for specific aspects are provided in other CADs.
+This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide** for experienced developers wishing to understand the language, its implementation and key features: more detailed specifications for specific aspects are provided in other CADs.
 
 ### Key language features
 
-- Emphasis on **functional programming** with support for the **lambda calculus**
 - Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems based on Convex
+- Emphasis on **functional programming** with support for the **lambda calculus**
 - Powerful **macro capabilities**, following the Expansion-passing Style developed by Dybvig, Friedman & Haynes
 - Automatic **memory management**, including [memory accounting](../006_memory)
 - Elegant **Lisp syntax** largely inspired by Clojure
 - **On-chain compiler** (smart contracts writing smart contracts....)
-- **Strong dynamic typing** - for well defined, consistent behaviour at runtime without placing undue restrictions on developers.
+- **Strong dynamic typing** - for well defined, consistent behaviour at runtime
+
+![XCCD Cartoon](https://imgs.xkcd.com/comics/lisp_cycles.png)
+
+(Image coutesy of [XKCD](https://xkcd.com/))
 
 ### Motivation
 
