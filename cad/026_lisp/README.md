@@ -132,17 +132,86 @@ Lists are sequential data structures most commonly used for expressing Convex Li
 => (1 2 3)
 ```
 
+#### Maps
+
+Maps are data structures that map arbitrary keys to values, similar to an immutable `HashMap` in Java.
+
+```clojure
+;; A map of keywords to integers
+{:red 1 :blue 2}
+
+;; accessing a value with `get`
+(get {:red 1 :blue 2} :red)
+=> 1
+
+;; associating a new value with a key (creates a new immutable map)
+(assoc {:red 1 :blue 2} :green 3)
+=> {:blue 2,:red 1,:green 3}
+
+;; constructing a map from keys and values
+(hash-map :foo 2 :bar 4)
+=> {:foo 2,:bar 4}
+```
+
+With functions that expect a sequential data structure, maps operate as if they are a sequence of entries, where each entry is a `[key value]` vector
+
+```clojure
+(def m {:blue 2,:red 1,:green 3})
+
+(first m)
+=> [:blue 2]
+
+(count m)
+=> 3
+```
+
+`nil` may be used as a map key or value, however this is usually not recommended since `nil` also signal the absence of a value and this can be ambiguous. e.g. all of the following evaluate to `nil` 
+
+```clojure
+(get {nil nil} nil)       ;; nil key present, but value is nil
+(get {} nil)              ;; nil key not present
+(get {:foo nil} :foo)     ;; :foo key present, but value is nil
+(get {:foo nil} :bar)     ;; :bar key not present
+
+```
+
+Internally maps are implemented as radix trees based on the hash value of keys. This means that ordering is deterministic (since hashes are deterministic) but will appear random. Code using maps SHOULD NOT make any assumptions about map order.
+
 ### Keywords
 
-Keywords are symbolic names preceded by a colon (`:`)
+Keywords are symbolic names preceded by a colon (`:`) which are typically used to represent:
+- short human-readable keys in data structures
+- possible values for a set of flags, similar to an "enum" in many languages
+- error codes such as `:TRUST`
+- metadata keys such as `:callable`
 
 ```clojure
 ;; Keywords are literals that evaluate to themselves
 :hello
 => :hello
+
+;; Keywords can be converted to and from Strings
+(name :hello)
+=> "hello"
+
+(keyword "hello")
+=> :hello
+
 ```
 
-Keywords of this form have been popularised in the Clojure language. Keywords are typically used to represent short human-readable keys in data structures or possible values in set of flags. The reference CVM implementation may perform some optimisations to make this type of usage more efficient.
+Keywords of this form have been popularised in the Clojure language. The CVM implementation may perform some optimisations to make use of common keywords more efficient.
+
+Technically, CVM Keywords can contain any UTF-8 characters, but for compatibility with the Reader, consistency with Clojure, for use in text files and by convention it is RECOMMENDED to limit character usage to the following:
+- Alphabetic characters (lowercase or uppercase, case sensitive)
+- Numerical digits `0` to `9` (disallowed as the first character by the Reader, but OK in other positions e.g. `:level7`)
+- The symbols `*`, `+`, `!`, `_`, `?`, `<`, `>` and `=`
+- The hyphen `-` (preferred as a word separator)
+
+A Keyword MUST have a length of between 1 and 128 UTF-8 bytes (inclusive). This size is motivated by the following considerations:
+- Large enough for most sensible human readable names
+- Small enough that Keywords are always embedded values in encodings
+- Large enough to contain a 32-byte hex string with a prefix (note restriction on numerical digits at start of keywords)
+- Discourage the use of Keywords for arbitrary content (use a Blob or String instead)
 
 ### Symbols
 
