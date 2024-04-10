@@ -105,7 +105,7 @@ Quantities of digital assets are owned by accounts in Convex.
 
 Assets may be owned by either user accounts or actors. In the latter case, it should be expected that the actor implements code able to manage the assets that it owns.
 
-Assets SHOULD be transferrable, i.e. it should be possible for a quantity of an asset to be transferred from one owned to another.
+Assets SHOULD be transferable, i.e. it should be possible for a quantity of an asset to be transferred from one owned to another.
 
 ### Offers and Acceptance
 
@@ -177,15 +177,6 @@ If an asset implementation is untrusted, it is possible that the asset may not b
 - A 3rd party may have the ability to update holdings unilaterally, without the authorisation of owners.
 - A previously well-behaved asset may be "upgraded" to become malicious
 
-### Volatile balances
-
-Some assets may have balances / quantities that may vary independently of usage of the asset model. Some examples:
-
-- An interest-bearing asset that pays out some form of periodic rewards that increase balance
-- A utility token that has quantity deducted automatically through usage of services
-
-If such assets might be used, applications SHOULD always check the balance at the start of any transaction rather than relying on any previously stored balances which may no longer be correct.
-
 ### Inaccessible Accounts
 
 It is possible to transfer assets to an account that may be locked or otherwise inaccessible (e.g. a user account with a lost key pair). In such cases, the quantity of asset transferred may be irretrievably lost.
@@ -206,16 +197,38 @@ Asset implementations should ensure that they do not allow bugs resulting from n
 
 An asset implementation which is vulnerable to quantity overflow issues should be considered as broken (and therefore untrusted).
 
-### Aliasing
+### Non-compliant asset implementations
+
+It is possible that some asset implementations (either by mistake or ill intention) are not compliant with the Convex Asset Model.
+
+Users SHOULD NOT interact with non-compliant assets.
+
+Some specific reasons for non-comliance are listed below:
+
+#### Volatile balances
+
+Some assets may have balances / quantities that may vary independently of usage via the asset model. Some examples:
+
+- An interest-bearing asset that pays out some form of periodic rewards that increase balance
+- A utility token that has quantity deducted automatically through usage of services
+
+Such assets are NOT COMPLIANT with the Convex Asset model and SHOULD NOT be implemented or used without extreme caution.
+
+If applications nevertheless choose to make use of assets with volatile balances, applications SHOULD always check the balance at the start of any transaction rather than relying on any previously stored balances which may no longer be correct.
+
+Such assets SHOULD NOT be used in general purpose smart contracts, since accounting for held balances may be invalidated.
+
+If functionality is desired that requires balances to be varied, better approaches include:
+- Requiring a user to explicitly claim interest or rewards
+- Requiring balances to be deposited in a pre-payment account, so that usage quantities can be deducted and accounted for properly.
+
+#### Aliasing
 
 It is possible that multiple assets may refer to the same underlying quantity or resources. As such, code referencing multiple assets MUST NOT assume that operations on the assets are independent.
 
-For example, transferring a quantity of an asset `A` may affect the balance available of asset `B`.
+For example, transferring a quantity of an asset `A` may affect the balance available of asset `B`. This behaviour is NOT COMPLIANT for reasons similar to the volatile balances mentioned above
 
-In general, it is safest to:
-
-- Operate on each asset in turn - avoid interleaving actions API calls on multiple assets.
-- Assume that any action on any asset may invalidate previously observed balances on all other assets.
+In general, it is safest to operate on each asset in turn - avoid interleaving actions API calls on multiple assets.
 
 
 

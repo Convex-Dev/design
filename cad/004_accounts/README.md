@@ -6,7 +6,7 @@ Accounts are a fundamental construct in Convex - they are logical records in the
 
 Accounts are identified with an address, which are sequentially allocated in the form `#1567`
 
-Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the User's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If an account is not able to accept external transactions, it's public key is set to `nil`.
+Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the user's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If an account is not able to accept external transactions, it's public key is set to `nil`.
 
 Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, accounts will probably constitute over 99% of the CVM State size - there isn't much else apart from data structure to support peers managing consensus and a little network-global data.
 
@@ -14,33 +14,46 @@ Accounts also constitute the largest part of the on-chain CVM State. Accounts ar
 
 ### Addresses
 
-Every Account has an address, which is a unique ID that identified the account. These are conventionally shown in the format `#1234`, and are primitive values in the CVM in their own right.
+Every account has an address, which is a unique ID that identified the account. Addresses are conventionally shown in the format `#1234`, and are primitive values in the CVM in their own right.
 
-Addresses are assigned sequentially whenever new accounts are created. It is impossible to change the address of an account once created.
+Addresses are assigned sequentially whenever new accounts are created. It is impossible to change the address of an account once created - this is important because the Address is intended to be a stable unique identifier for the account.
 
-Addresses are recommended as the unique ID to be used for access control mechanisms, e.g. an actor might maintain a `Set` of addresses which are allowed to execute a security-critical operation.
+Addresses are recommended to be used as the unique ID for access control mechanisms, e.g. an actor might maintain a `Set` of addresses which are allowed to execute a security-critical operation.
 
-Addresses are also typically used as the index for data structures that track ownership of digital assets. A common pattern is to represent ownership as a `Map` of addresses to numbers representing balances of the appropriate digital asset(s).
+Addresses are also typically used as the key for indexed data structures that track ownership of digital assets. A common pattern is to represent ownership as a `Map` of addresses to numbers representing balances of the appropriate digital asset(s).
 
 ### User Accounts
 
-A user account is an account with a public key defined, which is used to validate the digital signature of transactions. The associated private key is assumed to be under the secure control of an external user. 
+User accounts are accounts controlled / owned by individuals or organisations that use the Convex Network.
+
+A user account is defined as an account with a public key defined, which is used to validate the digital signature of transactions. The associated private key is assumed to be under the secure control of an external user. 
 
 A user account is considered the origin account during the execution of any transaction submitted for this account.
 
 ### Actor Accounts
 
-An actor account is an account with no public key.
+Actor accounts are autonomous accounts that manage trusted code and data. They can be considered as autonomous software components operating on the Convex Network. Typical applications of actors might include:
+- Implementing a digital asset such as a fungible token or collection of NFTs
+- Providing a public registry of accredited organisations
+- An auction house that manages multiple concurrent auctions, and ensures winners correctly receive their purchased items
+- Providing a shared code library for other accounts to utilise
 
-Actors do nothing on their own (with some limited execptions e.g. scheduled operations). They need to be invoked by other accounts, e.g. a user will typically `call` an exported actor function from their own account. 
+An actor account is defined as any account with no public key.
+
+Actors do nothing on their own initiative (with some limited exceptions e.g. scheduled operations). They need to be invoked by other accounts, e.g. a user will typically `call` an exported actor function from their own account. 
 
 ### Lisp Machine
 
 Each account can be considered as a small, lightweight lisp machine! It has its own programmable environment, and can be interacted with via transactions (write) or queries (read-only).
 
-There's no limit on what can be done with this capability, as the CVM provides a fully Truring complete programming environment. You can control an account with a REPL, use it to script various on-chain operations, use it as a temporary environment for on-chain smart contract development etc.
+There's no limit on what can be done with this capability, as the CVM provides a fully Turing complete programming environment. You can control an account with a REPL, use it to script various on-chain operations, use it as a temporary environment for on-chain smart contract development etc.
 
 ### Controllers
+
+Controllers allow an account to be controlled by other accounts, as an alternative or in addition to the use of transactions signed with the account key. Typical purposes might include:
+- Allowing a trusted third party to recover the account if the user's private key is lost
+- Allowing a maintainer to make upgrades to an actor
+- Allowing a DAO to receive instructions from an actor that manages votes on proposals
 
 Optionally, an account may define a controller, giving the ability to one or more other accounts to control the account. The controller may be a specific address of another account, or a trust monitor that permits access to an arbitrary set of accounts that may be defined in code (e.g. accounts authorised by a governance actor or DAO). 
 
@@ -59,7 +72,7 @@ It is possible to recycle old accounts, perhaps even selling them! This is likel
 An example procedure for doing this securely is:
 - Transfer away any digital assets or other access control rights you want to keep
 - Set the controller to `nil`
-- Delete unwanted definitions fro the account's environment with `undef`
+- Delete unwanted definitions from the account's environment with `undef`
 - Especially, it is important to delete:
   - any exported functions that might be called externally
   - The `*schedule-start*` value, which may enable scheduled operations
@@ -84,6 +97,7 @@ The account record (`AccountStatus` in the standard reference implementation) MU
 - `:controller` - a controller account, which has the power to issue commands for this account (e.g. `eval-as`)
 - `:environment` - a map of symbols to defined values in the account, initially `{}`
 - `:metadata` - a map of symbols to metadata for values defined in the account, if any. Initially `{}`
+- `:parent` - an optional address that is used to resolve symbols by default if not otherwise defined in this account. Initially `nil`
 
 ### Sequence Number
 
@@ -119,7 +133,9 @@ The balance field MUST be a non-negative integer indicating the number of Convex
 
 ### Allowance
 
-The allowance field enables each account to hold a pre-alloacted allowance of CVM memory for future use. If this is zero, and new memory allocations must be purchased at the prevailing memory pool price at the time the transaction completes.
+The allowance field enables each account to hold a pre-alloacted allowance of CVM memory for future use. If this is zero, any new memory allocations must be purchased at the prevailing memory pool price at the time the transaction completes.
+
+If a user's transactions result in a memory refund (by reducing the size of the global state), the refund is deposited automatically in the allowance field. The user may then utilise this memory for another purpose, or sell it if no longer required.
 
 The allowance field MUST be a non-negative integer indicating the number of bytes of unused memory allowance held by the account.
 
@@ -137,25 +153,29 @@ Holding values SHOULD be meaningfully defined by the address that sets them.
 
 The controller field MAY be any CVM value, including `nil` 
 
-If set to a specific Address, the CVM MUST regard that address as a controller
+If set to a specific Address, the CVM MUST regard that address as a controller.
 
-Otherwise, the CVM MUST regard any non-`nil` value in this field as defining a trust monitor, and check as if called with `(call controller (check-trusted? <caller> :control <account-address>))`
+The CVM MUST regard any non-`nil` value in this field as defining a trust monitor, and check as if called with `(call controller (check-trusted? <caller> :control <account-address>))` to determine whether another account should be regarded as a controller.
 
-If another account is defined as a controller, it MUST be able to control the account in its entirely, including use of `eval-as`.
+If another account is regarded as a controller, it MUST be able to control the account in its entirely, including use of `eval-as`.
 
 ### Environment
 
 The environment field MUST be a map of Symbols to defined values in the account.
 
-The environment field must be `{}` when initially created.
+The environment field MUST be `{}` when initially created.
 
 ### Metadata
 
 The metadata field MUST be a map of Symbols to defined metadata in the account.
 
-The metadata field must be `{}` when initially created.
+The metadata field MUST be `{}` when initially created.
 
 CVM operations MAY set values in the environment without setting equivalent values in the metadata. This is primarily for efficiency purposes, as most environment values do not require metadata.
+
+### Parent
+
+The parent field MUST be `nil` when the account is initially created
 
 
 

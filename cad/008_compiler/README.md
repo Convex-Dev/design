@@ -89,7 +89,7 @@ Users making use of the Compiler SHOULD ensure that they avoid error cases as fa
 
 ### Compiler Costs
 
-The Expansion Phase incurs a Juice Cost according to the cost of any expanders used (which may be user defined in regular CVM code). The `*initial-expander*` incurs small constant costs for each element expanded. In normal usage, expansion costs are therefore usually `O(n)` in the size of the Form being expanded, but can be arbitrarily large if custom macros or expanders are used.
+The Expansion Phase incurs a Juice Cost according to the cost of any expanders used (which may be user defined in regular CVM code). The `*initial-expander*` incurs small constant costs for each element expanded. In normal usage, expansion costs are usually `O(n)` in the size of the Form being expanded, but can be arbitrarily large if custom macros or expanders are used.
 
 The Compilation Phase incurs a constant Juice Cost for each node of the Expanded Form processed. Compilation costs are therefore never more than `O(n)` in the size of the Expanded Form.
 
