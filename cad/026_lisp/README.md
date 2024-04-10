@@ -144,6 +144,18 @@ false
 
 Booleans are primarily used in conditional expressions, or as return values from predicates.
 
+#### Characters
+
+Characters are Unicode code points (equivalent to 1-4 bytes in UTF-8 representation)
+
+```clojure
+;; character literals can be specified with a leading \
+\a
+=> \a
+```
+
+Characters are mostly useful for constructing Strings
+
 #### Strings
 
 Strings are arbitrary length, immutable UTF-8 strings

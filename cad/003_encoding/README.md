@@ -5,7 +5,7 @@
 Convex implements a standard **Encoding** format that represents any valid Convex data values as a **sequence of bytes**. Encoding is an important capability for Convex because:
 
 - It allows values to be efficiently **transmitted** over the network between peers and clients
-- It provided a standard format for **durable data storage** of values
+- It provides a standard format for **durable data storage** of values
 - It enables the definition of a cryptographic **Value ID** to identify any value as a "decentralised pointer", which also serves as the root of a Merkle DAG that is the encoding of the complete value.
 
 The Encoding model breaks Values into a Merkle DAG of one or more **Cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
@@ -165,23 +165,29 @@ The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long
 
 With the exception of the Tag byte, The encoding of an Integer is defined to be exactly equal to a Blob with `n` bytes.
 
-### `0x0c` Character
+### `0x1d` Double
 
 ```Encoding
-0x0c <2 Byte UTF16>
-```
-
-A Character value is encoded by the Tag byte followed by 2 bytes representing a standard UTF16 character. All 16-bit values are considered valid by the CVM, it is the responsibility of the application to interpret Characters.
-
-Note: A switch to UTF8 is being considered, see: https://github.com/Convex-Dev/convex/issues/215
-
-### `0x0d` Double
-
-```Encoding
-0x0d <8 bytes IEEE 764>
+0x1d <8 bytes IEEE 764>
 ```
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
+
+### `0x3c` - `0x3f` Character
+
+```Encoding
+Tag determines the length in bytes of the Unicode code point value
+0x3c <1 Byte>
+0x3d <2 Bytes>
+0x3e <3 Bytes>
+0x3f <4 Bytes> (reserved, not currently possible?)
+```
+
+A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
+
+A Character encoding is invalid if:
+- More bytes are used than necessary (i.e. a leading byte of zero)
+- The code point is beyond the maximum allowable (0x10ffff) 
 
 ### `0x20` Ref
 
@@ -268,7 +274,7 @@ A Symbol is encoded with the Tag byte, a VLC Count length `n`, and `n` bytes of 
 
 The Symbol MUST have a length of 1-128 UTF-8 bytes
 
-### 0x33 Keyword
+### `0x33` Keyword
 
 ```Encoding
 0x32 <VLC Count = n> <n bytes UTF-8 String>
@@ -278,7 +284,7 @@ A Keyword is encoded with the Tag byte, a VLC Count length `n`, and `n` bytes of
 
 The Keyword MUST have a length of 1-128 UTF-8 bytes
 
-### 0x80 Vector
+### `0x80` Vector
 
 ```Encoding
 If a Leaf Count:
