@@ -10,7 +10,7 @@ This document outlines the key elements of Convex Lisp. It is intended primarily
 
 - Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems based on Convex
 - Emphasis on **functional programming** with support for the **lambda calculus**
-- Powerful **macro capabilities**, following the Expansion-passing Style developed by Dybvig, Friedman & Haynes
+- Powerful **macro capabilities**, following the expansion-passing style developed by Dybvig, Friedman & Haynes
 - Automatic **memory management**, including [memory accounting](../006_memory)
 - Elegant **Lisp syntax** largely inspired by Clojure
 - **On-chain compiler** (smart contracts writing smart contracts....)
@@ -18,21 +18,21 @@ This document outlines the key elements of Convex Lisp. It is intended primarily
 
 ![XCCD Cartoon](https://imgs.xkcd.com/comics/lisp_cycles.png)
 
-(Image coutesy of [XKCD](https://xkcd.com/))
+(Image courtesy of [XKCD](https://xkcd.com/))
 
 ### Motivation
 
 As a platform for decentralised, open economic systems Convex requires a powerful and flexible language for developers to build the next generation of digital assets, smart contracts and services.
 
 While the CVM itself is language agnostic, we chose a Lisp dialect as the first language for Convex for a number of key reasons:
-- Productivity: general recognition of Lisp as a highly productive and flexible language
-- The advantages of a homoiconic language for constructing code with powerful macros and DSL capabilities
+- Productivity: general recognition of Lisp as a productive and flexible language
+- The advantages of a homoiconic language ("code is data") for generating code with powerful macros and DSL capabilities
 - The ability to create a small and efficient [compiler](../008_compiler) suitable for on-chain code generation and compilation 
 - Familiarity for developers of existing Lisp-based languages such as **Clojure**, **Scheme**, **Racket** or **Common Lisp**
 
-Designing a new language is not an easy task, so we naturally considered adopting an existing language for Convex. Unfortunately, none of the available options proved attractive for a variety of reasons:
+Designing a new language is no easy task, so we naturally considered adopting an existing language for Convex. Unfortunately, none of the available options proved attractive for a variety of reasons:
 - High level general purpose programming languages (Python, Java, JavaScript, Clojure, C# etc.) are not generally designed for decentralised VM operation. In particular, execution must be deterministic to allow independent execution and validation of the same exact computation by peers in a decentralised network. Cutting down such languages to a consistent deterministic subset (no IO, no randomness, no observable differences across platforms etc.) would itself be a massive task and break compatibility with the majority of existing code, negating most of the value of existing library ecosystems.
-- Low level languages (WASM etc.) do not provide the high level capabilities and abstractions needed for productive development of decentralised economic systems. The amount of library support required to provide this would be a significant development and performance overhead. Typically, such languages also lack good support for automatic memory management which is important for developer productivity and essential for the kinds of immutable data structures used in Convex. These would also imply complex toolchains and execution infrastructure that would add complexity and inhibit development and maintenance efficiency.
+- Low level languages (WASM etc.) do not provide the high level capabilities and abstractions needed for productive development of decentralised economic systems. The amount of library support required to provide this would be a significant development and performance overhead. Typically, such languages also lack good support for automatic memory management which is important for developer productivity and essential for the kinds of immutable data structures used in Convex. These languages would also imply complex toolchains and execution infrastructure that would add complexity and inhibit development and maintenance efficiency.
 - Existing smart contract languages (Solidity etc.) have significant limitations / design flaws and would not allow us to take full advantage of the power of the CVM (e.g. the improved account model with key rotation, memory accounting, extra CVM data structures etc.).
 - Convex performance at global scale depends heavily on very efficient immutable data structures that are not easy to represent in existing languages that were not designed with these in mind. No existing language would be a good fit for these natively, and translating to / from these structures would imply an unacceptable performance penalty: we need to use them directly.
 
