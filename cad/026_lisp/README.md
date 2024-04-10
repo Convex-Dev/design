@@ -4,7 +4,7 @@
 
 Convex Lisp is a general purpose, high level programming language for the Convex Virtual Machine (CVM), designed to facilitate effective construction of smart contracts, digital assets and open economic systems.
 
-This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide** for experienced developers wishing to understand the language, its implementation and key features: more detailed specifications for specific aspects are provided in other CADs.
+This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide** for experienced developers wishing to understand the language, its implementation and key features: more detailed specifications for specific aspects of the language and underlying runtime are provided in other CADs.
 
 ### Key language features
 
@@ -52,7 +52,7 @@ Examples given in this CAD are suitable for execution at a Convex Lisp REPL.
 
 ## Expressions and Forms
 
-Convex Lisp code operates through the evaluation of expressions. Expressions are represented as CVM data structured as a "form" - a data value that represents code. In this sense "code is data" because the language is represented in its own data structures. This property is sometimes termed **homoiconicity*.
+Convex Lisp code operates through the evaluation of expressions. Expressions are represented as CVM data structured as a "form" - a data value that represents code. In this sense "code is data" because the language is represented in its own data structures. This property is sometimes termed *homoiconicity*.
 
 Typically, a form is a List where the first element represents the operation and the following elements represent arguments, e.g.:
 
@@ -188,6 +188,10 @@ Addresses are identifiers for accounts on Convex (either user or actor accounts)
 
 ### Data Structures
 
+Data structures are composite values containing other values as elements. 
+
+In Convex Lisp, all data structures are immutable, in the sense that once an instance is constructed, it cannot be modified: however a new instance can be constructed with any desired modifications extremely efficiently (most importantly this does not require copying the entire data structure - the unchanged elements are shared with the original instance)
+
 #### Vectors
 
 Vectors are the most common data structure, representing an indexed sequence of elements. They can be constructed by square brackets `[ ... ]` or with the core function `vector` 
@@ -202,13 +206,19 @@ Vectors are the most common data structure, representing an indexed sequence of 
 ;; concatenate two vectors
 (concat [1 2 3] [4 5 6])
 => [1 2 3 4 5 6]
+
+;; append a new element
+(conj [1 2 3] 4)
+=> [1 2 3 4]
 ```
 
-You should use vectors in most cases when you would use an "array" or "list" as defined in other languages.
+You should use Vectors in most cases when you would use an "array" or "list" as defined in other languages.
+
+Vectors are particularly efficient for operations that add/remove at the end of the Vector.
 
 #### Lists
 
-Lists are sequential data structures most commonly used for expressing Convex Lisp code. They are representuing be surrounding zero or more elements with regular parentheses `( )`. Because they are interpreted as code, if you want to construct a list literal you must quote it to suppress evaluations with `'( )` or use the constructor function `list`
+Lists are sequential data structures most commonly used for expressing Convex Lisp code. They are representuing be surrounding zero or more elements with regular parentheses `( )`. Because they are interpreted as code, if you want to construct a List literal you must quote it to suppress evaluations with `'( )` or use the constructor function `list`
 
 ```clojure
 ;; Note single quote symbol needed to produce a literal List
@@ -226,9 +236,13 @@ Lists are sequential data structures most commonly used for expressing Convex Li
 ;; List constructor is also useful, especially if you want to compute elements to be the result of some expression 
 (list 1 2 (+ 1 2))
 => (1 2 3)
+
+;; Construct a list by adding a new element to the front
+(cons 1 '(2 3 4))
+=> (1 2 3 4)
 ```
 
-Lists are primarily used to express Lisp forms / expressions. For most other data, you should use a Vector.
+Lists are primarily used to express Lisp forms / expressions. They are also efficient for operations that add/remove at the front of the list. For most other sequential data, you should consider using a Vector.
 
 #### Maps
 
@@ -639,7 +653,7 @@ The `<`, `>`, `<=` and `>=` symbols perform numerical comparison in the conventi
 
 ## The `nil` value
 
-The value `nil` is an important special value. Its usage may depend on context: it is typically used to mean "no answer" or "not found".
+The value `nil` is an important special value. While usage may depend on context, it is typically used to mean "no value" or "not found".
 
 Frequently, it is used to indicate when something is not found in a data structure, e.g.
 
@@ -669,7 +683,7 @@ When passed to functions that expect a data structure, `nil` is interpreted as a
 => true
 ```
 
-NOTE: while `nil` may behave like an empty data structure in some contexts, it is a distinct value from the empty data structures (`[]` `()` `{}` and `#{}`). None of these values are considered equal to each other. In particular, functions that are expected to return a data structure should normally produce an empty data structure rather than `nil` if they succeed.
+NOTE: while `nil` may behave like an empty data structure in many contexts, it is a distinct value from the empty data structures (`[]` `()` `{}` and `#{}`). None of these values are considered equal to each other. In particular, functions that are expected to return a data structure should normally produce an empty data structure rather than `nil` if they succeed.
 
 When used in conditional expressions, `nil` is considered as `false` (see section on conditional expressions for more details)
 
@@ -1013,11 +1027,11 @@ The Convex Lisp Reader is a software component that converts UTF-8 strings into 
 
 E.g. the String "(+ 1 2 3)" is converted by the Reader into the list `(+ 1 2 3)`containing 4 elements  where the first element is the Symbol `+` and the following elements are Integers.
 
-The Reader is **not available on chain** - it is intended for use in tools that communicate with the Convex network, such as a REPL terminal.
+The Reader is **not available on chain** - it is intended for use in client code or tools that communicate with the Convex network, such as a REPL terminal.
 
 The reader syntax in the `convex-core` reference implementation is available as a [ANTLR Grammar](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/antlr4/convex/core/lang/reader/antlr/Convex.g4)
 
-NOTE: Use of the Reader is not mandatory: it is possible to construct Convex Lisp forms programmatically (or even directly build pre-compiled CVM Ops)  rather than parsing a String via the Reader. This may offer marginal performance benefits in some applications, e.g. JVM based systems that need to construct a large number of transactions.
+NOTE: Use of the Reader is not mandatory: it is possible to construct Convex Lisp forms programmatically (or even directly build pre-compiled CVM Ops) rather than parsing a String via the Reader. This may offer marginal performance benefits in some applications, e.g. JVM based systems that need to construct a large number of transactions.
 
 ## Coding Conventions
 
@@ -1134,7 +1148,7 @@ Many decentralised systems offer virtual machines that are Turing complete and c
 
 We believe the following features of Convex Lisp, among others, offer substantive improvements over typical existing solutions:
 
-- **Functional Programming**: full support for the lamdba calculus and first class functions
+- **Functional Programming**: full support for the lambda calculus and first class functions
 - **Code is data**: Convex Lisp is a fully homoiconic language, with code expressed in its own data structures
 - **On chain compiler**: Convex Lisp on-chain code can perform code generation, compile and deploy new Convex Lisp code
 - **Big Integer support**: arbitrary precisions integers are supported as standard, avoiding risks of overflow (e.g. 256-bit fixed words)
