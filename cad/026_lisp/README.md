@@ -546,6 +546,117 @@ danger/do-something
 
 Be aware that CNS references MAY change, i.e. `(import some.library.account as lib)` may result in a reference to a different underlying account in future executions. Ideally, the import should only be executed once, and the value of the alias `lib` should be examined afterwards to ensure it refers to the correct account (e.g. `#43567`). If a malicious change to CNS is considered a risk, it may be preferable to define the alias to a known trusted account directly e.g. `(def lib #43567)`
 
+## Calling actors
+
+Within a set of accounts that a user controls, the CVM provides a complete general purpose programming language where any code can be executed and data can be modified.
+
+However, for meaningful decentralised systems to operate, it is necessary to interact with other accounts that the user does not control, and which may provide important functionality such as trusted smart contracts or shared digital asset implementations. This can be done with a `call` that transfers execution control to another account.
+
+### Call Syntax
+
+A `call` should be regarded as an instruction to an actor to perform an action on the caller's behalf.
+
+The `call` takes the following arguments:
+- A destination Address, which can be any valid account address (*or* a scoped address of the form `[#1579 :some-value]`, see below)
+- An optional *offer* of Convex Coins, which the destination account may choose to accept from the caller
+- A function invocation (which may include any arguments)
+
+Typical usage:
+
+```clojure
+(call #67 (some-function :arg1 :arg2))
+```
+
+Usage with an offer of 1,000,000 copper:
+
+```clojure
+(call #67 1000000 (some-function :arg1 :arg2))
+```
+
+Executing a `call` expression will:
+- Check if the target account exists
+- Check if the function name exists in the target account and has the `:callable` metadata set to true
+- Check if the current account has enough Convex Coins to reserve for the offer (if set) 
+- If and only if all checks pass, switch the execution context to the target account and run the specified function with the given arguments
+- Once complete, control will return back to the caller with a result value for the call (or an error if one is thrown)
+
+### Callable functions
+
+A callable function is any function with the `:callable` metadata set to true. This instructs the CVM to allow the function to be a target of a `call`. An example definition of a callable function that might be defined in an actor account is as follows:
+
+```clojure
+(def visitor-count 0)
+
+(defn ^:callable visit [name]
+  (set! visitor-count (inc visitor-count))
+  (str "Hello " name " you are visitor number " visitor-count))
+```
+
+This can be called from any other account as follows:
+
+```clojure
+(def actor #456756) ;; refer to whatever the actor account is
+
+(call actor (visit "Bob"))
+=> "Hello Bob you are visitor number 1"
+
+(call actor (visit "Mary"))
+=> "Hello Mary you are visitor number 2"
+```
+
+Important points to note:
+- The callable function modifies a value `visitor-count` that is defined *within the actor*. Only the actor itself can adjust this value. This demonstrates how actors can have control over their own internal state, but still allow callers to interact in a way that modifies this state in a predictably defined manner.
+- Other users can *observe* `visitor-count` (but not modify it!) e.g. using a lookup `actor/visitor-count`. This demonstrates how actor state is publicly visible. However, users should exercise caution when referring to internal actor implementation details: it may be preferable to use a separate callable function to query state, especially if it is possible that implementation details may change.
+- Assuming that the actor is immutable (i.e. has no external access or upgrade functionality) then the visitor count will be correctly managed for all time. This demonstrates the use of an actor as an *unstoppable decentralised program* that serves a clear purpose.
+
+### Scoped calls
+
+It is frequently useful for an actor to manage multiple instances of entities of a particular type (e.g. a large number of concurrently running auctions in an auction house). In such cases, we can refer to each entity with a *scoped address* which is a vector that includes both the actor address and an identifier for the specific entity e.g. `[#123 101]`. 
+
+To support this usage, `call` may optionally support the provision of a *scope* specified as follows.
+
+```
+(call [#67 :scope-value] (some-function :arg1 :arg2))
+```
+
+A scoped call operates in the same way as any other call, except that the special value `*scope*` will be set to the value passed in the scope vector (in this case `:scope-value`). `*scope*` will be `nil` if no such scope value is used.
+
+Values or identifies used as a `*scope*` are defined by the actor: any CVM values may be used. It is however STRONGLY RECOMMEDED to enforce unique IDs e.g. allocating IDs using an incrementing integer counter for each entity created. 
+
+Usage of scoped calls is ultimately an interface design decision for creators of actors. It is possible to achieve the same functionality with an additional ID argument to the call, for example. Experience suggests however that using scoped addresses simplifies writing generic user code that must refer to multiple entities provided by multiple actors, so it is RECOMMENDED to do so if your actor manages multiple entities.
+
+In most cases, entities managed by an actor will have a limited lifecycle. It is STONGLY RECOMMENDED that:
+- Live entities are stored in a data structure indexed by `*scope*` for efficient access and existence checks (this should normally be a hash-map or index)
+- Actors provide a facility to delete expired entities (this allows memory reclaim to the benefit of whoever does the cleanup) 
+- Scoped calls that reference a deleted/non-existent entity should fail
+- There is no way for a new entity to be created with the same ID as a deleted entity (using an incrementing counter solves this)
+
+### Security context
+
+The current account is `*address*`. Any code executing has full control over this account, including the ability to modify the account's environment with `def` or `set!`.
+
+The account for which the transaction was initiated is `*origin*`. This remains unchanged for the entire transaction, and is initially equal to `*address*`
+
+The account that transfered control to this account, if any, is `*caller*`. This is `nil` initially, but will be the address of the account that executed any `call` to this account.
+
+IMPORTANT: From a security perspective, `*caller*` should be regarded as the account to check for authorisation to perform any action within an actor, since that is the account that made the `call` and requested for the action to be performed. DO NOT rely on `*origin*` for security checks.
+
+### Call security
+
+#### For callers
+
+Within the scope of the call the target actor executes within it's own account context. This **protects the caller** : the actor does not have the ability to modify the caller's account and cannot impersonate the caller for the purpose of interactions with other actors (it must act on its own behalf).
+
+As with all CVM code execution, **juice costs are paid by the account that initially executed the transaction** (`*origin*`). It is possible for an actor to burn all available juice (in which case the transaction will fail). While the downside is limited by available juice, users should be aware that malicious or badly written actors may consume more juice that desired, and avoid calling untrusted actors.
+
+#### For actor developers
+
+IMPORTANT SECURITY NOTES:
+- Actor creators should remember that *any* account may call a callable function: they are a **public API**
+- Actor code SHOULD always perform authorisation checks against `*caller*` to see if the caller has the right to perform the requested action, and fail with a `:TRUST` error otherwise. The only exceptions to this are operations that are truly intended for anyone to be able to perform (e.g. depositing in a public donation box)
+- The `:callable` metadata should only be set for functions that are intended to be part of a public actor interface. Each such function represents any entry point that increases the size of public actor API that must be security audited.
+
+
 ## Other syntax
 
 ### Whitespace
