@@ -69,7 +69,7 @@ hello
 "This is a string"
 ```
 
-## Values and data types
+## Data types
 
 Convex Lisp provides a rich set of data types suitable for general purpose development. These include:
 - A *superset of JSON* for easy interoperability with web based systems
@@ -313,6 +313,24 @@ A key motivation for the inclusion of Sets in the CVM (besides their mathematica
 
 Internally sets are implemented as radix trees based on the hash value of elements. This means that ordering is deterministic (since hashes are deterministic) but will appear random. Code using sets SHOULD NOT make any assumptions about set order.
 
+#### Indexes
+
+Indexes are specialised ordered maps that support "Blob-Like" keys only (Blobs, Strings, Addresses, Keywords and Symbols). Entries are sorted based on the byte values of the keys, up to a maximum of 32 bytes.
+
+```clojure
+;; Construct an index, note that the map is sorted in order
+(index 0x1234 :foo 0x3456 :bar :5678 :baz)
+=> {0x1234 :foo,0x3456 :bar,0x5678 :baz}
+
+;; Keys with identical byte values in their content will overwrite previous entries (even if a different type!)
+(assoc (index :foo 567) "foo" 789)
+=> {"foo" 789}
+```
+
+Use an Index instead of a Map if both:
+a) you need a sorted map 
+b) you can strictly control the type of keys
+
 ### Keywords
 
 Keywords are symbolic names preceded by a colon (`:`) which are typically used to represent:
@@ -382,7 +400,17 @@ It is sometimes useful to use a Symbol as a value in itself (without performing 
 => foo
 ```
 
+### Records
 
+Records are CVM data structures that behave like maps with a fixed set of keys. They are primarily used for internal data structures supporting the CVM. You cannot currently construct Records directly, but can access and read them:
+
+```clojure
+;; Get the account status record for an account
+(account #14)
+=> {:sequence 1,:key 0x168e11d2512217576c30ec305ed672147125c9e20636fac29f4fca46cda0f003,:balance 132933333327304,:allowance 9999977,:holdings {},:controller nil,:environment {},:metadata {},:parent nil}
+```
+
+For practical purposes, Records behave as an immutable Map, and can be used in similar ways.
 
 ## Functions
 
@@ -1027,13 +1055,45 @@ The [Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide) may be
 
 ## Performance tips and tricks
 
-Efficiency is an important concern for decentralised systems, as all computation and storage comes with a cost. So here are some methods for developing more efficient code in Convex Lisp.
+Efficiency is an important concern for decentralised systems, as all computation and storage comes with a cost. Users of your product will thank you for minimising their transaction fees.
 
-### Avoid string parsing
+Here are some methods for developing more efficient code in Convex Lisp.
 
-DO NOT attempt to parse strings in Convex Lisp (or on the CVM generally). This is almost always a bad idea: it is computationally expensive and likely to be error prone. 
+### Do complex processing elsewhere
 
-Parse strings on the client or server with well tested libraries (e.g. ANTLR) and send to the CVM as CVM data structures. This is the approach taken by the Convex Lisp Reader.
+In many cases, there is no point doing computation on the CVM at all: consider carefully if the processing can be done on the client or a product backend server instead. 
+
+Some common examples:
+
+#### String parsing
+
+Do not attempt to parse strings in Convex Lisp (or on the CVM generally). This is almost always a bad idea: it is computationally expensive and likely to be error prone. Formats are also likely to change which may cause maintenance headaches for on-chain code.
+
+Instead: parse strings on the client or server with well tested libraries (e.g. ANTLR) and send to the CVM as CVM data structures. This is the approach taken by the Convex Lisp Reader, for example.
+
+#### Human readable output
+
+Do not try to produce human readable output for users on the CVM. Code to generate such output almost certainly belongs on the client or backend server. Apart from the execution cost, there are additional practical problems with this approach:
+- Text is likely to change. You don't want to be updating CVM code or data every time marketing changes some copy or formatting rules.
+- You definitely don't want to be dealing with things like internationalisation on the CVM.
+
+Instead: return a well defined integer value, keyword or other data structure that represents the relevant information and can be converted to the right human readable message on the client and/or server. 
+
+### Don't store content
+
+The CVM is not the place for storing static content such as images, text or other large binary files. 
+
+Instead: use the [Data Lattice](../data_tattice), IPFS or a traditional web server / CDN that clients can download content from.
+
+If you absolutely must validate content against an on-chain record, store a single 32-byte hash of the content. This can be the merkle root of a large tree of content if necessary. Clients can hash the content and check this for authenticity / integrity.  
+
+### Beware loops
+
+Loops will often be at least `O(n)` in the size of the data structure they are iterating over. This can include explicit `loop` constructs or a `map` or `reduce` which implicitly loop over elements of a data structure. 
+
+Usually, looping in CVM code indicates a design problem that will get worse as data size grows. 
+
+Instead: Design your data structures and actor APIs so that data can be accessed or updated directly without looping. Typically, this might involve accessing records directly via a key in a Map. If necessary, clients can do loops themselves and access the content via multiple queries / transactions.
 
 ### Minimise encoding lengths
 
@@ -1053,6 +1113,9 @@ Other tips for shortening encodings:
 - Use a vector `[1 2]` instead of a map with fixed keys `{:field1 1 , :field2 2}`
 - Use shorter Keywords e.g. `:f` instead of `:failure`
 - Avoid having entries in maps where the value is a default value like `nil` or `0` e.g. `{:name "Bob" :ferraris 1 :bugattis 0 :lambos 0}` becomes `{:name "Bob" :ferraris 1}`. You code can provide a default value in `get` when reading the key e.g. `(get person-record :lambos 0)`
+- If the same code is going to be duplicated in multiple accounts, put it in one account (or a library) and refer to that from the other accounts
+- Use a Set rather than a Map with dummy values if the values don't matter
+- `nil` `0` `true` and `false` only require 1 byte of encoding. These are the smallest CVM values.
 
 ### Pre-compilation
 
