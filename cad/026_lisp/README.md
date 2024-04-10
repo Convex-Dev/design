@@ -152,9 +152,15 @@ Characters are Unicode code points (equivalent to 1-4 bytes in UTF-8 representat
 ;; character literals can be specified with a leading \
 \a
 => \a
+
+;; characters can also be specified by numerical Unicode code points
+(char 65)
+=> \A
 ```
 
-Characters are mostly useful for constructing Strings
+Characters are mostly useful for constructing Strings. 
+
+Characters may also be used as efficient small keys in Maps or Sets. The first 256 code points (equivalent to ISO-8859-1 characters) encode to just 2 bytes and are efficiently cached, though care should be taken that some of these values are not always correctly printable.
 
 #### Strings
 
