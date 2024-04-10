@@ -6,6 +6,16 @@ Convex Lisp is a general purpose, high level programming language for the Convex
 
 This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide**: more detailed specifications for specific aspects are provided in other CADs.
 
+### Key language features
+
+- Emphasis on **functional programming** with support for the **lambda calculus**
+- Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems based on Convex
+- Powerful **macro capabilities**, following the Expansion-passing Style developed by Dybvig, Friedman & Haynes
+- Automatic **memory management**, including [memory accounting](../006_memory)
+- Elegant **Lisp syntax** largely inspired by Clojure
+- **On-chain compiler** (smart contracts writing smart contracts....)
+- **Strong dynamic typing** - for well defined, consistent behaviour at runtime without placing undue restrictions on developers.
+
 ### Motivation
 
 As a platform for decentralised, open economic systems Convex requires a powerful and flexible language for developers to build the next generation of digital assets, smart contracts and services.
@@ -19,22 +29,12 @@ While the CVM itself is language agnostic, we chose a Lisp dialect as the first 
 Designing a new language is not an easy task, so we naturally considered adopting an existing language for Convex. Unfortunately, none of the available options proved attractive for a variety of reasons:
 - High level general purpose programming languages (Python, Java, JavaScript, Clojure, C# etc.) are not generally designed for decentralised VM operation. In particular, execution must be deterministic to allow independent execution and validation of the same exact computation by peers in a decentralised network. Cutting down such languages to a consistent deterministic subset (no IO, no randomness, no observable differences across platforms etc.) would itself be a massive task and break compatibility with the majority of existing code, negating most of the value of existing library ecosystems.
 - Low level languages (WASM etc.) do not provide the high level capabilities and abstractions needed for productive development of decentralised economic systems. The amount of library support required to provide this would be a significant development and performance overhead. Typically, such languages also lack good support for automatic memory management which is important for developer productivity and essential for the kinds of immutable data structures used in Convex. These would also imply complex toolchains and execution infrastructure that would add complexity and inhibit development and maintenance efficiency.
-- Existing smart contract languages (Solidity etc.) have significant limitations / design flaws and would not allow us to take full advantage of the power of the CVM, e.g. the improved account model.
+- Existing smart contract languages (Solidity etc.) have significant limitations / design flaws and would not allow us to take full advantage of the power of the CVM (e.g. the improved account model with key rotation, memory accounting, extra CVM data structures etc.).
 - Convex performance at global scale depends heavily on very efficient immutable data structures that are not easy to represent in existing languages that were not designed with these in mind. No existing language would be a good fit for these natively, and translating to / from these structures would imply an unacceptable performance penalty: we need to use them directly.
-
-### Key language features
-
-- Emphasis on **functional programming** with support for the **lambda calculus**
-- Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems based on Convex
-- Powerful **macro capabilities**, following the Expansion-passing Style developed by Dybvig, Friedman & Haynes
-- Automatic **memory management**, including [memory accounting](../006_memory)
-- Elegant **Lisp syntax** largely inspired by Clojure
-- **On-chain compiler** (smart contracts writing smart contracts....)
 
 ### Discussion and contributions
 
 Questions or discussions on Convex Lisp including design choices and potential improvements are encouraged on the [Convex Discord](https://discord.com/invite/xfYGq4CT7v) in the `#language-design` channel.
-
 
 ## Interactive development
 
@@ -56,13 +56,12 @@ Typically, a form is a List where the first element represents the operation and
 (operation arg1 arg2 .... argN)
 ```
 
-Each element it itself a form - so forms can be nested to construct more complex expressions.
+Each element is itself a form - so forms can be nested to construct more complex expressions.
 
-At the lowest level, forms will be a single (non-compound) data value that does not contain any further elements. These are sometimes called "atoms":
+At the lowest level, forms will be a single (non-compound) data value that does not contain any further elements. These are sometimes called "atoms" in Lisp literature:
 
 ```clojure
 ;; the following are all atomic forms
-
 1
 
 hello
@@ -73,8 +72,11 @@ hello
 ## Values and data types
 
 Convex Lisp provides a rich set of data types suitable for general purpose development. These include:
-- a *superset of JSON* for easy interoperability with web based systems
-- large immutable persistent data structures with automatic structural sharing for efficiency
+- A *superset of JSON* for easy interoperability with web based systems
+- Immutable persistent data structures with automatic structural sharing
+- Binary Blobs for arbitrary user-defined data and interoperability with external systems
+
+Convex Lisp data types map directly to those provided natively by the CVM, for maximum efficiency. 
 
 For more detailed specification see [CAD002](../002_values)
 
@@ -123,14 +125,6 @@ Doubles are 64-bit double precision floating point vales, as specified in IEEE75
 
 See below for more details on floating point support in Convex Lisp
 
-#### Strings
-
-Strings are arbitrary length, immutable UTF-8 strings
-
-```clojure
-"Hello"
-=> "Hello"
-```
 #### Booleans
 
 Booleans are either `true` or `false`
@@ -142,6 +136,24 @@ true
 false
 => false
 ```
+
+Booleans are primarily used in conditional expressions, or as return values from predicates.
+
+#### Strings
+
+Strings are arbitrary length, immutable UTF-8 strings
+
+```clojure
+;; A a literal String evaluates to itself
+"Hello"
+=> "Hello"
+
+;; Constructing a String
+(str "A" "BCD" "EF")
+=> "ABCDEF"
+```
+
+Strings are provided to enable human readable output, for programmer convenience and for compatibility with JSON. Typically, string processing should be avoided on the CVM - while possible this is usually best done on the client side or on a separate server backend.
 
 #### Blobs
 
@@ -161,11 +173,20 @@ Blobs can be easily constructed as literals by prefixing `0x` to a hexadecimal r
 => 2
 ```
 
+#### Addresses
+
+Addresses are identifiers for accounts on Convex (either user or actor accounts). They are expressed as positive integers preceded by `#`
+
+```clojure
+;; An address literal
+#123678
+```
+
 ### Data Structures
 
 #### Vectors
 
-Vectors are the most basic data structure, representing an indexed sequence of elements. They can be constructed by square brackets `[ ... ]` or with the core function `vector` 
+Vectors are the most common data structure, representing an indexed sequence of elements. They can be constructed by square brackets `[ ... ]` or with the core function `vector` 
 
 ```clojure
 [1 2 3]
@@ -173,7 +194,13 @@ Vectors are the most basic data structure, representing an indexed sequence of e
 
 (vector true 0x1234 "Hello")
 => [true 0x1234 "Hello"]
+
+;; concatenate two vectors
+(concat [1 2 3] [4 5 6])
+=> [1 2 3 4 5 6]
 ```
+
+You should use vectors in most cases when you would use an "array" or "list" as defined in other languages.
 
 #### Lists
 
@@ -196,6 +223,8 @@ Lists are sequential data structures most commonly used for expressing Convex Li
 (list 1 2 (+ 1 2))
 => (1 2 3)
 ```
+
+Lists are primarily used to express Lisp forms / expressions. For most other data, you should use a Vector.
 
 #### Maps
 
@@ -378,7 +407,7 @@ Function application is performed by evaluating a List where the function to be 
 => 5 
 ```
 
-If the number of arguments might be variable, you can use `apply` to apply a function to a sequence of arguments.
+If the number of arguments is variable, you can use `apply` to apply a function to a sequence of arguments.
 
 ```clojure
 (def numbers [1 2 3 4 5])
@@ -501,8 +530,12 @@ Convex Lisp supports IEE754 double precision floating point mathematics with the
 (sqrt 16)
 => 4.0
 
-;; Truncation to IEE754 Double precision is automatic when required
-12.6678347835634789562349785632948756
+;; You can convert any other number to a Double (including big integers)
+(double 100000000000000000000000000000000000)
+=> 1.0E35
+
+;; Truncation to IEE754 Double precision is automatic when required (this is done by the Reader)
+12.6678347835634781562349785632948756
  => 12.667834783563478
 ```
 
@@ -584,7 +617,7 @@ Frequently, it is used to indicate when something is not found in a data structu
 => nil
 ```
 
-When passed to functions that expect a data structure, `nil` usually indicates an empty data structure:
+When passed to functions that expect a data structure, `nil` is interpreted as an empty data structure:
 
 ```clojure
 ;; Concatenating vectors with `nil`
@@ -595,7 +628,7 @@ When passed to functions that expect a data structure, `nil` usually indicates a
 (intersection nil #{1 2 3})
  => #{}
 
-;; Merging maps with `nil` leaves then unchanged
+;; Merging maps with `nil` leaves them unchanged
 (merge {:foo 1} nil)
 => {:foo 1}
 
@@ -604,11 +637,11 @@ When passed to functions that expect a data structure, `nil` usually indicates a
 => true
 ```
 
-NOTE: while `nil` may behave like an empty data structure in some contexts, it is a distinct value from the empty data structures (`[]` `()` `{}` and `#{}`). None of these values should be considered equal to each other. In particular, functions that are expected to return a data structure should normally produce an empty data structure rather than `nil` if they succeed.
+NOTE: while `nil` may behave like an empty data structure in some contexts, it is a distinct value from the empty data structures (`[]` `()` `{}` and `#{}`). None of these values are considered equal to each other. In particular, functions that are expected to return a data structure should normally produce an empty data structure rather than `nil` if they succeed.
 
 When used in conditional expressions, `nil` is considered as `false` (see section on conditional expressions for more details)
 
-When used in JSON-like data structures, `nil` may be considered to map to the JSON value `null`.
+When used in JSON-like data structures, `nil` maps to the JSON value `null`.
 
 
 ## Conditional Expressions
@@ -650,7 +683,7 @@ The rule is simple:
 
 NOTE: A key reason for this is for convenience and simplifying code: `(if (not (nil? (lookup-thing a b))) ...)` can often become `(if (lookup-thing a b) ...)`. This is consistent with behaviour in other Lisps, where it is frequently referred to as "nil-punning". 
 
-## Importing namespaces
+## Importing and referencing other accounts
 
 It is frequently useful to refer to symbols in the environment of different account from the one currently being used. Examples where this is important:
 - Referring to functions in shared library code
@@ -960,7 +993,7 @@ The following conventions are recommended and/or generally utilised in Convex Li
 
 ### Hyphenation
 
-Hyphens are generally preferred for symbol names, e.g. `do-something` (rather than `do_something` or `doSomething`). This makes no difference to the CVM, but is primarily done for consistency with other Lisp based languages.
+Hyphens are generally preferred to separate symbol names, e.g. `do-something` (rather than `do_something` or `doSomething`). This makes no difference to the CVM, but is primarily done for consistency with other Lisp based languages.
 
 ### Constant naming
 
@@ -972,11 +1005,61 @@ If in doubt whether to use Symbols or Keywords, the following may be helpful:
 - Symbols are best when referring to values defined in the current environment (e.g. using `def`)
 - Keywords are best as keys in data structures or literal / constant values since they do not require quoting for such usage
 
+### Comma usage
+
+Commas are considered whitespace, so there is no functional difference between `[a b c]` and `[a,b,c]`. 
+
+We recommend using spaces instead of commas, unless the comma helps with source code readability or compatibility. Examples where commas may be helpful: 
+
+```clojure
+;; Commas may be helpful to visually group keys and values in maps 
+{:a 1, :b 2, :c 3}
+
+;; Commas may be used to make vectors compatible with JSON format. This is a valid JSON array:
+[1, 2, 3]
+```
+
 ### Clojure Consistency
 
 Where possible, coding style should be consistent with Clojure which shares a very similar syntax to Convex Lisp.
 
 The [Clojure Style Guide](https://github.com/bbatsov/clojure-style-guide) may be informative.
+
+## Performance tips and tricks
+
+Efficiency is an important concern for decentralised systems, as all computation and storage comes with a cost. So here are some methods for developing more efficient code in Convex Lisp.
+
+### Avoid string parsing
+
+DO NOT attempt to parse strings in Convex Lisp (or on the CVM generally). This is almost always a bad idea: it is computationally expensive and likely to be error prone. 
+
+Parse strings on the client or server with well tested libraries (e.g. ANTLR) and send to the CVM as CVM data structures. This is the approach taken by the Convex Lisp Reader.
+
+### Minimise encoding lengths
+
+It will be more efficient (and save memory costs) if you use data values with shorter encodings. If you expect to store large numbers of similar data structures, it is definitely worth minimising the size of each instance.
+
+You can use the `encoding` function to see the byte representation of any value. As an example you can see that the encoding of `true` is actually more memory efficient than the integer `1`
+
+```clojure
+(encoding 1)
+0x1101
+
+(encoding true)
+=> 0xb1
+```
+
+Other tips for shortening encodings:
+- Use a vector `[1 2]` instead of a map with fixed keys `{:field1 1 , :field2 2}`
+- Use shorter Keywords e.g. `:f` instead of `:failure`
+- Avoid having entries in maps where the value is a default value like `nil` or `0` e.g. `{:name "Bob" :ferraris 1 :bugattis 0 :lambos 0}` becomes `{:name "Bob" :ferraris 1}`. You code can provide a default value in `get` when reading the key e.g. `(get person-record :lambos 0)`
+
+### Pre-compilation
+
+If you compile Convex Lisp code before sending code to the CVM, you avoid the cost of compilation. This may be significant for complex expressions, especially if they involve macros. While unimportant for small one-off transactions, this may be valuable if you are sending a lot of transactions to Convex.
+
+There is no strong reason to avoid pre-compilation unless the compilation depends on something that might change in the global state and you need compilation to happen atomically in the same transaction as it is executed.
+
 
 ## Notable Differences vs. other languages on decentralised VMs
 
@@ -996,6 +1079,13 @@ We believe the following features of Convex Lisp, among others, offer substantiv
 
 We hope that developers will find the tools provided in Convex Lisp a compelling solution as we continue to build open economic systems.
 
+## Future plans
 
+Convex Lisp will continue to develop alongside Convex. Key goals beyond Convex V1 include:
+
+- **Backwards compatibility**: we must never break the behaviour of existing correct code. New changes will be strictly additive.
+- **Type System**: The CVM already has a rich type system. We will explore options to make this more visible and useful to developers: in particular support for gradual typing may be appealing
+- **Cryptographic primitives**: support for cryptographic operations natively in Convex Lisp. We note that most cryptographic operations should be performed at the level of client or peer implementations rather than on the CVM, but support for some such operations on the CVM may be justified where they enable important use cases (e.g. homomorphic encryption)
+- **32-bit floats** may be important as a key additional data type, particularly given their prevalence in AI systems. We will support these if and when they are natively supported on the CVM.
 
 
