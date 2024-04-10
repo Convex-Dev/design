@@ -4,25 +4,37 @@
 
 Convex Lisp is a general purpose, high level programming language for the Convex Virtual Machine (CVM), designed to facilitate effective construction of smart contracts, digital assets and open economic systems.
 
-This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide**: more detailed specifications for specific aspects are provided in other CADs
+This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide**: more detailed specifications for specific aspects are provided in other CADs.
 
-## Motivation
+### Motivation
 
-While the CVM itself is language agnostic, we developed a Lisp dialect as the first language for Convex for a number of key reasons:
+As a platform for decentralised, open economic systems Convex requires a powerful and flexible language for developers to build the next generation of digital assets, smart contracts and services.
+
+While the CVM itself is language agnostic, we chose a Lisp dialect as the first language for Convex for a number of key reasons:
 - Productivity: general recognition of Lisp as a highly productive and flexible language
 - The advantages of a homoiconic language for constructing code with powerful macros and DSL capabilities
 - The ability to create a small and efficient [compiler](../008_compiler) suitable for on-chain code generation and compilation 
 - Familiarity for developers of existing Lisp-based languages such as **Clojure**, **Scheme**, **Racket** or **Common Lisp**
 
+Designing a new language is not an easy task, so we naturally considered adopting an existing language for Convex. Unfortunately, none of the available options proved attractive for a variety of reasons:
+- High level general purpose programming languages (Python, Java, JavaScript, Clojure, C# etc.) are not generally designed for decentralised VM operation. In particular, execution must be deterministic to allow independent execution and validation of the same exact computation by peers in a decentralised network. Cutting down such languages to a consistent deterministic subset (no IO, no randomness, no observable differences across platforms etc.) would itself be a massive task and break compatibility with the majority of existing code, negating most of the value of existing library ecosystems.
+- Low level languages (WASM etc.) do not provide the high level capabilities and abstractions needed for productive development of decentralised economic systems. The amount of library support required to provide this would be a significant development and performance overhead. Typically, such languages also lack good support for automatic memory management which is important for developer productivity and essential for the kinds of immutable data structures used in Convex. These would also imply complex toolchains and execution infrastructure that would add complexity and inhibit development and maintenance efficiency.
+- Existing smart contract languages (Solidity etc.) have significant limitations / design flaws and would not allow us to take full advantage of the power of the CVM, e.g. the improved account model.
+- Convex performance at global scale depends heavily on very efficient immutable data structures that are not easy to represent in existing languages that were not designed with these in mind. No existing language would be a good fit for these natively, and translating to / from these structures would imply an unacceptable performance penalty: we need to use them directly.
 
-## Key features
+### Key language features
 
 - Emphasis on **functional programming** with support for the **lambda calculus**
-- Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems 
+- Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems based on Convex
 - Powerful **macro capabilities**, following the Expansion-passing Style developed by Dybvig, Friedman & Haynes
 - Automatic **memory management**, including [memory accounting](../006_memory)
 - Elegant **Lisp syntax** largely inspired by Clojure
 - **On-chain compiler** (smart contracts writing smart contracts....)
+
+### Discussion and contributions
+
+Questions or discussions on Convex Lisp including design choices and potential improvements are encouraged on the [Convex Discord](https://discord.com/invite/xfYGq4CT7v) in the `#language-design` channel.
+
 
 ## Interactive development
 
