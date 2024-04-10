@@ -474,6 +474,78 @@ The rule is simple:
 
 NOTE: A key reason for this is for convenience and simplifying code: `(if (not (nil? (lookup-thing a b))) ...)` can often become `(if (lookup-thing a b) ...)`. This is consistent with behaviour in other Lisps, where it is frequently referred to as "nil-punning". 
 
+## Importing namespaces
+
+It is frequently useful to refer to symbols in the environment of different account from the one currently being used. Examples where this is important:
+- Referring to functions in shared library code
+- Examining a data structure in an Actor account
+- Defining a value once and referring to it from many user accounts
+
+### Namespace Lookup
+
+Referring to a value in another account is made convenient with the `/` lookup syntax:
+
+```clojure
+;; A symbol in the current account (i.e. *address*)
+foo
+
+;; A symbol in a different account
+#42/foo
+
+;; Any expression can be used to define the target account
+(def other #42)
+other/foo
+```
+
+Referring to functions and data structures in this way is usually more memory efficient, and recommended in most cases where there is no need for multiple accounts to keep a duplicate copy of the same value.
+
+A very common use case is importing a library of code or values. Fot this purpose, the `import` macro is provided that creates an alias to any account via the Convex Name System (CNS)
+
+```clojure
+;; Import a library
+(import convex.fungible :as fun)
+
+;; Use the library alias for references
+(deploy (fun/build-token {:supply 1000000}))
+```
+
+### Nested lookups
+
+It is possible to nest lookups, since the target account is defined by an expression, and a lookup is a valid expression in itself.
+
+```clojure
+;; This works providing that `other-alias` is defined in the account specified by `alias`
+alias/other-alias/target-symbol
+
+;; This is equivalent to using a temporary intermediate alias:
+(let [intermediate-alias alias/other-alias] 
+  intermediate-alias/target-symbol)
+```
+
+While possible, nested lookups would be unusual. A possible use case would be adding a layer of indirection so that the intermediate account can switch to different versions of a final destination account, for purposes of version control or providing alternative implementations of a component.
+
+### Security implications - IMPORTANT
+
+**IMPORTANT NOTE**: while namespaced lookups refer to a value in another account, they do not change the security context, therefore code from another account that is executed will still run within the current account (`*address*`). To avoid security risks users MUST ensure they do not execute untrusted code. It practice this means:
+- Always review whether you trust an account that you `import`
+- NEVER execute a function from an untrusted account directly
+- Wrap execution of potentially untrusted code in a `query` to eliminate the possibility of any adverse side effects
+
+```clojure
+(import some.untrusted.account :as danger)
+
+;; This is safe because you are just reading a value, but you can't trust the value of `do-something`
+danger/do-something
+
+;; DON'T DO THIS - it will execute any code in the `do-something` function in your current account
+(danger/do-something)
+
+;; This is safe from side effects, though still potentially unwise: an attacker could burn your juice, or cause an error
+(query (danger/do-something))
+```
+
+Be aware that CNS references MAY change, i.e. `(import some.library.account as lib)` may result in a reference to a different underlying account in future executions. Ideally, the import should only be executed once, and the value of the alias `lib` should be examined afterwards to ensure it refers to the correct account (e.g. `#43567`). If a malicious change to CNS is considered a risk, it may be preferable to define the alias to a known trusted account directly e.g. `(def lib #43567)`
+
 ## Other syntax
 
 ### Whitespace
