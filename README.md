@@ -63,7 +63,7 @@ Contributions to this repository are welcome. Contributors may clarify existing 
 
 For questions and broader discussions, please join the Convex Discord channel (https://discord.com/invite/xfYGq4CT7v).
 
-It is recommended consulting the broader community first before preparing proposals or improvements that might otherwise be rejected.
+Contributors are recommended to consult the broader community first before developing new proposals or improvements.
 
 ## License
 

@@ -313,7 +313,7 @@ An Ordering includes all Blocks up to the current Consensus Point.  A Peer may p
 
 #### Convergent Consensus
 
-Convex uses a variant of Convergent Replicated Data Types (CRDTs), ensuring that the network converges to consensus. CRDTs have the provable property of eventual consistency. All nodes eventually agree on the same value of an ordering up to the agreed consensus point.
+Convex uses a variant of Conflict-free Replicated Data Types (CRDTs), ensuring that the network converges to consensus. CRDTs have the provable property of eventual consistency. All nodes eventually agree on the same value of an ordering up to the agreed consensus point.
 
 The CRDT is implemented through:
 
