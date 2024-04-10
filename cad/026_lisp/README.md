@@ -79,14 +79,15 @@ Convex Lisp provides a rich set of data types suitable for general purpose devel
 - A *superset of JSON* for easy interoperability with web based systems
 - Immutable persistent data structures with automatic structural sharing
 - Binary Blobs for arbitrary user-defined data and interoperability with external systems
+- Indexes for database implementations with efficient sorted keys
 
-Convex Lisp data types map directly to those provided natively by the CVM, for maximum efficiency. 
+Convex Lisp directly uses the data types provided natively by the CVM, for maximum efficiency. 
 
-For more detailed specification see [CAD002](../002_values)
+For more detailed specification of CVM data types see [CAD002](../002_values)
 
 ### Basic Literal values
 
-Literal values are expressions that evaluate to themselves as a constant. These include numbers, strings, booleans etc.
+Literal values are expressions that evaluate to themselves (as a constant). These include numbers, strings, booleans etc.
 
 #### Integers
 
@@ -345,7 +346,7 @@ Indexes are specialised ordered maps that support "Blob-Like" keys only (Blobs, 
 => {"foo" 789}
 ```
 
-Use an Index instead of a Map if both:
+Use an Index instead of a Map if both of the following are true:
 a) you need a sorted map 
 b) you can strictly control the type of keys
 
@@ -387,23 +388,27 @@ A Keyword MUST have a length of between 1 and 128 UTF-8 bytes (inclusive). This 
 
 ### Symbols
 
-Symbols are symbolic names used to refer to other values. They are similar to Keywords, however they are treated differently by the compiler as they are used to look up values in the current context / environment.
+Symbols are symbolic names used to refer to other values. They are similar to Keywords, however they are treated specially by the compiler as they are used to look up values in the current context / environment.
 
 ```clojure
-;; `count` refers to the core runtime function. This prints as `count` but is NOT the symbol: the result is a function
-count
-=> count
-
-;; Trying to evaluate a symbol that is undefined will result in an :UNDECLARED error
-foo
-=> :UNDECLARED error
-
 ;; You can define a symbol to refer to any value you like, e.g. a Vector. This will consume some CVM memory.
 (def bar [1 2 3])
 
 ;; Once a symbol is defined in the environment, it will evaluate to the value itself
 bar 
 => [1 2 3]
+
+;; Trying to evaluate a symbol that is undefined will result in an :UNDECLARED error
+foo
+=> :UNDECLARED error
+
+;; `count` refers to the core runtime function. This prints as `count` but is NOT the symbol: the result is the `count` core function
+count
+=> count
+
+;; This is how code works! the symbol refers to a function, which is looked up then applied to the arguments
+(count [0 1 2 3])
+=> 4 
 ```
 
 It is sometimes useful to use a Symbol as a value in itself (without performing any lookup). In this case, it is possible to **quote** the Symbol, so that the symbol itself will be returned (rather than the value that it refers to). This can be done in two ways:
@@ -432,7 +437,7 @@ For practical purposes, Records behave as an immutable Map, and can be used in s
 
 ## Functions
 
-Functions are values in Convex Lisp that can be applied to a set of arguments.
+Functions are values in Convex Lisp that can be applied to zero or more arguments.
 
 Key properties:
 - They are full first class values, i.e. can be stored in data structure or passed as arguments to other functions
@@ -473,6 +478,8 @@ Functions are typically defined with the `defn` macro, which creates a function 
 (square 12)
 => 144  
 ```
+
+### Variable arities 
 
 Functions can support multiple arities by specifying different combinations of parameter lists:
 
@@ -719,7 +726,7 @@ If multiple test expressions are required, the `cond` special form allows this, 
 
 NOTE: The `if` macro expands to a `cond` expression in the standard Convex Lisp implementation. Using `cond` may be mildly more efficient in performance sensitive code, as it avoids one additional step of macro expansion. 
 
-### Truthiness
+### Truth Values
 
 In conditional expressions, results are determined by whether the evaluation of a test expression is "truthy" (like `true`) or "falsey" (like `false`).
 
@@ -727,11 +734,11 @@ The rule is simple:
 - `false` or the value `nil` are considered "falsey"
 - `true` or *any other value* are considered "truthy"
 
-NOTE: A key reason for this is for convenience and simplifying code: `(if (not (nil? (lookup-thing a b))) ...)` can often become `(if (lookup-thing a b) ...)`. This is consistent with behaviour in other Lisps, where it is frequently referred to as "nil-punning". 
+NOTE: A key reason for this rule is for convenience and simplifying code: `(if (not (nil? (lookup-thing a b))) ...)` can often become `(if (lookup-thing a b) ...)`. This is consistent with behaviour in other Lisps, where it is frequently referred to as "nil-punning". 
 
 ## Importing and referencing other accounts
 
-It is frequently useful to refer to symbols in the environment of different account from the one currently being used. Examples where this is important:
+It is frequently useful to refer to symbols in the environment of a different account from the one currently being used. Examples where this is important:
 - Referring to functions in shared library code
 - Examining a data structure in an Actor account
 - Defining a value once and referring to it from many user accounts

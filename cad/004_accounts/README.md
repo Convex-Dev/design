@@ -69,8 +69,6 @@ With this method, accounts may be re-used by different individuals, with the sec
 
 ## Account Specification
 
-### Account Data Structure
-
 The account is represented a data structure within the state of the CVM.
 
 Each valid address MUST have precisely one account record in the global state.
@@ -78,10 +76,10 @@ Each valid address MUST have precisely one account record in the global state.
 If a state transition causes an update to information in the account record (e.g. changing a definition in the environment), the new state MUST reflect the account update.
 
 The account record (`AccountStatus` in the standard reference implementation) MUST be a valid CVM Record data structure with Keyword keys as follows:
-- `:sequence` - sequence number of the account, initally `0`
+- `:sequence` - sequence number of the account, initially `0`
 - `:key` - account key, may be `nil` to indicate an actor, otherwise a 32 byte Blob representing an Ed25519 public key
-- `:balance` - integer balance of the account in Convex copper coins
-- `:allowance` - unused memory allowance of the account, normally `0` but may be higher (e.g. if a memory accounting refund occured)
+- `:balance` - balance of the account in Convex copper coins (a 64-bit natural number)
+- `:allowance` - unused memory allowance of the account, normally `0` but may be higher (e.g. if a memory accounting refund occurred)
 - `:holdings` - map of holdings of the account, attributed to any other accounts which have utilised `set-holding` (e.g. token actors)
 - `:controller` - a controller account, which has the power to issue commands for this account (e.g. `eval-as`)
 - `:environment` - a map of symbols to defined values in the account, initially `{}`
@@ -89,13 +87,17 @@ The account record (`AccountStatus` in the standard reference implementation) MU
 
 ### Sequence Number
 
+The sequence number's primary purpose is to prevent replay attacks, since the same signed transaction with the same sequence number cannot be re-used.
+
 The sequence number MUST indicate the number of transactions which have been executed for this account.
 
 The sequence number MUST be `0` for a new account, or any account for which transactions have never been previously executed (e.g. an immutable actor)
 
-The sequence number MUST increase by `1` for each correctly signed transaction executed.
+The sequence number MUST increase by `1` for each correctly signed transaction executed. 
 
 ### Account Key
+
+The account key's purpose is to specify which cryptographic key (if any) can be used to control the account
 
 Each account MAY have a single account key.
 
@@ -111,17 +113,25 @@ The account key MAY be changed by a controller of the account to a new account k
 
 ### Balance
 
+The balance field enables each account to hold a quantity of Convex Coins.
+
 The balance field MUST be a non-negative integer indicating the number of Convex copper coins controlled directly by the account.
 
 ### Allowance
+
+The allowance field enables each account to hold a pre-alloacted allowance of CVM memory for future use. If this is zero, and new memory allocations must be purchased at the prevailing memory pool price at the time the transaction completes.
 
 The allowance field MUST be a non-negative integer indicating the number of bytes of unused memory allowance held by the account.
 
 ### Holdings
 
+The holdings field is an efficient way for actors to optionally store some data referring to each other account on the system. For example, it might be used to store a balance of actor-defined tokens that are held by the account.
+
 The holdings field MUST be a Index representing a mapping of Address to holding values. 
 
-Holding values SHOULD be meaningfully defined by the respective address that set them.
+Values MAY be any CVM value.
+
+Holding values SHOULD be meaningfully defined by the address that sets them.
 
 ### Controller
 
@@ -133,19 +143,19 @@ Otherwise, the CVM MUST regard any non-`nil` value in this field as defining a t
 
 If another account is defined as a controller, it MUST be able to control the account in its entirely, including use of `eval-as`.
 
-## Environment
+### Environment
 
 The environment field MUST be a map of Symbols to defined values in the account.
 
 The environment field must be `{}` when initially created.
 
-## Metadata
+### Metadata
 
 The metadata field MUST be a map of Symbols to defined metadata in the account.
 
 The metadata field must be `{}` when initially created.
 
-CVM operations MAY set values in the environment without setting equivalent values in the metadata. This is primarily for efficiency purposes, as most enviornment values do not require metadata.
+CVM operations MAY set values in the environment without setting equivalent values in the metadata. This is primarily for efficiency purposes, as most environment values do not require metadata.
 
 
 
