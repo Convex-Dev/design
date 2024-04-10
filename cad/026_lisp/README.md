@@ -250,6 +250,8 @@ Functions can also support fully variadic arguments using the `&` symbol precedi
 => 2.5  
 ```
 
+Variadic arguments may be included at any position in the parameter list, but to avoid ambiguity a maximum of one `&` may be used in any single binding list. Variadic arguments are not required to be placed in the final position, however it is recommended to do so by convention. An example where a non-termial variadic argument might be useful is where the arguments represent a "stack" and it is helpful to bind the last argument representing the top element of the stack for special treatment.
+
 ### Higher order functions
 
 Higher order functions are functions that themselves take functions as arguments. This is fully supported on the CVM, and often results in cleaner, more robust code than would be achieved with equivalent imperative programming style.
