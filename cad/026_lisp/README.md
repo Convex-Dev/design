@@ -4,13 +4,16 @@
 
 Convex Lisp is a general purpose, high level programming language for the Convex Virtual Machine (CVM), designed to facilitate effective construction of smart contracts, digital assets and open economic systems.
 
+This document outlines the key elements of Convex Lisp. It is intended primarily as an **introduction and programmer's guide**: more detailed specifications for specific aspects are provided in other CADs
+
+## Motivation
+
 While the CVM itself is language agnostic, we developed a Lisp dialect as the first language for Convex for a number of key reasons:
 - Productivity: general recognition of Lisp as a highly productive and flexible language
 - The advantages of a homoiconic language for constructing code with powerful macros and DSL capabilities
-- The ability to create a small and efficient [compiler](../008_compiler) suitable for on-chain code compilation 
+- The ability to create a small and efficient [compiler](../008_compiler) suitable for on-chain code generation and compilation 
 - Familiarity for developers of existing Lisp-based languages such as **Clojure**, **Scheme**, **Racket** or **Common Lisp**
 
-This CAD outlines the key elements of Convex Lisp. It is intended as an **introduction and programmer's guide**: more detailed specifications for particular aspects are provided in other CADs
 
 ## Key features
 
@@ -63,22 +66,72 @@ Convex Lisp provides a rich set of data types suitable for general purpose devel
 
 For more detailed specification see [CAD002](../002_values)
 
-### Basic literal values
+### Basic Literal values
 
 Literal values are expressions that evaluate to themselves as a constant. These include numbers, strings, booleans etc.
+
+#### Integers
+
+Integers are positive or negative integer values. Most typical mathematical operations are supported.
 
 ```clojure
 1
 => 1
 
-"Hello"
-=> "Hello"
-
-true
-=> true
+(+ 2 3)
+=> 5
 ```
 
-### Blobs
+The CVM supports "Big Integer" mathematics natively, with values up to 2^32768 (4096 bytes). Typically, most integers require less than 64 bits, so are stored efficiently as 64-bit long integers in the CVM implementation, switching to a Big Integer representation only when required. To the user, there is no visible difference apart from paying somewhat higher transactions fees to fairly reflect the additional computation requirement.
+
+```clojure
+;; A large negative big integer
+-9999999999999999999999999999999999999999
+=> -9999999999999999999999999999999999999999
+
+;; Big integer mathematics (this would overflow 64 bits)
+(* 100000000000000000000001 987654321)
+ => 98765432100000000000000987654321
+```
+
+Key motivations for including big integer support in Convex Lisp include:
+- Avoiding the risk of numerical overflow when performing computations on large numbers such as asset balances
+- Supporting 256-bit integers commonly found in other decentralised systems
+- Supporting cryptographic applications which rely on large integers (e.g. 4096 bits)
+
+#### Doubles
+
+Doubles are 64-bit double precision floating point vales, as specified in IEEE754
+
+```clojure
+;; Double values are literals, just like Integers
+12.45
+=> 12.45
+```
+
+See below for more details on floating point support in Convex Lisp
+
+#### Strings
+
+Strings are arbitrary length, immutable UTF-8 strings
+
+```clojure
+"Hello"
+=> "Hello"
+```
+#### Booleans
+
+Booleans are either `true` or `false`
+
+```clojure
+true
+=> true
+
+false
+=> false
+```
+
+#### Blobs
 
 Blobs are arbitrary length sequences of byte data. These are particularly useful in Convex for:
 - Representing cryptographic values such as hashes and Ed25519 public keys
@@ -176,6 +229,48 @@ With functions that expect a sequential data structure, maps operate as if they 
 ```
 
 Internally maps are implemented as radix trees based on the hash value of keys. This means that ordering is deterministic (since hashes are deterministic) but will appear random. Code using maps SHOULD NOT make any assumptions about map order.
+
+#### Sets
+
+Sets represent an unordered collection of distinct values, equivalent to a finite set on mathematics.
+
+```clojure
+;; A set of integers
+#{1 2 3 4}
+
+;; The empty set
+#{}
+```
+
+Sets can be tested for membership with the `get` function, which returns `true` or `false` based on whether the element is present:
+
+```clojure
+(get #{1 2 3} 2)
+=> true
+
+(get #{1 2 3} 5)
+=> false
+```
+
+Sets are particularly useful in cases where logic is required to compute intersections, unions and differences between sets. These operations have optimised support in the CVM, which makes such operations much cheaper than accessing or comparing elements individually.
+
+```clojure
+(union #{1 2 3} #{3 4 5})
+=> #{5,4,2,3,1}
+
+(intersection #{1 2 3} #{3 4 5})
+=> #{3}
+
+(difference #{1 2 3} #{3 4 5})
+=> #{2,1}
+```
+
+A key motivation for the inclusion of Sets in the CVM (besides their mathematical elegance) is to efficiently support systems that must keep track of a variable number of distinct values
+- Trusted users authorised via an access control list
+- Which users are still eligible to vote in an election, or have already voted
+- Flags describing which optional terms apply to a smart contract 
+
+Internally sets are implemented as radix trees based on the hash value of elements. This means that ordering is deterministic (since hashes are deterministic) but will appear random. Code using sets SHOULD NOT make any assumptions about set order.
 
 ### Keywords
 
@@ -379,10 +474,10 @@ In the absence of a explicit `return`, the result of a function will be the resu
 
 ## Floating point
 
-Convex Lisp supports IEE754 double precision floating point mathematics with a built-in `Double` type. This is an important for many domains where Integer values may be inconvenient or introduce inaccuracies, e.g. in statistical or pricing applications. `Double` support is also important so that Convex Lisp can express a superset of JSON.
+Convex Lisp supports IEE754 double precision floating point mathematics with the built-in `Double` type. This is an important for many domains where Integer values may be inconvenient or introduce inaccuracies, e.g. in statistical or pricing applications. `Double` support is also important so that Convex Lisp can express a superset of JSON.
 
 ```clojure
-;; Double values are lietrals, just like Integers
+;; Double values are literals, just like Integers
 12.45
 => 12.45
 
