@@ -237,7 +237,7 @@ Vectors are particularly efficient for operations that add/remove at the end of 
 
 #### Lists
 
-Lists are sequential data structures most commonly used for expressing Convex Lisp code. They are representuing be surrounding zero or more elements with regular parentheses `( )`. Because they are interpreted as code, if you want to construct a List literal you must quote it to suppress evaluations with `'( )` or use the constructor function `list`
+Lists are sequential data structures most commonly used for expressing Convex Lisp code. They are represented by surrounding zero or more elements with regular parentheses `( )`. Because they are interpreted as code, if you want to construct a List literal you must quote it to suppress evaluations with `'( )` or use the constructor function `list`
 
 ```clojure
 ;; Note single quote symbol needed to produce a literal List
@@ -586,7 +586,7 @@ In the absence of a explicit `return`, the result of a function will be the resu
 
 ## Floating point
 
-Convex Lisp supports IEE754 double precision floating point mathematics with the built-in `Double` type. This is an important for many domains where Integer values may be inconvenient or introduce inaccuracies, e.g. in statistical or pricing applications. `Double` support is also important so that Convex Lisp can express a superset of JSON.
+Convex Lisp supports IEE754 double precision floating point mathematics with the built-in `Double` type. This is important for many domains where Integer values may be inconvenient or introduce inaccuracies, e.g. in statistical or pricing applications. `Double` support is also important so that Convex Lisp can express a superset of JSON.
 
 ```clojure
 ;; Double values are literals, just like Integers
@@ -1126,7 +1126,7 @@ Instead: return a well defined integer value, keyword or other data structure th
 
 The CVM is not the place for storing static content such as images, text or other large binary files. 
 
-Instead: use the [Data Lattice](../data_tattice), IPFS or a traditional web server / CDN that clients can download content from.
+Instead: use the [Data Lattice](../data_lattice), IPFS or a traditional web server / CDN that clients can download content from.
 
 If you absolutely must validate content against an on-chain record, store a single 32-byte hash of the content. This can be the merkle root of a large tree of content if necessary. Clients can hash the content and check this for authenticity / integrity.  
 
