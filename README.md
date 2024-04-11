@@ -40,6 +40,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD24](cad/024_data_lattice)  | Data Lattice                     | Draft      | mikera
 | [CAD25](cad/025_wallet)        | HD Wallets                       | Draft      | mikera
 | [CAD26](cad/026_lisp)          | Convex Lisp                      | Draft      | mikera
+| [CAD27](cad/027_log)           | Event Logging                    | Draft      | mikera
 
 ## Convex Project Portfolio
 
