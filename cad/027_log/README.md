@@ -69,10 +69,16 @@ Conventionally, the first element of the log data SHOULD be a Keyword that descr
 
 ### Log Indexing
 
-Peers SHOULD produce and retain the following indexes on log data:
+Peers SHOULD index log records for efficient access any query by interested parties
+
+Peers SHOULD produce and retain the following indexes at minimum:
 
 - An index on block + transaction index, enabling sequential access to the log events for each transaction in order.
 - An index on the each of the first 4 fields of the log data, if these are Blob Like values that can be indexed
+
+Indexes SHOULD map the index key to a vector of log positions, so that the relevant Log Record(s) can be efficiently retrieved in order.
+
+The exact structure of log indexes are implementation details left to the peer operator.
 
 ### Execution fees
 
@@ -83,6 +89,9 @@ The cost of a `log` operation is:
 
 The outputs of `log` are not stored in the CVM State, so this has no direct effect on memory size
 
+### Log Output
+
+Peers MUST compute the following 
 
 ### Retention policies
 
