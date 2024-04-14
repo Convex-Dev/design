@@ -83,7 +83,7 @@ Note: The maximum supply is chosen so that coin balances can be comfortably expr
 The Network MUST divide the total initial supply of Convex Coins into two quantities:
 
 - 75% for Coin Purchasers via the Release Curve
-- 25% for the Convex Foundation's reserve
+- 25% for contributor and ecosystem awards
 
 ### Release Curve
 
@@ -118,6 +118,22 @@ The funds raised from coin purchases MUST be used in accordance with the objecti
 
 The funds raised SHOULD be managed as a long term fund by the Foundation to ensure the development of the network can be funded on a sustainable ongoing basis.
 
+## Coin Awards
+
+The 25% allocation for awards MUST be distributed at the sole discretion of the Convex Foundation, in its role as the governance body of the Convex Network.
+
+The Convex Foundation MUST make awards in the interest of developing the ecosystem, with a focus on awards to:
+- Contributors who have made positive contributions to the development of Convex core technology
+- Contributors who make positive contributions the the development of the community and ecosystem
+- Infrastructure providers (such as peer operators) who help to ensure the security and reliability of the network
+
+The Convex Foundation MAY require contributors to sign a Contributor's Agreement before award or distribution of coins.
+
+The Convex Foundation MAY requires to prove their legal identity (KYC requirement)
+
+The Convex Foundation SHOULD aim to ensure that the rate of awards remains broadly consistent with the ratio 25% : 75% relative to purchases from the release curve, with the understanding that this ratio may deviate from target in the short term.
+
+The Convex Foundation SHOULD explore options for decentralised governance of awards.
 
 ## Other considerations
 
