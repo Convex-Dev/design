@@ -10,7 +10,7 @@ This does not in any way constitute financial advice. Participants in the ecosys
 
 ## Overview
 
-Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for the
+Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for their services.
 
 
 ## Design Objectives
@@ -19,7 +19,7 @@ The tokenomic model has been designed with the following objectives:
 
 ### Utility Token
 
-The Convex Coin is a utility token - it represents no more and no less than the right to use the coin to access services provided by the Convex Network.
+The Convex Coin is a utility token - it represents the right to use the coin to access services provided by the Convex Network.
 
 ### Means of exchange
 
@@ -47,7 +47,7 @@ It is necessary to protect the network against the risk of DoS attacks enabled b
 
 ### Sustainability
 
-In the long term, the tokenomics should converge towards a stable steady state equilibrium, where the pricing of transactions is fair and balances the cost of providing services and infrastructure for the network
+In the long term, the tokenomics should converge towards a stable steady state equilibrium, where the pricing of transactions is fair and balances the cost of providing services and infrastructure for the network.
 
 
 
@@ -63,8 +63,6 @@ The following overall tokenomic flows are possible:
 - **Memory Accounting** : Coins may be exchanged for memory on the Global State. The memory accounting pool is considered a special governance account. See the Memory Accounting CAD for more details.
 - **Transaction Fees** : Coins are taken from users who commit transactions to the network, and held in a peer reward pool for subsequent distribution to Peers. See the Transactions and Juice Accounting CAD for more details.
 - **Peer Rewards** : **Peer Operators** may claim a share of the peer reward pool as they participate in running the network. See the Peer Staking CAD for more details. 
- 
-
 
 ### Coin Supply
 
@@ -74,7 +72,7 @@ Each Convex Coin MUST be sub-divided into 1,000,000,000 base units, referred to 
 
 The Network must treat Convex Coins and coppers identically, i.e. the implementation should consider the range of possible coin values to be a value from `0` to `10^18`.
 
-Note: The maximum supply is chosen so that coin balances can be comfortably expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
+Note: The maximum supply is chosen so that all valid coin balances can be expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
 
 ### Genesis
 
@@ -83,7 +81,7 @@ Note: The maximum supply is chosen so that coin balances can be comfortably expr
 The Network MUST divide the total initial supply of Convex Coins into two quantities:
 
 - 75% for Coin Purchasers via the Release Curve
-- 25% for the Convex Foundation's reserve
+- 25% for contributor and ecosystem awards
 
 ### Release Curve
 
@@ -118,6 +116,22 @@ The funds raised from coin purchases MUST be used in accordance with the objecti
 
 The funds raised SHOULD be managed as a long term fund by the Foundation to ensure the development of the network can be funded on a sustainable ongoing basis.
 
+## Coin Awards
+
+The 25% allocation for awards MUST be distributed at the sole discretion of the Convex Foundation, in its role as the governance body of the Convex Network.
+
+The Convex Foundation MUST make awards in the interest of developing the ecosystem, with a focus on awards to:
+- Contributors who have made positive contributions to the development of Convex core technology
+- Contributors who make positive contributions the the development of the community and ecosystem
+- Infrastructure providers (such as peer operators) who help to ensure the security and reliability of the network
+
+The Convex Foundation MAY require contributors to sign a Contributor's Agreement before award or distribution of coins.
+
+The Convex Foundation MAY requires to prove their legal identity (KYC requirement)
+
+The Convex Foundation SHOULD aim to ensure that the rate of awards remains broadly consistent with the ratio 25% : 75% relative to purchases from the release curve, with the understanding that this ratio may deviate from target in the short term.
+
+The Convex Foundation SHOULD explore options for decentralised governance of awards.
 
 ## Other considerations
 
