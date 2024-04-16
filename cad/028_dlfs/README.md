@@ -72,6 +72,14 @@ The file contents field MUST be either:
 - A Blob of file contents
 - `nil`, indicating the node is not a regular file
 
+#### Tombstones
+
+A file which is neither a directory not a regular file is a tombstone entry.
+
+Implementations SHOULD create tombstone entries upon file deletion, so that deletes of files can be resolved in future replication. Failure to do so will likely result in deleted files reappearing when not intended.
+
+Implementation SHOULD support removal of tombstones. The policy for this is implementation dependent, but should only occur after all replication is complete (e.g. after a fixed number of days) 
+
 #### Metadata
 
 The metadata field is a Cell indicating file metadata which may be either:
