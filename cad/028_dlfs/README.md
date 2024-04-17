@@ -92,7 +92,11 @@ Implementations MAY assign custom meanings to the metadata field
 
 The timestamp of the last operation which changed this node in any way
 
+Implementations SHOULD update the timestamp on all operations that change a node's content or metadata to the latest timestamp of the DLFS Drive. 
+
 Implementations SHOULD use the timestamp to help resolve situations where replicated file changes need to be detected and resolved.
+
+Implementations MAY set arbitrary timestamps for files, but it is important to be aware what effects this may have upon replication.
 
 ### DLFS file names
 
@@ -101,7 +105,7 @@ DLFS file names MAY be any UTF-8 String of length 1 or more.
 File names are case sensitive. For compatibility with Windows is is RECOMMENDED to avoid multiple file names differing only by case.
 
 It is RECOMMENDED (for compatibility with other files systems) that applications limit character usage to:
-- Alphabetic characters
+- Alphabetic uppercase and lowercase characters (`A` to `Z` and `a` to `z`)
 - The digits `0` to `9` (except in the first position)
 - The hyphen `-`
 - The dot `.`
