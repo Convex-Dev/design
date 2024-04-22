@@ -8,8 +8,6 @@ Accounts are identified with an address, which are sequentially allocated in the
 
 Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the user's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If an account is not able to accept external transactions, it's public key is set to `nil`.
 
-
-
 Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, accounts will probably constitute over 99% of the CVM State size - there isn't much else apart from data structure to support peers managing consensus and a little network-global data.
 
 ## Key Concepts
@@ -46,16 +44,16 @@ Actors do nothing on their own initiative (with some limited exceptions e.g. sch
 
 ### Identicons
 
-Accounts may be given an "Identicon" which visually represents the public key of an account. 
+Accounts may be given an "identicon" which visually represents the public key of an account. 
 
-![Account Identicons](identicons.png)
+![Account identicons](identicons.png)
 
-Identicons are optional and intended for user interfaces where public keys are used and must be kept secure. Different GUIs may implement alternative Identicon schemes, however the Convex Desktop used the following approach:
+Identicons are optional and intended for user interfaces where public keys are used and must be kept secure. Different GUIs may implement alternative identicon schemes, however the Convex Desktop used the following approach and other applications are invited to adopt the same format:
 
 - Identicons are 7x7 pixel bitmaps, symmetric about vertical axis
 - 4 colours, taken from last 12 bytes of key (3 RGB bytes each)
 - First 7 bytes of key define unique pixels, 2 bits each, i.e. one byte for each row of the identicon
-- The Identicon for a null value is defined to be a black box (useful for identifying actors etc. with no public key)
+- The identicon for a null value is defined to be a black box (useful for identifying actors etc. with no public key)
 
 ### Lisp Machine
 
