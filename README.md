@@ -6,7 +6,6 @@ This repository is dedicated to Convex Design and Documentation
 
 - [Convex Manifesto](papers/manifesto.md)
 - [Convex White Paper (Draft)](papers/convex-whitepaper.md)
-- [Ecosystem Projects](ecosystem/index.md)
 
 ## Current CADs
 
@@ -63,6 +62,12 @@ The main Convex repository is the primary code base, and includes important modu
 | [convex-api-py](https://github.com/Convex-Dev/convex-api-py) | Python REST client                            | Active     | billbsing
 | [convex-api-js](https://github.com/Convex-Dev/convex-api-js) | NodeJS REST client                            | Active     | billbsing
 | [convex.cljc](https://github.com/Convex-Dev/convex.cljc)     | Clojure libraries, Convex Lisp Runner         | Active     | helins
+
+## Ecosystem Projects
+
+We maintain a list of [Ecosystem Projects](ecosystem/index.md) as a shared resource for the community. 
+
+If you would like your project listed, please send a PR for the linked page.
 
 ## Contributing
 
