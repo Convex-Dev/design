@@ -7,6 +7,7 @@ This repository is dedicated to Convex Design and Documentation
 - [Convex Manifesto](papers/manifesto.md)
 - [Convex White Paper (Draft)](papers/convex-whitepaper.md)
 - [Ecosystem Projects](ecosystem/index.md)
+
 ## Current CADs
 
 Convex Architecture Documents (CADs) are defined for standards relating to the Convex network and ecosystem, in a manner inspired by Internet RFCs.
@@ -43,9 +44,15 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD27](cad/027_log)           | Event Logging                    | Draft      | mikera
 | [CAD28](cad/028_dlfs)          | Data Lattice File System         | Draft      | mikera
 
-## Convex Project Portfolio
+## Convex Project Repositories
 
-We are undertaking a number of projects under the umbrella of the Convex-Dev organisation.
+There are the key repositories managed under the Convex-Dev organisation on GitHub.
+
+The main Convex repository is the primary code base, and includes important modules including:
+- `convex-core` - the core Convex data structures and algorithms including CPoS
+- `convex-peer` - Convex peer implementation and P2P networking
+- `convex-gui` - Convex Desktop GUI Application
+- `convex-restapi` - REST API Server implementation
 
 | Name                                                         | Description                                   | Status     | Lead Dev.
 | -------------                                                | --------------------------------              | ---------- | -----
@@ -55,9 +62,7 @@ We are undertaking a number of projects under the umbrella of the Convex-Dev org
 | [convexity](https://github.com/Convex-Dev/convexity)         | Mobile application and wallet                 | Active     | pedrorgirardi
 | [convex-api-py](https://github.com/Convex-Dev/convex-api-py) | Python REST client                            | Active     | billbsing
 | [convex-api-js](https://github.com/Convex-Dev/convex-api-js) | NodeJS REST client                            | Active     | billbsing
-| [convex-java](https://github.com/Convex-Dev/convex-java)     | Java REST client                              | Active     | mikera
 | [convex.cljc](https://github.com/Convex-Dev/convex.cljc)     | Clojure libraries, Convex Lisp Runner         | Active     | helins
-| Pending                                                      | LSP (Language Server Protocol) implementation | Pending    | pedrorgirardi
 
 ## Contributing
 
