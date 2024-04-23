@@ -1,4 +1,4 @@
-# Convex Design
+# Convex Design & Documentation
 
 This repository is dedicated to Convex Design and Documentation
 
