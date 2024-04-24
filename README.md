@@ -11,43 +11,43 @@ This repository is dedicated to Convex Design and Documentation
 
 Convex Architecture Documents (CADs) are defined for standards relating to the Convex network and ecosystem, in a manner inspired by Internet RFCs.
 
-| Code                           | Title                            | Status     | Editor
-| ------------------             | -------------------------------- | ---------- | -----------
-| [CAD0](cad/000_principles)     | Design principles                | Active     | mikera
-| [CAD1](cad/001_arch)           | Vision & Architecture            | Active     | mikera
-| [CAD2](cad/002_values)         | CVM Values                       | Active     | mikera
-| [CAD3](cad/003_encoding)       | Encoding Format                  | Active     | mikera
-| [CAD4](cad/004_accounts)       | Account Model                    | Pending    | mikera
-| [CAD5](cad/005_cvmex)          | CVM Execution                    | Initial    | mikera
-| [CAD6](cad/006_memory)         | Memory Accounting                | Active     | mikera
-| [CAD7](cad/007_juice)          | Juice Accounting                 | Pending    | mikera
-| [CAD8](cad/008_compiler)       | Convex Lisp Compiler             | Pending    | mikera
-| [CAD9](cad/009_expanders)      | Expanders and Macros             | Pending    | mikera
-| [CAD10](cad/010_transactions)  | Transactions                     | Pending    | mikera
-| [CAD11](cad/011_errors)        | Error Handling                   | Active     | mikera
-| [CAD12](cad/012_numerics)      | Numerics                         | Pending    | mikera
-| [CAD13](cad/013_metadata)      | Metadata                         | Initial    | helins
-| [CAD14](cad/014_cns)           | CNS Registry                     | Pending    | mikera
-| [CAD15](cad/015_peercomms)     | Peer Connection Protocol         | Pending    | mikera
-| [CAD16](cad/016_peerstake)     | Peer Staking                     | Pending    | mikera
-| [CAD17](cad/017_peerops)       | Peer Operations                  | Pending    | mikera
-| [CAD18](cad/018_scheduler)     | Scheduler                        | Pending    | mikera
-| [CAD19](cad/019_assets)        | Asset Model                      | Draft      | mikera
-| [CAD20](cad/020_tokenomics)    | Tokenomics                       | Draft      | mikera
-| [CAD21](cad/021_observability) | Observability                    | Draft      | mikera
-| [CAD22](cad/022_trustmon)      | Trust Monitors                   | Draft      | mikera
-| [CAD23](cad/023_keystore)      | Local Key Store                  | Draft      | mikera
-| [CAD24](cad/024_data_lattice)  | Data Lattice                     | Draft      | mikera
-| [CAD25](cad/025_wallet)        | HD Wallets                       | Draft      | mikera
-| [CAD26](cad/026_lisp)          | Convex Lisp                      | Draft      | mikera
-| [CAD27](cad/027_log)           | Event Logging                    | Draft      | mikera
-| [CAD28](cad/028_dlfs)          | Data Lattice File System         | Draft      | mikera
+| Code                             | Title                            | Status     | Editor
+| ------------------               | -------------------------------- | ---------- | -----------
+| [CAD000](cad/000_principles)     | Design principles                | Active     | mikera
+| [CAD001](cad/001_arch)           | Vision & Architecture            | Active     | mikera
+| [CAD002](cad/002_values)         | CVM Values                       | Active     | mikera
+| [CAD003](cad/003_encoding)       | Encoding Format                  | Active     | mikera
+| [CAD004](cad/004_accounts)       | Account Model                    | Pending    | mikera
+| [CAD005](cad/005_cvmex)          | CVM Execution                    | Initial    | mikera
+| [CAD006](cad/006_memory)         | Memory Accounting                | Active     | mikera
+| [CAD007](cad/007_juice)          | Juice Accounting                 | Pending    | mikera
+| [CAD008](cad/008_compiler)       | Convex Lisp Compiler             | Pending    | mikera
+| [CAD009](cad/009_expanders)      | Expanders and Macros             | Pending    | mikera
+| [CAD010](cad/010_transactions)   | Transactions                     | Pending    | mikera
+| [CAD011](cad/011_errors)         | Error Handling                   | Active     | mikera
+| [CAD012](cad/012_numerics)       | Numerics                         | Pending    | mikera
+| [CAD013](cad/013_metadata)       | Metadata                         | Initial    | helins
+| [CAD014](cad/014_cns)            | CNS Registry                     | Pending    | mikera
+| [CAD015](cad/015_peercomms)      | Peer Connection Protocol         | Pending    | mikera
+| [CAD016](cad/016_peerstake)      | Peer Staking                     | Pending    | mikera
+| [CAD017](cad/017_peerops)        | Peer Operations                  | Pending    | mikera
+| [CAD018](cad/018_scheduler)      | Scheduler                        | Pending    | mikera
+| [CAD019](cad/019_assets)         | Asset Model                      | Draft      | mikera
+| [CAD020](cad/020_tokenomics)     | Tokenomics                       | Draft      | mikera
+| [CAD021](cad/021_observability)  | Observability                    | Draft      | mikera
+| [CAD022](cad/022_trustmon)       | Trust Monitors                   | Draft      | mikera
+| [CAD023](cad/023_keystore)       | Local Key Store                  | Draft      | mikera
+| [CAD024](cad/024_data_lattice)   | Data Lattice                     | Draft      | mikera
+| [CAD025](cad/025_wallet)         | HD Wallets                       | Draft      | mikera
+| [CAD026](cad/026_lisp)           | Convex Lisp                      | Draft      | mikera
+| [CAD027](cad/027_log)            | Event Logging                    | Draft      | mikera
+| [CAD028](cad/028_dlfs)           | Data Lattice File System         | Draft      | mikera
 
 ## Convex Project Repositories
 
 There are the key repositories managed under the Convex-Dev organisation on GitHub.
 
-The main Convex repository is the primary code base, and includes important modules including:
+The main [Convex repository](https://github.com/Convex-Dev/convex) is the primary code base, and includes important modules including:
 - `convex-core` - the core Convex data structures and algorithms including CPoS
 - `convex-peer` - Convex peer implementation and P2P networking
 - `convex-gui` - Convex Desktop GUI Application
