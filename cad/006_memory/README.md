@@ -21,11 +21,11 @@ Convex implements a novel solution of Memory Accounting to help manage the probl
 
 ## Memory Accounting Design
 
-### Memory Size
+### Storage Size
 
-Each CVM object is defined to have a "Memory Size" which approximates the actual storage requirement (in bytes) for the object
+Each CVM object is defined to have a "Storage Size" which approximates the actual storage requirement (in bytes) for the object
 
-The Memory Size includes:
+The Storage Size includes:
 
 - The size of the encoding of the Cell in bytes
 - The total size of all child Cells, (e.g. if the object is a data structure)
@@ -33,7 +33,7 @@ The Memory Size includes:
 
 ### Consumption
 
-Whenever a transaction is executed on the CVM, Memory Consumption is calculated based on the total impact of the transaction on the size of CVM State.
+Whenever a transaction is executed on the CVM, Memory Consumption is calculated based on the total impact of the transaction on the Storage Size of the CVM State.
 
 Memory Consumption is computed at the end of each transaction, and is defined as:
 
@@ -133,41 +133,39 @@ Alternatives to this design that were considered include techniques such as refe
 
 ## Technical implementation
 
+### Definition of Storage Size
+
+A storage size is defined for each cell (branch or root) is calculated as:
+
+`64 + [Size in bytes of encoded cell representation] + [Memory Size of any child Cells]`
+
+The constant 64 is chosen to approximate the expected number of bytes of overhead involved in the storage of each root or branch cell. This more accurately reflects the costs to peers to store each cell. This creates a strong incentive to minimise the total number of cells and use embedded values wherever possible (apart from memory size, this is valuable because they are handled more efficiently in general on the CVM).
+
 ### Definition of Memory Size
 
-A memory size is defined for each Cell which is calculated as:
+In the above definition of storage size, **memory size** for child cells is defined as:
+- The storage size of any branch cells (i.e. non-embedded references)
+- Embedded values do not require storage so are considered to have a memory size of zero, however the size of embedded objects will be included in the encoded cell representation of the parent.
 
-`64 + [Size in bytes of encoded cell representation] + [Memory Size of any child Cells]`
-
-Embedded values do not require storage so are considered to have a memory size of zero, however the size of embedded objects will be included in the size of any cells that contain the value.
-
-The constant 64 is chosen to approximate the expected number of bytes of overhead involved in the storage of each cell. This more accurately reflects the costs to peers to store each cell, and creates an additional incentive for Users to minimise the number of cells used.
-
-### Refs
-
-The smart reference data structure used internally by the CVM (Ref) contains a computed Memory size. This is *not* considered part of the object encoding, and should be re-calculated / validated by Peers as required.
-
-The Memory size for a Ref to an embedded object is zero (it is never directly persisted to storage). This creates a strong incentive to use embedded values wherever possible, which is valuable because they are handled more efficiently in general on the CVM.
-
-The Memory size for a non-embedded Cell is equal to:
-
-`64 + [Size in bytes of encoded cell representation] + [Memory Size of any child Cells]`
-
-Since this is a recursive definition, computation of memory size requires the ability to access the memory sizes of child Refs, which in means that the complete Cell tree must ultimately be available in the Peer's storage in order to validate the complete size. This means that the Cell must in general have a status of PERSISTED at minimum, to preclude the possibility of any missing values in nested child Cells.
+Since this is a mutually recursive definition, computation of storage / memory size requires the ability to access the memory sizes of any child branches, which in means that the complete cell tree must ultimately be available in the Peer's storage in order to fully validate the complete size. This means that the cell must in general have a status of PERSISTED at minimum, to preclude the possibility of any missing values in nested child cells.
 
 ### Lazy computation
 
-Memory requirements for a Cell are only calculated when required (usually at the point that the state resulting from a transaction is persisted to storage).
+Memory requirements for a cell are only calculated when required (usually at the point that the state resulting from a transaction is persisted to storage). Implementations SHOULD cache the memory size to avoid re-computing memory sizes on large trees.
 
 This minimises the computational costs associated with memory accounting for transient in-memory objects.
 
 ### Memory Size Caching and Persistence
 
-Implementations MUST cache memory size for Cells, and persist cached values in storage.
+Implementations SHOULD cache memory size for cells, and persist cached values in storage. 
 
-Caching and persisting Memory Size is important to ensure that memory sizes can be computed incrementally without re-visiting the complete tree of Cells.
+In particular Peers MUST cache memory sizes in order to meet CVM performance requirements.
 
-This ensures that memory size computation is at worst `O(n)` for a Transaction, where `n` is the number of new Cells constructed during the transaction.
+Caching and persisting memory size is important to ensure that memory sizes can be computed incrementally without re-visiting the complete tree of cells.
+
+This ensures that memory size computation is at worst `O(n)` for a Transaction, where `n` is the number of new cells constructed during the transaction.
+
+Implementation note: we cache memory size rather than storage size because storage size is only relevant for root and branch cells, whereas memory size is needed for all cells.
 
 ### Memory Accounting impact
 
@@ -177,20 +175,20 @@ This is achieved mainly by ensuring that state changes due to memory accounting 
 
 ### Performance characteristics
 
-Memory Accounting is `O(1)` for each non-embedded Cell allocated, with a relatively small constant. This would appear to be asymptotically optimal for any system that performs exact memory accounting at a fine-grained level.
+Assuming correct caching and persistence, memory accounting cost is `O(1)` for each cell allocated, with a very small constant. Benchmarks suggest the overall impact is negligible on CVM performance, and well justified by the upside in creating good economic incentives for efficient storage use (which is itself a net positive performance gain). This would appear to be asymptotically optimal for any system that performs exact memory accounting at a fine-grained level.
 
 This achievement is possible because:
 
-- The Memory Size is computed incrementally and cached for each Cell.
-- The number of child cells for each Cell is itself bounded by a small constant
-- Memory Size computation is usually lazy, i.e. it is not performed unless required
-- The immutable nature of Convex Cell values means that there is never a need to update Memory Sizes once cached
+- The memory size is computed incrementally and cached for each cell.
+- The number of child cells for each cell is itself bounded by a small constant
+- Memory size computation is usually lazy, i.e. it is not performed until required
+- The immutable nature of Convex cell values means that there is never a need to update memory sizes once cached
 
-The computational cost of performing this memory accounting is factored in to the juice cost of operations that perform new Cell allocations. The storage cost is, of course, factored in to the general economics of the Memory Accounting model.
+The computational cost of performing this memory accounting is factored in to the juice cost of operations that perform new cell allocations. The storage cost is, of course, factored in to the general economics of the memory accounting model.
 
 ## Open Design Questions
 
-- It possible that memory accounting could be used to add a per-transaction cost to submitted transactions based on the size of the transaction data. This would incentivise submitting smaller transactions.
+- It likely that memory accounting will be used to add a per-transaction cost to submitted transactions based on the size of the transaction data. This would incentivise submitting smaller transactions.
 - There are options regarding on-chain procedures for opening up new storage allowances (which might depend on advances in underlying storage technology). Initial assumption is that this is a Foundation network governance responsibility - there is potentially a need to monitor medium-term state growth and release new allowances accordingly over time.
 - There is a potential for memory allowance hoarding and speculation, in anticipated of high prices driven by shortages. It may be necessary to set an clear expectation that holding allowances is risky, as new allowances may be added to the Memory Pool at any time which would devalue large allowance holdings.
 - There is a risk that if memory price become too low, participants may become careless with memory usage. This is mitigated by the fact that on average we expect the Convex state to grow, so large falls in price precipitated by selling allowances is unlikely. This probably requires ongoing monitoring.
