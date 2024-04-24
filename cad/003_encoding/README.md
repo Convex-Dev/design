@@ -30,15 +30,15 @@ Branches are an important optimisation, since they reduce the need to produce ma
 
 ### Encoding
 
-The Encoding MUST be a sequence of bytes.
+The encoding MUST be a sequence of bytes.
 
-Any given Cell MUST map to one and only one Encoding. 
+Any given Cell MUST map to one and only one encoding. 
 
-Any two distinct (non-identical) Cell MUST map to different Encoding
+Any two distinct (non-identical) cells MUST map to different encoding
 
-It MUST be possible to reconstruct the Cell from its own Encoding, to the extent that the Cell represents the same Value (it is possible for implementations to use different internal formats if desired, providing these do not affect the CVM Value semantics)
+It MUST be possible to reconstruct the cell from its own encoding, to the extent that the cell represents the same Value (it is possible for implementations to use different internal formats if desired, providing these do not affect the CVM value semantics)
 
-The Encoding MUST have a maximum length of 8191 bytes. This ensure that an Encoded Cell will always fit within a reasonable fixed size buffer, and guarantees that most operations on cells can achieve `O(1)` complexity.
+The Encoding MUST have a maximum length of 8191 bytes. This ensure that a cell encoding will always fit within a reasonable fixed size buffer, and guarantees that most operations on cells can achieve `O(1)` complexity.
 
 ### Value ID
 
@@ -48,12 +48,14 @@ Since all cells have a unique encoding, they therefore also a unique value ID (s
 
 A value ID reference may be considered as a "decentralised pointer" to an immutable value. 
 
+Note: since only tree roots and branches are likely to be stored in storage systems, users should take care with value IDs that point to intermediate non-branch cells, as these may not be persisted in storage. If in doubt, navigate down from a known root or branch cell value ID.
+
 ### References 
 
-A cell encoding MAY contain a reference to another cell. There are two types of reference:
+A cell encoding MAY contain references to other cells. There are two types of reference:
 
 - Embedded, where the embedded cell's encoding is included within the parent cell encoding 
-- Branch, where a reference is encoded by a byte sequence that includes the Value ID of the non-embedded referenced Cell (the "branch")
+- Branch, where an external reference is encoded as a byte sequence that includes the Value ID of the referenced cell (i.e. the branch)
 
 From a functional perspective, the difference between an embedded cell and a branch cell is negligible, with the important exception that following a branch reference will require accessing a separate encoding (typically cached in memory, but if necessary loaded from storage).
 
@@ -63,9 +65,9 @@ From a performance perspective however, this distinction is extremely important:
 - It reduces the number of SHA3-256 hash operations that need to be performed, since typically these need only be computed on branch cells.
 - It reduces the overall number of nodes in Merkle DAGs of Cells, reducing the number of individual calls to network and storage functionality.
 
-#### Embedded References
+#### Embedded Cells
 
-A cell may be defined as embedded in which case a reference to the cell will be encoded by inserting the encoding of the cell into in the encoding of the parent cell.
+A cell may be defined as embedded in which case the cell's encoding is inserted into in the encoding of the parent cell.
 
 If a cell is embedded, it MUST NOT be included in the encoding of another cell by external reference. This restriction is required to guarantee uniqueness of encoding (if not enforced, child cells might be encoded as either an embedded reference or by external reference, thus giving two or more different encodings for the parent cell).
 
@@ -73,13 +75,13 @@ An embedded cell MUST have an encoding of 140 bytes or less. This restriction he
 
 #### External References
 
-An external reference is a reference to a Cell that is not embedded. 
+An external reference is a reference to a Cell that is not embedded, i.e. points to a branch cell.
 
 An external reference MUST be encoded using the value ID of the target cell. This requirement ensures the integrity of a complete Merkle DAG of cells.
 
 ### CVM Values
 
-Many cells represent valid CVM values, i.e. are permitted as first class values in the Convex Virtual Machine. 
+Most cells represent valid CVM values, i.e. are permitted as first class values in the Convex Virtual Machine. 
 
 Not all cells represent true CVM values, since cells may also be used for internal data structures within larger CVM values, or represent values that are only used outside the CVM.
 
@@ -108,7 +110,7 @@ Cells may be constructed in 3 ways:
 
 ### Tag Byte
 
-The first byte of the Encoding is defined to be the Tag, which designates the type of the data value, and determines how the remainder of the Encoding should be interpreted.
+The first byte of the Encoding is defined to be the "tag", which designates the type of the data value, and determines how the remainder of the Encoding should be interpreted.
 
 Implementations MUST reject an Encoding as Invalid if the Tag byte is not recognised as one defined in this document.
 
@@ -126,7 +128,7 @@ It should be noted that this system can technically support arbitrary sized inte
 
 ### VLC Counts
 
-VLC Counts are unsigned integer values, typically used where negative numbers are not meaningful, e.g. the size of data structures. 
+VLC Counts are unsigned integer values, typically used where negative numbers are not meaningful, e.g. the size or length of data structures, or for balances that are defined to be non-negative natural numbers. 
 
 Encoding rules are:
 - The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
@@ -151,7 +153,7 @@ The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` re
 
 Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
 
-### `0x10` - `0x18` Integer (SmallInt)
+### `0x10` - `0x18` Integer ("SmallInt")
 
 ```Encoding
 0x1n <n bytes of numeric data>
@@ -161,17 +163,22 @@ A small integer value is encoded by the Tag byte followed by `n` bytes represent
 
 Note: The value zero is conveniently encoded in this scheme as the single byte `0x10`
 
-### `0x19` Integer (BigInt)
+Note: This encoding is chosen in preference to a VLC encoding because:
+- The length of a small integer can be included in the tag, making it more efficient than VLC which requires continuation bits
+- It is consistent with the natural encoding for two's complement integers on most systems
+- The numerical part is consistent with the format for BigInts
+
+### `0x19` Integer ("BigInt")
 
 ```Encoding
-0x19 <VLC Length of Integer = n> <n bytes of data>
+0x19 <VLC Count length of Integer = n> <n bytes of data>
 ```
 
 An Integer is represented by the Tag byte followed by the VLC encoded length of the Integer in bytes. 
 
 The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long).
 
-With the exception of the Tag byte, The encoding of an Integer is defined to be exactly equal to a Blob with `n` bytes.
+With the exception of the Tag byte, The encoding of a BigInt is defined to be exactly equal to a Blob with `n` bytes.
 
 ### `0x1d` Double
 
@@ -202,13 +209,13 @@ A Character encoding is invalid if:
 ```Encoding
 0x20 <32 bytes Value ID>
 ```
-A Reference is encoded as the Tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
+An external reference is encoded as the Tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
 
 Ref encodings are used as substitutes for child values contained within other cell encodings subject to the following rules:
-- They MUST be used  whenever the child is not embedded. 
+- They MUST be used whenever the child cannot be embedded (i.e. is a branch cell). 
 - They MUST NOT be used when the child cell is embedded. 
 
-These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two versions, one with an embedded child and the other with a Ref).
+These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two versions, one with an embedded child and the other with a external ref ).
 
 ### `0x21` Address
 
@@ -324,6 +331,6 @@ This Encoding has some elegant properties which make Convex Vectors particularly
 
 ## Implementation Notes
 
-In the Convex JVM implementation, cells are represented by subclasses of the class `convex.core.data.ACell`. Having a common abstract base class if helpful for performance, allows for convenient implementation of common cell functionality, and ensures that all cell instances are designed to work with a common abstract interface.
+In the Convex JVM implementation, cells are represented by subclasses of the class `convex.core.data.ACell`. Having a common abstract base class is helpful for performance, allows for convenient implementation of common cell functionality, and ensures that all cell instances are designed to work with a common abstract class interface.
 
 The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, chosen for efficiency and performance reasons. However there is no strict requirement that `nil` must be represented this way (for example, it could alternatively be a singleton value). 
