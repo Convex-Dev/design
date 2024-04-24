@@ -170,7 +170,7 @@ Note: This encoding is chosen in preference to a VLC encoding because:
 
 ### `0x19` Integer ("BigInt")
 
-```Encoding
+```
 0x19 <VLC Count length of Integer = n> <n bytes of data>
 ```
 
@@ -182,7 +182,7 @@ With the exception of the Tag byte, The encoding of a BigInt is defined to be ex
 
 ### `0x1d` Double
 
-```Encoding
+```
 0x1d <8 bytes IEEE 764>
 ```
 
@@ -190,7 +190,7 @@ A Double value is encoded as the Tag byte followed by 8 bytes standard represent
 
 ### `0x3c` - `0x3f` Character
 
-```Encoding
+```
 Tag determines the length in bytes of the Unicode code point value
 0x3c <1 Byte>
 0x3d <2 Bytes>
@@ -206,7 +206,7 @@ A Character encoding is invalid if:
 
 ### `0x20` Ref
 
-```Encoding
+```
 0x20 <32 bytes Value ID>
 ```
 An external reference is encoded as the Tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
@@ -219,17 +219,17 @@ These rules are necessary to ensure uniqueness of the parent encoding (otherwise
 
 ### `0x21` Address
 
-```Encoding
-0x21 <VLC Count>
+```
+0x21 <VLC Count = address number>
 ```
 
-An Address value is encoded by the Tag byte followed by a VLC Encoding of the 64-bit value of the Address. 
+An Address value is encoded by the tag byte followed by a VLC Encoding of the 64-bit value of the Address. 
 
 Since Addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short encoding.
 
 ### `0x30` String
 
-```Encoding
+```
 If String is 4096 UTF-8 bytes or less:
 
 0x30 <VLC Count = n> <n bytes UTF-8 data>
@@ -256,7 +256,7 @@ Note with the exception of the Tag byte, String encoding is exactly the same as 
 
 ### `0x31` Blob
 
-```Encoding
+```
 If Blob is 4096 bytes or less:
 
 0x31 <VLC Count = n> <n bytes>
@@ -281,7 +281,7 @@ Importantly, this design allows:
 
 ### 0x32 Symbol
 
-```Encoding
+```
 0x32 <VLC Count = n> <n bytes UTF-8 String>
 ```
 
@@ -291,7 +291,7 @@ The Symbol MUST have a length of 1-128 UTF-8 bytes
 
 ### `0x33` Keyword
 
-```Encoding
+```
 0x32 <VLC Count = n> <n bytes UTF-8 String>
 ```
 
@@ -301,7 +301,7 @@ The Keyword MUST have a length of 1-128 UTF-8 bytes
 
 ### `0x80` Vector
 
-```Encoding
+```
 If a Leaf Count:
 
 0x80 <VLC Count = n> <Prefix Vector> <Value>(repeated 0-16 times)
@@ -315,14 +315,14 @@ A Leaf Count `n` is defined as 0, 16, or any other positive integer which is not
 
 A Vector is defined as "packed" if its Count is `16 ^ level`, where `level` is any positive integer. Intuitively, this represents a Vector which has the maximum number of elements before a new level in the tree must be added.
 
-All Vector encodings start with the Tag byte and a VLC Count of elements in the Vector.
+All Vector encodings start with the tag byte and a VLC Count of elements in the Vector.
 
 Subsequently:
 - For Leaf Vectors, a Prefix Vector is encoded (which may be `nil`) that contains all elements up to the highest multiple of 16 less than the Count, followed by the Values
 - For non-Leaf Vectors, Child Vectors are encoded where each child is the maximum size Packed Vector less than Count in length, except the last which is the Vector containing all remaining Values.
 
 This Encoding has some elegant properties which make Convex Vectors particularly efficient in regular usage:
-- Short Vectors (0-16 Count) are always encoded in a single Cell, which may require no further cell encodings in the common case that all elements are embedded.
+- Short Vectors (0-16 count) are always encoded in a single cell, which may require no further cell encodings in the common case that all elements are embedded.
 - The last few elements of the Vector are usually in a Leaf Vector, which allows `O(1)` access and update to elements
 - Append is always `O(1)` (since either it is a Leaf Vector, or the append creates a new Leaf Vector with the original Vector as its Prefix)
 - For practical purposes, access and update is also `O(1)` (Note: technically `O(log n)` with a high branching factor, but upper bounds on vector size make this `O(1)` with a constant factor that accounts for the maximum possible depth)
