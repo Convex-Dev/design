@@ -18,7 +18,15 @@ The Encoding model breaks Values into a Merkle DAG of one or more **Cells** that
 
 The fundamental entities that are encoded are called Cells.
 
-Cells may contain other cells by reference, and therefore a top-level cell can be regarded as a directed acyclic graph (DAG). Since cell encodings contain cryptographic hashes of the encodings of any externally referenced cells, this is furthermore a Merkle DAG.
+Cells may contain other cells by reference, and therefore a top-level cell can be regarded as a directed acyclic graph (DAG). Since cell encodings contain cryptographic hashes of the encodings of any branch referenced cells, this is furthermore a Merkle DAG.
+
+### Branches
+
+Branches are group of cells which are collectively stored in a single encoding.
+
+Branches are an important optimisation, since they reduce the need to produce many small individual cell encodings, and reduce the need for hashing, since only branches need to be hashed to produce references in the Merkle tree.
+
+![Branch Encodings](branch.png)
 
 ### Encoding
 
@@ -45,14 +53,14 @@ A value ID reference may be considered as a "decentralised pointer" to an immuta
 A cell encoding MAY contain a reference to another cell. There are two types of reference:
 
 - Embedded, where the embedded cell's encoding is included within the parent cell encoding 
-- External, where a reference is encoded by a byte sequence that includes the Value ID of the referenced Cell. 
+- Branch, where a reference is encoded by a byte sequence that includes the Value ID of the non-embedded referenced Cell (the "branch")
 
-From a functional perspective, the difference between an embedded cell and an external cell is negligible, with the important exception that following an external reference will require accessing a separate encoding (typically cached in memory, but if necessary loaded from storage).
+From a functional perspective, the difference between an embedded cell and a branch cell is negligible, with the important exception that following a branch reference will require accessing a separate encoding (typically cached in memory, but if necessary loaded from storage).
 
 From a performance perspective however, this distinction is extremely important:
 
-- It allows multiple values to be included in the encoding of a single cell. For example a small Vector like `[1 2 3 4 5]` will be encoded within a single top level cell encoding, with the individual element values being embedded.
-- It reduces the number of SHA3-256 hash operations that need to be performed, since typically these need only be computed on non-embedded cells.
+- Embedding allows multiple values to be included in the encoding of a single cell. For example a small Vector like `[1 2 3 4 5]` will be encoded within a single top level cell encoding, with the individual element values being embedded.
+- It reduces the number of SHA3-256 hash operations that need to be performed, since typically these need only be computed on branch cells.
 - It reduces the overall number of nodes in Merkle DAGs of Cells, reducing the number of individual calls to network and storage functionality.
 
 #### Embedded References
