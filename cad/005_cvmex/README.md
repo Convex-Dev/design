@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Convex Virtual Machine (CVM) execution operates as a pure, deterministic State Transition Function. Conceptually this can be viewed as:
+The Convex Virtual Machine (CVM) execution operates as decentralised virtual machine. 
+
+The CVM implements a pure, deterministic state transition function which can be executed and validated by all peers. Conceptually this can be viewed as:
 
 ```
 State' = f (State, Block)
@@ -11,7 +13,7 @@ State' = f (State, Block)
 Under this model, the latest consensus state can always be reconstructed given both:
 
 - A initial State
-- All Blocks between the initial State and the current consenus point
+- All Blocks in the CPoS ordering between the initial State and the current consensus point
 
 Normally, Peers maintain the current Consensus State, and update this accordingly whenever one or more new Blocks are confirmed by the CPoS Consensus Algorithm. However, a new Peer can reliably reconstruct the Consensus State from any preceding State as long it it also holds the necessary Blocks from that state onwards. This enables a new Peer to efficiently synchronise with the Convex Network without having to process all preceding Blocks.
 
