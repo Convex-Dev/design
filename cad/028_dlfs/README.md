@@ -47,8 +47,38 @@ The Drive State Hash MUST be the SHA-256 hash of the root value of the Drive Sta
 
 The Drive State Hash can therefore be used to validate the entire contents of the drive as a Merkle tree.
 
+### DLFS URIs
 
-### DLFS Node
+DLFS is designed to operate as a fundamental Internet protocol, and interoperate with widely used standards such as URI based addressing of content.
+
+Proposed URI method is `dlfs`
+
+#### Global addresses
+
+`dlfs:bob/shared/images/nft0001.png`
+
+Refers to the drive `shared` controlled by the user `bob`, and within that the file `nft0001.png` in the directory `images`.
+
+Usernames MUST be publicly registered users on CNS with a public DID in the `user` namespace, e.g. `user.bob` in order to enable public resolution and authentication.
+
+#### Hosted Drives
+
+Alternative to global addresses, a URI authority can be specified to refer to a specific Internet host
+
+`dlfs://dlfs-opendrives.com/bob/shared/images/nft0001.png` 
+
+Implementations MAY support user names that are not publicly registered, in which cases clients will need to be aware of (and verify) the appropriate mapping
+
+#### Local Drives
+
+Local drives are accessed on the local system, and need not be publicly visible or resolvable. They MAY be replicas of public drives kept for temporary working purposes or backups.
+
+`dlfs:local:bob/private/finance/invoices/amazon.pdf`
+
+Implementations MUST support user names that are not publicly registered
+
+
+### DLFS Nodes
 
 Each object in a DLFS drive is represented as Node
 
