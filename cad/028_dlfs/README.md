@@ -4,8 +4,6 @@
 
 The Data Lattice File System (DLFS) is a virtual file system that operates using the [Data Lattice](../024_data/lattice).
 
-
-
 ## Design Goals
 
 - Support peer-to-peer data replication (BitTorrent style)
@@ -14,6 +12,20 @@ The Data Lattice File System (DLFS) is a virtual file system that operates using
 - Provide POSIX compatibility as far as possible 
 - Take advantage of the capabilities of the Data Lattice
 - Allow off-chain personal and/or private file systems 
+
+## Overall architecture
+
+DLFS is implemented over a **P2P network** that manages "drives" controlled by various sets of users. 
+
+Each drive is implemented naturally on the **Data Lattice**: the drive state coupled with a merge function that is commutative, associative and idempotent forms a mathematical lattice, where properly executed drive replication is guaranteed to converge to a stable state in the manner of a **CRDT**. From a user perspective, they appear as virtual filesystems that automatically sync across devices with decentralised backup.
+
+**Cryptographic security** is used to ensure:
+- Only authorised users are allowed to update drives (usually the owner of the drive, or a group of owners) using Ed25519 digital signatures
+- Each drive state has complete integrity as a Merkle Tree
+- All data is content addressable an collision resistant via SHA3-256 hashes
+- Optional encryption can applied for privacy
+
+**Decentralised identity** with W3C style DIDs is used to identify and validate users. This can be stored on-chain on the Convex network as a secure public root of trust.
 
 ## Specification
 
@@ -77,6 +89,12 @@ Local drives are accessed on the local system, and need not be publicly visible 
 
 Implementations MUST support user names that are not publicly registered
 
+#### HTTPS mapping
+
+DLFS URIs can be mapped to HTTP / HTTPS for easy access by web-based clients and browsers:
+
+`https://dlfs-opendrives.com/dlfs/bob/shared/images/nft0001.png` 
+
 
 ### DLFS Nodes
 
@@ -132,9 +150,9 @@ Implementations MAY set arbitrary timestamps for files, but it is important to b
 
 DLFS file names MAY be any UTF-8 String of length 1 or more.
 
-File names are case sensitive. For compatibility with Windows is is RECOMMENDED to avoid multiple file names differing only by case.
+File names are case sensitive. For compatibility with Windows is is STRONGLY RECOMMENDED to avoid multiple file names differing only by case.
 
-It is RECOMMENDED (for compatibility with other files systems) that applications limit character usage to:
+It is STRONGLY RECOMMENDED (for compatibility with other files systems and URLs) that applications limit character usage to:
 - Alphabetic uppercase and lowercase characters (`A` to `Z` and `a` to `z`)
 - The digits `0` to `9` (except in the first position)
 - The hyphen `-`

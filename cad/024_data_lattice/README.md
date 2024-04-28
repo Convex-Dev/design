@@ -16,13 +16,13 @@ Here are some of the key reasons data storage and processing extrinsic to Convex
 
 3. Speed & Responsiveness: DLTs feature lengthy settlement finality and limited transactions per second. This hinders uses needing real-time data flow like messaging or IoT monitoring. Off-chain networks have fewer limits reacting to data changes. 
 
-4. Cost Efficiency: Persisting every small update on global chains becomes expensive long term. Offloading data which does not require use of the global on-chain state curtails unnecessary fees and bloat. Subnets handle localized logic.
+4. Cost Efficiency: Persisting every small update on-chain becomes expensive long term. Offloading data which does not require use of the global on-chain state curtails unnecessary fees and bloat. Subnets handle localised logic.
 
 5. Regulatory Compliance: Chains are transnational making compliance difficult. Off-chain systems can enforce jurisdiction specific rules around permissible data types, storage locations, access restrictions and lifecycles.
 
 6. Rich Data Formats: Chains restrict data schemas to basic key-value pairs and byte strings. Document databases, media assets, and complex analytic jobs operate off-chain.
 
-In summary, a hybrid decentralized model using blockchains for consensus/settlement alongside purpose-built off-chain coordination handles data-intensive tasks aligned to use case needs more effectively. This unlocks wider adoption.
+In summary, a hybrid decentralised model using blockchains for consensus/settlement alongside purpose-built off-chain coordination handles data-intensive tasks aligned to use case needs more effectively. This unlocks wider adoption.
 
 ## Capabilities
 
@@ -44,11 +44,33 @@ The Data Lattice provides the following capabilities:
 
 ## Reference Implementation
 
-The Data Lattice reference implementation contains two key components:
+The Data Lattice reference implementation contains the following key components:
+
+### Data Structures
+
+The data lattice supports the full set of decentralised data values used in the Convex CVM. This enables the construction of arbitrary data structures. In practice, Data Lattice Users are likely to rely primarily upon composing data structures from the following types:
+- Maps
+- Indexes
+- Vectors
+- Sets
+- Strings
+- Keywords
+- Integers
+- Booleans
+- Doubles
+- Signed Data
+
+Applications SHOULD consider whether there is an advantage to limiting usage to the subset of these that represents JSON (Numbers, Maps, Vectors, Strings, Booleans and `nil`). This enables easy one-to-one mapping to JSON representations.
 
 ### Etch
 
 Etch is the storage subsystem utilised by Convex, which is specialised for efficient storage of content addressable Merkle Trees. 
+
+### Binary Protocol
+
+The Data Lattice operates using the same efficient binary protocol used by Convex peer-to-peer communication.
+
+Peers SHOULD support hosting Data Lattice access on a different port from CPoS / peer communication.
 
 ### REST API
 
