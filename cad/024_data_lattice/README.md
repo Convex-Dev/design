@@ -2,9 +2,11 @@
 
 ## Overview 
 
-Convex maintains data as part of the operation of the CVM (on-chain). It is possible to build decentralised solutions using these capabilities alone which we call a "pure dApp". This approach is sufficient for many use cases, however more sophisticated decentralised applications are likely to require additional data sources (off-chain). We call such applications "hybrid dApps".
+The Data Lattice is the data substrate of the Convex ecosystem, designed for high volume storage, massive scalability and content delivery at scale.
 
-While off-chain data can be provided in many different ways, including via tradition Web 2.0 server infrastructure, there is a compelling case for a more powerful decentralised storage solution to support hybrid dApps on Convex
+Convex maintains data as part of the operation of the CVM global state (on-chain). It is possible to build decentralised solutions using these capabilities alone which we call a "pure dApp", which is sufficient for many use cases. However, more sophisticated decentralised applications are likely to require additional data sources (off-chain). We call such applications "hybrid dApps".
+
+While off-chain data can be provided in many different ways, including via traditional Web 2.0 server infrastructure, there is a compelling case for a more powerful decentralised storage solution to support hybrid dApps on Convex
 
 ## Rationale
 
@@ -30,21 +32,26 @@ The Data Lattice provides the following capabilities:
 
 - **Content Addressability**: all data is addressed and indexed by a cryptographic hash. The near impossibility of hash collisions ensures that having the correct hash always allows location of the correct data.
 
+- **Lazy loading**: data can be partially loaded on demand, allowing many processes to proceeded without downloading complete data structures. This enables many capabilities such a streaming media, and storage volumes beyond the memory size of individual nodes in the network.
+
 - **Verifiability**: all data can be verified in its entirety from the cryptographic hash. Because the data takes the form of a Merkle Tree, this verifiability extends to multiple levels
 
 - **Structural Sharing**: all common subtrees (i.e. sharing the same content and cryptographic hash) are automatically shared and de-duplicated. This property arises naturally from content addressability and the Merkle Tree structure, which in turn allows for efficient operations such as cloning and storing modified copies of any data.
 
 - **Rich Data Types**: The Lattice supports a wide variety of data structures, including all data types available on the CVM such as maps, lists, vectors, numbers, strings and arbitrary blobs of byte data. In particular, the data lattice types support a superset of JSON, so JSON objects can be naturally represented with ease.
 
-- **CRDT support**: The data lattice forms a natural CRDT, where arbitrary sets of data can be merged to create a union of all data. This process is aided by automatic de-duplication to reduce storage and transmission costs.
+- **CRDT support**: The data lattice forms a natural CRDT, where arbitrary sets of data can be merged to create a union of all data. This process is aided by automatic de-duplication to reduce storage and transmission costs. 
+
+- **Self healing** - The CRDT also makes the data lattice "self-healing": nodes which lose access to some data (e.g. due to disk corruption) may obtain it again on subsequent merges as long as at least one copy survives.
 
 - **Garbage Collection**: Stores can be garbage collected to reduce resource requirements at any time, simply by specifying which data is required to be maintained ("pinning"). This facilitates better operational management and allows flexible control by data lattice providers regarding what data they are interested in preserving or hosting.
 
-- **Access Control**: data lattice hosts may optionally impose whatever access controls they require for governance, security or privacy purposes.
+- **Access Control**: data lattice hosts may optionally impose whatever access controls they require for governance, security or privacy purposes. Typically, these would involve authentications against a decentralised ID (DID) and a digital signature (Ed25519 as standard, though other systems can also be adopted)
+
 
 ## Reference Implementation
 
-The Data Lattice reference implementation contains the following key components:
+The data lattice provides the following key components:
 
 ### Data Structures
 

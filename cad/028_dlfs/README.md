@@ -6,16 +6,16 @@ The Data Lattice File System (DLFS) is a virtual file system that operates using
 
 ## Design Goals
 
-- Support peer-to-peer data replication (BitTorrent style)
 - Provide a decentralised alternative to cloud storage services such as DropBox
+- Support peer-to-peer data replication (BitTorrent style)
 - Maintain compatibility with familiar personal computer file systems
 - Provide POSIX compatibility as far as possible 
-- Take advantage of the capabilities of the Data Lattice
+- Take advantage of the capabilities of the Data Lattice and self-healing CRDTs
 - Allow off-chain personal and/or private file systems 
 
 ## Overall architecture
 
-DLFS is implemented over a **P2P network** that manages "drives" controlled by various sets of users. 
+DLFS is implemented over a **P2P network** that manages **drives** controlled by independent sets of users. 
 
 Each drive is implemented naturally on the **Data Lattice**: the drive state coupled with a merge function that is commutative, associative and idempotent forms a mathematical lattice, where properly executed drive replication is guaranteed to converge to a stable state in the manner of a **CRDT**. From a user perspective, they appear as virtual filesystems that automatically sync across devices with decentralised backup.
 
