@@ -2,11 +2,11 @@
 
 ## Overview
 
-Staking is the process by which Peers in the Network and other particpants lock up economic value (Stake) to support the security of the Network and earn economic rewards from participating in the CPoS consensus.
+Staking is the process by which Peers in the Network and other participants lock up economic value (Stake) to support the security of the Network and earn economic rewards from participating in the CPoS consensus.
 
-Peers must place a Peer Stake to participate in consensus. This is at risk if the Peer provably misbehaves, and may be lost through a process of Slashing, but is safe as long as the Peer sontinues to operate correctly and securely.
+Peers must place a Peer Stake to participate in consensus. This is at risk if the Peer provably misbehaves, and may be lost through a process of Slashing, but is safe as long as the Peer continues to operate correctly and securely.
 
-Other particpants may also place a Delegated Stake on a Peer they wish to support. It is in the interests of large coin holders to support the security of the Network by placing stake on Good Peers that they trust, as well as to earn additional rewards on their holdings.
+Other participants may also place a Delegated Stake on a Peer they wish to support. It is in the interests of large coin holders to support the security of the Network by placing stake on Good Peers that they trust, as well as to earn additional rewards on their holdings.
 
 The Total Stake of a Peer determines its voting weight in the CPoS consensus. 
 
@@ -22,6 +22,16 @@ Rewards are divided as follows:
   - 50% is alloacted to the Peer itself (added to Peer Stake)
   - 50% is divided across Delegated Stakers on the Peer (according to their relative Stake)
   - If there are no Delegated Stakers, the reward goes to the Peer
+  
+## Stake decay
+
+Peer stakes are discounted if the peer is temporarily inactive. This enables the network to progress even in the event of major peers going offline for an amount of time.
+
+Stake decay occurs at the following rate by default:
+- 3 minutes grace period with no decay
+- A fall by a factor of `1/e` every 5 minutes thereafter
+
+Stake decay does not effect the actual peer's stake, only the effectiveness of the stake in consensus.
 
 ## Slashing
 
