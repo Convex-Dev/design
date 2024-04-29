@@ -13,15 +13,15 @@ The Total Stake of a Peer determines its voting weight in the CPoS consensus.
 ## Rewards
 
 Stakers are rewarded with a share of Convex Coins earned from
-- Transaction fees executed in the Network
+- Transaction fees executed on the network affecting the CVM global stake
 - Reward Pools set by the Convex Foundation
 
 Rewards are divided as follows:
 - The Total reward is divided over all Peers according to Peer Stake
 - For each Peer:
-  - 50% is alloacted to the Peer itself (added to Peer Stake)
-  - 50% is divided across Delegated Stakers on the Peer (according to their relative Stake)
-  - If there are no Delegated Stakers, the reward goes to the Peer
+  - 50% is allocated to the Peer itself (added to peer stake)
+  - 50% is divided across delegated stakers on the peer (according to their relative stake)
+  - If there are no delegated stakers, the reward goes to the Peer
   
 ## Stake decay
 
@@ -35,7 +35,9 @@ Stake decay does not effect the actual peer's stake, only the effectiveness of t
 
 ## Slashing
 
-TODO: verify slashing conditions.
+There will be no stake slashing in Protonet, although stake decay is active so inactive or misbehaving peers will become quickly irrelevant to consensus.
+
+TODO: verify slashing conditions for main network
 
 Question: is delegated stake subject to slashing or not?
 
