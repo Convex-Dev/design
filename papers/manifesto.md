@@ -2,7 +2,7 @@
 
 We are building open economic systems based on decentralised technology for the 21st century and beyond.
 
-The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monoplistic control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monopolistic control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
 
 Convex is a public decentralised system for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
 
@@ -10,9 +10,9 @@ This manifesto outlines our beliefs and core principles.
 
 ## Open Economic Systems
 
-**The primary purpose of Convex is to facilitate economic systems: interactions where participants come to agreements where they gain something of value from each other.**
+**The primary purpose of Convex is to facilitate open economic systems: interactions where participants freely and mutually create value for each other.**
 
-Done properly, economic systems enabling value exchange is a "win-win" where participants are each better off than they were before the exchange. As such, value exchange is a net good that should be encouraged. 
+Voluntary value exchange is a "win-win" where participants are each better off than they were before the exchange. This is a net good that should be encouraged. 
 
 We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a society etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
 
@@ -28,7 +28,7 @@ It is important to note that self-sovereignty does not negate the obligation for
 
 ## Sustainability
 
-**Convex will provide the most efficient and sustainable system for value exchange available to humanity.** 
+**Convex will provide efficient and sustainable systems for value exchange for all humanity.** 
 
 The system of value exchange must be ecologically responsible, supporting economic activity without unnecessary waste or environmental costs. It is unacceptable that many of our current systems of value exchange produce massive waste, with the costs primarily borne by innocent third parties and future generations.
 
