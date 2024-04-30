@@ -2,3 +2,8 @@ title: Convex Design & Documentation
 description: Documentation and specifications for the Convex ecosystem
 
 remote_theme: sighingnow/jekyll-gitbook
+
+toc:
+    enabled: true
+    h_min: 1
+    h_max: 3
