@@ -1,4 +1,4 @@
 title: Convex Design & Documentation
 description: Documentation and specifications for the Convex ecosystem
 
-theme: jekyll-theme-time-machine
+remote_theme: sighingnow/jekyll-gitbook
