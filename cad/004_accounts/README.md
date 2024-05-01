@@ -6,7 +6,7 @@ Accounts are a fundamental construct in Convex - they are logical records in the
 
 Accounts are identified with an address, which are sequentially allocated in the form `#1567`
 
-Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the user's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If an account is not able to accept external transactions, it's public key is set to `nil`.
+Accounts are the primary means of managing security and access control for on-chain transactions. Any transaction executed by Convex must be associated with a user account and signed with a valid digital signature. This protects the user's account from unauthorised access. Any user account used in this way must have a 32-byte Ed25519 public key, of the form `0x9D98C7C6B9E89AEC23F4AF6D5175872C25982264AD91E95DC4B061EE3062BFD1`. If external transactions are not permitted for an account, its public key is set to `nil` (this is the case for autonomous actor accounts).
 
 Accounts also constitute the largest part of the on-chain CVM State. Accounts are used to store code and data, and to track holdings of various digital assets. In the future, accounts will probably constitute over 99% of the CVM State size - there isn't much else apart from data structure to support peers managing consensus and a little network-global data.
 
@@ -16,9 +16,9 @@ Accounts also constitute the largest part of the on-chain CVM State. Accounts ar
 
 Every account has an address, which is a unique ID that identified the account. Addresses are conventionally shown in the format `#1234`, and are primitive values in the CVM in their own right.
 
-Addresses are assigned sequentially whenever new accounts are created. It is impossible to change the address of an account once created - this is important because the Address is intended to be a stable unique identifier for the account.
+Addresses are assigned sequentially whenever new accounts are created. It is impossible to change the address of an account once created - this is important because the Address is designed to be a stable unique identifier for the account.
 
-Addresses are recommended to be used as the unique ID for access control mechanisms, e.g. an actor might maintain a `Set` of addresses which are allowed to execute a security-critical operation.
+Addresses should be used as the unique ID for access control mechanisms, e.g. an actor might maintain a `Set` of addresses which are authorised to execute a security-critical operation.
 
 Addresses are also typically used as the key for indexed data structures that track ownership of digital assets. A common pattern is to represent ownership as a `Map` of addresses to numbers representing balances of the appropriate digital asset(s).
 
@@ -26,7 +26,7 @@ Addresses are also typically used as the key for indexed data structures that tr
 
 User accounts are accounts controlled / owned by individuals or organisations that use the Convex Network.
 
-A user account is defined as an account with a public key defined, which is used to validate the digital signature of transactions. The associated private key is assumed to be under the secure control of an external user. 
+A user account is defined as an account with a public key defined, which is used to validate the digital signature of transactions. The associated private key is assumed to be under the secure control of an external user. In this way, Convex supports full self sovereign control over accounts.
 
 A user account is considered the origin account during the execution of any transaction submitted for this account.
 
@@ -65,8 +65,8 @@ There's no limit on what can be done with this capability, as the CVM provides a
 
 Controllers allow an account to be controlled by other accounts, as an alternative or in addition to the use of transactions signed with the account key. Typical purposes might include:
 - Allowing a trusted third party to recover the account if the user's private key is lost
-- Allowing a maintainer to make upgrades to an actor
-- Allowing a DAO to receive instructions from an actor that manages votes on proposals
+- Allowing a maintainer to make upgrades to actor / smart contract code
+- Allowing a DAO treasury to receive instructions from an actor that manages votes on proposals
 
 Optionally, an account may define a controller, giving the ability to one or more other accounts to control the account. The controller may be a specific address of another account, or a trust monitor that permits access to an arbitrary set of accounts that may be defined in code (e.g. accounts authorised by a governance actor or DAO). 
 
@@ -114,7 +114,7 @@ The account record (`AccountStatus` in the standard reference implementation) MU
 
 ### Sequence Number
 
-The sequence number's primary purpose is to prevent replay attacks, since the same signed transaction with the same sequence number cannot be re-used.
+The sequence number's purpose is to prevent replay attacks, since the same signed transaction with the same sequence number cannot be re-used.
 
 The sequence number MUST indicate the number of transactions which have been executed for this account.
 
@@ -124,7 +124,7 @@ The sequence number MUST increase by `1` for each correctly signed transaction e
 
 ### Account Key
 
-The account key's purpose is to specify which cryptographic key (if any) can be used to control the account
+The account key specifies which cryptographic public key (if any) can be used to control the account
 
 Each account MAY have a single account key.
 
@@ -134,7 +134,7 @@ If the account key is not specified for the account, it MUST be treated as the v
 
 The account key SHOULD represent a valid Ed25519 public key for which the owner of the user account is expected to have access to the corresponding private key. Security of the private key is the responsibility of the external user.
 
-The CVM MUST NOT process transactions for an account unless the Ed25519 digital signature on the transaction can be verified with the account key. See CAD10 for more details.
+The CVM MUST NOT process transactions for an account unless the Ed25519 digital signature on the transaction can be verified with the account key. See CAD010 for more details.
 
 The account key MAY be changed by a controller of the account to a new account key, or set to `nil`.
 
