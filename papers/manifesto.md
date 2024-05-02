@@ -87,6 +87,7 @@ The data lattice provides this capability to all Convex users, with the followin
 - Data is structured to form mathematical lattices, enabling efficient coordination-free P2P replication via CRDTs
 - Users have full control over the data they store, and what they share with others 
 - Data can be in any format, and take any structure. 
+- Code is also data: programs and computations can be stored on or referenced from the data lattice, allowing any computational process (such as AI models) to be executed using the data lattice alone. 
 - Specific data structures are provided to support effective operational databases and real-time applications, so that the data lattice can replace conventional centralised databases and storage. 
 - All data is immutable, content addressable, and structured as merkle trees that can be validated with cryptographic hashes (enabling strong provenance claims and integrity validation)
 - Data can be partially loaded, stored and transmitted, allowing applications to operate efficiently on small subsets of much larger data structures
@@ -130,7 +131,9 @@ The data lattice is also 100% free to users, although service providers may offe
 
 **Participants must be empowered to create and utilise digital assets.**
 
-In many cases, value exchange will relate to one or more forms of digital asset. These assets may be entirely virtual, or represent ownership of some asset in the real world. We believe everyone should have the freedom to create and use digital assets.
+In many cases, value exchange will relate to one or more forms of digital asset. These assets may be entirely virtual, or represent ownership of some asset in the real world. We believe everyone should have the freedom to create and use digital assets. 
+
+Data assets may be "on-chain" (part of the global state) or kept "off-chain" on the data lattice. 
 
 Given the infinite variety of possible assets, it is essential to allow users to innovate and create new kinds of assets without limitation. This may involve defining rules and governance mechanisms (both on-chain and off-chain). Convex technology will allow the development of new digital asset classes on a decentralised basis.
 
@@ -140,7 +143,7 @@ The creation and usage of digital assets may be regulated in some jurisdictions.
 
 **Convex must operate as an open network in the spirit of the original Internet.**
 
-Convex effectively adds new capabilities to the Internet: a secure, persistent global state machine that can efficiently execute transactions and enforce smart contracts backed by a powerful decentralised network for arbitrary data and compute operations.
+Convex effectively adds new capabilities to the Internet: a secure, persistent global state machine that can efficiently execute transactions and enforce smart contracts backed by a powerful decentralised data lattice for arbitrary data and compute operations.
 
 As a protocol and network for value exchange, Convex is agnostic to the types of applications which are built on top of this base layer. Like the Internet, we support innovation and a wide variety of use cases. We do not limit or prescribe the possibilities in any way.
 
