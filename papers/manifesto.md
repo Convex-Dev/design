@@ -124,6 +124,8 @@ Convex transaction costs include both immediate processing costs (network and CP
 
 Read-only access to the network ("queries") is free at the protocol level, and should also generally be 100% free for users (subject only to peer operators being willing to service requests).
 
+The data lattice is also 100% free to users, although service providers may offer optional value added services for which they charge fees (such as redundant backup with high availability). We encourage innovation and experimentation in business models based on the data lattice.
+
 ## Digital Asset Innovation
 
 **Participants must be empowered to create and utilise digital assets.**
