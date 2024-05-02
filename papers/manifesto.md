@@ -107,9 +107,11 @@ Because it is impossible to anticipate the full scope of potential future innova
 
 **The operation of open economic systems should be transparent to all participants**
 
-Transparent operation is essential for open economic systems to thrive. Data should be available to all to enable better decisions making and allow independent audits to ensure trust and accountability.
+Transparent operation is essential for open economic systems to thrive. Data in the global state should be available to all to enable better decisions making and allow independent audits to ensure trust and accountability.
 
-We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate pseudonymously is important to allow individual privacy to be protected, while still providing transparency at the system level.
+We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate pseudonymously is critical to allow individual privacy to be protected, while still providing transparency at the system level.
+
+For data that should remain private, the data lattice provides the capability to protect and control access on whatever terms the user chooses. Such data is compatible with but separate from the public global state. In this way, Convex users are empowered to choose the appropriate level of privacy for each type of data.
 
 ## Cost Effectiveness
 
