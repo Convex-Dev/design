@@ -4,13 +4,13 @@ We are building open economic systems based on decentralised technology for the 
 
 The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monopolistic control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
 
-Convex is a public decentralised system for real-time value exchange, designed as a substrate for economic transactions and smart contracts. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
+Convex is a public decentralised system for P2P real-time exchange of data and value, designed as a substrate for the digital economy. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
 
 This manifesto outlines our beliefs and core principles.
 
 ## Open Economic Systems
 
-**The primary purpose of Convex is to facilitate open economic systems: interactions where participants freely and mutually create value for each other.**
+**The key purpose of Convex is to facilitate open economic systems: interactions where participants freely and mutually create value for each other.**
 
 Voluntary value exchange is a "win-win" where participants are each better off than they were before the exchange. This is a net good that should be encouraged. 
 
@@ -20,11 +20,11 @@ We define value broadly: it may be represented through currency, information, ow
 
 **Participants must be empowered to act as self-sovereign agents: they must be allowed to transact freely with others without prior restraint by third parties**
 
-We believe that being able to participate in the economy is a fundamental right. This principle is critical so that people can act freely in the economy without being excluded.
+We believe that being able to participate in the economy is a fundamental right. This principle is critical so that people can act freely in the economy without being excluded. Every individual has the right to choose what interactions to participate in (or not).
 
-While we ensure the possibility for participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable if it is a free choice by participants, and they are not forced into such arrangements.
+While we ensure the possibility for participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
 
-It is important to note that self-sovereignty does not negate the obligation for participants to act within the law and fulfil societal obligations such as paying appropriate taxes.
+It is important to note that self-sovereignty does not negate the obligation for participants to act within the law and fulfil societal obligations such as paying appropriate taxes or avoiding harm to other parties. Our vision of self-sovereignty is therefore consistent with the *Golden Rule*.
 
 ## Sustainability
 
@@ -34,11 +34,11 @@ The system of value exchange must be ecologically responsible, supporting econom
 
 We note that centralised systems are not a good solution: large organisations and the complex services that support them represent a very high ecological footprint. Perhaps 5-10% of the entire global economy is dedicated to financial services and transaction costs related to value exchange. We must do better.
 
-We will never use technology or services that are ecologically unjustifiable. Among other things, this rules out Proof of Work (PoW) as an acceptable consensus mechanism.  
+We will never use technology or services that are ecologically unjustifiable. Among other things, this rules out protocols that waste computational resources such as Proof of Work (PoW) as an acceptable consensus mechanism.  
 
 Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. CPoS also maintains the same (to a lesser degree) computational advantage over PoS and other consensus networks whose designs neglect crucial sustainability considerations. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
 
-Because Convex is an open, decentralised system, it is not possible for us to directly ensure that value exchange conducted on top of Convex is fully sustainable. However, we hope for a world where all economic activity is conducted on a sustainable basis, and Convex will make important contributions towards that goal.
+Because Convex is an open, decentralised system, it is not possible for us to directly enforce that business conducted on top of Convex is fully sustainable. However, we hope for a world where all economic activity is conducted on a sustainable basis, and Convex will make important contributions towards that goal.
 
 ## Fair Access
 
@@ -68,7 +68,7 @@ Global state is essential to the vision of building decentralised economic syste
 
 The Convex Global State is maintained by Peers, managed on a decentralised basis according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactions across all users and smart contracts.
 
-The Global State is protected by strict access control rules: account holders on Convex may store information freely within the scope of their own account. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
+The Global State is protected by strict access control rules: account holders on Convex may store information freely within the scope of their own accounts. Automated actors may provide custom access control rules allowing for sophisticated on-chain shared databases. 
 
 A system of memory accounting ensures a cost is applied for those wishing to use on-chain memory within the global state. Refunds are provided when memory is released. This is reasonable and fair since on-chain memory is a scarce resource and we wish to incentivise efficient usage, including appropriate clean up when memory is no longer needed.
 
@@ -86,9 +86,9 @@ Because it is impossible to anticipate the full scope of potential future innova
 
 **The operation of open economic systems should be transparent to all participants**
 
-Transparent operation is essential for open economic systems to thrive. Data should be available to all to enable better decisions making and allow indepent audits to ensure trust and accountability.
+Transparent operation is essential for open economic systems to thrive. Data should be available to all to enable better decisions making and allow independent audits to ensure trust and accountability.
 
-We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate psudonymously is important to allow individual privacy to be protected, while still providing transparency at the system level.
+We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate pseudonymously is important to allow individual privacy to be protected, while still providing transparency at the system level.
 
 ## Cost Effectiveness
 
@@ -152,15 +152,15 @@ In particular, the Convex network protocol must treat all user transactions equa
 
 **Anyone may operate a Peer on the network, subject only to following protocol rules**
 
-As a decentralised network, anyone should be permitted to operate a Convex Peer and participate in maintaining the secure consensus of the network.
+As a decentralised network, anyone should be permitted to operate a Convex Peer and participate in maintaining the secure consensus of the network and providing other infrastructure such as the data lattice.
 
-Provided that protocol rules are followed, Peer Operators are free to customise the software and services they operate as they wish. This might include value added services for users, high end analytics capabilities, performance optimisations etc. 
+Provided that protocol rules are followed, peer operators are free to customise the software and services they operate as they wish. This might include value added services for users, high end analytics capabilities, performance optimisations etc. 
 
 ## The Convex Coin
 
 **Users must have access to the native currency for the network, usable as a form of money.**
 
-A native currency is required as a utility token so that that those who provide resources to the network can be fairly compensated, in an automatic way, as part of the network protocol. It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
+A native currency is required as a utility token so that that those who provide common resources to the network can be fairly compensated, in an automatic way, as part of the network protocol. It also serves the traditional roles of a currency in that it is a store of value, a medium of exchange and a unit of account.
 
 The Convex Coin is the native currency of the Convex network, and has a fixed maximum supply of `1,000,000,000,000,000,000` basic units. For convenience, we designate the quantity `1,000,000,000` as `1 Convex Gold`, i.e. the maximum supply is one billion Convex Gold, each of which can be subdivided one billion times.
 
