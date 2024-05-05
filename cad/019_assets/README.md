@@ -141,7 +141,11 @@ Users do not need to use the `convex.asset` library to work with Convex digital 
 The `balance` function gets the total quantity of an asset currently held by an account. 
 
 ```
-(balance some-fungible-asset *address*)
+(asset/balance some-fungible-asset *address*)
+=> 1500
+
+;; Omitting the address argument is equivalent to using *address*
+(asset/balance some-fungible-asset)
 => 1500
 ```
 
