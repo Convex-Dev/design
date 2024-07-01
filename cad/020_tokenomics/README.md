@@ -12,6 +12,13 @@ This does not in any way constitute financial advice. Participants in the ecosys
 
 Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for their services.
 
+Convex Coins are initially issued in two ways:
+- 75% are available for purchase on a **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle.
+- 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.)
+
+Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.)
+
+We believe this model strikes the right balance between enabling long term sustainable growth and recognising  those who bring value to the Convex ecosystem (financially or otherwise)
 
 ## Design Objectives
 
@@ -19,7 +26,7 @@ The tokenomic model has been designed with the following objectives:
 
 ### Utility Token
 
-The Convex Coin is a utility token - it represents the right to use the coin to access services provided by the Convex Network.
+The Convex Coin is a utility token - it represents the right to use the coin to access services provided by the Convex Network. As such, it should be broadly available as a decentralised asset.
 
 ### Means of exchange
 
