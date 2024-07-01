@@ -1,8 +1,8 @@
 # Tokenomics
 
-## IMPORTANT NOTE
+## IMPORTANT LEGAL NOTE
 
-This repository discusses hypothetical tokenomic specification and design decisions relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, 
+This repository discusses hypothetical tokenomic specification and design decisions relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, and may be subject to change based on learnings from Protonet.
 
 The information contained in this repository is provided on an "as is" basis for informational and discussion purposes only, with no guarantees of completeness, accuracy, usefulness or timeliness.
 
@@ -30,7 +30,7 @@ The Convex Coin is a utility token - it represents the right to use the coin to 
 
 ### Means of exchange
 
-The Convex Coin should serve as a means of exchange within the ecosystem, which can be used to facilitate efficient transactions between parties on a decentralised basis. As such, it must be convenient to use both by network users and autonomous actors / smart contracts as a digital currency.
+The Convex Coin serves as a means of exchange within the ecosystem, which can be used to facilitate efficient transactions between parties on a decentralised basis. As such, it must be convenient to use both by network users and autonomous actors / smart contracts as a digital currency.
 
 ### Capped maximum supply
 
@@ -38,7 +38,7 @@ We apply a capped maximum supply so that the value of the Convex Coin is not sub
 
 ### Anti-dilution
 
-We wish to provide a degree of assurance to coin holders that their holdings will not be diluted by large issuance of coins at a low price. 
+We wish to provide a degree of assurance to coin holders that their holdings will not be diluted by large issuance of coins at a lower prices. Hence, the release curve will not offer coins for sale at a lower price than previous purchases.
 
 ### Equitable rewards for contribution
 
@@ -57,7 +57,6 @@ It is necessary to protect the network against the risk of DoS attacks enabled b
 In the long term, the tokenomics should converge towards a stable steady state equilibrium, where the pricing of transactions is fair and balances the cost of providing services and infrastructure for the network.
 
 
-
 ## Solution Specification
 
 ### Overview
@@ -73,13 +72,13 @@ The following overall tokenomic flows are possible:
 
 ### Coin Supply
 
-The Network MUST implement a fixed maximum coin supply of 1,000,000,000 Convex Coins.
+The Network MUST implement a fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
 
-Each Convex Coin MUST be sub-divided into 1,000,000,000 base units, referred to as "coppers" 
+Each Convex Coin MUST be sub-divided into 1,000,000,000 base units, referred to informally as "coppers" 
 
 The Network must treat Convex Coins and coppers identically, i.e. the implementation should consider the range of possible coin values to be a value from `0` to `10^18`.
 
-Note: The maximum supply is chosen so that all valid coin balances can be expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
+Note: The maximum supply cap is chosen so that all valid coin balances can be expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
 
 ### Genesis
 
@@ -123,22 +122,31 @@ The funds raised from coin purchases MUST be used in accordance with the objecti
 
 The funds raised SHOULD be managed as a long term fund by the Foundation to ensure the development of the network can be funded on a sustainable ongoing basis.
 
-## Coin Awards
+### Coin Awards
 
-The 25% allocation for awards MUST be distributed at the sole discretion of the Convex Foundation, in its role as the governance body of the Convex Network.
+The 25% allocation for awards MUST be distributed by the Convex Foundation, in its role as the governance body of the Convex Network.
 
 The Convex Foundation MUST make awards in the interest of developing the ecosystem, with a focus on awards to:
 - Contributors who have made positive contributions to the development of Convex core technology
 - Contributors who make positive contributions the the development of the community and ecosystem
 - Infrastructure providers (such as peer operators) who help to ensure the security and reliability of the network
+- Organisations or startups that help build the ecosystem by developing effective use cases
 
 The Convex Foundation MAY require contributors to sign a Contributor's Agreement before award or distribution of coins.
 
-The Convex Foundation MAY requires to prove their legal identity (KYC requirement)
+The Convex Foundation MAY require contributors to verify their legal identity (KYC requirement)
 
 The Convex Foundation SHOULD aim to ensure that the rate of awards remains broadly consistent with the ratio 25% : 75% relative to purchases from the release curve, with the understanding that this ratio may deviate from target in the short term.
 
-The Convex Foundation SHOULD explore options for decentralised governance of awards.
+The Convex Foundation SHOULD explore options for decentralised governance of awards. In the long term, it is intended that decentralised governance will apply to all awards.
+
+### Transaction Fees
+
+Transactions executed on the Convex network are subject to fees that reflect the cost of providing underlying network infrastructure to maintain the consensus network and global state.
+
+Transaction fees are intended to be small, to encourage adoption and use of the Convex network. Transaction fees MUST NOT be zero to mitigate against denial of service (DoS) attacks on the network.
+
+Transaction fees MUST be collected at the point of transaction execution, and placed in a pool for subsequent distribution to peer operators. This process MUST occur automatically as part of the network protocol. 
 
 ## Other considerations
 
