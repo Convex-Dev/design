@@ -1,8 +1,8 @@
 # Tokenomics
 
-## IMPORTANT LEGAL NOTE
+## IMPORTANT LEGAL NOTICE
 
-This repository discusses hypothetical tokenomic specification and design decisions relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, and may be subject to change based on learnings from Protonet.
+This repository discusses tokenomic specification and design concepts relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, and may be subject to change based on learnings from Protonet or elsewhere.
 
 The information contained in this repository is provided on an "as is" basis for informational and discussion purposes only, with no guarantees of completeness, accuracy, usefulness or timeliness.
 
@@ -18,7 +18,28 @@ Convex Coins are initially issued in two ways:
 
 Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.)
 
-We believe this model strikes the right balance between enabling long term sustainable growth and recognising  those who bring value to the Convex ecosystem (financially or otherwise)
+This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise)
+
+## Rationale / Discussion
+
+All currencies must have a mechanism for initial issuance, and Convex is no exception. However, many existing mechanisms have significant flaws:
+
+- **Protocol based issuance** - it is possible to issue tokens purely through the operation of the protocol, such as Bitcoin mining. Due to the mechanical nature, this is relatively predictable, automatic and trustworthy (at least to the extent that forks / upgrades to not fundamentally change the protocol). However, such approaches disproportionately incentivise infrastructure provision to the exclusion of all else: huge amounts of resources get consumed in Bitcoin mining, for example. This is undesirable because, at least for Convex, infrastructure provision is relatively cheap and efficient and can be well compensated through transaction fees alone - we want the majority of rewards to flow to people who add value to the ecosystem.
+- **Premining** - tokens can be generated "as if" they were mined and distributed to select parties (typically founding teams and early investors). The problem with this approach is that it creates a significant incentives for these parties to "cash out" at the earliest opportunity, often at the expense of later ecosystem entrants, and it reduces the incentives for insiders to continue to build the project. There is a significant danger of a negative "pump and dump" dynamic.
+- **ICOs** - tokens can be generated and sold in a large public sale event. Such an event may generate a significant treasury for a foundation, and create broad public ownership. However, the price of such ICOs is hard to get right, and likely to attract significant speculative activity. Similar to premining (which may occur alongside an ICO), there is a significant risk of "pump and dump" dynamics, often at the expense of less sophisticated retail investors.
+- **Airdrops** - tokens can be distributed for free in large quantities according to a variety of eligibility criteria (in-person events, community membership, holding some other token etc.). While airdrops can create publicity and temporary excitement, giving out tokens for free risks devaluing the token while rewarding individuals disproportionately without them having to contribute anything. This is a disservice to those who truly do add value. It may also incentivise non-useful behaviour to attempt to benefit from airdrops (signing up with multiple fake accounts etc.)
+
+What we really need is an way to distribute coins that:
+- is **proportionate** to contribution / value add to the ecosystem
+- continues to **maintain good incentives** for contribution long after initial launch
+- aligns **incentives** of participants (e.g. avoiding "pump and dump" by large holders or insiders)
+- grows with the ecosystem on a **sustainable** basis
+
+Hence we have defined a new approach of **market driven release**: new coins are issued as and when the economic growth of the ecosystem requires it. Purchasable coins are issued on demand if and only if they are purchased from the release curve that pre-defines a schedule of rising prices. If demand for coins is strong (i.e. market cap growth causes prices to rise above the current release curve price) then there is an economic arbitrage opportunity for purchasers to buy new coins from the release curve. This continues until equilibrium is reached, i.e the newly increased supply and new higher price equal the new market cap. 
+
+This can be considered, in some ways, analogous to a company issuing new shares to raise capital. Existing shareholders will be diluted, but the extra injection of capital and resources increases the market value of the company so that they are still better off (hopefully, assuming the capital is well invested). There are two notable differences:
+- The Convex ecosystem is not a company, but a decentralised network of participants
+- The release curve guarantees that previous purchasers will never be diluted by new coin issuance at a lower price: additional issuance must occur at a higher price (or at worst equal, if purchased from the same tranche). 
 
 ## Design Objectives
 
@@ -32,9 +53,11 @@ The Convex Coin is a utility token - it represents the right to use the coin to 
 
 The Convex Coin serves as a means of exchange within the ecosystem, which can be used to facilitate efficient transactions between parties on a decentralised basis. As such, it must be convenient to use both by network users and autonomous actors / smart contracts as a digital currency.
 
-### Capped maximum supply
+### Ecosystem driven supply
 
-We apply a capped maximum supply so that the value of the Convex Coin is not subject to long term inflationary risks. In the long term, we would expect the Convex Coin to achieve a stable value representing the utility of lattice technology powering a diverse ecosystem.
+The Convex coin supply is driven by ecosystem growth: new issuance occurs primarily due to ecosystem demand.
+
+In the longer term, we would expect the Convex Coin to achieve a relatively stable value representing the utility of lattice technology powering a diverse ecosystem.
 
 ### Anti-dilution
 
@@ -57,7 +80,7 @@ It is necessary to protect the network against the risk of DoS attacks enabled b
 In the long term, the tokenomics should converge towards a stable steady state equilibrium, where the pricing of transactions is fair and balances the cost of providing services and infrastructure for the network.
 
 
-## Solution Specification
+## Specification
 
 ### Overview
 
@@ -72,7 +95,9 @@ The following overall tokenomic flows are possible:
 
 ### Coin Supply
 
-The Network MUST implement a fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
+The issued coin supply is VARIABLE based on coin issuance via the Release Curve or contributor awards.
+
+The Network MUST implement a technical fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
 
 Each Convex Coin MUST be sub-divided into 1,000,000,000 base units, referred to informally as "coppers" 
 
@@ -140,6 +165,12 @@ The Convex Foundation SHOULD aim to ensure that the rate of awards remains broad
 
 The Convex Foundation SHOULD explore options for decentralised governance of awards. In the long term, it is intended that decentralised governance will apply to all awards.
 
+### Vesting 
+
+Early coin purchases via the FCPA (up to and during Protonet phase) are subject to a vesting schedule, reflecting the desire that early purchasers should remain committed to the ecosystem for a period of time, and to mitigate the risk of large simultaneous sales of coins.
+
+Coin awards will not be subject to any vesting schedule as they are considered already "earned" by contributors. However, contributors are likely to wish to remain involved for other reasons e.g. building applications on top of Convex or wishing to earn future awards.
+
 ### Transaction Fees
 
 Transactions executed on the Convex network are subject to fees that reflect the cost of providing underlying network infrastructure to maintain the consensus network and global state.
@@ -150,13 +181,21 @@ Transaction fees MUST be collected at the point of transaction execution, and pl
 
 ## Other considerations
 
+### Fully Diluted Value
+
+Some tokenomic analyses depend on the concept of "Fully Diluted Value", by multiplying the current price of tokens by some maximum supply cap.
+
+Such analysis is generally invalid in the Convex of Convex, since full dilution cannot occur under the Release Curve model at the current price.
+
+Analysts SHOULD NOT consider FDV in relation to Convex, and instead use the market capitalisation of issued coins, which more accurately represents the coin ecosystem.
+
 ### Testnets
 
-Testnets (i.e. any Convex based network other than the Main Network) MAY alter or ignore any aspect of the tokenomics for testing, development or experimental purposes. Indeed, this is encouraged for the purposes of research and learning.
+Testnets (i.e. any Convex based network other than the official Main Network) MAY alter or ignore any aspect of the tokenomics for testing, development or experimental purposes. Indeed, this is encouraged for the purposes of research and learning.
 
 Test networks MAY implement a system of distributing coins for testing purposes, e.g. a "faucet" which automatically issues testnet coins to users.
 
-Participants in the ecosystem SHOULD NOT conduct any economically significant activity on test networks, with the understanding that they have no assurance of the tokenomic model or governance over such networks, and may face significant security or legal risks if they do so.
+Participants in the ecosystem SHOULD NOT conduct economically significant activity on test networks, with the understanding that they have no assurance of the tokenomic model or governance over such networks, and may face significant security or legal risks if they do so.
 
 ### Disaster Recovery
 
