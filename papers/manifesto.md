@@ -171,7 +171,7 @@ We develop software in public, according to open source principles. Currently, a
 
 **We must provide neutral network infrastructure, which does not censor or discriminate between users or applications.**
 
-Networks should not discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all, in the spirit of the Internet.
+Networks should not discriminate amongst users, both from an ethical and practical perspective. This is consistent with our vision of Convex as a public utility available to all, in the spirit of the Internet. Indeed, Convex itself depends on the presence of the Internet as an underlying, censorship-resistant neutral communication network.
 
 In particular, the Convex network protocol must treat all user transactions equally, without giving preferential treatment or blocking any transactions.
 
@@ -217,8 +217,14 @@ Good governance of the network is essential for several reasons: the network and
 
 Governance must be sustainable, in the sense that adequate provision should be made to allow for continued investment in the core technology and infrastructure, supporting the common needs of ecosystem participants. To ensure this, the Convex Foundation will manage a long-term endowment fund, comprising both an initial allocation of Convex Coins and proceeds from the sale of Convex Coins to initial purchasers. 
 
-One key role of network governance is to prevent forks in the global state: the entire point of a global state is to act as a single source of truth. As a public utility that records important economic information on a decentralised basis, the network must avoid forks  since these present a significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
-
 Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom.
 
 In the longer term, we will implement decentralised governance. This will happen once we have sufficient confidence that it is practical to implement, secure against plausible threats and fully serves the interest of Convex users and society as a whole.
+
+Key governance roles include:
+- Authorising official updates to the peer network / protocol
+- Prevent forks in the global state: the entire point of a global state is to act as a single source of truth. As a public utility that records important economic information on a decentralised basis, the network must avoid forks  since these present a significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
+- Ensuring that issuance of Convex Coins is fair, secure and consistent with out principles of rewarding ecosystem contribution
+
+
+
