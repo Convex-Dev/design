@@ -2,7 +2,7 @@
 
 We are building open economic systems based on decentralised technology for the 21st century and beyond.
 
-The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monopolistic control over important parts of our economies. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monopolistic control over most of our economic life. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
 
 AI is rapidly changing the landscape of the digital economy, and indeed the whole world. At this critical time in our civilisation, it imperative that control over data, computational power and the economy as a whole is put back in the hands of individuals.
 
@@ -14,7 +14,7 @@ This manifesto outlines our beliefs and core principles.
 
 **The key purpose of Convex is to facilitate open economic systems: interactions where participants freely and mutually create value for each other.**
 
-Voluntary value exchange is a "win-win" where participants are each better off than they were before the exchange. This is a net good that should be encouraged. 
+Voluntary value exchange is a "win-win" where participants are each better off than they were before the exchange. This is a net good that must be encouraged: the alternatives are coercion and paternalistic control.
 
 We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a society etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
 
@@ -22,7 +22,7 @@ We define value broadly: it may be represented through currency, information, ow
 
 **Participants must be empowered to act as self-sovereign agents: they must be able to transact freely on their own behalf**
 
-We believe that being able to participate in the digital economy is a fundamental right. This principle is critical so that people can act freely in the economy without being excluded. Every individual has the right to choose what interactions to participate in (or not). Unfortunately, this principle is under threat as powerful institutions and centralised systems gain the power to exclude, censor or extract monopolistic rents. We must give this sovereignty back to individuals.
+The ability to participate in the digital economy is a fundamental right. Every individual has the right to choose what interactions to participate in (or not). Unfortunately, this principle is under threat as powerful institutions and centralised systems gain the power to exclude, censor or extract monopolistic rents. We must give this sovereignty back to individuals.
 
 While we ensure the possibility for participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
 
@@ -34,9 +34,9 @@ It is important to note that self-sovereignty does not negate the obligation for
 
 The system of value exchange must be ecologically responsible, supporting economic activity without unnecessary waste or environmental costs. It is unacceptable that many of our current systems of value exchange produce massive waste, with the costs primarily borne by innocent third parties and future generations.
 
-We note that centralised systems are not a good solution: large organisations and the complex services that support them represent a very high ecological footprint. Perhaps 5-10% of the entire global economy is dedicated to financial services and transaction costs related to value exchange. We must do better.
+Centralised systems are a poor solution: large organisations and the complex services that support them represent a very high ecological footprint. Perhaps 5-10% of the entire global economy is dedicated to financial services and transaction costs related to value exchange. We must do better.
 
-We will never use technology or services that are ecologically unjustifiable. Among other things, this rules out protocols that waste computational resources such as Proof of Work (PoW) as an acceptable consensus mechanism.  
+We will only use technology or services that are ecologically justifiable. This rules out protocols that waste computational resources such as Proof of Work (PoW) as an acceptable consensus mechanism.  
 
 Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. CPoS also maintains the same (to a lesser degree) computational advantage over PoS and other consensus networks whose designs neglect crucial sustainability considerations. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
 
@@ -109,7 +109,7 @@ Because it is impossible to anticipate the full scope of potential future innova
 
 Transparent operation is essential for open economic systems to thrive. Data in the global state should be available to all to enable better decisions making and allow independent audits to ensure trust and accountability.
 
-We recognise that there is a trade-off between economic transparency and individual privacy. We believe that the ability to operate pseudonymously is critical to allow individual privacy to be protected, while still providing transparency at the system level.
+There is a trade-off between economic transparency and individual privacy. The ability to operate pseudonymously is critical to allow individual privacy to be protected, while still providing transparency at the system level. While the Convex network is public, we expect individuals and organisations to take appropriate measures to ensure the protection of private data.
 
 For data that should remain private, the data lattice provides the capability to protect and control access on whatever terms the user chooses. Such data is compatible with but separate from the public global state. In this way, Convex users are empowered to choose the appropriate level of privacy for each type of data.
 
