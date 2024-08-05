@@ -39,3 +39,16 @@ A CNS record MUST contain the following values:
 - **Metadata** : Optional metadata attached to the CNS Record
 
 Any of the three logical values MAY be `nil`
+
+### Root namespaces
+
+The following root namespaces are initially available:
+
+- `convex` - reserved for approved convex libraries and tools. Typically these SHOULD be FULLY specified with a CAD (e.g. `convex.asset` API as specified in CAD19). Foundation approval required.
+- `user` - indended for user accounts. Open access, names / subdomains are assets obtainable for a fixed Convex coin cost.
+- `torus` - reserved for open source marketplaces and trading contracts such as the Torus DEX. Community approval required.
+- `app` - reserved for decentralised application actors and contracts. Community approval required.
+- `peer` - reserved for peer operators. Community or Foundation approval required.
+- `id` - reserved for decentralised IDs
+
+New root namespaces require Foundation governance approval.
