@@ -14,7 +14,8 @@ This implies that the following values are permissible
 - A Hashmap with Strings as Keys
 - A String
 - Boolean values
-- Numbers (which should be a small integer or double precision floating point value in valid JSON ranges)
+- A Vector of values
+- Numbers (must be a small integer or double precision floating point value to fit within valid JSON ranges)
 - `nil`
 
 ```clojure
@@ -27,8 +28,8 @@ Which would be equivalently expressed in JSON as:
 
 ```json
 {
-  name: "Bob",
-  image: "http://foo.com/image1.png"
+  "name": "Bob",
+  "image": "http://foo.com/image1.png"
 }
 ```
 
