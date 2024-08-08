@@ -29,7 +29,7 @@ All currencies must have a mechanism for initial issuance, and Convex is no exce
 - **ICOs** - tokens can be generated and sold in a large public sale event. Such an event may generate a significant treasury for a foundation, and create broad public ownership. However, the price of such ICOs is hard to get right, and likely to attract significant speculative activity. Similar to premining (which may occur alongside an ICO), there is a significant risk of "pump and dump" dynamics, often at the expense of less sophisticated retail investors.
 - **Airdrops** - tokens can be distributed for free in large quantities according to a variety of eligibility criteria (in-person events, community membership, holding some other token etc.). While airdrops can create publicity and temporary excitement, giving out tokens for free risks devaluing the token while rewarding individuals disproportionately without them having to contribute anything. This is a disservice to those who truly do add value. It may also incentivise non-useful behaviour to attempt to benefit from airdrops (signing up with multiple fake accounts etc.)
 
-What we really need is an way to distribute coins that:
+What we really need is a fair way to distribute coins that:
 - is **proportionate** to contribution / value add to the ecosystem
 - continues to **maintain good incentives** for contribution long after initial launch
 - aligns **incentives** of participants (e.g. avoiding "pump and dump" by large holders or insiders)
