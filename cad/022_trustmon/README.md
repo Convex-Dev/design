@@ -60,35 +60,73 @@ The target account MAY be a user account.
 
 The reference MAY be `nil`, which behaves as a trust monitor that never provides any authorisation.
 
-### `check-trusted?` callable function
+### `check-trusted?` SPI
 
-A Trust Monitor MUST implement the callable function `check-trusted?`
+A Trust Monitor MUST implement the callable function `check-trusted?` as a common SPI to support its use according to this standard.
 
-The `check-trusted?` function must accept three arguments: `subject`, `action` and `object`
+The `check-trusted?` function must accept three arguments corresponding to `subject`, `action` and `object`. Example:
 
-The Trust Monitor SHOULD return true or false for all possible argument values.
+```
+(defn ^:callable
+  check-trusted?
+  [subject action object]
+  (boolean
+    (and
+      (= subject object)
+      (= action :examine-self))))
+```
 
-The Trust Monitor MAY implement arbitrary access control logic.
+The Trust Monitor SHOULD return `true` or `false` for all possible argument values. While CAD22 functionality will work with any results (via the truthiness or falsiness of all values), callers may expect the specific values `true` or `false`, so returning anything else may break compatibility with some potential applications.
 
-The Trust Monitor SHOULD avoid excessive computation, stack depth usage.
+The Trust Monitor MAY implement arbitrary access control logic on the basis of the arguments provided and the current CVM state. This might include looking up values in an on-chain database or calling other actors for confirmatory information.
 
-The Trust Monitor MUST NOT rely on side effects, and should expect to be called within a `query` context.
+The Trust Monitor SHOULD avoid excessive computation and stack depth usage. Ideally it SHOULD be guaranteed `O(1)` in both, with a small constant. Use of pre-computed Sets or Maps for lookups in data structures is recommended: it is unsafe to perform scans of arbitrary data structures in a trust monitor context, since this could enable DoS attacks. 
+
+The Trust Monitor MUST NOT rely on side effects, and MUST operate correctly when called within a `query` context. This requirement is to ensure that callers can wrap a trust monitor call in a `(query ...)` or similar construct to avoid potential security risks (e.g. re-entrancy attacks from some malicious nested code).
 
 ### Trust checks
 
-A trust monitor check MUST return a truthy or falsey result for any `[subject action object]` combination. 
+A trust monitor check MUST return a truthy or falsey result for any `[subject action object]` combination. It should never fail (except for hitting resource constraints like `:JUICE`)
 
-When a trust monitor is required to check a `[subject action object]` combination the following procedure MUST be performed:
+When checking a `[subject action object]` combination against a trust monitor the following procedure SHOULD be performed:
 
 1. If the trust monitor is an account implementing a callable function `check-trusted?` then return the result of calling that function while protected with a query: `(query (call trust-monitor (check-trusted? subject action object)))`
-2. If the trust monitor is an unscoped address, and is precisely equal to the `subject`, then return `true`
+2. If the trust monitor is an unscoped Address, and is precisely equal to the `subject`, then return `true`
 3. Return `false`
 
-## Implementation notes
+If the trust monitor is known and trusted, then the caller MAY simplify the above procedure and call the SPI directly:
+
+```
+(call trust-monitor (check-trusted? subject action object))
+```
+
+### Subjects
+
+Subjects of Trust Monitor checks SHOULD be valid unscoped Convex account addresses. 
+
+In most cases, the subject will be the `*caller*` of some actor code which needs to perform authorisation checks on the caller.
+
+### Actions
+
+Actions SHOULD be short human readable keywords, e.g. `:update`
+
+Actions MAY be any CVM value, which could include a data structure descibing the action in more detail. We urge caution on making actions too complex: it would be easy to introduce tricky security bugs.
+
+Actions SHOULD NOT depend on information provided by or subject to influence by untrusted users. In most cases, the action should be hard-coded to a specific value relevant to the context of the authorisation check being performed.
+
+### Objects
+
+Objects SHOULD be the caninical identifier of the object being acted upon. Thypically this is some information or resource which is protected by the authorisation check.
+
+Most common object types are likely to be:
+- A Convex address (possibly scoped)
+- An integer ID
+
+## Reference Implementation notes
 
 ### `convex.trust` library
 
-The `convex.trust` library provides a canonical interface to trust monitors via the `trusted?` function:
+The `convex.trust` library provides a canonical CAD22 compatible interface to trust monitors via the `trusted?` function:
 
 ```clojure
 (import convex.trust :as trust)
@@ -99,3 +137,31 @@ The `convex.trust` library provides a canonical interface to trust monitors via 
 ```
 
 Action and object are optional: if omitted, they are passed to the Trust Monitor as the value `nil`
+
+### `convex.trust.monitors` library
+
+The `convex.trust.monitors` library provides a set of lightweight standard trust monitor implementations.
+
+These are designed to be *composed*, i.e. they are building blocks which can be used to create more sophisticated trust monitors and associated governance functionality.
+
+```clojure
+(import convex.trust.monitors :as mon)
+
+;; Permit a specific set of subjects (effectively a fixed whitelist)
+(trust/trusted? (mon/permit-subjects #3 #14 #17) #14)
+=> true
+
+;; Permit a specific set of actions only
+(trust/trusted? (mon/permit-actions :open :close) #14 :delete :some-target)
+=> false
+
+;; Permit something that satisfies ALL of the given trust monitors
+;; This is an example of composing trust monitors
+(trust/trusted? (mon/all (mon/permit-actions :open :close) (mon/permit-subjects #13 #17)) #13 :open :some-target)
+=> true
+
+;; Permit based on calling a function on (subject, action, object)
+;; This can be a good way to allow subjects to control resources that they logically "own" 
+(trust/trusted? (mon/rule (fn [s a o] (= s o))) #16 :foo #16
+=> true
+```
