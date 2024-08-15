@@ -219,12 +219,18 @@ If a pre-condition is not met, it may then be appropriate to `fail` immediately 
 
 Error sources indicate the region in the network where an error occurred
 
-### `:CLIENT`
+| Source Code  | Location of error                            | Example(s)
+| ------------ | --------------------------------             | -----------
+| `:CLIENT`  | Client library code                         | Failed input validation
+| `:COMM`    | Client-Server communications                | IO failure, connection failure or timeout
+| `:PEER`    | Peer handling of user request                | Rejected for bad signature by peer
+| `:NET`     | Consensus network                            | Transaction rejected in corrupt block
+| `:TX`      | CVM transaction handling                   | Invalid public key for account
+| `:CODE`    | CVM code execution                   | Invalid public key for account
 
-Client code, probably due to invalid input validation
 
-### `:NET`
+, probably due to invalid input validation
 
-Network communication failure  typically IO failure, connection failure or timeout
+
 
 
