@@ -217,20 +217,18 @@ If a pre-condition is not met, it may then be appropriate to `fail` immediately 
 
 ## Error Sources
 
-Error sources indicate the region in the network where an error occurred
+Error sources indicate the region in the network where an error occurred. These are important mainly because they can indicate responsibility for failure and/or or how to diagnose the problem.
 
 | Source Code  | Location of error                            | Example(s)
 | ------------ | --------------------------------             | -----------
 | `:CLIENT`  | Client library code                         | Failed input validation
 | `:COMM`    | Client-Server communications                | IO failure, connection failure or timeout
 | `:PEER`    | Peer handling of user request                | Rejected for bad signature by peer
-| `:NET`     | Consensus network                            | Transaction rejected in corrupt block
-| `:TX`      | CVM transaction handling                   | Invalid public key for account
-| `:CODE`    | CVM code execution                   | Invalid public key for account
+| `:NET`     | Consensus network                            | Transaction failed to get into consensus
+| `:CVM`      | CVM state transition handling               | Invalid sequence number, `:JUICE` error
+| `:CODE`    | CVM code execution                          | `:CAST` error in user code
 
-
-, probably due to invalid input validation
-
+Error sources are not formally part of the Convex Network / CVM specification, but are important additional information normally returned alongside transaction results. Be aware that a malicious peer could fabricate the error source, so it may be useful to independently validate results. 
 
 
 
