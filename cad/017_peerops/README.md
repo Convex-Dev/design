@@ -18,21 +18,34 @@ Running a Peer requires:
 - At least 8 GB RAM (32 Gb Recommended)
 - At least 2 TB fast Storage (NVMe Recommended)
 - A secure modern operating system (Linux recommended) with good support for memory mapped files
-- Java 15 or above
+- Java 21 or above
 
-## Installation
+The network should be configured with:
+- a publicly accessible IP address (IPv4 or IPv6)
+- firewall access to the server via TCP on a chosen port (the Convex protocol default `18888` is recommended)
+- a trusted DNS entry (e.g. `peer.mycompany.com`)
+
+The DNS entry is optional, but it will help significantly with discoverability / user access to your peer.
 
 ## Configuration
 
-Peers SHOULD configure the number of concurrent outgoing Peer connections according to their available bandwidth. 20 recommeded for Peers with fast connections.
+### Peer Config
+
+Peers can be configured at launch 
+
+
+Peers SHOULD configure the number of concurrent outgoing Peer connections according to their available bandwidth. 20 recommended for Peers with fast connections.
 
 
 
 ## Startup
 
+
 ## Shutdown
 
+
 ## Upgrade
+
 
 ## Recovery
 
