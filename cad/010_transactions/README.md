@@ -15,13 +15,12 @@ The general lifecycle of a transaction is as follows:
 
 1. Client constructs a transaction containing the desired instruction to the network
 2. Client signs the transaction using a private Ed25519 key
-3. The signed transaction is submitted to a Peer
-4. The Peer incorporates the transaction into a Belief, which is propagated to the network
+3. The signed transaction is submitted to a peer of the client's choosing
+4. The peer incorporates the transaction into a Belief, which is propagated to the network
 5. The transaction is confirmed in consensus according to the CPoS algorithm
-6. The Peer computes the effect of the transaction on the CVM state, and any result(s)
-7. Peer returns a confirmed transaction result to the Client
+6. The peer computes the effect of the transaction on the CVM state, and any result(s)
+7. Peer returns a confirmed transaction result to the client
  
-
 
 ## Transaction Types
 
@@ -32,28 +31,30 @@ All signed transactions MUST contain at least the following fields:
 
 ### Transfer
 
-A Transfer Transaction causes a transfer of Convex Coins from the origin account to a destination account
+A `Transfer` is a transaction requesting the transfer of Convex Coins from a user (origin) account to some other (target) account. 
 
-A Transfer Transaction MUST specify an amount to transfer, as an integer.
+A transfer transaction MUST specify an amount to transfer, as an integer.
 
-The Source Account MUST be the Origin Account for the Transaction, i.e. transfers can only occur from the Account which has the correct Digital Signature
+The Source Account MUST be the origin account for the transaction, i.e. transfers can only occur from the account which has the correct digital signature
 
-Both Accounts MUST be valid, otherwise the Transaction MUST fail
+Both accounts MUST be valid, otherwise the transaction MUST fail
 
-The Transaction MUST fail if any of the following are true:
+The transaction MUST fail if any of the following are true:
 - The source Account has insufficient balance to pay for Transfer Transaction fees.
 - The transferred Amount is negative
 - The transferred Amount is greater than the Convex Coin Balance of the source Account (after subtracting any Transfer Transaction Fees)
 
-If the Transfer Transaction does not fail for any reason, then:
+If the transfer transaction does not fail for any reason, then:
 - The Amount MUST be subtracted from the Source Account's Balance
 - The Amount MUST be added to the Destination Account's balance
 
-A transfer amount of zero will succeed, though this is relatively pointless. Users SHOULD avoid submitting such transfers, unless they are willing to pay transaction fees simply to have this recorded in consensus.
+A transfer amount of zero will succeed, though this is relatively pointless. Users SHOULD avoid submitting such transfers, unless there is a good reason (e.g. public proving the ability to transact with a given account).
 
 ### Invoke
 
-An Invoke Transaction causes the execution of CVM Code
+An `Invoke` transaction is a request to execute some CVM code by a user account. This is the most general type of transaction: any CVM code may be executed.
+
+An Invoke transaction causes the execution of CVM Code when successfully signed and submitted to the Convex network
 
 An Invoke Transaction MUST include a payload of CVM Code. This may be either:
 - A pre-compiled CVM Op
@@ -69,6 +70,14 @@ An Invoke Transaction MUST fail if:
 Otherwise, the CVM State MUST be updated by the result of executing the CVM Code for the Origin Account
 
 ### Call
+
+A `Call` is a transaction requesting the execution of a callable function (typically a smart contract entry point) from a user account.
+
+Semantically, this is broadly equivalent to using an `Invoke` transaction to do the following:
+
+`(call target-address (function-name arg1 arg2 .... argN)`
+
+`Call` transaction types are mainly intended as an efficient way for user applications to invoke smart contract calls on behalf of the User.
 
 A Call Transaction causes the invocation of an Actor function.
 
@@ -107,6 +116,17 @@ Transaction results MUST be returned in a `Result` record which contains the fol
 
 An an optimisation, peers MAY avoid creating `Result` records if they have no requirement to report results back to clients.
 
+### Verification
+
+If the client trusts the peer, the returned result may be assumed as evidence that the transaction has succeeded. 
+
+If there are doubts about the integrity of the peer, further verification may be performed in several ways:
+- Checking the consensus ordering to ensure that the transaction occurred when the peer claimed
+- Querying the CVM state to ensure transaction effects have been carried out
+- Confirming the result with one or more independent peers  
+
+It is generally the responsibility of the user / app developer to choose an appropriate level of verification and ensure connection to trusted peers.
+
 ## Peer Responsibilities
 
 Peers are generally expected to be responsible for validating and submitting legitimate transactions for consensus on behalf of their clients.
@@ -117,7 +137,7 @@ Peers SHOULD submit legitimate transaction for consensus, unless they have a rea
 
 Peers SHOULD submit transactions in the order that they are received from any single client. Failure to do so is likely to result in sequence errors and potential economic cost for the peers.
 
-Peers SHOULD validate the digital signature of transactions they include in a block. Failure to do so is likely to result in penalities (at a minimum, paying the fees for the invalid transaction) 
+Peers SHOULD validate the digital signature of transactions they include in a block. Failure to do so is likely to result in penalties (at a minimum, paying the fees for the invalid transaction) 
 
 Peers MAY reject transactions that do not appear to be legitimate, in which case the Peer SHOULD return a Result to the Client submitting the transaction indicating the reason for rejection. Some examples where this may be appropriate:
 - Any transaction that has an obviously invalid sequence number (less than that required for the current Consensus State)
