@@ -342,7 +342,7 @@ From a logical perspective, every Value is either present or excluded from the s
 
 Records are specialised data structures that implement a defined sequence of fields.
 
-Records behave like Maps when accessed using their field names as keys mapped to the corresponding field values. If updated, errors may occur if the update is inconsistent with the requirements on field values (e.g. attempting to put a value of the wrong Type into a field.
+Records behave like Maps when accessed using their field names as keys mapped to the corresponding field values. If updated, errors may occur if the update is inconsistent with the requirements on field values (e.g. attempting to put a value of the wrong type into a field).
 
 #### Block
 
@@ -363,17 +363,17 @@ A Peer Record represents the current state of a Peer.
 
 #### Ordering
 
-An Ordering a special record type used by Peers to represent their Belief regarding:
+An Ordering is a special record type used by Peers to represent their Belief regarding:
 
 - The sequence of all Blocks
 - The current Consensus Point
 - The proposed Consensus Point
 
-Orderings are not normally used or accessible in CVM code.
+Orderings are not normally used or accessible in CVM code, but are important for the CPoS algorithm and may be used to access the complete transaction history.
 
 #### State
 
-The State represents a total global State of the CVM. This includes
+The State reocrd represents an immutable snapshot of the global State of the CVM. This includes
 
 - All Accounts
 - All Peers
@@ -382,9 +382,17 @@ The State represents a total global State of the CVM. This includes
 
 #### Transaction Types
 
-Transaction types represent instructions to Convex that can be submitted by external Clients. Transactions are specialised record types.
+Transaction types represent instructions to Convex that can be submitted by external clients. Transactions are specialised record types.
 
 For more details see CAD010.
+
+#### SignedData
+
+A `SignedData` record combines any other CVM value with an Ed25519 digital signature.
+
+SignedData records are used extensively for security, since the represent proof that someone constructing such data was in posession of the correct cryptographic key. In particular: 
+- Peers sign Blocks and Orderings as part of CPoS
+- Clients sign Transaction records that they wish to execute
 
 
 
