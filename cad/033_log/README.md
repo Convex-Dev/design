@@ -22,13 +22,12 @@ The builtin CVM `log` function adds a log entry for the current transaction.
 
 A log entry consists of:
 - The `*address*` that caused the `log` entry to be created (never nil)
-- The `*caller*` address at the time of logging (may be `nil`) 
 - The `*scope*` present at the time of logging (may be `nil`)
 - The location of the transaction, as a `[block-number transaction-number]` pair
-- A vector of values
+- A vector of the values logged
 
 ```clojure
-[origin address scope location [val1 val2 val3 ...]]
+[address scope location [val1 val2 val3 ...]]
 ```
 
 ### Log Data
