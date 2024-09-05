@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convex provides a vaerifiable event log for on-chain events.
+Convex provides a verifiable event log for on-chain events.
 
 The log is designed for events that may be consumed / observed by external observers interested in meaningful events in the CVM state. Typical use cases include:
 - Detecting transactions that represent transfers of assets to / from a specific account
@@ -58,8 +58,8 @@ The standard for a transfer "TR" log event is:
 
 Where:
 - `sender` is the account address of the asset sender
-- `receiver` is the acccount address of the reciever
-- `quantity` is the quanity of the asset transferred, as per CAD19
+- `receiver` is the account address of the receiver
+- `quantity` is the quantity of the asset transferred, as per CAD19
 - `data` is any additional data attached to the transfer (e.g. a map containing a payment reference)
 
 Transfer events of this type SHOULD be emitted by the actor implementing the asset, with a `*scope*` set as appropriate.
@@ -82,10 +82,9 @@ Peers SHOULD maintain logs for as long as possible
 
 ### Indexing
 
-By default peers MUST maintain the following indexes into the log, for all log entries that they retain:
+By default peers SHOULD maintain the following indexes into the log, for all log entries that they retain:
 - block -> log start and end position (allows fast location of log entries for a given block)
 - [ address | first value | second value | third value ] -> vector of log positions
-- [ address | caller (if non-null, otherwise omitted) ] -> vector of log positions
 
 Values are included in the index if present and bloblike, otherwise empty blob. 
 
