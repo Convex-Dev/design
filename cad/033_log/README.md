@@ -2,11 +2,12 @@
 
 ## Overview
 
-Convex provides an event log for on-chain events
+Convex provides a vaerifiable event log for on-chain events.
 
 The log is designed for events that may be consumed / observed by external observers interested in meaningful events in the CVM state. Typical use cases include:
 - Detecting transactions that represent transfers of assets to / from a specific account
 - Notifying observers of availability of smart contracts, e.g. opening of an auction
+- Alerting external observers to situations that may require action
 
 ## Specification
 
@@ -29,6 +30,39 @@ A log entry consists of:
 ```clojure
 [address scope location [val1 val2 val3 ...]]
 ```
+
+### Interaction with rollbacks
+
+The log MUST NOT be apdated with any log entries created within code that was rolled back (either due to an explicit `rollback` or failure of some atomic expression or transaction).
+
+The reason for this is that the Log should only include *things that happened* rather than any operations that are rolled back.
+
+The log SHOULD NOT be used for error reporting or diagnostics. 
+
+### Conventional values
+
+Users of logging capabilities MAY log any values they wish. However by convention, and in order to facilitate standards in tool, the following conventions are recommended.
+
+The first log entry SHOULD by a short uppercase string value that describes the type of event. Common codes are:
+
+- "TR" = a transfer of an asset
+- "ALERT" = a warning that external action may be needed
+
+#### Transfers
+
+The standard for a transfer "TR" log event is:
+
+```clojure
+["TR" sender receiver quantity data]
+```
+
+Where:
+- `sender` is the account address of the asset sender
+- `receiver` is the acccount address of the reciever
+- `quantity` is the quanity of the asset transferred, as per CAD19
+- `data` is any additional data attached to the transfer (e.g. a map containing a payment reference)
+
+Transfer events of this type SHOULD be emitted by the actor implementing the asset, with a `*scope*` set as appropriate.
 
 ### Log Data
 
