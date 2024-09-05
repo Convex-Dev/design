@@ -38,15 +38,33 @@ Typically this might be a callable function of the form:
 
 The decimals value SHOULD NOT be utilised or depended upon to affect behaviour by on-chain code: it is intended to allow user interfaces to produce meaningful human readable units.
 
-The decimals value MUST not change for the lifetime of a fungible token. A re-denomination to a different unit should logically be considered as the creation of a new fungible token.
+The decimals value MUST NOT change for the lifetime of a fungible token. A re-denomination to a different unit should logically be considered as the creation of a new fungible token.
+
+Example usage:
+
+```clojure
+(@convex.fungible/decimals USD-TOKEN)
+=> 2
+```
+
+i.e. if `decimals` is `2` then an asset quantity of `1499` will be considered as `14.99` in the natural unit of the currency. This is common in national currencies, e.g. the US Dollar can be considered to have 2 decimal places, where 100 cents to one dollar. 
 
 ### Total Supply
 
-A fungible token MUST be able to report its total supply.
+A fungible token SHOULD be able to report its total supply.
 
 The total supply MAY change (e.g. when minting or burning occurs). If this is the case, then the total supply MUST always be consistent with the sum of all balances of the token.
 
 A fungible token MUST NOT have any mechanism to create or destroy net balances without simultaneously updating the total supply.
+
+Typically this might be implemented with a fixed constant definition of total supply, e.g.:
+
+```clojure
+(define max-supply 12345678)
+
+(defn total-supply ^:callable []
+  max-supply)
+```
 
 ## convex.fungible library
 

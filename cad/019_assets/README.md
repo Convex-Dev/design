@@ -153,6 +153,19 @@ The returned value should always be a valid quantity for the specified asset. In
 
 If the address argument is omitted, the balance for the current account is queried (i.e. an implicit `*address*` argument is used to specify the current account).
 
+### `total-supply`
+
+The `total-supply` function obtains the current total supply of an asset. 
+
+```clojure
+(asset/total-supply my-token)
+=> 1000000000000000000
+```
+
+The `total-supply` function MAY return `nil` if the asset does not support efficient computation of the total supply.
+
+The total supply of an asset may change during the lifetime of an asset, e.g. because new quantities are minted or burned.
+
 
 ## Security considerations
 
