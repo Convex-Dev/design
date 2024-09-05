@@ -46,6 +46,7 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD030](cad/030_torus)          | Torus DEX                        | Draft      | mikera
 | [CAD031](cad/031_nft_metadata)   | NFT Metadata                     | Draft      | mikera
 | [CAD032](cad/032_reader)         | Convex Reader                    | Draft      | mikera
+| [CAD033](cad/033_log)            | Convex Log                       | Draft      | mikera
 
 ## Convex Project Repositories
 
