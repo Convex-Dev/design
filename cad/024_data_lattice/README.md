@@ -2,7 +2,7 @@
 
 ## Overview 
 
-The Data Lattice is the data substrate of the Convex ecosystem, designed for high volume storage, massive scalability and content delivery at scale.
+The Data Lattice is the data substrate of the Convex ecosystem, designed for high volume storage, high performance and verifiable content delivery at scale.
 
 Convex maintains data as part of the operation of the CVM global state (on-chain). It is possible to build decentralised solutions using these capabilities alone which we call a "pure dApp", which is sufficient for many use cases. However, more sophisticated decentralised applications are likely to require additional data sources (off-chain). We call such applications "hybrid dApps".
 
@@ -12,11 +12,11 @@ While off-chain data can be provided in many different ways, including via tradi
 
 Here are some of the key reasons data storage and processing extrinsic to Convex is useful for decentralised applications:
 
-1. Scalability: Blockchains inherently have limits on computational capacity and data throughput. Storing and analysing large data sets is inefficient on-chain. Off-chain resources can horizontally scale to demand.
+1. Scalability: Blockchains inherently have limits on computational capacity and data throughput. Storing and analysing large data sets is inefficient on-chain. Off-chain resources that do not require the same degree of synchronisation via consensus can horizontally scale to demand.
 
-2. Privacy: Sensitive data as with healthcare records or personal information requires restricted access. Public blockchains provide transparency but not confidentiality. Off-chain systems support encryption and fine-grained access control.
+2. Privacy: Sensitive data as with health records or personal financial information requires restricted access. Public blockchains provide transparency but not confidentiality. Off-chain systems support encryption and fine-grained access control.
 
-3. Speed & Responsiveness: DLTs feature lengthy settlement finality and limited transactions per second. This hinders uses needing real-time data flow like messaging or IoT monitoring. Off-chain networks have fewer limits reacting to data changes. 
+3. Speed & Responsiveness: DLTs feature lengthy settlement finality and limited transactions per second. This hinders uses needing real-time data flow like messaging or IoT monitoring. Off-chain networks have can react faster to data changes. 
 
 4. Cost Efficiency: Persisting every small update on-chain becomes expensive long term. Offloading data which does not require use of the global on-chain state curtails unnecessary fees and bloat. Subnets handle localised logic.
 
@@ -42,7 +42,7 @@ The Data Lattice provides the following capabilities:
 
 - **CRDT support**: The data lattice forms a natural CRDT, where arbitrary sets of data can be merged to create a union of all data. This process is aided by automatic de-duplication to reduce storage and transmission costs. 
 
-- **Self healing** - The CRDT also makes the data lattice "self-healing": nodes which lose access to some data (e.g. due to disk corruption) may obtain it again on subsequent merges as long as at least one copy survives.
+- **Self healing** - The CRDT also makes the data lattice "self-healing": nodes which lose access to some data (e.g. due to disk corruption) may obtain it again on subsequent merges as long as at least one copy survives somewhere in the network.
 
 - **Garbage Collection**: Stores can be garbage collected to reduce resource requirements at any time, simply by specifying which data is required to be maintained ("pinning"). This facilitates better operational management and allows flexible control by data lattice providers regarding what data they are interested in preserving or hosting.
 

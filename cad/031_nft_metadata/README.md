@@ -10,7 +10,7 @@ Each NFT may define metadata which is accessible on-chain on a per-NFT basis
 
 Metadata SHOULD be expressed as a Convex data structure value that is representable as a JSON Object
 
-This implies that the following values are permissible
+This implies that the following values are permissible:
 - A Hashmap with Strings as Keys
 - A String
 - Boolean values
@@ -47,5 +47,5 @@ Metadata MUST be accessed using the following interface either directly or indir
 
 ## Stored vs. Generated metadata
 
-NFT implementations may either generate metadata dynamically on demand or store metadata on-chain.
+NFT implementations MAY either generate metadata dynamically on demand or store metadata on-chain.
 

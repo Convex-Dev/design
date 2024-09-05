@@ -81,7 +81,7 @@ Principles are rarely absolute. There are always tradeoffs in engineering decisi
 
 Literal code (e.g. Convex Lisp forms) should be quoted in a fixed width font `(like this)`
 
-Type names like Vector or the Java type Object should be captitalised.
+Type names like Vector or the Java type Object should be capitalised.
 
 Where possible, follow RFC style MUST, SHOULD, MAY, SHOULD NOT etc. in formal specifications.
 
