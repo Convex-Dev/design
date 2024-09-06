@@ -37,7 +37,9 @@ Whenever a transaction is executed on the CVM, Memory Consumption is calculated 
 
 Memory Consumption is computed at the end of each transaction, and is defined as:
 
-`Memory Consumption = [Size of CVM state at end of transaction] - [Size of CVM state at start of transaction] 
+```
+Memory Consumption = [Size of CVM state at end of transaction] - [Size of CVM state at start of transaction] 
+```
 
 If a transaction has zero Memory Consumption, it will complete normally with no effect from the Memory Accounting subsystem
 

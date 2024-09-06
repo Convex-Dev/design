@@ -112,9 +112,27 @@ Transaction results MUST be returned in a `Result` record which contains the fol
  - `:eaddr` - the Address of execution where the error was raised
  - `:mem` - Integer amount of memory consumed by the transaction (may be omitted if zero, may be negative for a refund)
  - `:juice` - Execution juice for the transaction
- - `:fee` - Total fee paid in Convex coppers, including memory cost
+ - `:fees` - Total fee paid in Convex coppers, including memory cost
 
 An an optimisation, peers MAY avoid creating `Result` records if they have no requirement to report results back to clients.
+
+### Fees
+
+Total fees for a successful transaction are calculated as:
+
+```
+(juice used + transaction base cost) * juice price + memory costs
+```
+
+See [CAD007](../007_juice) for more details on juice cost calculation.
+
+See [CAD006](../006_memory) for more details on memory cost calculation.
+
+Memory costs MUST be zero if no memory was used, or if the origin account had sufficient memory allowance to cover the increase in state size caused by the transaction.
+
+In the case of a failed transaction, memory fees MUST be zero (since state changes are rolled back)
+
+If a transaction failed signature or sequence verification, the base transaction cost is paid by the peer that submitted the erroneous transaction.
 
 ### Verification
 
