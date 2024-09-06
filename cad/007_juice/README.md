@@ -16,9 +16,17 @@ The Juice Fees are the execution cost component of transaction fees and are comp
 
 ```
 Juice Consumed * Juice Price
+
+where:
+
+Juice Consumed = Transaction Size Cost + sum(Juice cost of each operation executed)
+
+Transaction Size Cost = TRANSACTION_PER_BYTE * Storage Size of Transaction
 ```
 
-Where `Juice Price` is a variable defined in the CVM State that varies according to the level of network demand, and is available to CVM code via accessing the special Symbol `*juice-price*`.
+`Juice Price` is a variable defined in the CVM State that varies according to the level of network demand, and is available to CVM code via accessing the special Symbol `*juice-price*`.
+
+`TRANSACTION_PER_BYTE` is a global constant pricing the relative cost of transaction storage in the ordering. The value is `20` as of September 2024 but may be updated in future Convex versions if required. The rationale for this component of juice fees is to improve incentives regarding efficient transaction size: we want users and application developers to submit small transactions as much as possible to minimise storage requirements for peers.
 
 ## Juice Allowance
 
