@@ -112,7 +112,7 @@ Transaction results MUST be returned in a `Result` record which contains the fol
  - `:eaddr` - the Address of execution where the error was raised
  - `:mem` - Integer amount of memory consumed by the transaction (may be omitted if zero, may be negative for a refund)
  - `:juice` - Execution juice for the transaction
- - `:fee` - Total fee paid in Convex coppers, including memory cost
+ - `:fees` - Total fee paid in Convex coppers, including memory cost
 
 An an optimisation, peers MAY avoid creating `Result` records if they have no requirement to report results back to clients.
 
