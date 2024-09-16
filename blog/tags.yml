@@ -1,19 +1,14 @@
-facebook:
-  label: Facebook
+convex:
+  label: Convex
   permalink: /facebook
-  description: Facebook tag description
+  description: Convex Foundation
 
-hello:
-  label: Hello
+welcome:
+  label: Welcome
   permalink: /hello
   description: Hello tag description
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
-
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+community:
+  label: Community
+  permalink: /community
+  description: Convex Developer Community
