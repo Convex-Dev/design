@@ -1,3 +1,8 @@
+---
+title: White Paper
+authors: [convex]
+tags: [convex, technology]
+---
 # Convex White Paper
 
 ## Abstract

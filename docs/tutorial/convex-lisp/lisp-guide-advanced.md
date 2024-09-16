@@ -1,3 +1,11 @@
+---
+slug: convex-lisp-advanced
+title: Advanced Guide
+sidebar_position: 2
+authors: [mikera, helins]
+tags: [convex, developer, lisp]
+---
+
 If you've got this far, you may be interested in some of the more advanced features of Convex Lisp. This section is intended for people who want to know more about how Convex Lisp work, and how it integrated with the capabilities of the CVM.
 
 ## Compiler Phases

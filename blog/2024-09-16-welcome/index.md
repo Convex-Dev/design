@@ -8,6 +8,7 @@ tags: [convex, welcome, community]
 Welcome to the Convex Developer Documentation! The is the go-to resource for building with Convex.
 
 We're thrilled to introduce our new developer documentation site. This platform is designed to be your comprehensive guide for mastering Convex, a powerful decentralised platform based on lattice technology.
+<!-- truncate -->
 
 What you'll find here:
 

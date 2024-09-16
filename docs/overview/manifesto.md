@@ -1,14 +1,20 @@
-# The Convex Manifesto - DRAFT
+---
+title: Manifesto
+authors: [convex]
+tags: [convex, community, philosophy]
+---
 
-We are building open economic systems based on decentralised technology for the 21st century and beyond.
+# The Convex Manifesto (draft)
 
-The time is ripe for change: For too long, our societies have been burdened by inefficient and unfair economic systems. Centralised organisations hold undue power, exploiting monopolistic control over most of our economic life. Transaction costs are massive, holding back progress and burdening people with unnecessary expenses. Many people are unfairly excluded from financial and economic participation. Our economic models are causing tragic and unsustainable damage to the natural world we all share.
+Building Open, Decentralized Economies for the 21st Century
 
-AI is rapidly changing the landscape of the digital economy, and indeed the whole world. At this critical time in our civilisation, it imperative that control over data, computational power and the economy as a whole is put back in the hands of individuals.
+The time for change is now. For far too long, our societies have been shackled by inefficient and inequitable economic systems. Centralized institutions wield excessive power, exploiting monopolistic control over much of our economic activity. Transaction costs are exorbitant, hindering progress and imposing unnecessary burdens on individuals. Countless people are unfairly excluded from financial and economic participation. Our current economic models are inflicting irreversible damage on the natural world we all share.
 
-Convex is a public decentralised system for real-time P2P exchange of data and value, designed as a substrate for the digital economy in the age of AI. As such, it provides the foundation for the type of economics we want to see in the world - fair, inclusive, efficient, diverse and sustainable.
+Artificial intelligence is rapidly transforming the digital economy, and indeed, the entire world. At this pivotal moment in human history, it is imperative that control over data, computational power, and the economy as a whole is returned to the hands of individuals.
 
-This manifesto outlines our beliefs and core principles.
+Convex is a public, decentralized system for real-time peer-to-peer exchange of data and value, designed as a foundational layer for the digital economy in the age of AI. As such, it provides the bedrock for the kind of economics we envision – fair, inclusive, efficient and sustainable.
+
+This manifesto outlines our core beliefs and principles.
 
 ## Open Economic Systems
 
