@@ -1,3 +1,11 @@
+---
+slug: convex-lisp-intro
+title: Gentle Introduction
+sidebar_position: 0
+authors: [mikera, helins]
+tags: [convex, developer, lisp]
+---
+
 This guide is intended for developers interested in learning about Convex Lisp. We will take you through the basics of the language, all the way through to designing and deploying a simple smart contract!
 
 ## Setup

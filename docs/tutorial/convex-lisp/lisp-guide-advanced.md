@@ -1,6 +1,7 @@
 ---
-slug: convex-lisp
+slug: convex-lisp-advanced
 title: Advanced Guide
+sidebar_position: 2
 authors: [mikera, helins]
 tags: [convex, developer, lisp]
 ---
