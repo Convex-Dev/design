@@ -41,7 +41,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/Convex-Dev/design',
+            'https://github.com/Convex-Dev/design/tree/develop',
         },
         blog: {
           showReadingTime: true,
@@ -52,7 +52,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/Convex-Dev/design',
+            'https://github.com/Convex-Dev/design/tree/develop',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
