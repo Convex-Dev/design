@@ -1,3 +1,9 @@
+---
+title: Manifesto
+authors: [convex]
+tags: [convex, community, philosophy]
+---
+
 # The Convex Manifesto - DRAFT
 
 We are building open economic systems based on decentralised technology for the 21st century and beyond.
