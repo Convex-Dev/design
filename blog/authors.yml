@@ -9,3 +9,13 @@ mikera:
     github: mikera
     linkedin: mike-cvx
 
+convex:
+  name: Convex Foundation
+  title: Hacker, Convex Foundation
+  url: https://github.com/Convex-Dev
+  image_url: https://github.com/Convex-Dev.png
+  page: true
+  socials:
+    x: convex_world
+    github: Convex-Dev
+

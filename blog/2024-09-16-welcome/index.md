@@ -1,7 +1,7 @@
 ---
 slug: welcome
 title: Welcome
-authors: [mikera]
+authors: [convex]
 tags: [convex, welcome, community]
 ---
 
