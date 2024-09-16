@@ -1,0 +1,8 @@
+{
+  "label": "CADs",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Official Convex Architecture Documents"
+  }
+}
