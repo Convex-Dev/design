@@ -16,9 +16,14 @@ The CVM is designed to be able to support many different languages and paradigms
 - **Code is data**: representing code using its own data structures (also known as "homoiconicity") gives Lisp advanced **metaprogramming** capabilities the creation of domain-specific languages (DSLs) tailored to specific concepts, making it easier to reason about and implement complex economic mechanisms.
 - **Interactive coding**: Lisp pineered the use of the REPL for highly interactive programming. With Convex, we've taken this a step further with a complete on-chain compiler so that everything on the CVM can be done with simple interactive Lisp commands.
 
+## Inspirations
+
+Lisp was originally created in the 1950s by John McCarthy and has maintained a deep-rooted appeal among hackers for its unique characteristics.
+
 Convex Lisp was heavily inspired by [Clojure](https://clojure.org/), from which it borrows most basic and many core functions, and [Racket Scheme](https://racket-lang.org/) which inspired many of the more advanced metaprograming facilities.
 
 ## Interesting technical notes
 
 - Convex Lisp is a **Lisp-1** (i.e. keeps function and data values in the same namespace).This is simpler than a Lisp-2 and seems more appropriate for a functional programming language, where functions are regularly treated as first class values.
 - Convex Lisp is designed for **orthogonal persistence**. Developers don't need to care where data or code is stored: it is loaded and cached on demand. This powerful capability means that the CVM can operate code and data data structures much larger than system RAM without imposing any burden on developers.
+- Convex Lisp data structures (and therefore code) are all represented as **Merkle trees** using strong cryptographic hashes. This has the ineteresting property of making all code and data **content-addressable** and cryptographically **verifiable**. As well as making Convex Lisp ideally suited for running on the lattice technology used by Convex, this opens interesting possibility for new kinds of systems based on immutable and verifiable distributed code bases.

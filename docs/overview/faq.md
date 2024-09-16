@@ -98,6 +98,8 @@ A variant of Lisp was chosen as the initial language for the CVM for a few reaso
 
 Paul Graham's essay [Beating the Averages](http://www.paulgraham.com/avg.html) is an interesting perspective on the advantages of Lisp for building a business. Despite dating from 2001, we feel many of these points still stand today and are very relevant for people wanting to build applications using Convex.
 
+For more information see the tutorial section for [Convex Lisp](/docs/tutorial/convex-lisp/convex-lisp)
+
 
 ## What is Memory Accounting?
 
