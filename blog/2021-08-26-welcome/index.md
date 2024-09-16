@@ -2,28 +2,20 @@
 slug: welcome
 title: Welcome
 authors: [mikera]
-tags: [facebook, hello, docusaurus]
+tags: [convex, welcome, community]
 ---
 
-[Docusaurus blogging features](https://docusaurus.io/docs/blog) are powered by the [blog plugin](https://docusaurus.io/docs/api/plugins/@docusaurus/plugin-content-blog).
+Welcome to the Convex Developer Documentation! The is the go-to resource for building with Convex.
 
-Here are a few tips you might find useful.
+We're thrilled to introduce our new developer documentation site. This platform is designed to be your comprehensive guide for mastering Convex, a powerful decentralised platform based on lattice technology.
 
-<!-- truncate -->
+What you'll find here:
 
-Simply add Markdown files (or folders) to the `blog` directory.
+- Clear and concise tutorials: Learn the basics of Convex, from creating your first project to building complex dApps and smart contracts.
+- In-depth reference guides: Dive into the details of Convex's API, functions, and syntax.
+- Best practices and tips: Discover expert advice on optimizing your Convex applications for performance and scalability.
+- Community resources: Connect with other developers, share your experiences, and ask questions.
 
-Regular blog authors can be added to `authors.yml`.
+Whether you're a seasoned developer or just starting out, our documentation is here to help you make the most of Convex.
 
-The blog post date can be extracted from filenames, such as:
-
-- `2019-05-30-welcome.md`
-- `2019-05-30-welcome/index.md`
-
-A blog post folder can be convenient to co-locate blog post images:
-
-![Docusaurus Plushie](./docusaurus-plushie-banner.jpeg)
-
-The blog supports tags as well!
-
-**And if you don't want a blog**: just delete this directory, and use `blog: false` in your Docusaurus config.
+Let's get started! Explore the site and begin your Convex journey. We're excited to see what you'll build.
