@@ -6,6 +6,16 @@ tags: [convex, ecosystem, applications]
 
 Convex is a general purpose, programmable decentralised network with global state. As such, there is no inherent limit on the nature of applications that can be built. Here are some of the things that Convex can be used for, and are being actively developed within the Convex community:
 
+## Tokensiation
+
+Convex offers a uniquely powerful system for the development of tokenised assets and applications. Tokens in Convex usually support the [CAD029](cad/029_fungible/README.md) token standard, which offers multiple advantages over the common ERC20 standard.
+
+Tokens can be used for:
+- Payments in the form of stablecoins, flatcoins, nationcoins or other digital curreny types
+- Utility tokens for delivery of decentralised services
+- Reward schemes and bonus programmes
+- Governance of decentralised economic systems, e.g. with stake-weighted voting
+
 ## NFTs
 
 Non-fungible tokens (NFTs) are a powerful mechanism for creating unique virtual items that can be owned, collected traded and utilised in virtual environments such as games. Each NFT has a unique on-chain ID and can be individually addressed, transferred and used within smart contracts.

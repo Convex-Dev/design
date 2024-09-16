@@ -6,8 +6,9 @@ authors: [mikera, helins]
 tags: [convex, developer, lisp]
 ---
 
-This guide is intended for developers interested in learning about Convex Lisp. We will take you through the basics of the language, all the way through to designing and deploying a simple smart contract!
+This guide is for developers interested in learning the basics of Convex Lisp. We will take you through the basics of the language, all the way through to designing and deploying a simple smart contract!
 
+<!--
 ## Setup
 
 Using the [Sandbox](/sandbox) is the easiest way to experience Convex Lisp. We recommend that you try it out as you go through this guide: It's more fun to get instant feedback and try out new ideas quickly! To do this:
@@ -15,26 +16,29 @@ Using the [Sandbox](/sandbox) is the easiest way to experience Convex Lisp. We r
 - Open the Sandbox (you can create a free, anonymous temporary account with one just one click!)
 - Type example code from this guide into the Sandbox input window as you progress
 - You will see outputs from Convex in the output window. we use `=>` to indicate expected outputs in the examples below.
+-->
 
 ## Lisp basics
 
-Lisp is all about expressions. All code in Lisp is ultimately an expression that can be evaluated to get a resulting value (or maybe an error, if something went wrong...). So let's take a quick tour through the most common types of expressions, and the values that they produce.
+A Lisp code is contructed out of expressions, which can be evaluated to get a resulting value (or maybe an error, if something went wrong...). The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elemenst are the arguments. So to add two numbers with the `+` function you would do something like:
+
+```clojure
+(+ 2 3)
+=> 5
+```
+
+So let's take a quick tour through the most common types of expressions, and the values that they produce.
 
 ### Literals
 
-The simplest type of expression is a constant literal data value, which evaluates directly to itself!
+The simplest type of expression is a constant literal data value, which evaluates directly to itself! If you type the number `1` in the REPL and execute it, the result is simply the number `1` itself:
 
 ```clojure
 1
-```
-
-If you type the number `1` in the Sandbox and execute it, the result is the number one itself:
-
-```clojure
 => 1
 ```
 
-Convex can handle double precision floating point numbers as well:
+Convex can handle double precision floating point numbers, which work the same way:
 
 ```clojure
 1.5
@@ -83,7 +87,7 @@ nil
 => nil
 ```
 
-Addresses (which refer to Accounts) can be expressed as a literal starting with `#`. Address literals need not refer to an account that actually exists.
+Addresses (which refer to accounts) can be expressed as a literal starting with `#`. Address literals need not refer to an account that actually exists.
 
 ```clojure
 #12345
