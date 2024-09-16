@@ -19,12 +19,13 @@ convex:
     x: convex_world
     github: Convex-Dev
 
-helins:
-  name: Adam Helinski
-  title: Core Contributor
-  url: https://github.com/helins
-  image_url: https://github.com/helins.png
-  page: true
-  socials:
-    github: helins
+#helins:
+#  name: Adam Helinski
+#  title: Core Contributor
+#  url: https://github.com/helins
+#  image_url: https://github.com/helins.png
+#  page: true
+#  socials:
+#    github: helins
+
 
