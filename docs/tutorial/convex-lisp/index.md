@@ -18,6 +18,7 @@ The CVM is designed to be able to support many different languages and paradigms
 
 Convex Lisp was heavily inspired by [Clojure](https://clojure.org/), from which it borrows most basic and many core functions, and [Racket Scheme](https://racket-lang.org/) which inspired many of the more advanced metaprograming facilities.
 
-## Some technical notes on Convex Lisp
+## Interesting technical notes
 
 - Convex Lisp is a **Lisp-1** (i.e. keeps function and data values in the same namespace).This is simpler than a Lisp-2 and seems more appropriate for a functional programming language, where functions are regularly treated as first class values.
+- Convex Lisp is designed for **orthogonal persistence**. Developers don't need to care where data or code is stored: it is loaded and cached on demand. This powerful capability means that the CVM can operate code and data data structures much larger than system RAM without imposing any burden on developers.
