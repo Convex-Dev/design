@@ -1,12 +1,12 @@
 ---
 slug: convex-lisp-intro
-title: Gentle Introduction
+title: Gentle Lisp Introduction
 sidebar_position: 0
 authors: [mikera, helins]
 tags: [convex, developer, lisp]
 ---
 
-This guide is for developers interested in learning the basics of Convex Lisp. We will take you through the basics of the language, all the way through to designing and deploying a simple smart contract!
+This guide is for developers interested in learning the basics of Convex Lisp. We assume a general familiarity with programming concepts, but no prior experience in Lisp. We will take you through the basics of the language. Veteran Lisp hackers may wish to skip this section, though there are some unique features in Convex Lisp worth noting. 
 
 <!--
 ## Setup
@@ -18,13 +18,20 @@ Using the [Sandbox](/sandbox) is the easiest way to experience Convex Lisp. We r
 - You will see outputs from Convex in the output window. we use `=>` to indicate expected outputs in the examples below.
 -->
 
-## Lisp basics
+## Lisp expressions
 
-A Lisp code is contructed out of expressions, which can be evaluated to get a resulting value (or maybe an error, if something went wrong...). The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elemenst are the arguments. So to add two numbers with the `+` function you would do something like:
+All Lisp code is contructed from expressions, which can be evaluated to get a resulting value (or maybe an error, if something went wrong...). The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elemenst are the arguments. So to add two numbers with the `+` function you would do something like:
 
 ```clojure
 (+ 2 3)
 => 5
+```
+
+It's important to not that each element in the expression is itself an expression. It's expressions all the way down. So you can nest expressions arbitrarily to create more complex structures:
+
+```
+(- (* 10 10) (* 5 5))
+=> 75
 ```
 
 So let's take a quick tour through the most common types of expressions, and the values that they produce.
@@ -195,7 +202,7 @@ You can easily define your own functions with `defn`:
 => 12321
 ```
 
-You can also create anonymous functions and use them directly with the `fn` special form. The function below is equivalent to the `square` example above, but we don't give it a name at any point.
+You can also create anonymous functions and use them directly with the `fn` special form. The function below is equivalent to the `square` example above, but we can use it without needing to give it a symbolic name.
 
 ```clojure
 ((fn [x] (* x x)) 111)
@@ -210,7 +217,7 @@ All Convex data structures are *immutable* - functions that make a change to a d
 
 #### Vectors
 
-A Vector is an ordered sequence of values. You can create a vector as a literal value by enclosing any list of expressions with square brackets `[...]`
+A `Vector` is an ordered sequence of values. You can create a vector by enclosing any list of expressions with square brackets `[...]`
 
 ```clojure
 ;; A vector containing the numbers 1, 2 and 3
@@ -250,7 +257,7 @@ There are many functions in the core library that work with Vectors. Some simple
 => [1 2 3]
 ```
 
-In general, you should use Vectors whenever you need to store an ordered sequence of values. They are the fastest data structure for indexed lookup, and for appending a single element to the end with `conj`. Vectors are the natural Convex equivalent to what is often called "arrays" or "tuples" in other languages.
+In general, you should use Vectors whenever you need to store an ordered sequence of values. They are the fastest data structure for indexed lookup, and for appending elements to the end with `conj`. Vectors are the natural Convex equivalent to what is often called "arrays" or "tuples" in other languages.
 
 #### Maps
 
@@ -376,14 +383,14 @@ Some examples of functions from the core library that work with sets:
 
 Lists are ordered sequences of elements, just like Vectors. However, Lists are specially designed to be used for representing code.
 
-If you enter a List directly in the Sandbox, it will get executed as an expression:
+If you enter a List directly in the Sandbox, it will get evaluated as an expression:
 
 ```clojure
 (inc 10)
 => 11
 ```
 
-This is helpful for executing code, but it is not useful if you want to use Lists as a data structure! If you want to stop a List from being automatically evaluated, you can *quote* the List by adding the character `'` before this list. This tells Convex to interpret the List as a literal data structure:
+This is helpful for executing code, but it is not useful if you want to use Lists as a data structure! If you want to stop a List from being automatically evaluated, you can *quote* the List by adding the character `'` before this list. This tells Convex to interpret the list as a literal data structure:
 
 ```clojure
 '(inc 10)
@@ -397,24 +404,24 @@ Some other ways of constructing a List:
 ()
 => ()
 
-;; Convert a Vector to a List
-(vec [1 2 3])
-=> (1 2 3)
-
 ;; Create a List using 'cons' which adds a value to the front of any sequential collection
 (cons a '(b c))
 =>(a b c)
+
+;; Assumbkle a List by concatenating two list
+(concat '(this is) '(a test))
+ => (this is a test)
 ```
 
-In normal code, you should generally prefer Vectors over Lists for storing data. Lists should mainly be used for generating code - in macros, for example.
+You should use vectors over lists for storing data in most cases. Lists are mainly be used for generating code - in macros, for example.
 
 ### Special forms
 
-Convex Lisp includes several special forms, that implement behaviour that can't be achieved using regular functions from the core library.
+Convex Lisp includes several special forms, that implement behaviour above and beyond regular functions from the core library.
 
 #### Conditionals
 
-General-purpose languages need some way of controlling the conditional execution of code, and Convex Lisp is no exception. 
+General-purpose Turing complete languages need some way of controlling conditional execution of code, and Convex Lisp is no exception. 
 
 Convex Lisp provides an `if` macro that evaluates a conditional expression and then executes one of two other expressions depending on whether the value of the first is true or false.
 
@@ -439,7 +446,7 @@ Conditionals branch based on whether the conditional expression evaluated is tru
 
 Why do we do this rather than only allowing booleans? Well, it turns out that in a lot of situations, you want to branch based on whether a result is `nil` or non-`nil` (e.g. when you want to look up a value in a database). We could force developers to do a `(nil? x)` check to coerce each such result into a boolean, but this adds overhead and boilerplate code. Instead, we make conditionals work with truthy and falsey values directly, so that such conversion code is usually unnecessary.
 
-The `cond` special form works like `if`, but allows multiple tests, and can optionally provide a default result that 
+The `cond` special form works like `if`, but allows multiple tests, and can optionally provide a default result that will be returned if none of the previous tests succeed.
 
 ```clojure
 (cond 
@@ -449,7 +456,7 @@ The `cond` special form works like `if`, but allows multiple tests, and can opti
   false 40)
 => 30
   
-;; You can provide a default result if all tests fail
+;; You can provide a default result at the end if all tests fail
 (cond
   false 10
   false 20
@@ -457,13 +464,11 @@ The `cond` special form works like `if`, but allows multiple tests, and can opti
 => "Nothing Matched"
 ```
 
-Implementation note: `if` is actually a macro that expands to a `cond` form under the hood. So technically, `cond` is the lower level special form. In practice, it is usually more convenient and intuitive to use `if`.
-
-
+Implementation note: `if` is actually a macro that expands to a `cond` special form. So technically, `cond` is the lower level special form. In practice, it may be more convenient and intuitive to use `if`. Your choice, as always!
 
 #### Do blocks
 
-The `do` special form groups a number of expressions into a single expression and returns the value of the last expression (or `nil` if there are zero expressions). Results from earlier expressions are discarded. Typically, the earlier expressions are included to perform some side effect.
+The `do` special form groups a number of expressions into a single expression and returns the value of the last expression (or `nil` if there are zero expressions). Results from earlier expressions are discarded. 
 
 ```clojure
 ;; A do Block with three expressions inside, all are executed but only the last result is returned.
@@ -481,6 +486,7 @@ The `do` special form groups a number of expressions into a single expression an
 
 The `do` form serves a similar purpose to a code block in many other languages. It's useful for grouping several statements together for the purposes of side effects.
 
+Typically, the earlier expressions are included because they perform some side effect. There isn't much point executing some pure code that simply returns a value if you simply ignore it. Because of this, the presence of `do` in some Convex Lisp code is a strong hint that side effects may be happening.
 
 #### Let and local variables
 
@@ -708,213 +714,3 @@ We can get a bit more sophisticated, and use functions to create other functions
 ```
 
 `map` and `reduce` are both very powerful tools for functional programming, and in many cases can replace the need to implement imperative loops. They also help to avoid the dreaded "off by one" errors!
-
-## Actors
-
-Actors are autonomous programs that live on the CVM. Most importantly, they are the "workers" that enable the operation of smart contracts.
-
-Actors have quite similar capabilities to Users:
-
-- They have an Account on the CVM, with an address like `#2501`
-- They have their own dynamic environment, which can contain definitions and data just like a User's environment.
-- They can control digital assets, coins and memory allocations
-
-### Creating an Actor
-
-To create an Actor, you need to deploy some code to initialise the actor. The code is executed when the Actor is deployed and can be used to set up the environment of the actor, e.g. defining new values or functions.
-
-```clojure
-;; Deploy an actor, get the resulting address
-(deploy '(def some-data "Hello"))
-=> #1033
-
-;; This is undeclared, since some-data exists in the Actor's environment, not ours
-some-data
-=> UNDECLARED
-
-;; However, we can look up the data in the new Actor's environment:
-(lookup #1033 'some-data)
-=> "Hello"
-```
-
-
-
-
-Your initialisation code *must* set up any capabilities you want the actor to have in the future: once deployed, you might not be able to make any further changes if you make a mistake (although it is possible to make Actor upgradable... more on this later).
-
-### Calling Actor functions
-
-Actors are more than just containers for data - they can be active participants in transactions. To create an Actor that exposes executable functionality to others, you need to `export` one or more functions. The following example is an Actor that allows callers to get and set a value
-
-```clojure
-;; define code for our Actor
-(def actor-code
-  '(do
-     (def value :initial-value)
-     
-     (defn set [v]
-       (def value v))
-       
-     (defn get []
-       value)
-       
-     (export get set)))
-
-;; Deploy the Actor and store the address as 'act' for convenient use later      
-(def act (deploy actor-code))
-
-;; Call 'get'
-(call act (get))
-=> :initial-value
-
-;; Call 'set' with a new value
-(call act (set :new-value))
-
-;; Call 'get' again
-(call act (get))
-=> :new-value
-```
-
-This actor is pretty simple, but it demonstrates the key ideas:
-
-- An Actor is an autonomous program, with its own execution environment
-- You can export functions to allow users to interact with an Actor
-
-### Building parameterised actors with `defactor`
-
-Sometimes you want to pass parameters to construct an Actor. `defactor` lets you build an actor with parameters, and also provides some magic syntax to make declaring actors a bit more elegant:
-
-```clojure
-(defactor multiplier [x]
-  (defn calc [y]
-     (* x y))
-     
-  (export calc))
-
-;; deploy multipliers with different parameters
-(def times2 (deploy (multiplier 2)))
-=> #2601
-
-(def times3 (deploy (multiplier 3)))
-=> #2602
-
-;; test them out!
-(call times2 (calc 10))
-=> 20
-
-(call times3 (calc 10))
-=> 30
-```
-
-
-### Sending funds to Actors
-
-Like Users, Actor Accounts can have their own balance of funds. 
-
-You can use the `transfer` function to transfer funds to an Actor.However, this causes a problem: what if the Actor doesn't expect to receive funds, and there is no a facility to transfer the funds elsewhere? This can cause coins to be irrevocably lost.
-
-The better way to transfer funds is to "offer" them to the Actor you are calling, which then has to actively `accept` the funds to acknowledge receipt. Then, if coded correctly, there is no risk of funds being transferred that the receiving actor is unable to handle.
-
-Below is a simple example of an Actor that accepts funds, keeps track of how much each caller has donated, and provides a payout mechanism to relay the funds to the given cause.
-
-```
-(defactor donations [cause]
-  (assert (address cause)) ;; cause must cast to an address!
-
-  (def all-donations {}) ;; a map of donation amounts
-
-  (defn donate []
-    (let [donation *offer*]
-      (if (> donation 0)
-        (let [past-donation (or (get all-donations *caller*) 0)]
-          (def all-donations (assoc all-donations *caller* (+ past-donation donation)))
-          (accept donation)
-          (return "Thanks for your donation")))))
-    
-  (defn payout []
-    (transfer cause *balance*))
-    
-  (export donate payout))
-```
-
-To use this Actor, it needs to be deployed and then called with the offer amount as an extra parameter to `call`:
-
-```
-;; A charity address that you want to be the beneficiary of donations
-(def charity #2055)
-
-;; Deploy the donations fund
-(def charity-fund (deploy (donations charity)))
-=> #2603
-
-;; Donate to charity
-(call charity-fund 100000 (donate))
-=> "Thanks for your donation"
-
-;; See who has donated so far!
-(lookup charity-fund 'all-donations)
-=> {#2599 100000}
-```
-
-### Important security note for Actors
-
-Actor code runs in the Account of the actor itself. In many circumstances, calling Actor code can be considered "safe" in the sense that it cannot in general access assets owned by the calling account. However, there are some risks that you should be aware of:
-
-- If you make an Actor call, you are still liable for paying any transaction fees (and memory usage) associated with running actor code. If this is a concern, you should evaluate the Actor code to determine if there is any risk of high transaction fees (or set an appropriate transaction fee limit).
-- An Actor may call other Actors. This can open up a "re-entrancy attack" if the Actor calls back into other code that you were not expecting (may change the state of other actors for example) and invalidate some assumptions about the state of other Actors that you previously made. If you consider this a risk, calling an Actor, especially an unknown / untrusted one, should usually be the *last* thing you do in a transaction.
-- An Actor may "accept" Convex Coins or other digital assets that have been offered to it. Only offer assets to an Actor that you intend to call if you are comfortable that the Actor may claim these assets. 
-	
-## Libraries
-
-In most programming environments, it is helpful to bundle up code into libraries that can be shared and re-used. Convex Lisp is no exception, but takes a novel approach: Libraries are simply Actors!
-
-This approach is powerful because:
-
-- We make use of Convex as a global repository for libraries
-- You can deploy libraries in the same way as you deploy Actors - no special tools needed!
-- Libraries get all the same security and management guarantees as Actors
-- You can use the library functionality to access Actors
-
-### Using libraries
-
-Using libraries is easy! All you need to do is:
-
-- `import` the library using its Address or CNS name and give it a convenient alias e.g. `foo`
-- Use symbols defined in the library by prefixing the symbol name with the alias e.g. `foo/bar`
-
-```clojure
-;; Import a library (in this case, the standard registry Actor)
-(import convex.registry :as reg)
-
-;; Use a symbol from the library (in this case, count the number of registered accounts)
-(count reg/registry)
-=> 67081
-```
-
-### Deploying libraries
-
-Deploying libraries is just like deploying an Actor, with a few key differences to note:
-
-- You don't need to `export` any functions (unless you really want to enable `call`)
-
-```clojure
-(def my-lib-address 
-  (deploy
-    '(defn distance [x y]
-       (sqrt (+ (* x x) (* y y))))))
-       
-(import my-lib-address :as my-lib)
-
-(my-lib/distance 3.0 4.0)
-=> 5.0
-```
-
-### Important security note for libraries
-
-A key difference between a `call` to an Actor function and running library code is the difference in *security context*:
-
-- An Actor `call` runs code in the Actor's environment, with the Actor itself the current `*address*` (and the calling Account as `*caller*`)
-- Library code runs in the environment of the current Account, i.e. `*address*` is unchanged
-
-As a result of this: **DO NOT RUN LIBRARY CODE YOU DO NOT TRUST**. Library code can do anything that your Account can, including transferring away all your coins and tokens, or calling arbitrary smart contracts. If you have any doubt about the trustworthiness of library code, do not use it from an Account that controls any valuable assets.
-

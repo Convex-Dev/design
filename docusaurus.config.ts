@@ -157,8 +157,9 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Convex Foundation. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.oceanicNext,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.vsLight,
+      darkTheme: prismThemes.vsDark,
+      additionalLanguages: ['powershell','clojure','java']
     },
   } satisfies Preset.ThemeConfig,
 };
