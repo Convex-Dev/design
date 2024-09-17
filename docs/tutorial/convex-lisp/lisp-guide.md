@@ -415,11 +415,7 @@ Some other ways of constructing a List:
 
 You should use vectors over lists for storing data in most cases. Lists are mainly be used for generating code - in macros, for example.
 
-### Special forms
-
-Convex Lisp includes several special forms, that implement behaviour above and beyond regular functions from the core library.
-
-#### Conditionals
+### Conditionals
 
 General-purpose Turing complete languages need some way of controlling conditional execution of code, and Convex Lisp is no exception. 
 
@@ -444,7 +440,7 @@ Conditionals branch based on whether the conditional expression evaluated is tru
 - A value is considered **falsey** if it is either the boolean value `false` or `nil`
 - Any other value is considered **truthy**, including the boolean value `true` but also `[]`, `1`, `:foo` etc.
 
-Why do we do this rather than only allowing booleans? Well, it turns out that in a lot of situations, you want to branch based on whether a result is `nil` or non-`nil` (e.g. when you want to look up a value in a database). We could force developers to do a `(nil? x)` check to coerce each such result into a boolean, but this adds overhead and boilerplate code. Instead, we make conditionals work with truthy and falsey values directly, so that such conversion code is usually unnecessary.
+Why? It turns out that in many situations, you want to branch based on whether a result is `nil` or non-`nil` (e.g. when you look up a key in a database, `nil` may represent the absence of a value). We could force developers to do a `(nil? x)` check, but this adds overhead and boilerplate code. Instead, we make conditionals work with truthy and falsey values directly, so that such conversion code becomes unnecessary. This convention is well established in other Lisps such as Common Lisp or Clojure.
 
 The `cond` special form works like `if`, but allows multiple tests, and can optionally provide a default result that will be returned if none of the previous tests succeed.
 
@@ -466,7 +462,7 @@ The `cond` special form works like `if`, but allows multiple tests, and can opti
 
 Implementation note: `if` is actually a macro that expands to a `cond` special form. So technically, `cond` is the lower level special form. In practice, it may be more convenient and intuitive to use `if`. Your choice, as always!
 
-#### Do blocks
+### Sequential `do` blocks
 
 The `do` special form groups a number of expressions into a single expression and returns the value of the last expression (or `nil` if there are zero expressions). Results from earlier expressions are discarded. 
 
@@ -488,7 +484,7 @@ The `do` form serves a similar purpose to a code block in many other languages. 
 
 Typically, the earlier expressions are included because they perform some side effect. There isn't much point executing some pure code that simply returns a value if you simply ignore it. Because of this, the presence of `do` in some Convex Lisp code is a strong hint that side effects may be happening.
 
-#### Let and local variables
+### Local variables with `let`
 
 The `let` special form allows you to define local variables in the scope of a code block. Apart from the local variable definition, a `let` block is similar to a `do` block.
 
@@ -497,7 +493,7 @@ The `let` special form allows you to define local variables in the scope of a co
 (let [x 10] (* x x))
 => 100
 
-;; You can define multiple local variables in one binding expression
+;; You can define multiple local variables with one binding vector
 (let [x 10
       y (* x x)] 
   (+ x y))
@@ -518,7 +514,7 @@ foo
 => 17
 ```
 
-You can also use `set!` to set the binding of a local variable. This value will last until the end of the current binding form (a surrounding `let` block, or returning from a function body).
+You can also use `set!` to modify the binding of a local variable. This value will last until the end of the current binding form (a surrounding `let` block, or returning from a function body).
 
 ```clojure
 (let [a 10]
@@ -664,14 +660,11 @@ The power of 'Code is Data' starts to become apparent when you realise that sinc
 => 24
 ```
 
-Hopefully, it is now clear why Lisp puts parentheses *before* the function name: it means that expressions can trivially be constructed as a single list, but prepending (`cons`) the desired function name to the list of arguments. Code generation becomes simple: just construct the expression you want!
+It is now clear why Lisp puts parentheses *before* the function name: expressions can be constructed as a single list, prepending the desired function to the list of arguments (often using `cons`). Code generation for arbitrary expressions becomes simple: just construct the code you want as a data structure!
 
-### SECURITY: Important note for `eval`
+### SECURITY: Take care with `eval`
 
 You should **NEVER** use `eval` on data from an untrusted source. It will be able to execute anything that you can in your environment - including helping itself with any coins and tokens controlled by your account. If you are unsure whether this is a risk or not, a good rule is that you should avoid using `eval` at all in any environment with economically valuable assets.
-
-
-
 
 ## Functional Programming
 

@@ -6,7 +6,7 @@ authors: [mikera, helins]
 tags: [convex, developer, lisp]
 ---
 
-In the Gentle Lisp Introduction we covered the basic of the Convex Lisp langauge. This guide build on these basic to introduce the key ideas of programming on the Convex CVM.
+In the Gentle Lisp Introduction we covered the basic of the Convex Lisp language. This guide build on these basic to introduce the key ideas of programming on the Convex CVM.
 
 ## The Convex Virtual Machine
 
@@ -83,7 +83,7 @@ As a simple example, here's a program that manages a database of "friend" accoun
 (add-friend #67)
 (add-friend #70)
 friends
-=> #{#70 #67}          ;; We have friends now!   :-)
+=> #{#70 #67}       ;; We have friends now!   :-)
 ```
 
 The significance of this capability cannot be understated:
@@ -94,15 +94,15 @@ The significance of this capability cannot be understated:
 
 ## Actors
 
-So far, we've looked at accounts managed by users. But accounts can also be CVM programs that are independent of any users. We call these actors in Convex because they act and respond autonomously in accordance with their code.
+So far, we've looked at accounts controlled by users. But accounts can also be CVM programs that are independent of any users. We call these actors in Convex because they act and respond autonomously in accordance with their code.
 
 Actors are critical because they can serve as trusted services shared by all users. This is often done so that actors can enforce **smart contracts**: self-executing contracts that are guaranteed to behave in predictable ways.
 
-Actors each get their own account on Convex. So an account implementing a smart contract might be `#1033`.
+Actors each get their own account on Convex. So an actor implementing a smart contract might be located at account address `#1033`.
 
-### Creating an Actor
+### Creating an actor
 
-To create an actor, you need to deploy some code to initialise the actor. The code is executed immedfiately after a new account for the actor is created and can be used to set up the environment of the actor, e.g. defining new values or functions.
+To create an actor, you need to deploy some code to initialise the actor. The code is executed immediately after a new account for the actor is created and can be used to set up the environment of the actor, e.g. defining new values or functions.
 
 ```clojure
 ;; Deploy an actor, returning the address of the new actor account
@@ -120,23 +120,21 @@ some-data
 
 Your initialisation code *MUST* set up any capabilities you want the actor to have in the future: once deployed, you may not be able to make any further changes if you make a mistake (although it is possible to make an actor upgradable... more on this later).
 
-### Calling Actor functions
+### Calling actor functions
 
-Actors are more than just containers for data - they can be active participants in transactions. To create an Actor that exposes executable functionality to others, you need to `export` one or more functions. The following example is an Actor that allows callers to get and set a value
+Actors are more than just containers for data - they can be active participants in transactions. To create an Actor that exposes executable functionality to others, you need to make functions `:callable`. The following example is an actor that allows callers to get and set a value
 
 ```clojure
 ;; define code for our Actor
 (def actor-code
   '(do
-     (def value :initial-value)
+     (def value :initial-value) ;; stateful data definition for this actor
      
-     (defn set [v]
-       (def value v))
+     (defn ^:callable set [v]
+       (set! value v))          ;; for safety: set! fails if `value` is not defined
        
-     (defn get []
-       value)
-       
-     (export get set)))
+     (defn ^:callable get []
+       value)))
 
 ;; Deploy the Actor and store the address as 'act' for convenient use later      
 (def act (deploy actor-code))
@@ -155,107 +153,120 @@ Actors are more than just containers for data - they can be active participants 
 
 This actor is pretty simple, but it demonstrates the key ideas:
 
-- An Actor is an autonomous program, with its own execution environment
-- You can export functions to allow users to interact with an Actor
+- An actor is an autonomous program, with its own execution environment
+- You can export functions to allow users to interact with an actor
 
-### Building parameterised actors with `defactor`
+Note you can also read the actor account's data directly by lookup. 
 
-Sometimes you want to pass parameters to construct an Actor. `defactor` lets you build an actor with parameters, and also provides some magic syntax to make declaring actors a bit more elegant:
+```
+act/value
+=> :new-value
+```
+
+This works, but is not recommended: you are making an assumption about how the actor is internally structured which might break if the actor ever gets updated. It is better to use a public `:callable` API to minimise this risk.
+
+### Sending funds to actors
+
+Like users, actor accounts can have their own balance of funds. 
+
+You can use the `transfer` function to transfer funds to an Actor. However, this causes a problem: what if the actor doesn't expect to receive funds, and there is no a facility to transfer the funds elsewhere? This can cause coins to be irrevocably lost.
+
+The better way to transfer funds is to "offer" them to the actor you are calling, which then has to actively `accept` the funds to acknowledge receipt. Thus, if coded correctly, there is no risk of funds being transferred that the receiving actor is unable to handle.
+
+Below is a simple example of an actor that accepts funds, keeps track of how much been donated to each charitable cause, and provides a payout mechanism to relay the funds to the given cause.
 
 ```clojure
-(defactor multiplier [x]
-  (defn calc [y]
-     (* x y))
-     
-  (export calc))
+(def charity-box (deploy '(
+  ;; a map of causes to donation amounts
+  (def all-donations {}) 
 
-;; deploy multipliers with different parameters
-(def times2 (deploy (multiplier 2)))
-=> #2601
-
-(def times3 (deploy (multiplier 3)))
-=> #2602
-
-;; test them out!
-(call times2 (calc 10))
-=> 20
-
-(call times3 (calc 10))
-=> 30
-```
-
-
-### Sending funds to Actors
-
-Like Users, Actor Accounts can have their own balance of funds. 
-
-You can use the `transfer` function to transfer funds to an Actor.However, this causes a problem: what if the Actor doesn't expect to receive funds, and there is no a facility to transfer the funds elsewhere? This can cause coins to be irrevocably lost.
-
-The better way to transfer funds is to "offer" them to the Actor you are calling, which then has to actively `accept` the funds to acknowledge receipt. Then, if coded correctly, there is no risk of funds being transferred that the receiving actor is unable to handle.
-
-Below is a simple example of an Actor that accepts funds, keeps track of how much each caller has donated, and provides a payout mechanism to relay the funds to the given cause.
-
-```
-(defactor donations [cause]
-  (assert (address cause)) ;; cause must cast to an address!
-
-  (def all-donations {}) ;; a map of donation amounts
-
-  (defn donate []
+  (defn ^:callable donate [cause]
     (let [donation *offer*]
       (if (> donation 0)
-        (let [past-donation (or (get all-donations *caller*) 0)]
-          (def all-donations (assoc all-donations *caller* (+ past-donation donation)))
-          (accept donation)
-          (return "Thanks for your donation")))))
+        (let [prev-donations (get all-donations cause 0)]
+          (accept donation) ;; take the offered amount
+          (set! all-donations (assoc all-donations cause (+ prev-donations donation)))
+          (return "Thanks for your donation"))
+        (fail :FUNDS "No donation offered!"))))
     
-  (defn payout []
-    (transfer cause *balance*))
-    
-  (export donate payout))
+  (defn ^:callable collect [cause]
+    (if (@convex.trust/trusted? cause *caller*)
+      (let [amt (get all-donations cause 0)]
+        ;; We need to clear the donations for the cause
+        (set! all-donations (dissoc all-donations cause))
+        ;; CEI Pattern implies interactions go last
+        (transfer *caller* amt))
+      (fail :TRUST "Not authorised to collect funds")))
+
+  ;; end of actor code    
+  )))
 ```
 
-To use this Actor, it needs to be deployed and then called with the offer amount as an extra parameter to `call`:
+To use this actor, it should be called with the offer amount as an extra parameter to `call`:
 
-```
+```clojure
 ;; A charity address that you want to be the beneficiary of donations
 (def charity #2055)
 
-;; Deploy the donations fund
-(def charity-fund (deploy (donations charity)))
-=> #2603
-
-;; Donate to charity
-(call charity-fund 100000 (donate))
+;; Donate 0.0001 Convex Gold to charity via an offer (2nd argument to `call`)
+(call charity-box 100000 (donate charity))
 => "Thanks for your donation"
 
-;; See who has donated so far!
-(lookup charity-fund 'all-donations)
-=> {#2599 100000}
+;; Sneakily look at how much is donated so far to each cause!
+charity-box/all-donations
+=> {#2055 100000}
+```
+
+This actor also make use of the powerful `convex.trust` library to control who is allowed to collect funds. The `cause` is actually a trust monitor that verifies whether a caller is authorised to make a collection of the donated funds. Unauthorised attempts will get rejected:
+
+```clojure
+;; try to collect funds
+(call charity-box (collect charity))
+=> Exception: :TRUST Not authorised to collect funds
+```
+
+However if the account `#2055` itself attempted to collect the funds, it would receive the full donated amount, since `convex.trust` specified that an account always trusts itself by default:
+
+```clojure
+;; try to collect funds as account #2055
+(call charity-box (collect #2055))
+=> 100000
 ```
 
 ### Important security note for Actors
 
-Actor code runs in the Account of the actor itself. In many circumstances, calling Actor code can be considered "safe" in the sense that it cannot in general access assets owned by the calling account. However, there are some risks that you should be aware of:
+Actor code runs in the account of the actor itself. In many circumstances, calling actor code can be considered "safe" in the sense that it cannot in general access assets owned by the calling account. However, there are some risks that you should be aware of:
 
-- If you make an Actor call, you are still liable for paying any transaction fees (and memory usage) associated with running actor code. If this is a concern, you should evaluate the Actor code to determine if there is any risk of high transaction fees (or set an appropriate transaction fee limit).
-- An Actor may call other Actors. This can open up a "re-entrancy attack" if the Actor calls back into other code that you were not expecting (may change the state of other actors for example) and invalidate some assumptions about the state of other Actors that you previously made. If you consider this a risk, calling an Actor, especially an unknown / untrusted one, should usually be the *last* thing you do in a transaction.
-- An Actor may "accept" Convex Coins or other digital assets that have been offered to it. Only offer assets to an Actor that you intend to call if you are comfortable that the Actor may claim these assets. 
+- If you make an actor call, you are still liable for paying any transaction fees (and memory usage) associated with running actor code. If this is a concern, you should evaluate the actor code to determine if there is any risk of high transaction fees (or set an appropriate transaction fee limit).
+- An actor may call other actors. This can open up a "reentrancy attack" if the Actor calls back into other code that you were not expecting (may change the state of other actors for example) and invalidate some assumptions about the state of other Actors that you previously made. If you consider this a risk, calling an actor, especially an unknown / untrusted one, should usually be the *last* thing you do in a transaction.
+- An actor may "accept" Convex Coins or other digital assets that have been offered to it. Only offer assets to an actor if you are comfortable that the actor will only attempt to claim these assets legitimately. 
 	
 ## Libraries
 
-In most programming environments, it is helpful to bundle up code into libraries that can be shared and re-used. Convex Lisp is no exception, but takes a novel approach: Libraries are simply Actors!
+In most programming environments, it is helpful to bundle up code into libraries that can be shared and re-used. Convex Lisp is no exception, but takes a novel approach on the CVM: Libraries are just actor accounts that don't do anything other than provide usable code.
 
 This approach is powerful because:
 
 - We make use of Convex as a global repository for libraries
-- You can deploy libraries in the same way as you deploy Actors - no special tools needed!
-- Libraries get all the same security and management guarantees as Actors
-- You can use the library functionality to access Actors
+- You can deploy libraries in the same way as you deploy actors - no special tools or treatment needed!
+- Libraries get all the same security and management guarantees as actors
+- You can use library functionality to access actors and vice versa
 
 ### Using libraries
 
-Using libraries is easy! All you need to do is:
+Using libraries is easy! All you need to do is call code in the library account:
+
+```clojure
+(#567858/some-function arg1 arg2)
+```
+
+If the library is registered in CNS, you can also use its CNS name symbol to resolve the address:
+
+```clojure
+(@convex.fungible/balance MY-TOKEN)
+```
+
+If you use a library regularly, you may find it convenient to import it and give in an alias (which is just a definition in your environment that points to the library address).
 
 - `import` the library using its Address or CNS name and give it a convenient alias e.g. `foo`
 - Use symbols defined in the library by prefixing the symbol name with the alias e.g. `foo/bar`
