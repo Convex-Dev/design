@@ -11,7 +11,7 @@ Some answers to common questions can be found here.
 
 Yes! Convex is free for anyone to use and build applications upon, and always will be. We are building Convex for everyone to support the Internet of Value.
 
-To make use of the resources of the network, small transaction fees are charged using Convex Coins, which is the native utility token of the network. This is important for serveral reasons:
+To make use of the resources of the network, small transaction fees are charged using Convex Coins, which is the native utility token of the network. This is important for several reasons:
 
 - Compensate those who provide important secure infrastructure to the network (i.e. peer operators)
 - Prevent denial of service attacks by people flooding the network with wasteful transactions. This makes it very expensive to launch such attacks.
@@ -64,7 +64,7 @@ It is a good idea to **keep data structures as simple as possible**. Ideally, Ac
 
 ## Is Convex a Blockchain?
 
-Think of Convex and the undelying lattice technology as "beyond blockchain".
+Think of Convex and the underlying lattice technology as "beyond blockchain".
 
 Convex shares many common attributes with traditional public blockchains:
 
@@ -97,6 +97,8 @@ A variant of Lisp was chosen as the initial language for the CVM for a few reaso
 - Lisp is a highly expressive language for interactive development, with a long history of REPL-based usage. We feel this is ideal for a platform where we want developers to be instantly productive and able to interact directly with the system in real-time.
 
 Paul Graham's essay [Beating the Averages](http://www.paulgraham.com/avg.html) is an interesting perspective on the advantages of Lisp for building a business. Despite dating from 2001, we feel many of these points still stand today and are very relevant for people wanting to build applications using Convex.
+
+For more information see the tutorial section for [Convex Lisp](/docs/tutorial/convex-lisp/convex-lisp)
 
 
 ## What is Memory Accounting?

@@ -89,6 +89,12 @@ const config: Config = {
         },
         {
           type: 'docSidebar',
+          sidebarId: 'productsSidebar',
+          position: 'left',
+          label: 'Products',
+        },
+        {
+          type: 'docSidebar',
           sidebarId: 'cadsSidebar',
           position: 'left',
           label: 'CADs',
@@ -151,8 +157,9 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Convex Foundation. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.oceanicNext,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.vsLight,
+      darkTheme: prismThemes.vsDark,
+      additionalLanguages: ['powershell','clojure','java']
     },
   } satisfies Preset.ThemeConfig,
 };

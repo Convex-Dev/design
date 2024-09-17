@@ -113,11 +113,11 @@ The CVM is a highly optimised execution engine. Some notable points:
 - CVM code is compiled down to efficient "Ops", where a typical transaction might require 10-50 Ops to be executed. This is effectively the "machine code" of the JVM, and corresponds to operations typical in an implementation of the Lambda Calculus - because of the power of the lambda calculus, we usually require fewer Ops than the equivalent for a stack-based machine
 - We can rely on the JVM JIT to further compile key code paths down to efficient native code
 
-The `OpBenckmark` is a microbenchmark of several different groups of Ops, and demonstrates that up to hundreds of millions of Ops can be executed per second on a single thread:
+The `OpBenchmark` is a microbenchmark of several different groups of Ops, and demonstrates that up to hundreds of millions of Ops can be executed per second on a single thread:
 
 ```
 Benchmark                          Mode  Cnt          Score           Error  Units
-OpBenchmark.constant              thrpt    5  522926192.803 ± 200159991.331  ops/s     (a single Contsant op)
+OpBenchmark.constant              thrpt    5  522926192.803 ± 200159991.331  ops/s     (a single Constant op)
 OpBenchmark.emptyLoop             thrpt    5       2180.943 ±       118.609  ops/s     (a loop executing 1000 times)
 OpBenchmark.simpleSum             thrpt    5    8336440.019 ±    444054.388  ops/s     (a sum involving dynamic lookup, 4 Ops)
 OpBenchmark.simpleSumPrecompiled  thrpt    5   21846062.388 ±   1823368.198  ops/s     (a sum with constants, 4 Ops)

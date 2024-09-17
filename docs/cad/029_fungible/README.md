@@ -11,13 +11,13 @@ Typical use cases for fungible tokens might include:
 - Quantities of some resource in a game or metaverse
 - Reputation points
 
-Note: This CAD represents the Convex replacement for ERC20 / ERC777 on Ethereum
+This CAD represents the Convex replacement for ERC20 / ERC777 on Ethereum
 
 ## Specification
 
 ### CAD19 Compliance
 
-A fungible token MUST meet all the specifications for a compatible CAD19 asset, in addition to the requirements specified here.
+A fungible token MUST meet all the specifications for a compatible CAD19 asset, as well as the mandatory requirements specified in this CAD.
 
 ### Balances
 
