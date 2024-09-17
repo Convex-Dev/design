@@ -20,7 +20,7 @@ Using the [Sandbox](/sandbox) is the easiest way to experience Convex Lisp. We r
 
 ## Lisp expressions
 
-All Lisp code is contructed from expressions, which can be evaluated to get a resulting value (or maybe an error, if something went wrong...). The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elemenst are the arguments. So to add two numbers with the `+` function you would do something like:
+All Lisp code is constructed from expressions, which can be evaluated to get a resulting value (or maybe an error, if something went wrong...). The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elemenst are the arguments. So to add two numbers with the `+` function you would do something like:
 
 ```clojure
 (+ 2 3)

@@ -505,7 +505,7 @@ In this simple case, the new Consensus is confirmed within just three rounds of 
 
 In more complex cases:
 
-* Multiple Peers may propose Blocks at the same time. In this case, stake-weighted voting would be used to resolve conflicts and determine which Blocks are included first. It may take an additional round or two to resolve such conflicts into a stable Ordering. Overall, this is more efficient since multiple Blocks are being brought into Consensus in a similar toatl number of rounds.
+* Multiple Peers may propose Blocks at the same time. In this case, stake-weighted voting would be used to resolve conflicts and determine which Blocks are included first. It may take an additional round or two to resolve such conflicts into a stable Ordering. Overall, this is more efficient since multiple Blocks are being brought into Consensus in a similar total number of rounds.
 * The network might not reach a quiescent state before further new Blocks are added. This is not an issue: consensus will be confirmed for the initial Block(s) while the new Blocks are still being propagated at earlier stages.
 * Some Peers might misbehave or be temporarily unavailable. Again, this is not a problem as long as a sufficient number of Good Peers are still operating and connected, since the consensus thresholds can still be met. Temporarily disconnected or offline Peers can "catch up" later.
 * The Peer Network may not be fully connected, potentially adding `O(log(number of peers))` additional rounds of propagation assuming that each Peer propagates to a small constant number of other Peers in each time period. In practice, not all these additional rounds may be needed because a smaller number of highly staked and well-connected Peers will be able to confirm consensus without waiting for the rest of the Network.
@@ -1007,7 +1007,7 @@ To solve the state growth problem, Convex implements **Memory Accounting** with 
 
 **Note 1**: that in practice, the actual storage size of the CVM state will be significantly smaller than the tracked state size, because the use of immutable persistent data structures allows many equal tree branches to be shared. The effectiveness of this structural sharing needs to be observed over time, but we anticipate perhaps a 2-3x reduction in state size may be possible in the long term.
 
-**Note 2**: Observant system hackers may notice that the memory accounting mechanism means that if Account A causes some memory to be allocated, and Account B causes that same memory to be de-allocated (e.g., through the use of calls to an Actor), then Account B will gain memory from A. We consider this a feature, not a bug: It incentivises participants to clean up state wherever possible and incentivises the writers of Actor code to consider their memory allocations and deallocations carefully.
+**Note 2**: Observant system hackers may notice that the memory accounting mechanism means that if Account A causes some memory to be allocated, and Account B causes that same memory to be de-allocated (e.g., through the use of calls to an Actor), then Account B will gain memory from A. We consider this a feature, not a bug: It incentivises participants to clean up state wherever possible and encourages the writers of actor code to consider their memory allocations and deallocations carefully.
 
 To ensure correct economic behaviour, it is necessary for free memory to have an economic cost. Therefore, Convex provides a **Memory Exchange** though which memory allocations may be traded. This has the following features:
 

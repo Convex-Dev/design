@@ -1,6 +1,6 @@
 # Convex CLI
 
-The Convex CLI (Command Line Interface) is a powerful tool for interacting with Convex from the command line on Windows, Linux and MacOS. It's a handy tool for system administartors and peer operators who need to script interactions with the Convex Network.
+The Convex CLI (Command Line Interface) is a powerful tool for interacting with Convex from the command line on Windows, Linux and MacOS. It's a handy tool for system administrators and peer operators who need to script interactions with the Convex Network.
 
 ![Convex CLI Screenshot](convex-cli.png)
 
@@ -24,7 +24,7 @@ To run the CLI, you simply need to run the following:
 java -jar convex.jar <arguments>
 ```
 
-It is usually more conveninet to have a script, alias or batch file which executes the Java command. This means that you can simply type `convex ....` from any directory to access the CLI. The remainder of this document assumes you are using such a script.
+It is usually more convenient to have a script, alias or batch file which executes the Java command. This means that you can simply type `convex ....` from any directory to access the CLI. The remainder of this document assumes you are using such a script.
 
 ### Windows
 

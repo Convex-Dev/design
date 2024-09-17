@@ -30,9 +30,9 @@ Expansion is the second phase of the compiler. Expansion takes the raw form data
 '(foo :bar :baz) -> <Syntax Object>
 ```
 
-In this phase, any macros are applied to the forms analyzed, which has the effect of replacing them with the macro expansion.
+In this phase, any macros are applied to the forms analysed, which has the effect of replacing them with the macro expansion.
 
-This means that arbitrary CVM code in macros *can* be executed during expansion - which in turn can be sometimes useful, e.g. in smart contract code that wishes to generate code based on analyzing the CVM state.
+This means that arbitrary CVM code in macros *can* be executed during expansion - which in turn can be sometimes useful, e.g. in smart contract code that wishes to generate code based on analysing the CVM state.
 
 Phase 2 expansion can be performed either on-chain or off-chain.
 

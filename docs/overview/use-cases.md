@@ -11,7 +11,7 @@ Convex is a general purpose, programmable decentralised network with global stat
 Convex offers a uniquely powerful system for the development of tokenised assets and applications. Tokens in Convex usually support the [CAD029](cad/029_fungible/README.md) token standard, which offers multiple advantages over the common ERC20 standard.
 
 Tokens can be used for:
-- Payments in the form of stablecoins, flatcoins, nationcoins or other digital curreny types
+- Payments in the form of stablecoins, flatcoins, nationcoins or other digital currency types
 - Utility tokens for delivery of decentralised services
 - Reward schemes and bonus programmes
 - Governance of decentralised economic systems, e.g. with stake-weighted voting

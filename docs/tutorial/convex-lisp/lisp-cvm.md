@@ -10,7 +10,7 @@ In the Gentle Lisp Introduction we covered the basic of the Convex Lisp language
 
 ## The Convex Virtual Machine
 
-The CVM is a denctralised, deterministic VM. Because it is deterministic, any replicas of the CVM that execute the same transactions from the same initial state will produce identical results. This is a key part how the Convex network is able to provide a consistent, programmable global state. It also enforces cryptographic security, so that only authorised users can make use of protected services.
+The CVM is a decentralised, deterministic VM. Because it is deterministic, any replicas of the CVM that execute the same transactions from the same initial state will produce identical results. This is a key part how the Convex network is able to provide a consistent, programmable global state. It also enforces cryptographic security, so that only authorised users can make use of protected services.
 
 In practice, this means that developers can execute code on the CVM safe (including smart contracts and transactions involving valuable digital assets) in the knowledge that the the results are guaranteed by a robust, fault-tolerant global network with no centralised point of failure and strong security.
 
@@ -233,7 +233,7 @@ However if the account `#2055` itself attempted to collect the funds, it would r
 => 100000
 ```
 
-### Important security note for Actors
+### Important security note
 
 Actor code runs in the account of the actor itself. In many circumstances, calling actor code can be considered "safe" in the sense that it cannot in general access assets owned by the calling account. However, there are some risks that you should be aware of:
 
@@ -282,9 +282,9 @@ If you use a library regularly, you may find it convenient to import it and give
 
 ### Deploying libraries
 
-Deploying libraries is just like deploying an Actor, with a few key differences to note:
+Deploying libraries is like deploying an Actor, with a few key differences to note:
 
-- You don't need to `export` any functions (unless you really want to enable `call`)
+- You don't need to make any functions `:callable`
 
 ```clojure
 (def my-lib-address 
@@ -298,12 +298,19 @@ Deploying libraries is just like deploying an Actor, with a few key differences 
 => 5.0
 ```
 
-### Important security note for libraries
+### Important security note
 
 A key difference between a `call` to an Actor function and running library code is the difference in *security context*:
 
-- An Actor `call` runs code in the Actor's environment, with the Actor itself the current `*address*` (and the calling Account as `*caller*`)
-- Library code runs in the environment of the current Account, i.e. `*address*` is unchanged
+- An actor `call` runs code in the actor's account and environment, with the actor itself as the current `*address*` (and the calling account as `*caller*`)
+- Library code runs in the environment of the current account, i.e. `*address*` is unchanged
 
-As a result of this: **DO NOT RUN LIBRARY CODE YOU DO NOT TRUST**. Library code can do anything that your Account can, including transferring away all your coins and tokens, or calling arbitrary smart contracts. If you have any doubt about the trustworthiness of library code, do not use it from an Account that controls any valuable assets.
+**DO NOT RUN LIBRARY CODE YOU DO NOT TRUST**. Library code executed in your account can do anything that your account can, including transferring away all your coins and tokens, or entering into arbitrary smart contracts on your behalf. If you have any doubt about the trustworthiness of library code, do not use it from an account that controls any valuable assets or resources.
+
+If you don't trust a library but also don't expect it to make any state changes, you can wrap a call in `query` which will roll back any state changes made and just return the result. This is mostly safe since any malicious state changes will be undone (though beware that the library might still return malicious results, or deliberately burn juice to hit you with transactions fees...)
+
+```clojure
+(query (untrusted-library/dangerous-function))
+=> "This is the result"
+```
 
