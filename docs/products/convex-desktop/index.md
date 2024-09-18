@@ -1,13 +1,12 @@
 # Convex Desktop
 
-The Convex CLI (Command Line Interface) is a powerful tool for interacting with Convex from the command line on Windows, Linux and MacOS. It's a handy tool for system administrators and peer operators who need to script interactions with the Convex Network.
+Convex Desktop is a GUI tool for interacting with Convex. Designed for developers and power users, it puts all the capabilities of Convex at your fingertips.
 
-```
 ![Convex Desktop Screenshot](convex-desktop.png)
-```
+
 ## Installation
 
-The Convex Desktop requires:
+Convex Desktop requires:
 - A recent version of Java (21+, Java 22 recommended)
 - A GUI based operating system (e.g. Windows, Linux or MacOS)
 - A copy of the `convex.jar` executable jar file
