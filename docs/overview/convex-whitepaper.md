@@ -1,5 +1,5 @@
 ---
-title: White Paper
+title: Convex White Paper
 authors: [convex]
 tags: [convex, technology]
 permalink: white-paper
@@ -315,7 +315,7 @@ Convex eschews the idea of selecting a leader. We maintain the principle that **
 - Blocks can be **independent of all previous Blocks** - they do not necessarily form a "chain" linked by cryptographic hashes.
 - It is possible for multiple Peers to propose Blocks **concurrently** for inclusion in consensus at the same time. This removes a major bottleneck compared to systems that require on some form of sequential leadership e.g. ??????.
 
-An Ordering includes all Blocks up to the current Consensus Point.  A Peer may propose a novel Block for consensus by appending it to the Ordering plus additional Blocks remaining to be confirmed in consensus. 
+An ordering includes all blocks up to the current consensus point. A peer may propose a novel block for consensus by appending it to the ordering (alongside any other additional blocks still to be confirmed in consensus). 
 
 #### Convergent Consensus
 
@@ -338,9 +338,9 @@ The Ordering of one or more other peers could be removed by from the Belief of a
 
 During the convergence process conflicts in proposed block Orderings from different Peers are resolved by a system of convergent stake-weighted voting. [A diagram would be really helpful here] At each belief merge step, peers compute the total share of stake voting for each proposed block in the next position after the current Consensus Point. Peers have a view of the Orderings proposed by all other Peers. 
 
-Stake-weighted voting is applied iteratively to future proposed blocks, but only counting the votes by peers that have supported the winning ordering up to this point. Supporting a minority block causes peers to be temporarily excluded from the considered vote in following blocks. Peers that vote for orderings inconsistent with the majority cannot influence the ordering of any subsequent blocks.
+Stake-weighted voting is applied iteratively to future proposed blocks, but only counting the votes by peers that have supported the winning ordering up to this point. Supporting a minority block causes peers to be temporarily excluded from the vote on following blocks. Peers that vote for orderings inconsistent with the majority cannot influence the ordering of any subsequent blocks. There is therefore an incentive for peers to adopt an ordering consistent with the majority.
 
-Once the overall winning ordering has been determined, any peer can append any new Blocks it wishes to propose, adopting this ordering as its own proposal. This ordering is signed and incorporated into the pPeer's own belief, which is then propagated onwards to other peers.
+Once the overall winning ordering has been determined, any peer can append any new blocks it wishes to propose, adopting this ordering as its own proposal. This ordering is signed and incorporated into the peer's own belief, which is then propagated onwards to other peers.
 
 As an illustration, consider three Peers that are initially in consensus with respect to an ordering of blocks `XXXX` but peers `A` and `B` propose new blocks `Y` and `Z`:
 
@@ -772,7 +772,7 @@ The CVM therefore constrains **time**, **space** and **depth**.
 
 Convex constrains time by placing a "juice cost" on each CVM operation performed. Any transaction executed has a "juice limit" that places a bound on the total amount of computational work that can be performed within the scope of the transaction.
 
-The originating account for a transaction must reserve juice by paying an amount `[juice limit] x [juice price]` at the start of the transaction. Any unused juice at the end of the transaction is refunded at the same rate. The juice price a dynamically varying price that adjusts with amount of execution performed per unit time by the Convex network as a whole: this is a cryptoeconomic mechanism to disincentivise transactions from being submitted at peak periods, and as a protection from DoS attacks by making it prohibitively expensive to flood the compute capacity of the network for a sustained period of time.
+The originating account for a transaction must reserve juice by paying an amount `[juice limit] x [juice price]` at the start of the transaction. Any unused juice at the end of the transaction is refunded at the same rate. The juice price is a dynamically varying price that adjusts with the amount of load on the Convex network as a whole: this is a cryptoeconomic mechanism to disincentivise transactions from being submitted at peak periods, and as a protection from DoS attacks by making it prohibitively expensive to flood the compute capacity of the network for a sustained period of time.
 
 If the juice limit has been exceeded, the CVM terminates transaction execution with an exception, and rolls back any state changes. No juice is refunded in such a situation - this penalises users who attempt excessive resource consumption either carelessly or maliciously.
 
@@ -1054,15 +1054,15 @@ Memory Consumption is computed at the end of each transaction, and is defined as
 
 `Memory Consumption = [CVM State Size at end of Transaction] - [CVM State Size at start of Transaction]` 
 
-If a transaction has zero Memory Consumption, it will complete normally with no effect from the Memory Accounting subsystem
+If a transaction has zero memory consumption, it will complete normally with no effect from the memory accounting subsystem
 
-If a transaction would complete normally, but has a positive Memory Consumption, the following resolutions are attempted, in this order:
+If a transaction would complete normally, but has a positive memory consumption, the following resolutions are attempted, in this order:
 
-1. If the user has sufficient Allowance, the additional memory requirement will be deducted from the allowance, and the transaction will complete normally
+1. If the user has sufficient allowance, the additional memory requirement will be deducted from the allowance, and the transaction will complete normally
 2. If the transaction execution context has remaining juice, and attempt will be made to automatically purchase sufficient memory from the Memory Exchange. The maximum amount paid will be the current juice price multiplied by the remaining juice for the transaction. If this succeeds, the transaction will complete successfully with the additional memory purchase included in the total juice cost.
 3. The transaction will fail with a MEMORY Error, and any state changes will be rolled back. The User will still be charged the juice cost of the transaction
 
-If a transaction has negative Memory Consumption, the memory allowance of the user will be increased by the absolute size of this value. In effect, this is a refund granted for releasing storage requirements.
+If a transaction has negative memory consumption, the memory allowance of the user will be increased by the absolute size of this value. In effect, this is a refund granted for releasing storage requirements.
 
 
 #### Allowance transfers
@@ -1077,7 +1077,7 @@ It is permissible to make an allowance transfer directly between accounts. This 
 
 #### Actor Considerations
 
-All Accounts, including actors, have a memory allowance. However, in most cases actors have no use for a memory allowance: any memory consumed during interaction with an actor will be accounted for via the user account account that originated the transaction.
+All Accounts, including actors, have a memory allowance. However, in most cases actors have no need for a memory allowance: any memory consumed during interaction with an actor will be accounted for via the user account account that originated the transaction.
 
 One exception to this is with scheduled execution, where an actor itself may be the origin for a transaction.
 

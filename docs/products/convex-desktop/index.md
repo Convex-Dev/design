@@ -1,3 +1,10 @@
+---
+title: Convex Desktop
+authors: [convex]
+tags: [convex]
+sidebar_position: 0
+---
+
 # Convex Desktop
 
 Convex Desktop is a GUI tool for interacting with Convex. Designed for developers and power users, it puts all the capabilities of Convex at your fingertips.
