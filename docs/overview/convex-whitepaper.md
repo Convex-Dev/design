@@ -2,6 +2,7 @@
 title: White Paper
 authors: [convex]
 tags: [convex, technology]
+permalink: white-paper
 ---
 # Convex White Paper
 
