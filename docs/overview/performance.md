@@ -9,6 +9,9 @@ We care primarily about two different measurements of performance:
 
 Convex performance is based around a key idea: We implement consensus using a **CRDT** (conflict-free replicated data type) where the Peers achieve consensus by simply sharing a Belief data structure which is repeatedly merged with other Beliefs to form consensus. CRDTs are guaranteed to eventually converge to a consistent value under reasonable assumptions, which gives the desired properties of safety and liveness to the network. Peers, therefore, have a simple primary task: merge and propagate new beliefs to the network as quickly as possible.
 
+Here are some performance figured validated in the EU's Next Generation Internet (NGI) OntoChain Project. 
+![CompareETH2](https://github.com/user-attachments/assets/0ed23d0b-85dc-4aa6-91f7-8fc6903bcf40)
+
 
 ## Latency
 
