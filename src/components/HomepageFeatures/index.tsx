@@ -10,31 +10,29 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Lattice Technology',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Convex is the easiest way to create decentralised applications.
+        The Lattice is the innovation at the heart of Convex - decentralised, infinitely scalable, cryptographically secure. 
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Developer Power',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Convex gives developers superpowers: fully interactive REPL development and the power of "One Line DeFi"
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Blazing Performance',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        With zero block delay and near-instant transaction confirmation, you can build the perfect experience for your users. 
       </>
     ),
   },
