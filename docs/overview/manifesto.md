@@ -228,7 +228,7 @@ Initially, the governance role will be performed by the Convex Foundation, a non
 In the longer term, we will implement decentralised governance. This will happen once we have sufficient confidence that it is practical to implement, secure against plausible threats and fully serves the interest of Convex users and society as a whole.
 
 Key governance roles include:
-- Authorising official updates to the peer network / protocol
+- Authorising official updates to the peer network or protocol
 - Preventing forks in the global state: the entire point of a global state is to act as a single source of truth. As a public utility that records important economic information on a decentralised basis, the network must avoid forks  since these present a significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
 - Ensuring that issuance of Convex Coins is fair, secure and consistent with out principles of rewarding ecosystem contribution
 
