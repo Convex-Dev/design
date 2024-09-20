@@ -14,19 +14,19 @@ The Peer Container is packaged as a docker container available on DockerHub
 
 The latest version is general available in docker as `convexlive/convex:latest`
 
-To run the peer container locally, you will need to install [Docker]()
-
 ## Running a Peer Container
 
 Running the Peer Container is a one-liner:
 
 ```bash
-docker run --name my-peer -d convexlive/convex:latest -p 8080:8080
+docker run --name my-peer -d convexlive/convex:latest -p 8080:8080 -p 18888:18888
 ```
 
-This will run a default peer, with port 8080 mapped.
+This will run a default test peer, with ports mapped as follows:
+- `8080` mapped for REST API access
+- `18888` for the Convex peer protocol (other peers and binary clients)
 
-However, to operate a peer effectively some configuration is required.
+However, to operate a peer effectively some configuration is usually required.
 
 ### SSL Certificates
 
