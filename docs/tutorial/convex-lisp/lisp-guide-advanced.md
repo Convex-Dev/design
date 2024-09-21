@@ -10,7 +10,7 @@ If you've got this far, you may be interested in some of the more advanced featu
 
 ## Compiler Phases
 
-How does 'Code as Data' actually work? The secret is in understanding the phases of the Convex Lisp compiler
+How does 'Code as Data' actually work? The secret is in understanding the phases of the Convex Lisp compiler.
 
 ### 1. Reading
 
@@ -67,15 +67,15 @@ The final phase is execution, where Ops are executed in the CVM context. The Op 
 <Old CVM State> + <Op> => <New CVM State> + <Result>
 ```
 
-Results from Op execution must be either:
+Results from Op execution can be either:
 
 - A valid CVM data object
 - An exceptional result (e.g. an error or early return value)
 
 Convex Ops are technically a form of [p-code](https://en.wikipedia.org/wiki/P-code_machine), analogous in many ways to Java bytecode. Using Ops gives a few big advantages:
 
-- Ops can be executed very efficiently many times (avoiding the more expensive phases of parsing, expansion and compilation).
-- Ops are very compact in terms of memory used - making them ideal for network transmission and efficient usage of on-chain storage.
+- Ops can be executed efficiently many times (avoiding the more expensive phases of parsing, expansion and compilation).
+- Ops are very compact in terms of memory used - making them ideal for network transmission and efficient use of on-chain storage.
 - We can improve the underlying performance and implementation details of the CVM without breaking CVM code that has been compiled to Ops.
 - Ops are designed to match up with the runtime and security checks that the CVM must perform when executing code securely on-chain.
 
