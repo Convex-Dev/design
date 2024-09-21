@@ -15,7 +15,7 @@ We adopt immutability for all values in Convex. Immutability is important for se
 - Easier to reason about immutable values, especially with pure functions
 - Better suited for concurrency
 
-Mutability may occur as an implementation detail (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the encoding of values). 
+Mutability may occur as an implementation detail (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the encoding of values or CVM behaviour). 
 
 A useful presentation on the topic: https://www.infoq.com/presentations/Value-Values/
 
@@ -31,7 +31,7 @@ Where input to Convex may be effectively unbounded (e.g. the size of data struct
 
 ### Security First
 
-Convex supports high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
+Convex supports high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects that might place digital assets at risk.
 
 We SHOULD use existing, proven algorithms and cryptography wherever practical: there is no need to "reinvent the wheel" in crypto.
 
