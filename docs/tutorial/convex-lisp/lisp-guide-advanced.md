@@ -6,7 +6,7 @@ authors: [mikera, helins]
 tags: [convex, developer, lisp]
 ---
 
-If you've got this far, you may be interested in some of the more advanced features of Convex Lisp. This section is intended for people who want to know more about how Convex Lisp work, and how it integrated with the capabilities of the CVM.
+If you've got this far, you may be interested in some of the more advanced features of Convex Lisp. This section is intended for people who want to know more about how Convex Lisp works.
 
 ## Compiler Phases
 
@@ -20,31 +20,32 @@ Reading is the first phase that parses source code as text into CVM data structu
 "(foo :bar :baz)" -> '(foo :bar :baz)
 ```
 
-The Convex Lisp parser is part of the Convex platform code but technically outside the scope of the CVM - there's no good reason for doing parsing on-chain when it can be performed easily and cheaply by clients. This means that you can't parse code from Strings on-chain, but this isn't a significant limitation: you can just parse off-chain and pass in the resulting data structure (skipping Phase 1)
+The Convex Lisp reader is part of the Convex platform code but technically outside the scope of the CVM - there's no good reason for doing parsing on-chain when it can be performed easily and cheaply by clients. This means that you can't parse code from Strings on-chain, but this isn't a significant limitation: you can just parse off-chain and pass in the resulting data structure (skipping Phase 1)
 
 ### 2. Expansion
 
-Expansion is the second phase of the compiler. Expansion takes the raw form data structures and translates them into Syntax Objects, which are a representation of the Convex Lisp Abstract Syntax Tree (AST)
+Expansion is the second phase of the compiler. Expansion takes the raw form data structures and translates them into expanded forms, which are a representation of the Convex Lisp Abstract Syntax Tree (AST)
 
 ```clojure
-'(foo :bar :baz) -> <Syntax Object>
+(expand '(if :bar :baz)) 
+=> (cond :bar :baz)
 ```
 
 In this phase, any macros are applied to the forms analysed, which has the effect of replacing them with the macro expansion.
 
 This means that arbitrary CVM code in macros *can* be executed during expansion - which in turn can be sometimes useful, e.g. in smart contract code that wishes to generate code based on analysing the CVM state.
 
-Phase 2 expansion can be performed either on-chain or off-chain.
+Expansion can be performed either on-chain (with the `expand` core function) or off-chain.
 
 ### 3. Compilation
 
 In the third phase, Syntax Objects are *compiled* into *Ops*, which are the low-level instructions that can be executed by the CVM.
 
 ```clojure
-<Syntax Object> -> <Op>
+<expanded-form> -> Op
 ```
 
-There are only a small number of Op types on the CVM, which are roughly based on the fundamental operations required to implement the [Lambda Calculus](https://en.wikipedia.org/wiki/Lambda_calculus). Currently, these are:
+There are only a small number of Op types on the CVM, which are roughly based on the fundamental operations required to implement the [Lambda Calculus](https://en.wikipedia.org/wiki/Lambda_calculus). Important ones are:
 
 - **Cond** - Performs a conditional branch
 - **Constant** - Loads a constant value
@@ -78,6 +79,33 @@ Convex Ops are technically a form of [p-code](https://en.wikipedia.org/wiki/P-co
 - Ops are very compact in terms of memory used - making them ideal for network transmission and efficient use of on-chain storage.
 - We can improve the underlying performance and implementation details of the CVM without breaking CVM code that has been compiled to Ops.
 - Ops are designed to match up with the runtime and security checks that the CVM must perform when executing code securely on-chain.
+
+## Destructuring
+
+It is common that data is passed in a data structure, and you wish to access specific elements of the structure. Convex supports basic destructuring of sequential data structures:
+
+```clojure
+(defn name [user]
+  (let [[name age attributes & flags] user]
+    name))
+
+(name ["Bob" 67 {:favourite-colour "Green"} :some-extra-flag])
+ => "Bob"
+```
+
+The `&` symbol can be user to indicate an arbitrary number of following elements. Such elements are bound as a single vector.
+
+```clojure
+(defn restargs [_ & more]
+  more)
+
+(restargs 1 2 3 4)
+ => [2 3 4]
+```
+
+The `_` symbol is used to ignore an argument. Nothing is bound for the corresponding position.
+
+While often convenient, destructuring can make code harder to read, so use judiciously.
 
 ## Macros
 
