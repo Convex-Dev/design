@@ -1,25 +1,27 @@
 # CAD000: Design Principles
 
-This document details general design and engineering principles deployed in the implementation and documentation of Convex.
+We are building a platform for global decentralised computation and data, based on lattice technology and as a shared public utility network. As such, we are developing a set of open standards based on sound principles and values that will serve the long term vision.
+
+This document details general design and engineering principles deployed in the implementation and documentation of Convex. All CADs should refer to and align with these principles.
 
 ## Technical Principles
 
 ### Values are Immutable
 
-We adopt immutability as a standard principle for all values in Convex. Immutability is important for several reasons:
+We adopt immutability for all values in Convex. Immutability is important for several reasons:
 
 - Enables hash codes to be used for value identity (value IDs) - essential for content-addressable storage
-- Enables structural sharing in persistent data structures
+- Enables structural sharing in persistent data structures, especially when shared on the lattice
 - Easier to reason about immutable values, especially with pure functions
 - Better suited for concurrency
 
-Mutability in implementations is permitted (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the Encoding of Values). 
+Mutability in implementations is permitted (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the encoding of values). 
 
-An important presentation on the topic: https://www.infoq.com/presentations/Value-Values/
+A useful presentation on the topic: https://www.infoq.com/presentations/Value-Values/
 
 ### Bounded Resources
 
-We are building a system for distibuted computation and data in the context of a global internet where many parties with access to the Convex network may be untrusted.
+We are building a system for distributed computation and data in the context of a global internet where many parties with access to the Convex network may be untrusted.
 
 It is therefore necessary to place a bound on the size of resources used. This is essential to ensure that the CVM does not ever attempt to process data of unbounded size, which could allow DoS attacks by adversaries constructing arbitrarily sized input.
 
@@ -31,7 +33,7 @@ Where input to Convex may be effectively unbounded (e.g. the size of data struct
 
 Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
 
-We SHOULD use existing, proven algorithms and cryptography wherever practically possible: there is no need to reinvent the wheel in crypto.
+We SHOULD use existing, proven algorithms and cryptography wherever practical: there is no need to "reinvent the wheel" in crypto.
 
 ### Favour Simplicity
 
@@ -78,14 +80,13 @@ Such features MAY make sense in P2P off-chain usage, e.g. the Data Lattice. We e
 
 ### Apply Judgement
 
-Principles are rarely absolute. There are always tradeoffs in engineering decisions that must be considered. Discussion is encouraged to ensure relevant aspects are considered from a number of perspectives.
+Principles are rarely absolute. There are always trade-offs in engineering decisions that must be considered. Discussion is encouraged to ensure relevant aspects are considered from a number of perspectives.
 
 ## CAD Style Conventions
 
-
 Literal code (e.g. Convex Lisp forms) should be quoted in a fixed width font `(like this)`
 
-Type names like Vector or the Java type Object should be capitalised.
+Type names like the Convex Vector or the Java type Object should be capitalised. They SHOULD NOT be quoted as code unless they are intended as a code example.
 
 Where possible, follow RFC style MUST, SHOULD, MAY, SHOULD NOT etc. in formal specifications.
 
