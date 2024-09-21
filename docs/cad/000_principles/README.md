@@ -15,7 +15,7 @@ We adopt immutability for all values in Convex. Immutability is important for se
 - Easier to reason about immutable values, especially with pure functions
 - Better suited for concurrency
 
-Mutability in implementations is permitted (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the encoding of values). 
+Mutability may occur as an implementation detail (e.g. a mutable cached value for performance reasons), however such mutability should not be externally visible (e.g. should not affect the encoding of values). 
 
 A useful presentation on the topic: https://www.infoq.com/presentations/Value-Values/
 
@@ -31,13 +31,13 @@ Where input to Convex may be effectively unbounded (e.g. the size of data struct
 
 ### Security First
 
-Convex is a system intended to support high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
+Convex supports high value economic transactions. As such, security issues should be automatically regarded as the highest priority. We MUST NOT release core software with known severe security defects.
 
 We SHOULD use existing, proven algorithms and cryptography wherever practical: there is no need to "reinvent the wheel" in crypto.
 
 ### Favour Simplicity
 
-Especially in API design, there may be a tendency to want to add new features for user convenience, e.g. additional optional arguments for core functions.
+Especially in API design, there is a tendency to want to add new features for user convenience, e.g. additional optional arguments for core functions.
 
 In such cases we SHOULD strongly resist the temptation to add additional complexity, and prefer the simplest possible implementation, especially within core Convex functionality. It is more important that core functionality is clean, simple and maintainable than superficially easy to use. Users have a powerful language with macro capabilities if they wish to implement more convenient programmatic interfaces appropriate for their own use case or design tastes.
 
