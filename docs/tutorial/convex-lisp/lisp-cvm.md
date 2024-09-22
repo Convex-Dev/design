@@ -101,6 +101,8 @@ You might notice symbols like `*address*`, conventionally surrounded with asteri
 - `*juice-price*` the price (in Convex coppers) of each unit of juice
 - `*caller*` the address which made a `call` to the current address (may be `nil`)
 - `*origin*` the address of the origin account for the transaction
+- `*timestamp*` the unix timestamp of the current CVM state (= the time of the most recent block which started processing)
+- `*controller*` an account (can be `nil`) with the authority to control this account
 
 ## Actors
 
@@ -119,11 +121,11 @@ To create an actor, you need to deploy some code to initialise the actor. The co
 (deploy '(def some-data "Hello"))
 => #1033
 
-;; This is undeclared, since some-data exists in the Actor's environment, not ours!
+;; This is undeclared, since some-data is in the actor's environment
 some-data
 => UNDECLARED
 
-;; However, we can look up the data in the new Actor's environment:
+;; However, we can look up the data in another account:
 #1033/some-data
 => "Hello"
 ```
@@ -132,7 +134,7 @@ Your initialisation code *MUST* set up any capabilities you want the actor to ha
 
 ### Calling actor functions
 
-Actors are more than just containers for data - they can be active participants in transactions. To create an Actor that exposes executable functionality to others, you need to make functions `:callable`. The following example is an actor that allows callers to get and set a value
+Actors are more than just containers for data - they can be active participants in transactions. To create an actor that exposes executable functionality to others, you need to make functions `:callable`. The following example is an actor that allows callers to get and set a value
 
 ```clojure
 ;; define code for our Actor
@@ -141,12 +143,12 @@ Actors are more than just containers for data - they can be active participants 
      (def value :initial-value) ;; stateful data definition for this actor
      
      (defn ^:callable set [v]
-       (set! value v))          ;; for safety: set! fails if `value` is not defined
+       (set! value v))          ;; note: `set!` fails if `value` is not defined
        
      (defn ^:callable get []
        value)))
 
-;; Deploy the Actor and store the address as 'act' for convenient use later      
+;; Deploy the Actor and store the address as 'act' for convenient use later
 (def act (deploy actor-code))
 
 ;; Call 'get'
@@ -164,11 +166,11 @@ Actors are more than just containers for data - they can be active participants 
 This actor is pretty simple, but it demonstrates the key ideas:
 
 - An actor is an autonomous program, with its own execution environment
-- You can export functions to allow users to interact with an actor
+- You can make callable functions to allow users to interact with an actor
 
-Note you can also read the actor account's data directly by lookup. 
+Note you can also read the actor account's data directly by lookup: 
 
-```
+```clojure
 act/value
 => :new-value
 ```
@@ -177,7 +179,7 @@ This works, but is not recommended: you are making an assumption about how the a
 
 ### Sending funds to actors
 
-Like users, actor accounts can have their own balance of funds. 
+Like users, actor accounts can have their own balance of Convex Coins. 
 
 You can use the `transfer` function to transfer funds to an Actor. However, this causes a problem: what if the actor doesn't expect to receive funds, and there is no a facility to transfer the funds elsewhere? This can cause coins to be irrevocably lost.
 
