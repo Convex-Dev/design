@@ -135,6 +135,70 @@ Macros are powerful tools, but should only be used when they are needed - they a
 - Writing new syntax / language extensions that need to make use of arguments *without* evaluating them beforehand. If you are happy to use arguments after regular evaluation, then regular functions are probably a better fit.
 - Situations where you want code to be evaluated at compile-time, e.g. to avoid repeatedly performing the same expensive computation at runtime.
 
+## Exception Handling
+
+**WARNING**: error handling on the CVM is a risky business. It is always safer to fail a transaction than to attempt to handle an error - so only do this if you really know what you are doing
+
+### `try` expressions
+
+The CVM supports a `try` expression similar to many general purpose languages that support exception handling. The semantics of `try` are:
+
+1. Attempt the first expression
+ 2. If the expression succeeds, return its result (including any CVM state changes)
+ 3. If expression fails with a catchable error **roll back** any CVM state changes and proceed
+2. If more expressions exist, continue to attempt each expression in turn as above
+3. If all expressions fail, return the result of the last expression (which could be an error)
+
+Example:
+
+```
+(try 
+  (+ :foo :bar)   ;; this will fail due to bad argument types
+  :ALTERNATIVE)=> :ALTERNATIVE
+```
+
+### Rollback behaviour
+
+The atomic rollback feature of `try` is critical for smart contract safety. In the event of failure, the CVM state will be as it was before the failing expression. 
+
+For example, the following code performs some digital asset transactions (which typically involved nested calls to actors that modify CVM state). If any one of these fails, the entire `do` block is atomically rolled back before `alternative-handling` is attempted.
+
+```clojure
+(try
+  (do
+    (asset-transfer-1) 
+    (asset-transfer-2) 
+    (asset-transfer-3))
+  (alternative-handling))
+```
+
+This pattern of ensuring a set of actions either all succeed or are all rolled back is quite common in more sophisticated smart contract code. In effect, the `try` block lets you attempt an atomic sub-transaction.
+
+You can furthermore wrap code in `query` to discard CVM state changes even in the case of success. This enables speculative execution of arbitrary code, even with `eval` on untrusted code:
+
+```clojure
+(defn would-code-succeed? [dangerous-code]
+  (try 
+    (query
+      (eval dangerous-code)
+      true)
+    false))
+
+(would-code-succeed? '(transfer #11 1000000000))
+=> true
+
+(would-code-succeed? '(transfer #11 1000000000000000000))
+=> false
+```
+
+The most you can lose here is the value of your juice: the transfer (or any other state changes) won't actually happen.
+
+### Uncatchable errors
+
+Note: Some CVM errors are impossible to recover from: such errors are regarded as *uncatchable*.
+
+This usually isn't a concern because there is nothing you can do anyway to continue effectively. e.g. `:JUICE` failures are pointless to catch because any error handling code will immediately also fail due to `:JUICE`.
+
 ## Upgradable Actors
 
 A key risk of developing smart contracts is that once they are live, significant losses may occur if bugs are found. Losses could be from theft by malicious actors that manage to exploit a security weakness, or a bug that causes assets to be permanently lost.
