@@ -41,7 +41,7 @@ Especially in API design, there is a tendency to want to add new features for us
 
 In such cases we SHOULD strongly resist the temptation to add additional complexity, and prefer the simplest possible implementation, especially within core Convex functionality. It is more important that core functionality is clean, simple and maintainable than superficially easy to use. Users have a powerful language with macro capabilities if they wish to implement more convenient programmatic interfaces appropriate for their own use case or design tastes.
 
-An Excellent talk by Rich Hickey on this topic: https://www.infoq.com/presentations/Simple-Made-Easy-QCon-London-2012/
+An excellent talk by Rich Hickey on this topic: https://www.infoq.com/presentations/Simple-Made-Easy-QCon-London-2012/
 
 ### Design for Composition
 
