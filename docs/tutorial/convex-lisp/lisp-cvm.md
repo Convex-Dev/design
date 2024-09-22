@@ -92,6 +92,16 @@ The significance of this capability cannot be understated:
 - You can store and manage arbitrary data
 - Everything can be done interactively with simple REPL commands - no other tools required!
 
+## Special Symbols
+
+You might notice symbols like `*address*`, conventionally surrounded with asterisks. These are *special symbols* which get special treatment by the CVM. They are not static values, but dunamiocally calculated on demand by the CVM. Commonly used ones are:
+
+- `*address*` the address of the current account, e.g. `#15656`
+- `*balance*` the Convex Coin balance of the account
+- `*juice-price*` the price (in Convex coppers) of each unit of juice
+- `*caller*` the address which made a `call` to the current address (may be `nil`)
+- `*origin*` the address of the origin account for the transaction
+
 ## Actors
 
 So far, we've looked at accounts controlled by users. But accounts can also be CVM programs that are independent of any users. We call these actors in Convex because they act and respond autonomously in accordance with their code.

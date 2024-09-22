@@ -144,10 +144,10 @@ Macros are powerful tools, but should only be used when they are needed - they a
 The CVM supports a `try` expression similar to many general purpose languages that support exception handling. The semantics of `try` are:
 
 1. Attempt the first expression
- 2. If the expression succeeds, return its result (including any CVM state changes)
- 3. If expression fails with a catchable error **roll back** any CVM state changes and proceed
-2. If more expressions exist, continue to attempt each expression in turn as above
-3. If all expressions fail, return the result of the last expression (which could be an error)
+2. If the expression succeeds, return its result and finish (including any CVM state changes)
+3. If expression fails with a catchable error **roll back** any CVM state changes and proceed
+4. If more expressions exist, continue to attempt each expression in turn as in 2. above
+5. If all expressions fail, return the result of the last expression (which could be an error)
 
 Example:
 
