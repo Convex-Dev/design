@@ -8,11 +8,11 @@ tags: [convex, community, philosophy]
 
 Building Open, Decentralized Economies for the 21st Century
 
-The time for change is now. For far too long, our societies have been shackled by inefficient and inequitable economic systems. Centralized institutions wield excessive power, exploiting monopolistic control over much of our economic activity. Transaction costs are exorbitant, hindering progress and imposing unnecessary burdens on individuals. Countless people are unfairly excluded from financial and economic participation. Our current economic models are inflicting irreversible damage on the natural world we all share.
+For too long, our societies have been shackled by inefficient and inequitable economic systems. Centralised institutions wield excessive power, exploiting monopolistic control over much of our economic activity. Transaction costs are exorbitant, hindering progress and imposing unnecessary burdens on individuals. Countless people are unfairly excluded from financial and economic participation. Our current economic models are inflicting irreversible damage on the natural world we all share.
 
 Artificial intelligence is rapidly transforming the digital economy, and indeed, the entire world. At this pivotal moment in human history, it is imperative that control over data, computational power, and the economy as a whole is returned to the hands of individuals.
 
-Convex is a public, decentralized system for real-time peer-to-peer exchange of data and value, designed as a foundational layer for the digital economy in the age of AI. As such, it provides the bedrock for the kind of economics we envision – fair, inclusive, efficient and sustainable.
+Convex is a public, decentralised system for real-time peer-to-peer exchange of data and value, designed as a foundational layer for the digital economy in the age of AI. As such, it provides the bedrock for the kind of economics we envision – fair, inclusive, efficient and sustainable.
 
 This manifesto outlines our core beliefs and principles.
 

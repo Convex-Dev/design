@@ -312,7 +312,7 @@ Deploying libraries is like deploying an Actor, with a few key differences to no
 
 ### Important security note
 
-A key difference between a `call` to an Actor function and running library code is the difference in *security context*:
+A key difference between a `call` to an actor function and running library code is the difference in *security context*:
 
 - An actor `call` runs code in the actor's account and environment, with the actor itself as the current `*address*` (and the calling account as `*caller*`)
 - Library code runs in the environment of the current account, i.e. `*address*` is unchanged
