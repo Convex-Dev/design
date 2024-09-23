@@ -18,9 +18,11 @@ Using the [Sandbox](/sandbox) is the easiest way to experience Convex Lisp. We r
 - You will see outputs from Convex in the output window. we use `=>` to indicate expected outputs in the examples below.
 -->
 
-## Lisp expressions
+## Expressions
 
-All Lisp code is constructed from expressions, which can be evaluated to get a resulting value (or maybe an error, if something went wrong...). The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elemenst are the arguments. So to add two numbers with the `+` function you would do something like:
+All Lisp code is constructed from expressions. Expressions are evaluated to get a result (or maybe an error, if something went wrong...). 
+
+The classic Lisp expression is a list enclosed in parentheses `(...)` where the first element of the list is the function to be called and the following elements are the arguments. So to add two numbers with the `+` function you would do something like:
 
 ```clojure
 (+ 2 3)
@@ -34,9 +36,9 @@ It's important to not that each element in the expression is itself an expressio
 => 75
 ```
 
-So let's take a quick tour through the most common types of expressions, and the values that they produce.
+There are many different types of expressions (many of which are introduced in this guide). But the syntax is of Lisp is ultimately just a tree of nested expressions. It is this simplicity and consistency which gives Lisp its power.
 
-### Literals
+## Literals
 
 The simplest type of expression is a constant literal data value, which evaluates directly to itself! If you type the number `1` in the REPL and execute it, the result is simply the number `1` itself:
 
@@ -114,7 +116,7 @@ Finally, there is also support for byte data encoded in hexadecimal (we call the
 
 Blob literals are somewhat unusual as a data type, but are very convenient for many reasons in Convex: specifying addresses of users or smart contracts, validating cryptographic hashes against exact values etc. Using blob literals directly is also much more efficient than encoding/decoding binary data in some other format such as hex strings.
 
-### Symbols
+## Symbols
 
 Symbols are named references to value in the Convex programming environment. When used as expressions, they look up the value that they refer to in the current context. Usually, you would first use `def` to create a new value in the environment.
 
@@ -148,11 +150,11 @@ Some *special symbols* are provided by Convex to make it easier to access specia
 => #123
 ```
 
-### Functions
+## Functions
 
 Functions in Convex Lisp are the fundamental objects that represent computation: algorithms that can be applied to transform input data into output data.
 
-#### Function application syntax
+### Function application
 
 Functions can be called in an expression by placing the function name in a list before the arguments to a function. Usually, the function is specified by a Symbol:
 
@@ -174,7 +176,24 @@ inc(10)
 
 Why do we do this? It turns out that being able to express the whole function application expression as a list is extremely useful for more advanced techniques such as macros and code generation. A topic for later.
 
-#### The Core library
+### Variable arity
+
+Lisp function often allow variable arity, i.e. you can pass a variable number of arguments. This is often more concise and readable than nesting multiple functions. A good example is the core `str` function for assembling strings:
+
+```clojure
+(str "Hello" " :: " "Bob" " :: " 42)
+=> "Hello :: Bob :: 42"
+```
+
+If you pass an illegal number of arguments, you will get an `:ARITY` error:
+
+```clojure
+(count [1 2 3] [5 6])
+ Exception: :ARITY count requires arity 1 but called with: 2
+```
+
+
+### The Core library
 
 The Convex core runtime library provides a wide variety of useful functions that you can see in the [Reference](/documentation/reference). Some simple examples to try out:
 
@@ -189,7 +208,7 @@ The Convex core runtime library provides a wide variety of useful functions that
 => true
 ```
 
-#### Defining functions
+### Defining functions
 
 You can easily define your own functions with `defn`:
 
@@ -209,7 +228,7 @@ You can also create anonymous functions and use them directly with the `fn` spec
 => 12321
 ```
 
-### Data structures
+## Data structures
 
 Convex provides a powerful set of data structures as part of the CVM. In fact, one of the reasons Convex performs so well is due to the power of the data structures.
 
@@ -415,7 +434,7 @@ Some other ways of constructing a List:
 
 You should use vectors over lists for storing data in most cases. Lists are mainly be used for generating code - in macros, for example.
 
-### Conditionals
+## Conditionals
 
 General-purpose Turing complete languages need some way of controlling conditional execution of code, and Convex Lisp is no exception. 
 
@@ -462,6 +481,8 @@ The `cond` special form works like `if`, but allows multiple tests, and can opti
 
 Implementation note: `if` is actually a macro that expands to a `cond` special form. So technically, `cond` is the lower level special form. In practice, it may be more convenient and intuitive to use `if`. Your choice, as always!
 
+## Execution flow
+
 ### Sequential `do` blocks
 
 The `do` special form groups a number of expressions into a single expression and returns the value of the last expression (or `nil` if there are zero expressions). Results from earlier expressions are discarded. 
@@ -475,7 +496,7 @@ The `do` special form groups a number of expressions into a single expression an
 (do)
 => nil
 
-;; Side effects from ealier expressions are visible in later expressions
+;; Side effects from earlier expressions are visible in later expressions
 (do (def a 100) (+ a a))
 => 200
 ```
@@ -523,7 +544,7 @@ You can also use `set!` to modify the binding of a local variable. This value wi
 => 20
 ```
 
-#### Def and the environment
+### Def and the environment
 
 We've already seen the `def` special form in a couple of examples, where it was used to set the value of a symbol:
 
@@ -555,7 +576,7 @@ If you want to define functions specifically, you can use `defn`:
 
 `defn` is actually a simple macro that converts `(defn f [x] ...)` into `(def f (fn [x] ...)`. So you never really need `defn`: it's just a convenient shortcut for defining functions and can make your code more readable.
 
-#### Loop and recur
+### Loop and recur
 
 When you want to iteratively re-evaluate an expression, you can use `loop` and `recur`. 
 
@@ -585,7 +606,7 @@ You can also use `recur` to repeat the evaluation of a function body:
 
 `recur` implements "tail call optimisation", i.e. it recurs without consuming any stack space. This is important if you want to perform many iterations: stack depth on the CVM is a limited resource and your transactions will fail if you consume too much. `recur` is your friend.
 
-#### Quoting
+## Quoting
 
 Sometimes, you want to use a symbol itself rather than the thing that the symbol refers to. In these cases, you can 'quote' the symbol.
 

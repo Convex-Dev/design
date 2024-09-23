@@ -221,12 +221,13 @@ Error sources indicate the region in the network where an error occurred. These 
 
 | Source Code  | Location of error                            | Example(s)
 | ------------ | --------------------------------             | -----------
-| `:CLIENT`  | Client library code                         | Failed input validation
-| `:COMM`    | Client-Server communications                | IO failure, connection failure or timeout
-| `:PEER`    | Peer handling of user request                | Rejected for bad signature by peer
-| `:NET`     | Consensus network                            | Transaction failed to get into consensus
-| `:CVM`      | CVM state transition handling               | Invalid sequence number, `:JUICE` error
-| `:CODE`    | CVM code execution                          | `:CAST` error in user code
+| `:CLIENT`    | Client library code                          | Failed input validation
+| `:COMM`      | Client-Server communications                 | IO failure, connection failure, timeout
+| `:SERVER`    | Server handling of request                   | Bad request format, server error, server load
+| `:PEER`      | Peer handling of user request                | Rejected for bad signature by peer
+| `:NET`       | Consensus network                            | Transaction failed to get into consensus
+| `:CVM`       | CVM state transition handling                | Invalid sequence number, `:JUICE` error
+| `:CODE`      | CVM code execution                           | `:CAST` error in user code
 
 Error sources are not formally part of the Convex Network / CVM specification, but are important additional information normally returned alongside transaction results. Be aware that a malicious peer could fabricate the error source, so it may be useful to independently validate results. 
 

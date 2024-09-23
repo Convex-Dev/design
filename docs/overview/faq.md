@@ -6,19 +6,17 @@ tags: [convex]
 
 Some answers to common questions can be found here.
 
-
 ## Is Convex Free?
 
-Yes! Convex is free for anyone to use and build applications upon, and always will be. We are building Convex for everyone to support the Internet of Value.
+Yes! Convex is free for anyone to use, and always will be. We are building Convex as an open public utility network for everyone to support the Internet of Value.
 
-To make use of the resources of the network, small transaction fees are charged using Convex Coins, which is the native utility token of the network. This is important for several reasons:
+When transacting on the network, small fees are charged using Convex Coins, which is the native utility token of the network. This is necessary for several reasons:
 
-- Compensate those who provide important secure infrastructure to the network (i.e. peer operators)
+- Compensate fairly those who provide important secure infrastructure to the network (i.e. peer operators)
 - Prevent denial of service attacks by people flooding the network with wasteful transactions. This makes it very expensive to launch such attacks.
 - Create an economic incentive to use the network as efficiently as possible (both for users and developers of smart contracts)
 
 Our goal is to keep transaction fees small, so that it is never a significant issue for legitimate network users.
-
 
 ## How fast is Convex?
 
