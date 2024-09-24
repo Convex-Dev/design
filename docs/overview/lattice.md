@@ -28,11 +28,23 @@ Lattice technology augments the idea of the CRDT in several key ways:
 - Lattice data structures are also Merkle trees, proving strong integrity guarantees and fast identity checking.
 - Enforcement of rules regarding which incoming lattice values are "accepted" by a participant: this prevents malicious actors from disrupting the Lattice as a whole. Merging a bad lattice value is generally pointless: in most cases all it means is that a participant wastes resources producing a lattice value that will subsequently be ignored by others, so there is an incentive for all participants to immediately reject such values.
 
-## Parts of the Lattice
+### Merge Context
 
-Sections of the Lattice are defined by the lattice values they utilise and how these values are merged, which in turn defines the rules by which they operate. 
+Lattice Technology introduces the concept of a merge context when merging lattice values. So technically the full merge function is actually a function of three values: the merge function, the old lattice value and the lattice value received from elsewhere:
 
-Each section is effectively a sub-lattice of the Lattice as a whole: we exploit the property that a map of keys to lattice values is itself a lattice (with the simple merge function: combine entries of both maps into a single map and merge the lattice values of any keys that collide)
+```
+new lattice value = merge (context, old lattice value, received lattice value)
+```
+
+This is a significant enhancement on a traditional lattice because it allows the merge function to take into account additional context that determines to enforce rules regarding how and if the merge occurs in a decentralised setting. In such a context the two lattice values should not be treated equally: the old lattice value has typically already been validated locally, but a lattice value received from the internet is not necessarily to be trusted.
+
+For example, a merge that depends on verification of 3rd party digital signatures might include acceptable public keys in the context, and only merge parts of the received lattice value that pass validation.
+
+## Regions of the Lattice
+
+Regions of the Lattice are defined by the lattice values they utilise and how these values are merged, which in turn defines the rules by which they operate. 
+
+Each region is effectively a sub-lattice of the Lattice as a whole: we exploit the property that a map of keys to lattice values is itself a lattice (with a simple merge function: combine entries of both maps into a single map and then merge the lattice values of any keys that collide)
 
 Participants enforce these rules on a decentralised basis. Anyone breaking the rules and sharing illegal values is able to do so, but the lattice values they produce will effectively be ignored by other participants: such behaviour cannot harm the integrity of the Lattice as a whole.
 
