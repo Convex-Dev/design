@@ -2,52 +2,55 @@
 
 ## IMPORTANT LEGAL NOTICE
 
+Yeah, we need a mandatory disclaimer here :-)
+
 This repository discusses tokenomic specification and design concepts relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, and may be subject to change based on learnings from Protonet or elsewhere.
 
 The information contained in this repository is provided on an "as is" basis for informational and discussion purposes only, with no guarantees of completeness, accuracy, usefulness or timeliness.
 
-This does not in any way constitute financial advice. Participants in the ecosystem must take their own professional advice regarding any legal or financial issues.  
+This does not in any way constitute financial or legal advice. Participants in the ecosystem must take their own professional advice regarding any such issues.  
 
 ## Overview
 
 Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for their services.
 
 Convex Coins are initially issued in two ways:
-- 75% are available for purchase on a **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle.
-- 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.)
+- 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle.
+- 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.). Contributions must benefit the ecosystem as a whole.
 
 Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.)
 
-This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise)
+This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise). There is a maximum supply cap of 1,000,000,000 Convex coins, though it will take a long time to get there. The total Coin supply at Protonet launch is estimated to be ~1-2m Convex Coins.
 
 ## Rationale / Discussion
 
-All currencies must have a mechanism for initial issuance, and Convex is no exception. However, many existing mechanisms have significant flaws:
+All digital currencies must have a mechanism for initial issuance, and Convex is no exception. However, many existing mechanisms have significant flaws:
 
 - **Protocol based issuance** - it is possible to issue tokens purely through the operation of the protocol, such as Bitcoin mining. Due to the mechanical nature, this is relatively predictable, automatic and trustworthy (at least to the extent that forks / upgrades to not fundamentally change the protocol). However, such approaches disproportionately incentivise infrastructure provision to the exclusion of all else: huge amounts of resources get consumed in Bitcoin mining, for example. This is undesirable because, at least for Convex, infrastructure provision is relatively cheap and efficient and can be well compensated through transaction fees alone - we want the majority of rewards to flow to people who add value to the ecosystem.
 - **Premining** - tokens can be generated "as if" they were mined and distributed to select parties (typically founding teams and early investors). The problem with this approach is that it creates a significant incentives for these parties to "cash out" at the earliest opportunity, often at the expense of later ecosystem entrants, and it reduces the incentives for insiders to continue to build the project. There is a significant danger of a negative "pump and dump" dynamic.
 - **ICOs** - tokens can be generated and sold in a large public sale event. Such an event may generate a significant treasury for a foundation, and create broad public ownership. However, the price of such ICOs is hard to get right, and likely to attract significant speculative activity. Similar to premining (which may occur alongside an ICO), there is a significant risk of "pump and dump" dynamics, often at the expense of less sophisticated retail investors.
-- **Airdrops** - tokens can be distributed for free in large quantities according to a variety of eligibility criteria (in-person events, community membership, holding some other token etc.). While airdrops can create publicity and temporary excitement, giving out tokens for free risks devaluing the token while rewarding individuals disproportionately without them having to contribute anything. This is a disservice to those who truly do add value. It may also incentivise non-useful behaviour to attempt to benefit from airdrops (signing up with multiple fake accounts etc.)
+- **Airdrops** - tokens can be distributed for free in large quantities according to a variety of eligibility criteria (in-person events, community membership, holding some other token etc.). While airdrops can create publicity and temporary excitement, giving out tokens for free risks devaluing the token by arbitrarily giving a windfall to individuals without them having to contribute anything. This is a disservice to those who truly do add value. It also incentivises negative behaviour in terms of attempts to benefit from future airdrops (signing up with multiple fake accounts etc.)
 
 What we really need is a fair way to distribute coins that:
 - is **proportionate** to contribution / value add to the ecosystem
 - continues to **maintain good incentives** for contribution long after initial launch
 - aligns **incentives** of participants (e.g. avoiding "pump and dump" by large holders or insiders)
-- grows with the ecosystem on a **sustainable** basis
+- grows with the economic demand of the ecosystem on a **sustainable** basis
 
 Hence we have defined a new approach of **market driven release**: new coins are issued as and when the economic growth of the ecosystem requires it. Purchasable coins are issued on demand if and only if they are purchased from the release curve that pre-defines a schedule of rising prices. If demand for coins is strong (i.e. market cap growth causes prices to rise above the current release curve price) then there is an economic arbitrage opportunity for purchasers to buy new coins from the release curve. This continues until equilibrium is reached, i.e the newly increased supply and new higher price equal the new market cap. 
 
-This can be considered, in some ways, analogous to a company issuing new shares to raise capital. Existing shareholders will be diluted, but the extra injection of capital and resources increases the market value of the company so that they are still better off (hopefully, assuming the capital is well invested). There are two notable differences:
+This can be considered, in some ways, analogous to a company issuing new shares to raise capital. Existing shareholders will be diluted, but the extra injection of capital and resources increases the market value of the company so that they are still better off (hopefully, assuming the capital is well invested). There are however some notable differences with traditional equity:
 - The Convex ecosystem is not a company, but a decentralised network of participants
 - The release curve guarantees that previous purchasers will never be diluted by new coin issuance at a lower price: additional issuance must occur at a higher price (or at worst equal, if purchased from the same tranche). 
+- There is a fixed maximum supply cap
 
 ## Design Objectives
 
-The tokenomic model has been designed with the following objectives:
+The tokenomic model for Convex has been designed with the following objectives:
 
 ### Utility Token
 
-The Convex Coin is a utility token - it represents the right to use the coin to access services provided by the Convex Network. As such, it should be broadly available as a decentralised asset.
+The Convex Coin is a utility token - it represents the right to use the coins to access services provided by or on the Convex Network. As such, it should be broadly available as a decentralised asset to anyone wishing to use these facilities.
 
 ### Means of exchange
 
@@ -114,6 +117,25 @@ The Network MUST divide the total initial supply of Convex Coins into two quanti
 - 75% for Coin Purchasers via the Release Curve
 - 25% for contributor and ecosystem awards
 
+#### Reserve accounts
+
+The genesis MUST create a set of reserve accounts (`#0` to `#7`) which represent unissued coins. Such coins MUST NOT be considered part of the current coin supply. 
+
+By reserving these accounts, we maintain the invariant that the total supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed, but the majority of these are not yet part of the current total supply.
+
+Any cryptographic keys for reserve accounts MUST be kept securely and governed according to the release tokenomics described in this CAD. The Convex Foundation will use air-gapped systems initially for this purpose. 
+
+#### Genesis account
+
+The genesis of the network MUST include a genesis account (currently `#11`) that is responsible for initial distribution of Convex Coins to start up the network.
+
+The genesis account MUST receive funds from one or more reserve accounts to handle initial coin issuance for the following purposes:
+- Performing any network setup transactions
+- Establishing the first peer on the network
+- Making initial coin distributions to early purchasers and contributors
+
+The genesis account MUST NOT have access to the majority of the reserve account funds, beyond what is necessary for the above. 
+
 ### Release Curve
 
 Coin purchases MUST be priced in fiat currency or equivalent, consistent with the Release Curve defined in this section.
@@ -124,20 +146,20 @@ Note: The constant value `$100` is chosen so that once `50%` of all coins are is
 
 The Release Curve formula MAY be adjusted in the event of significant economic events affecting the relative value of fiat currencies used (e.g. sustained high rates of inflation). The Foundation MUST consult with the ecosystem and provide a robust rationale for any such changes.
 
-To account for transaction costs, effective financial management or purchaser convenience, the Foundation MAY group the release of some coins into rounds, provided that such round MUST be broadly consistent with the overall Release Curve.  
+To account for transaction costs, effective financial management or purchaser convenience, the Foundation MAY group the release of some coins into rounds, provided that such rounds MUST be broadly consistent with the overall Release Curve.  
 
 
 ### Coin Purchases
 
-The 75% allocation for Coin Purchasers MUST be distributed on the basis of purchases of coins in a manner consistent with the Release Curve.
+The 75% allocation for Coin Purchasers MUST be distributed on the basis of purchases of coins in a manner consistent with the release curve.
 
 The distribution MUST be administered by the Convex Foundation, or an entity acting on its behalf in accordance with relevant local regulations.
 
-Coins purchases MUST be delivered to purchasers only after the release of the Main Network.
+Coins purchases MUST be delivered to purchasers only after the release of the main network.
 
 Coin purchasers MUST meet all relevant regulatory, legal and other requirements that may be defined to ensure that they are permitted to purchase Convex coins in their respective jurisdictions.
 
-The Convex Foundation SHOULD offer coins on an equal, non-discriminatory basis to any Coin Purchaser that meets the necessary criteria.
+The Convex Foundation SHOULD sell coins on an equal, non-discriminatory basis to any purchaser that meets the necessary criteria.
 
 The Convex Foundation MAY place restrictions on the rate that coins are distributed to early purchasers, giving consideration to the potential impact of large numbers of coins being issued at the same time.
 
@@ -163,7 +185,7 @@ The Convex Foundation MAY require contributors to verify their legal identity (K
 
 The Convex Foundation SHOULD aim to ensure that the rate of awards remains broadly consistent with the ratio 25% : 75% relative to purchases from the release curve, with the understanding that this ratio may deviate from target in the short term.
 
-The Convex Foundation SHOULD explore options for decentralised governance of awards. In the long term, it is intended that decentralised governance will apply to all awards.
+The Convex Foundation SHOULD explore options for decentralised governance of awards. In the long term, decentralised governance SHOULD apply to all awards.
 
 ### Vesting 
 
@@ -183,20 +205,22 @@ Transaction fees MUST be collected at the point of transaction execution, and pl
 
 ### Fully Diluted Value
 
-Some tokenomic analyses depend on the concept of "Fully Diluted Value", by multiplying the current price of tokens by some maximum supply cap.
+Some tokenomic analysis depend on the concept of "Fully Diluted Value", by multiplying the current price of tokens by some maximum supply cap.
 
-Such analysis is generally invalid in the Convex of Convex, since full dilution cannot occur under the Release Curve model at the current price.
+Such analysis is generally invalid and SHOULD NOT be applied in the case of Convex, because full dilution cannot occur under the release curve model at the current price and such a number is effectively meaningless.
 
-Analysts SHOULD NOT consider FDV in relation to Convex, and instead use the market capitalisation of issued coins, which more accurately represents the coin ecosystem.
+Analysts SHOULD NOT consider FDV in relation to Convex, and instead use the market capitalisation of issued coins (i.e. the current supply), which more accurately represents the coin ecosystem. This is also more consistent with other tokens that do not have a fixed supply.
 
 ### Testnets
 
-Testnets (i.e. any Convex based network other than the official Main Network) MAY alter or ignore any aspect of the tokenomics for testing, development or experimental purposes. Indeed, this is encouraged for the purposes of research and learning.
+Testnets (i.e. any Convex based network other than the official main network) MAY alter or ignore any aspect of the tokenomics for testing, development or experimental purposes. Indeed, this is encouraged for the purposes of research and learning.
 
-Test networks MAY implement a system of distributing coins for testing purposes, e.g. a "faucet" which automatically issues testnet coins to users.
+Test networks MAY implement a system of distributing free coins for testing purposes, e.g. a "faucet" which automatically issues testnet coins to users.
 
 Participants in the ecosystem SHOULD NOT conduct economically significant activity on test networks, with the understanding that they have no assurance of the tokenomic model or governance over such networks, and may face significant security or legal risks if they do so.
 
 ### Disaster Recovery
 
-In the event of a high severity event that substantially affects overall tokenomics, the Foundation MAY take remedial action, up to and including requiring a mandatory network update to fix the issue. Such action will only be taken as a last resort, and shall be done in a manner that minimises the impact on legitimate coin holders.
+In the event of a high severity event that substantially affects overall tokenomics, the governance body MAY take remedial action, up to and including requiring a mandatory network update to fix the issue. Such action will only be taken as a last resort, and MUST be done in a manner that minimises the impact on legitimate coin holders.
+
+The governance body MUST NOT take any action which results in the modification of the coin balances of any 3rd party user or actor accounts, except where necessary to remediate the effects of a security breach as above.  

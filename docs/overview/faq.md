@@ -18,6 +18,27 @@ When transacting on the network, small fees are charged using Convex Coins, whic
 
 Our goal is to keep transaction fees small, so that it is never a significant issue for legitimate network users.
 
+## When will Convex go live?
+
+We are on track to release the first live version of Convex (Convex Protonet) in H2 2024.
+
+An important caveat: getting it right is more important than rushing a release. We won't launch until we are 100% sure it is ready for production use and fully secure with real-world value at stake.
+
+People will depend on Convex to be a secure, reliable platform for decentralised applications and digital assets. It is not acceptable to expose them to security risks from flaws in the platform, nor is it acceptable to make breaking changes to the CVM that could cause significant problems with smart contracts.
+
+## How do I get Convex coins?
+
+Convex coins are a cryptoasset that can be obtained in multiple ways.
+- Anyone can buy Convex coins directly from individuals on a self-sovereign basis
+- You will be free to purchase Convex coins via exchanges and other independent service providers
+- [Paisley](https://www.paisley.io/) allows its members to purchase Convex Coins with fiat / crypto
+- Contributors to Convex or the broader Convex ecosystem can earn awards of Convex coins
+- Approved purchasers can buy newly issued coins from the Release Curve.
+
+Anyone interested in Convex coins should familiarise themselves with the relevant [tokenomics](../cad/020_tokenomics/README.md)
+
+We have established the Convex Foundation a non-profit organisation that facilitates the initial sale of Convex coins, and distributes coin awards to contributors. Funds raised will be reinvested in building Convex and the ecosystem.
+
 ## How fast is Convex?
 
 Convex can comfortably process many thousands of complex transactions per second (e.g. transfers and smart contract calls). The CVM itself has been benchmarked at over 1,000,000 TPS on a modern desktop PC. And as we continue making performance improvements it is getting faster by the day.
@@ -33,16 +54,15 @@ But it's important to note that performance and scalability are not just about t
 
 We achieve all this *without* resorting to over-complicated scaling solutions that introduce various new problems (e.g. cross-shard transactions). We can always add additional scaling features later, but it may not even be necessary.
 
-
 ## How do I integrate my application with Convex?
 
 Convex provides several mechanisms for integration.
 
-For most decentralised apps, it is easy to build a client-side application that makes use of the **Client API**. This is a convenient REST API using JSON that is ideal for web and mobile applications developers.
+For most decentralised apps, it is easy to build a client-side application that makes use of the **HTTP Client API**. This is a convenient REST API using JSON that is ideal for web and mobile applications developers.
 
 Advanced applications can use the **Binary API** and construct messages directly to communicate with Peers. This is currently only possible for JVM-based languages (Java, Clojure, Scala etc.), but more may be supported in the future.
 
-Integrators can also use **Direct Peer Integration** where they run a fully operational Convex Peer alongside their server-side applications. This approach is complex and recommended only if you want maximum performance and/or want to interact with the CVM state directly (e.g. for search or indexing purposes). The convex.world server itself uses this technique.
+Integrators can also use **Direct Peer Integration** where they run a fully operational Convex Peer alongside their server-side applications. This approach is complex and recommended only if you want maximum performance and/or want to interact with the CVM state directly (e.g. for search or indexing purposes). The `convex.world` sandbox itself uses this technique.
 
 
 ## What should go on-chain?
@@ -70,7 +90,7 @@ Convex shares many common attributes with traditional public blockchains:
 - Security from malicious actors with cryptographic techniques
 - Decentralised ownership of accounts, including the ability to control digital assets and currencies
 - Ability to deploy and execute secure smart contract code
-- Transactions are grouped into Blocks
+- Transactions are grouped into blocks
 
 Technically however it's not implemented as a blockchain (in the sense that there is a linked list of blocks where each block contains the hash of a previous block). The Convex consensus algorithm creates an *ordering* of blocks, but the cryptographic hashes used to secure this ordering are kept outside the blocks themselves. This gives us a big advantage, as blocks can be submitted and processed by peers concurrently without having to first determine the hash of preceding block(s).
 
@@ -79,12 +99,12 @@ Technically however it's not implemented as a blockchain (in the sense that ther
 
 It's complex! But here are some of the most important points:
 
-- The consensus algorithm (Convergent Proof of Stake, or CPoS) is extremely fast. It can confirm blocks in milliseconds between peers running on a local network. The main latency delay in the global network is just signal transmission over the Internet: the speed of light is a tricky problem.
-- The CVM execution model is designed for performance: CVM operations are relatively high level, but are implemented using very efficient low-level code.
-- We wrote a custom database (Etch) from scratch, specifically to support the performance needs of Convex. Having a database perfectly designed and tuned for the specific workload is a huge advantage and is faster than more generic alternatives (e.g. LevelDB)
-- We exploit a lot of advanced features of the JVM, which is a very powerful platform backed by thousand man-years of engineering effort. We especially appreciate the JIT compiler, concurrency, asynchronous IO and advanced memory management features. It probably wouldn't be feasible to build something as fast as Convex without these.
-- Some of our team have been performance-oriented hackers for many years, with experience in game coding, embedded systems, distributed computing etc. We enjoy and take pride in writing fast, efficient code!
-
+- [Lattice technology](lattice.md) is uniquely efficient for handling decentralised data at scale. We've been building the foundations of lattice technology for 5+ years with a heavy focus on making it supremely scalable.
+- The consensus algorithm (Convergent Proof of Stake, or CPoS) is magic. It can confirm blocks in milliseconds between peers running on a local network. The main latency delay in the global network is just signal transmission over the Internet: the speed of light is a tricky problem.
+- The CVM execution model is designed for performance: CVM operations perform high level state transformations, but are implemented using very efficient low-level code.
+- We wrote a custom database (Etch) from scratch to support the performance needs of Convex. Having a database perfectly designed and tuned for lattice technology is a huge advantage and much faster than more generic alternatives (e.g. LevelDB)
+- We exploit a lot of advanced features of the JVM, which is a very powerful platform backed by thousands of man-years of engineering effort. We benefit a lot from the JIT compiler, concurrency, asynchronous IO and advanced memory management features. 
+- Our team includes people who have been performance-oriented hackers for many years, with experience in algorithms, data structures, game coding, embedded systems, distributed computing and more. We enjoy and take pride in writing fast, efficient code!
 
 ## Why does Convex use Lisp?
 
@@ -107,30 +127,18 @@ If a user executes a transaction that releases memory, the amount of released me
 
 We need Memory Accounting because on-chain memory is a **scarce resource**, and should be used wisely. An effective way of doing this is to make memory allowances themselves into a digital asset, that can be transferred and traded. This creates a market incentive to utilise memory as efficiently as possible.
 
-
-## What is the difference between Actors and Smart Contracts?
-
-Actors are virtual agents that live their whole existence inside the Convex Virtual Machine. They are autonomous agents that can execute CVM code, manage digital assets, perform complex computation, make decisions. They follow strict rules that control their execution, so that they can be relied upon to behave in a particular way.
-
-Smart contracts are a concept: the idea of having real-world contracts or agreements that can be automatically executed and enforced by software, eliminating risk and the need to trust fallible humans.
-
-You can use Convex Actors to implement smart contracts. Not every Actor needs to be a smart contract, however: an Actor that simply stores on-chain information on your behalf isn't really a contract with anyone else.
+Memory account is described in much more detail in [CAD006](../cad/006_memory/README.md)
 
 
-## When will the Main Network go live?
+## What is the difference between actors and smart contracts?
 
-We are on track to release the first live version of Convex (Convex Protonet) in 2024.
+Actors are virtual agents that exist inside the Convex Virtual Machine. They are autonomous agents that can execute CVM code, manage digital assets, perform complex computation, make decisions. They follow strict rules that control their execution, so that they can be audited and relied upon to behave in a particular way.
 
-An important caveat: getting it right is more important than rushing a release. We won't launch until we are 100% sure it is ready for production use and fully secure with real-world value at stake.
+Smart contracts are a concept: the idea of agreements that can be automatically executed and enforced by software, eliminating risk and the need to trust fallible humans.
 
-People will depend on Convex to be a secure, reliable platform for decentralised applications and digital assets. It is not acceptable to expose them to security risks from flaws in the platform, nor is it acceptable to make breaking changes to the CVM that could cause significant problems with smart contracts.
+Convex actors are therefore used to *implement* smart contracts. An example would be a digital asset store that allows parties to offer assets for sale, but only delivers them to the buyer once payment has been made. Each asset sale is a smart contract between the seller and the buyer, facilitated by the actor.
 
-
-## Can I buy Convex as a cryptoasset?
-
-Not yet, but soon!
-
-We are establishing the Convex Foundation a non-profit organisation that will facilitate the initial sale of Convex native coins in the near future. Initially, this will be only open to institutional investors. Funds raised will be invested in building Convex and the ecosystem.
+Not every actor needs to be a smart contract, however: an actor that simply manages on-chain information on behalf of individuals isn't facilitating any contracts between parties.
 
 
 ## Who is building Convex?
