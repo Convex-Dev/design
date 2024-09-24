@@ -4,7 +4,7 @@
 
 Yeah, we need a mandatory disclaimer here :-)
 
-This repository discusses tokenomic specification and design concepts relating to the Convex network. It does not in any way represent a commitment to implement the Convex Network in precisely the manner described, and may be subject to change based on learnings from Protonet or elsewhere.
+This repository discusses and describes tokenomics concepts in relation to the Convex network. It does not in any way represent a commitment on behalf of any party to implement the Convex Network in precisely the manner described, and may be subject to change based on learnings from Protonet or elsewhere.
 
 The information contained in this repository is provided on an "as is" basis for informational and discussion purposes only, with no guarantees of completeness, accuracy, usefulness or timeliness.
 
