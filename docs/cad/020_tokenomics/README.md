@@ -27,8 +27,8 @@ This model strikes the right balance between enabling long term sustainable grow
 All digital currencies must have a mechanism for initial issuance, and Convex is no exception. However, many existing mechanisms have significant flaws:
 
 - **Protocol based issuance** - it is possible to issue tokens purely through the operation of the protocol, such as Bitcoin mining. Due to the mechanical nature, this is relatively predictable, automatic and trustworthy (at least to the extent that forks / upgrades to not fundamentally change the protocol). However, such approaches disproportionately incentivise infrastructure provision to the exclusion of all else: huge amounts of resources get consumed in Bitcoin mining, for example. This is undesirable because, at least for Convex, infrastructure provision is relatively cheap and efficient and can be well compensated through transaction fees alone - we want the majority of rewards to flow to people who add value to the ecosystem.
-- **Premining** - tokens can be generated "as if" they were mined and distributed to select parties (typically founding teams and early investors). The problem with this approach is that it creates a significant incentives for these parties to "cash out" at the earliest opportunity, often at the expense of later ecosystem entrants, and it reduces the incentives for insiders to continue to build the project. There is a significant danger of a negative "pump and dump" dynamic.
-- **ICOs** - tokens can be generated and sold in a large public sale event. Such an event may generate a significant treasury for a foundation, and create broad public ownership. However, the price of such ICOs is hard to get right, and likely to attract significant speculative activity. Similar to premining (which may occur alongside an ICO), there is a significant risk of "pump and dump" dynamics, often at the expense of less sophisticated retail investors.
+- **Pre-mining** - tokens can be generated "as if" they were mined and distributed to select parties (typically founding teams and early investors). The problem with this approach is that it creates a significant incentives for these parties to "cash out" at the earliest opportunity, often at the expense of later ecosystem entrants, and it reduces the incentives for insiders to continue to build the project. There is a significant danger of a negative "pump and dump" dynamic.
+- **ICOs** - tokens can be generated and sold in a large public sale event. Such an event may generate a significant treasury for a foundation, and create broad public ownership. However, the price of such ICOs is hard to get right, and likely to attract significant speculative activity. Similar to pre-mining (which might occur alongside an ICO), there is a significant risk of "pump and dump" dynamics, often at the expense of less sophisticated retail investors.
 - **Airdrops** - tokens can be distributed for free in large quantities according to a variety of eligibility criteria (in-person events, community membership, holding some other token etc.). While airdrops can create publicity and temporary excitement, giving out tokens for free risks devaluing the token by arbitrarily giving a windfall to individuals without them having to contribute anything. This is a disservice to those who truly do add value. It also incentivises negative behaviour in terms of attempts to benefit from future airdrops (signing up with multiple fake accounts etc.)
 
 What we really need is a fair way to distribute coins that:
@@ -110,6 +110,8 @@ Note: The maximum supply cap is chosen so that all valid coin balances can be ex
 
 ### Genesis
 
+The genesis process in Convex includes the process of creating the initial Global State and establishing the first peer on the network, to which others can then connect. This genesis state is important for tokenomics because it established the initial coin allocation and the rules by which future colin allocations may be made.
+
 #### Top Level Coin Allocation
 
 The Network MUST divide the total initial supply of Convex Coins into two quantities:
@@ -131,10 +133,18 @@ The genesis of the network MUST include a genesis account (currently `#11`) that
 
 The genesis account MUST receive funds from one or more reserve accounts to handle initial coin issuance for the following purposes:
 - Performing any network setup transactions
-- Establishing the first peer on the network
+- Establishing and staking the first peer on the network
 - Making initial coin distributions to early purchasers and contributors
 
 The genesis account MUST NOT have access to the majority of the reserve account funds, beyond what is necessary for the above. 
+
+#### Distribution account(s)
+
+The genesis process SHOULD produce one or more secondary distribution accounts that will hold Convex coins temporarily before distribution to award recipients or purchasers.
+
+The distribution accounts SHOULD NOT hold large balances of coins, and are only intended for short term holdings of coins that are already allocated to recipients (e.g. purchasers who have purchased coins, but not yet provided a public key or account into which the coins can be delivered). These balances are considered as issued (i.e. part of the current coin supply) but not yet distributed, i.e. still in the control of the governance body.
+
+The governance body MUST ensure these accounts are securely controlled by authorised individuals to ensure legitimate distributions are made.
 
 ### Release Curve
 
@@ -142,7 +152,7 @@ Coin purchases MUST be priced in fiat currency or equivalent, consistent with th
 
 The price of a Coin on the release curve is defined as `$100 * x / (1-x)` where `x` is the proportion of coins released out of the total allocation for coin purchasers, and `$` represents United States dollars or equivalent currency.
 
-Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn` 
+Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, the Convex Foundation would have a significant treasury sufficient to develop and maintain the Convex ecosystem in perpetuity.
 
 The Release Curve formula MAY be adjusted in the event of significant economic events affecting the relative value of fiat currencies used (e.g. sustained high rates of inflation). The Foundation MUST consult with the ecosystem and provide a robust rationale for any such changes.
 
