@@ -16,9 +16,7 @@ Metadata is a map containing any arbitrary set of key-values. It is specified af
 
 ```clojure
 (def some-symbol
-
   ^{:my ["meta" :data]}
-
   42)
 ```
 
