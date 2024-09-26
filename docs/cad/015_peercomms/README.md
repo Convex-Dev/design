@@ -2,13 +2,14 @@
 
 ## Overview
 
-Peers in Convex need to communicate certain messages to ensure the effective running of the protocol and communication with binary clients. This CAD describes peer-to-peer messaging as required to implement the protocol.
+Peers in Convex need to communicate messages to ensure the effective running of the protocol and communication with clients and other peers. This CAD describes peer-to-peer messaging as required to implement the protocol.
 
 Objectives:
 
 - Resilient to network failures and deliberate attacks
 - Low latency communications
 - Messaging efficiency
+- Asynchronous model supported
 
 ## Message Passing
 
@@ -18,36 +19,44 @@ A Message consists of:
  
 - A Message Type tag (one byte)
 - Encoded message payload (according to Cell encoding rules)
+- Optional: One or more additional branch cell encodings
+    - A VLC encoded length 
+    - Branch cell encoding (according to Cell encoding rules)
 
 Encoded message data depends on the message type.
 
-Messages MUST fit within a fixed size buffer (currently 8192 bytes).
+Each individual cell encoding MUST fit within a fixed size buffer (currently 8192 bytes). However, by including the additional branch cell encodings, it is possible to include branch cells referenced by the payload. In this way:
+- Large data structures can be passed in a single message
+- Branch cells can be omitted, in which case the message is regarded as **partial**. Partial messages are appropriate for values such as lattice deltas where the recipient is expected to already be in possession of the omitted branches.
 
-Where a large message exceeds the buffer, the message MUST be split into smaller messages.
+The overall size of the message is not part of the message itself, but will be provided by the transport mechanism e.g.:
+- For binary protocol messages, the message length precedes the message
+- For HTTP messages of type `application/cvx-raw` the message length is specified in the HTTP `Content-Length` header.
+- For messages passed as an octet stream, the message length is naturally delineated by the end of the stream
 
 ### Message Types
 
 #### BELIEF
 
-This message specifies a Belief from an other eer that is being shared as part of the consensus algorithm.
+This message specifies a belief from an other peer that is being shared as part of the CPoS consensus algorithm.
 
-Receiving Peers SHOULD validate this Belief message, and if valid perform a Belief Merge with their current Belief.
+Receiving peers SHOULD validate this belief message, and if valid perform a belief merge with their current belief.
 
-Receiving Peers MAY ignore Beliefs if they are experiencing high demand and need to throttle the number of Belief merges being performed.
+Receiving peers MAY ignore beliefs if they are experiencing high demand and need to throttle the number of belief merges being performed.
 
-Receiving Peers SHOULD ignore and/or minimise processing for Beliefs that have already been received and merged. This is safe because Belief merges are idempotent.
+Receiving peers SHOULD ignore and/or minimise processing for beliefs that have already been received and merged. This is safe because belief merges are idempotent.
 
 #### DATA
 
-This message type provides one encoded Cell of data to the receivening Peer. Usually, this will be a component part of a longer message or a response to a `MISSING_DATA` message.
+This message type provides one or more encoded cells of data. Usually, this will be a component part of a longer message or a response to a `MISSING_DATA` message.
 
 #### QUERY
 
-This message represents a request for a Peer to compute the results of a query (considered as a read-only transaction).
+This message represents a request for a peer to compute the results of a query (considered as a read-only transaction).
 
-Peers SHOULD make a best effort attempt to respond to all queries from permitted clients.
+Peers SHOULD make a best effort attempt to respond to queries from authorised clients.
 
-Peers MAY reject queries if they are experiencing high demand. In such cases Peers SHOULD send a result message with an error code indicating temporary failure due to load.
+Peers MAY reject queries if they are experiencing high demand. In such cases peers MUST attempt to return a result message with an error code indicating temporary failure due to load.
 
 #### TRANSACT
 
@@ -81,11 +90,9 @@ Peer that send this message MAY suspend processing of a message pending receipt 
 
 Receiving Peers SHOULD respond by sending a `DATA` message containing the missing data specified. Failure to do so may result in a previous message being ignored.
 
-
-
 ### Trust
 
-Peers in general SHOULD only trust outbound connections to other peers where the other Peer is able to prove their authenticity by signing a unique challenge with the Peer's private key.
+Peers in general SHOULD only trust outbound connections to other peers where the other peer is able to prove their authenticity by signing a unique challenge with the peer's private key.
 
 Peers MAY accept messages from any source, but if they do, they SHOULD prioritise messages from trusted sources.
 
