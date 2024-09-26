@@ -2,18 +2,22 @@
 
 ## Overview
 
-Peers in Convex need to communicate messages to ensure the effective running of the protocol and communication with clients and other peers. This CAD describes peer-to-peer messaging as required to implement the protocol.
+Peers in Convex need to communicate messages to ensure the effective running of the protocol and communication with clients and other peers. We need highly efficient messaging that is well suited for distributed systems dealing with advanced lattice data structures and operations.
+
+This CAD describes the Convex / lattice messaging model. 
 
 Objectives:
 
 - Resilient to network failures and deliberate attacks
 - Low latency communications
 - Messaging efficiency
-- Asynchronous model supported
+- Asynchronous model supported by default
+- Flexibility to adapt to different transport protocols
+- Consistency with lattice data principles
 
-## Message Passing
+## Messages
 
-Peers communicate via messages. 
+Peers communicate via messages. A message is an atomic, asynchronous piece of data passed from a sender to a receiver.
 
 A Message consists of:
  
@@ -82,9 +86,9 @@ Peers MAY cache their most recent status response for efficiency reasons.
 
 #### MISSING_DATA
 
-This message represents a request for missing data. Usually, this is sent by a peer when it is attempting to process another message but some data is missing.
+This message represents a request for missing data. Usually, this is sent by a peer when it is attempting to process a partial message but some data is missing locally, and it needs to acquire the missing data before proceeding.
 
-The Missing Data request must include the Value ID (hash of encoding) for the missing data.
+The Missing Data request must include the Value ID (hash of encoding) for the missing data. Note: It is guaranteed that if a peer has received a partial message, it must be able to determine the hashes of any directly missing data (since they will be encoded as refs in the partial message).
 
 Peer that send this message MAY suspend processing of a message pending receipt of missing data from the original sender. If the original sender is unable to satisfy this request in a timely manner, the suspended message SHOULD be discarded.
 
@@ -93,6 +97,8 @@ Receiving Peers SHOULD respond by sending a `DATA` message containing the missin
 ### Trust
 
 Peers in general SHOULD only trust outbound connections to other peers where the other peer is able to prove their authenticity by signing a unique challenge with the peer's private key.
+
+Peers SHOULD reject messages that appear to be malicious, incorrectly formed or too large for reasonable handling.
 
 Peers MAY accept messages from any source, but if they do, they SHOULD prioritise messages from trusted sources.
 
