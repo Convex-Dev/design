@@ -20,7 +20,7 @@ The CNS user API is a library implemented as standard by the `*registry*` (accou
 The resolve function gets the value referred to by a CNS name. This is the most fundamental CNS function.
 
 ```clojure
-(@cns/resolve 'convex.asset)
+(@convex.cns/resolve 'convex.asset)
 => #18
 ```
 
@@ -40,6 +40,14 @@ And is also equivalent to just using the resolution symbol `@` directly:
 
 The resolve function returns `nil` if the CNS name referred to does not exist.
 
+### `read`
+
+The `read` function is similar to `resolve, but returns the entire CNS record:
+
+```clojure
+()
+```
+
 ## Specification
 
 ### CNS Base Address
@@ -54,7 +62,7 @@ A CNS record MUST contain the following logical values:
 - **Value** : The entity referred to be the CNS record, which SHOULD be an address or a scoped reference e.g/ `[#45 :some-key]`
 - **Controller** : The controller that enables access to update the CNS record, which SHOULD be a valid trust monitor
 - **Metadata** : Optional metadata attached to the CNS Record
-- **Child** : Optional CNS implementation that handles child namespaces (typically a scoped address)
+- **Child** : Optional CNS node that handles child namespaces (typically a scoped address)
 
 Any of the logical values MAY be `nil`
 
@@ -69,11 +77,19 @@ Paths can be represented in at least two forms:
 
 Normally the user API makes use of symbols, while the CNS internal SPI uses vectors of strings. The rationale for this is:
 - Dot delimited symbols are preferred for conciseness and human readability
-- A vector of strings is more convenient and efficient for programmatic manipulation and internal database representation. 
+- A vector of strings is more convenient and efficient for programmatic manipulation and internal database representation.
+
+### CNS Nodes
+
+CNS nodes are elements of the CNS tree that maintain mappings of names to records.
+
+Typically, a CNS Node stores a map of names to records, but different implementations MAY implement such mappings in any way they chose, including creating mapping dynamically.
+
+Note: there is a correspondence between CNS records and nodes: each CNS record may optionally specify the CNS node (Child) that represents any children.
 
 ### CNS Root
 
-The CNS root is the record indicated by the empty path `[]`.
+The CNS root is the CNS Node indicated by the empty path `[]`.
 
 As such, it acts as the parent for all root namespaces (e.g. `convex`).
 
@@ -107,7 +123,7 @@ Instead of CNS, it is perfectly legitimate to directly use addresses that are kn
 (call #16789 (known-actor-function :foo))
 ```
 
-Commonly, actor code might `import` a library from CNS at compile time into the local environment, then use it in subsequent code without further CNS lookups:
+Commonly, actor code might `import` a library from CNS at compile/deploy time into the local environment, then use it in subsequent code without further CNS lookups:
 
 ```clojure
 (import convex.asset :as asset)
@@ -118,7 +134,7 @@ Commonly, actor code might `import` a library from CNS at compile time into the 
 
 ### Static compilation
 
-It is reasonable to statically compile resolved CNS addresses so that future uses do not actually perform CNS lookups (which could be a relatively expensive operation). This can be done by compile time resolution as follows:
+It is reasonable to statically compile resolved CNS addresses so that future uses do not actually perform CNS lookups (which can be a relatively expensive operation). This can be done by compile time resolution as follows:
 
 ```clojure
 (defn my-function [x]
