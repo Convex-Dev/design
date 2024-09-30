@@ -12,3 +12,13 @@ community:
   label: Community
   permalink: /community
   description: Convex Developer Community
+
+reader:
+  label: Reader
+  permalink: /reader
+  description: Convex Reader
+
+lisp:
+  label: Lisp
+  permalink: /lisp
+  description: Convex Reader

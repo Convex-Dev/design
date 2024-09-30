@@ -1,8 +1,8 @@
 ---
 slug: tagged-values
 title: Reader upgrades
-authors: [convex]
-tags: [convex, reader, convex-lisp]
+authors: [mikera]
+tags: [convex, reader, lisp]
 ---
 
 The Reader converts text into data. It's a key component in making Convex based apps work effectively:
@@ -69,4 +69,4 @@ We have literally thousands of unit tests checking all kinds of input combinatio
 
 ### Learn More
 
-Full Reader specifications are outlined in [CAD032](/docs/cad/032_reader). For anyone wanting to work on the Reader or CVM data translation in general it's a great place to get started! 
+Full Reader specifications are outlined in [CAD032](/docs/cad/reader). For anyone wanting to work on the Reader or CVM data translation in general it's a great place to get started! 
