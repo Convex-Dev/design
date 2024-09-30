@@ -5,7 +5,7 @@ authors: [mikera]
 tags: [convex, reader, lisp]
 ---
 
-The Reader converts text into data. It's a key component in making Convex based apps work effectively:
+The Reader converts text into data. It's a key component in making Convex based apps work effectively in multiple ways:
 
 - **Source Code** like `(transfer #101 1000000)` is transformed into trees of code ready for execution on the CVM.
 - **REST APIs** can use Convex data in text form with the MIME type `application/cvx`
@@ -19,7 +19,7 @@ In preparation for Protonet, we've been putting the final touches on the Reader.
 
 The Convex Reader is now about **10x faster than before**. It can now parse roughly 15 MB/s of CVX data files into lattice data structures per thread, up from about 1.5 MB/s before. 
 
-That's pretty fast: remember we are transforming text into full cryptographically verifiable lattice data structures here, not simply scanning a file to gather statistics. It's certainly comparable to high-performance JSON parsing libraries that produce full object trees.
+That's pretty fast: remember we are transforming text into full cryptographically verifiable lattice data structures here, not simply scanning a file to gather statistics. It's certainly comparable to high-performance JSON parsing libraries that produce full object graphs.
 
 This means that you can confidently implement high performance APIs that take `application/cvx` data as input, such as in the Convex REST API Server over HTTPS.
 
