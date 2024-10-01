@@ -9,13 +9,13 @@ Error handling is a critical feature of all good code, and therefore requires sp
 Every expression MUST do one of three things:
 - Succeed with a valid CVM value as the `*result*`.
 - Fail with an error as described in ths CAD.
-- Never complete due to an exceptional exit, e.g. because of a nested CVM `return` function.
+- Perform an exceptional exit, e.g. because of a nested CVM `return` function. In these cases, control is always returned to some higher level expression.
 
 ### Error Codes
 
 All errors are defined to have a non-nil error code that describes the general nature of the error. The error code SHOULD provide information regarding the type or cause of the error, in a way that may be interpreted appropriately by clients.
 
-Error codes SHOULD be upper case keywords (e.g. `:ASSERT`) by convention, though this is not enforced by the CVM and alternative CVM types MAY be used.
+Error codes SHOULD be upper case keywords (e.g. `:ASSERT`) by convention. The CVM itself MUST follow this convention, though this is not enforced in user code and alternative CVM types MAY be used.
 
 ### Error Messages
 
@@ -37,7 +37,7 @@ Most errors can be caught and handled within CVM code (`:JUICE` errors are a not
 
 This construct has several notable features:
 - Sub-expressions are executed in turn until the *first one that succeeds* (completes without an error).
-- Each sub-expression is *atomic* - either it succeeds, or in the case of an error, the whole subexpression is rolled back. This is important protection to ensure that code causing an error does not result in inconsisent state from partically completed operations.
+- Each sub-expression is *atomic* - either it succeeds, or in the case of an error, the whole sub-expression is rolled back. This is important protection to ensure that code causing an error does not result in inconsistent state from partially completed operations.
 - The whole `try` expression can only fail if the last sub-expression fails (or an uncatchable error like `:JUICE` is thrown)
 
 NOTE: Originally catching errors was not allowed in the CVM, because of the fears that the security and integrity of smart contracts would be at risk if error recovery was mishandled. This risk is largely mitigated by the "rollback" behaviour implemented in the `try` construct.
@@ -232,7 +232,7 @@ All error results SHOULD include a source code to indicate the source of the err
 | `:CLIENT`    | Client library code                          | Failed input validation
 | `:COMM`      | Client-Server communications                 | IO failure, connection failure, timeout
 | `:SERVER`    | Server handling of request                   | Bad request format, server error, server load
-| `:PEER`      | Peer handling of user request                | Rejected for bad signature by peer
+| `:PEER`      | Peer handling of user request                | Rejected for bad signature detected by peer
 | `:NET`       | Consensus network                            | Transaction failed to get into consensus
 | `:CVM`       | CVM state transition handling                | Invalid sequence number, `:JUICE` error
 | `:CODE`      | CVM code execution                           | `:CAST` error in user code
