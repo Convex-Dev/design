@@ -68,19 +68,23 @@ The following are standard Error Codes that are recommended for use in the CVM. 
 
 ### `:ARGUMENT`
 
-An `:ARGUMENT` srror SHOULD be thrown whenever a function is passed an argument that is of an allowable type but for some reason is invalid (perhaps in relation to other arguments). An example would be attempting to put `assoc` a non-Blob value into a Index (which only accepts Blob-like values as keys).
+An `:ARGUMENT` error SHOULD be thrown whenever a function is passed an argument that is of an allowable type but for some reason is invalid (perhaps in relation to other arguments). 
+
+Examples:
+- Attempting to put `assoc` a non-Blob value into a Index (which only accepts Blob-like values as keys).
+- Attempting to cast a value that is out of the allowable range (e.g. `(long 1e100)`)
 
 If the argument is definitely of the wrong type (i.e. would never be valid in any situation) then a `:CAST` error should be thrown instead.
 
 ### `:ARITY`
 
-An `:ARITY` srror SHOULD be thrown whenever an attempt is made to call a Function with an illegal number of arguments.
+An `:ARITY` error SHOULD be thrown whenever an attempt is made to call a Function with an illegal number of arguments.
 
 Note that a function may allow a variable number of arguments with a parameter declaration such as `[a & more]`. In such cases, code SHOULD still throw an `:ARITY` Error if the number of variable arguments is impermissible for any reason (e.g. requiring an odd number of arguments)
 
 ### `:ASSERT`
 
-An `:ASSERT` Error MAY be thrown whenever a precondition for some code is not satisfied. In many cases, a more specific error message may be appropriate or informative (e.g. `:CAST` or `:STATE`.
+An `:ASSERT` error MAY be thrown whenever a precondition for some code is not satisfied. In many cases, a more specific error message may be appropriate or informative (e.g. `:CAST` or `:STATE`).
 
 The Core function `assert` throws an `:ASSERT` error if any of its conditions evaluates to `false`
 
@@ -94,7 +98,7 @@ This Error is useful because it is more specific than `:ARGUMENT` when working w
 
 A `:CAST` error SHOULD be thrown whenever a function is passed an argument that is of the wrong type.
 
-In particular, a `:CAST` Error SHOULD be thrown whenever an attempt is made to explicitly or implicitly convert a value to a different type, but the conversion is not permitted. 
+In particular, a `:CAST` Error MUST be thrown whenever an attempt is made to convert a value to a different type using a CVM runtime function, but the conversion is not permitted for any member of the type.
 
 ### `:NOBODY`
 
@@ -128,13 +132,15 @@ A `:MEMORY` error SHOULD be thrown when an operation is attempted that fails bec
 
 ### `:JUICE`
 
-A `:JUICE` error SHOULD be thrown if the `*origin*` account of the currently executing code has insufficent Convex Coin balance to pay the required Juice costs. User code MAY return this error to indicate that an infeasibly expensive operation was attempted.
+A `:JUICE` error MUST be thrown with the source `:CVM` if the `*origin*` account of the currently executing code has insufficient Convex Coin balance to pay the required Juice costs. 
 
-A `:JUICE` error cannot be caught: it would be pointless because any error handling code would not be able to execute due to lack of juice.
+A `:JUICE` error from the CVM MUST NOT caught: it would be pointless because any error handling code would not be able to execute due to lack of juice.
+
+User code MAY throw a `:JUICE` error to indicate that an infeasibly expensive CVM operation was attempted.
 
 ### `:UNDECLARED`
 
-An `:UNDECLARED` error SHOULD be thrown whenever an attempt is made to lookup a Symbol in an account's environment that is not defined.
+An `:UNDECLARED` error SHOULD be thrown whenever an attempt is made to lookup a symbol in an account's environment that is not defined.
 
 ## CVM Behaviour
 
@@ -144,7 +150,7 @@ Clients MAY assume that the CVM behaves consistently according to these rules, B
 
 ### Core Runtime functions
 
-Core runtime functions MUST throw an `:ARITY` error if an invalid number of arguments is passed to a funtion.
+Core runtime functions MUST throw an `:ARITY` error if an invalid number of arguments is passed to a function.
 
 Otherwise, core runtime functions MUST throw a `:CAST` error when an argument of the wrong Type is provided, or if an explicit cast function such as `blob` fails.
 
@@ -160,9 +166,9 @@ Otherwise, core runtime functions MUST NOT throw an error.
 
 If the CVM encounters any condition that should not be legally possible during CVM execution (typically caused by a host runtime exception), it should regard this condition as a Fatal Failure
 
-The CVM MUST report a `:FATAL` error if any fatal failure occurs.
+The CVM MUST report a `:FATAL` error with a source of `:CVM` if any fatal failure occurs.
 
-The CVM MUST NOT interpret an error thrown by user code as a fatal failure, but such errors MAY still have the `:FATAL` error code.
+The CVM MUST NOT interpret an error thrown by user code as a fatal failure, but such errors MAY still have the `:FATAL` error code - however the source MUST be `:CODE` in such cases.
 
 A peer that encounters a fatal error has a serious problem. Hardware failure, bugs in the CVM implementation or resource limitations of the host environment are all possibilities, all of which may cause the peer to fail to correctly compute the updated CVM state in consensus.
 
@@ -185,9 +191,9 @@ In this case, the CVM MUST NOT execute the transaction. This is necessary to pre
 
 #### `:SEQUENCE`
 
-The CVM must throw a `:SEQUENCE` error in the case that the sequence number of a transaction is invalid for the origin account that it is submitted for. This protection is neccessary to stop replay attacks (multiple executions of the same transaction cause by an adversary re-submitting it). 
+The CVM throws a `:SEQUENCE` error in the case that the sequence number of a transaction is invalid for the origin account that it is submitted for. The only correct sequence value is the integer which is the current `*sequence*` plus one. This protection is necessary to stop replay attacks (multiple executions of the same transaction cause by an adversary re-submitting it). 
 
-If the transaction is submitted for a valid cccount but has the wrong sequence number for the acount (i.e. it is not the next Sequence Number), the CVM MUST return a `:SEQUENCE` Error.
+If the transaction is submitted for a valid account but has the wrong sequence number for the account (i.e. it is not the next Sequence Number), the CVM MUST return a `:SEQUENCE` Error with the source code `:CVM`
 
 In this case, the CVM MUST NOT commence execution of the transaction. 
 
@@ -218,6 +224,8 @@ If a pre-condition is not met, it may then be appropriate to `fail` immediately 
 ## Error Sources
 
 Error sources indicate the region in the network where an error occurred. These are important mainly because they can indicate responsibility for failure and/or or how to diagnose the problem.
+
+All error results SHOULD include a source code to indicate the source of the error.
 
 | Source Code  | Location of error                            | Example(s)
 | ------------ | --------------------------------             | -----------
