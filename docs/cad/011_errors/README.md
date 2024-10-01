@@ -23,7 +23,7 @@ All errors are accompanied with a message, which may be any CVM value (including
 
 Messages SHOULD be meaningful and human readable to facilitate debugging or appropriate notification to users.
 
-The contents of the message MUST NOT affect CVM state, however it SHOULD be returned to clients by peers for informational purposes.
+If not otherwise handled, the contents of the message SHOULD be returned to clients by peers for informational purposes.
 
 ### Try / Catch
 
