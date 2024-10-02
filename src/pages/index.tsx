@@ -17,11 +17,18 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link
+          <Link 
             className="button button--secondary button--lg"
             to="/docs/intro">
             Convex Intro
           </Link>
+          <div style={{width:20}} />
+          <Link
+            className="button button--secondary button--lg"
+            to="/docs/overview/lattice">
+            The Lattice
+          </Link>
+          
         </div>
       </div>
     </header>

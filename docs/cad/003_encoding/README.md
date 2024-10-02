@@ -10,7 +10,13 @@ Convex implements a standard **Encoding** format that represents any valid Conve
 
 The Encoding model breaks Values into a Merkle DAG of one or more **Cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
 
+## Special Requirements
 
+Convex and related lattice infrastructure places some very specific requirements on the encoding format which necessitate the design of the encoding scheme design here:
+
+- Every distinct value must have one and only one unique valid encoding, so that it can be hashed to a stable ID
+- It must be possible to read encode / decode `n` bytes of data in `O(n)` time (DoS resistance)
+- There must be a fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers
 
 ## Basic Rules
 
@@ -18,7 +24,7 @@ The Encoding model breaks Values into a Merkle DAG of one or more **Cells** that
 
 The fundamental entities that are encoded are called Cells.
 
-Cells may contain other cells by reference, and therefore a top-level cell can be regarded as a directed acyclic graph (DAG). Since cell encodings contain cryptographic hashes of the encodings of any branch referenced cells, this is furthermore a Merkle DAG.
+Cells may contain other cells by reference, and therefore a top-level cell can be regarded as a directed acyclic graph (DAG). Since cell encodings contain cryptographic hashes of the encodings of any referenced cells, this is furthermore a Merkle DAG.
 
 ### Branches
 
@@ -32,7 +38,7 @@ Branches are an important optimisation, since they reduce the need to produce ma
 
 The encoding MUST be a sequence of bytes.
 
-Any given Cell MUST map to one and only one encoding. 
+Any given cell MUST map to one and only one encoding. 
 
 Any two distinct (non-identical) cells MUST map to different encoding
 
@@ -153,13 +159,13 @@ The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` re
 
 Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
 
-### `0x10` - `0x18` Integer ("SmallInt")
+### `0x10` - `0x18` Integer (Long)
 
 ```Encoding
 0x1n <n bytes of numeric data>
 ```
 
-A small integer value is encoded by the Tag byte followed by `n` bytes representing the signed 2's complement  numeric value of the Integer. The integer must be represented in the minimum possible number of bytes (can be 0 additional bytes for the specific value `0`).
+A Long value is encoded by the Tag byte followed by `n` bytes representing the signed two's complement numeric value of the Integer. The Integer MUST be represented in the minimum possible number of bytes - excess leading bytes are an invalid encoding.
 
 Note: The value zero is conveniently encoded in this scheme as the single byte `0x10`
 
@@ -168,7 +174,7 @@ Note: This encoding is chosen in preference to a VLC encoding because:
 - It is consistent with the natural encoding for two's complement integers on most systems
 - The numerical part is consistent with the format for BigInts
 
-### `0x19` Integer ("BigInt")
+### `0x19` Integer (BigInt)
 
 ```
 0x19 <VLC Count length of Integer = n> <n bytes of data>
@@ -188,21 +194,6 @@ With the exception of the Tag byte, The encoding of a BigInt is defined to be ex
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
 
-### `0x3c` - `0x3f` Character
-
-```
-Tag determines the length in bytes of the Unicode code point value
-0x3c <1 Byte>
-0x3d <2 Bytes>
-0x3e <3 Bytes>
-0x3f <4 Bytes> (reserved, not currently possible?)
-```
-
-A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
-
-A Character encoding is invalid if:
-- More bytes are used than necessary (i.e. a leading byte of zero)
-- The code point is beyond the maximum allowable (0x10ffff) 
 
 ### `0x20` Ref
 
@@ -282,52 +273,156 @@ Importantly, this design allows:
 ### 0x32 Symbol
 
 ```
-0x32 <VLC Count = n> <n bytes UTF-8 String>
+0x32 <Count Byte = n> <n bytes UTF-8 String>
 ```
 
-A Symbol is encoded with the Tag byte, a VLC Count length `n`, and `n` bytes of UTF-8 encoded characters.
+A Symbol is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
 The Symbol MUST have a length of 1-128 UTF-8 bytes
 
 ### `0x33` Keyword
 
 ```
-0x32 <VLC Count = n> <n bytes UTF-8 String>
+0x32 <Count Byte = n> <n bytes UTF-8 String>
 ```
 
-A Keyword is encoded with the Tag byte, a VLC Count length `n`, and `n` bytes of UTF-8 encoded characters.
+A Keyword is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
 The Keyword MUST have a length of 1-128 UTF-8 bytes
+
+### `0x3c` - `0x3f` Character
+
+```
+Tag determines the length in bytes of the Unicode code point value
+0x3c <1 Byte>
+0x3d <2 Bytes>
+0x3e <3 Bytes>
+0x3f <4 Bytes> (reserved, not currently possible?)
+```
+
+A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
+
+A Character encoding is invalid if:
+- More bytes are used than necessary (i.e. a leading byte of zero)
+- The code point is beyond the maximum allowable (0x10ffff) 
 
 ### `0x80` Vector
 
 ```
-If a Leaf Count:
+If a leaf cell:
 
 0x80 <VLC Count = n> <Prefix Vector> <Value>(repeated 0-16 times)
 
-If a non-Leaf Count:
+If a non-leaf cell:
 
 0x80 <VLC Count = n> <Child Vector>(repeated 2-16 times)
 ```
 
-A Leaf Count `n` is defined as 0, 16, or any other positive integer which is not an exact multiple of 16.
+A leaf cell is a Vector with Count `n` being 0, 16, or any other positive integer which is not an exact multiple of 16.
 
-A Vector is defined as "packed" if its Count is `16 ^ level`, where `level` is any positive integer. Intuitively, this represents a Vector which has the maximum number of elements before a new level in the tree must be added.
+A Vector is defined as "packed" if its count is a positive multiple of 16. A leaf vector which is packed must therefore have a count of exactly 16 - such vectors for the leaf nodes of a tree of non-leaf vectors.
+
+A Vector is defined as "fully packed" if its Count is `16 ^ level`, where `level` is any positive integer. Intuitively, this represents a Vector which has the maximum number of elements before a new level in the tree must be added.
 
 All Vector encodings start with the tag byte and a VLC Count of elements in the Vector.
 
 Subsequently:
-- For Leaf Vectors, a Prefix Vector is encoded (which may be `nil`) that contains all elements up to the highest multiple of 16 less than the Count, followed by the Values
-- For non-Leaf Vectors, Child Vectors are encoded where each child is the maximum size Packed Vector less than Count in length, except the last which is the Vector containing all remaining Values.
+- For leaf cells, a packed prefix vector is encoded (which may be `nil`) that contains all elements up to the highest multiple of 16 less than the Count, followed by the Values
+- For non-Leaf cells, Child Vectors are encoded where each child is the maximum size Packed Vector less than Count in length, except the last which is the Vector containing all remaining Values.
 
 This Encoding has some elegant properties which make Convex Vectors particularly efficient in regular usage:
 - Short Vectors (0-16 count) are always encoded in a single cell, which may require no further cell encodings in the common case that all elements are embedded.
 - The last few elements of the Vector are usually in a Leaf Vector, which allows `O(1)` access and update to elements
-- Append is always `O(1)` (since either it is a Leaf Vector, or the append creates a new Leaf Vector with the original Vector as its Prefix)
-- For practical purposes, access and update is also `O(1)` (Note: technically `O(log n)` with a high branching factor, but upper bounds on vector size make this `O(1)` with a constant factor that accounts for the maximum possible depth)
+- Append is `O(1)`, usually with a small constant (only extending the current leaf vector)
+- Access and update are also `O(1)` (Note: could be considered `O(log n)` with a high branching factor, but upper bounds on vector size make this `O(1)` with a constant factor accounting for the maximum possible depth)
 
-### TODO: More tags
+### `0x81` List
+
+A List is encoded exactly the same as a Vector, except:
+- The tag byte is `0x81`
+- The elements are logically considered to be in reversed order (i.e. the last element encoded is the first element of the list)
+
+### `0x82` Map
+
+```
+If a leaf cell:
+
+0x80 <VLC Count = n> <Key Ref | Value Ref> (repeated n times, in order of key hashes)
+
+If a non-leaf cell:
+
+0x80 <VLC Count = n> <Shift Byte> <Mask> <Child Refs> (repeated 2-16 times)
+
+Where:
+- <Shift Byte>   specifies the hex position where the map branches (0 = at the fist hex digit, etc.)
+- <Mask>    is a 16-bit bitmask indicating key hash hex valeus are included (low bit = `0` ... high bit = `F`)
+- <Child Refs>    are Refs to Map cells which can be Leaf or non-Leaf nodes
+```
+
+This encoding guaranteed that all entries are encoded in the order of key hashes. 
+
+
+### `0x83` Set
+
+A Set is encoded exactly the same as a Map, except:
+- The tag byte is `0x83`
+- The Value Refs are omitted
+
+### `0x84` Index
+
+```
+0x84 <VLC Count = n> <Entry> <Depth> <Mask> <Child Refs> (repeated 1-16 times)
+
+Where:
+
+<Entry> is either:
+- 0x00      (if no entry present at this position in Index)
+- 0x20 <Key Ref> <Value Ref>     (if entry present)
+
+<Depth> is an unsigned byte indicating the hex digit at which the entry / branch occurs
+
+<Mask> is a 16 bit bitmap of which child Index nodes are present at the given depth (low bit = `0` ... high bit = `F`)
+
+Special cases:
+- If Count is 0 everything following the Count is omitted (the empty Index)
+- If Count is 1 the first byte of <Entry> and everything following the Entry is omitted (single Key / Value pair)
+```
+
+An Index serves as a specialised map with BlobLike keys (Blobs, Strings, Addresses etc.). Logically, it is a mapping from byte arrays to values. 
+
+This encoding ensures that entries are encoded in lexicographic ordering. Unlike the hash based Maps, an Index is constrained to use only BlobLike keys, and cannot store two keys which have the same Blob representation (though the keys will retain their original type).
+
+### `0x88` Syntax
+
+```
+0x88 <Meta Ref> <Value Ref>
+
+Where <Meta Ref> is either:
+- 0x00 (nil) if there is no metadata (considered as empty map)
+- A Ref to a non-empty map
+
+The <Value Ref> can be any value.
+```
+
+Logically, a `Syntax` value is a wrapped value with a metadata map.
+
+### `0x90` Signed
+
+Represents a digitally signed data value.
+
+```
+`0x90` <Public Key> <Signature> <Value Ref>
+
+Where:
+- Public Key is 32 bytes Ed25519 public key
+- Signature is 64 bytes Ed25519 signature
+```
+
+The Signature is expected to be the Ed25519 signature of the Value Ref encoding. This means that the signed bytes will be either an embedded value (1-140 bytes), or an `0x20` Ref to a branch cell (33 bytes). This format is effective because it means the encoding of the Signed data value is sufficient to validate the Signature without any external references.
+
+The signature may or may not be valid: an invalid signature is still a valid value from an encoding perspective.
+
+### TODO: A few remaining tags
 
 ## Implementation Notes
 

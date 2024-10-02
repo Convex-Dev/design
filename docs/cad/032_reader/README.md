@@ -52,6 +52,8 @@ nil
 ;; Maps
 {:a 1, :b 2}
 
+;; Index (note: uses tagged reader syntax)
+#Index {0x1234 :foo}
 ```
 
 ### Symbols
@@ -134,6 +136,25 @@ Note: The Convex Lisp compiler generally compiles syntax objects to and expressi
 => ^{:foo true} [1 2 3]
 ```
 
+### Tagged values
+
+The reader supported **tagged values** where custom tags indicate how a value should be interpreted.
+
+```clojure
+;; You can tag with #Index to signify an Index rather than a regular map
+#Index {0x :empty-blob}
+=> #Index {0x :empty-blob}
+
+;; A CVM Result record
+#Result {:id 2,:result 2}
+
+;; A signed value
+#Signed {:public-key 0x8556aba53e4de38cc4e8775b546261c803eb0b09bd9d8868ebefd469f6e93e37,
+         :signature 0xb85f149acac95790d2bccdd8c3bf32ac603e8a34a9378684ba073bb2065455d56056a5240283b4d1d39f1d04c69cf53acc5236710fa8d76ecfe2e8e9795f9502,
+         :value {:origin #12,:sequence 5,:command 1}}
+```
+
+Currently, this is mostly useful for CVM types such as records which do not have a direct data structure representation. In the future, this may be extended to allow more custom types.
 
 ## Usage
 
