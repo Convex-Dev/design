@@ -159,13 +159,13 @@ The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` re
 
 Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
 
-### `0x10` - `0x18` Integer ("SmallInt")
+### `0x10` - `0x18` Integer (Long)
 
 ```Encoding
 0x1n <n bytes of numeric data>
 ```
 
-A small integer value is encoded by the Tag byte followed by `n` bytes representing the signed 2's complement  numeric value of the Integer. The integer must be represented in the minimum possible number of bytes (can be 0 additional bytes for the specific value `0`).
+A Long value is encoded by the Tag byte followed by `n` bytes representing the signed two's complement numeric value of the Integer. The Integer MUST be represented in the minimum possible number of bytes - excess leading bytes are an invalid encoding.
 
 Note: The value zero is conveniently encoded in this scheme as the single byte `0x10`
 
@@ -174,7 +174,7 @@ Note: This encoding is chosen in preference to a VLC encoding because:
 - It is consistent with the natural encoding for two's complement integers on most systems
 - The numerical part is consistent with the format for BigInts
 
-### `0x19` Integer ("BigInt")
+### `0x19` Integer (BigInt)
 
 ```
 0x19 <VLC Count length of Integer = n> <n bytes of data>
@@ -194,21 +194,6 @@ With the exception of the Tag byte, The encoding of a BigInt is defined to be ex
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
 
-### `0x3c` - `0x3f` Character
-
-```
-Tag determines the length in bytes of the Unicode code point value
-0x3c <1 Byte>
-0x3d <2 Bytes>
-0x3e <3 Bytes>
-0x3f <4 Bytes> (reserved, not currently possible?)
-```
-
-A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
-
-A Character encoding is invalid if:
-- More bytes are used than necessary (i.e. a leading byte of zero)
-- The code point is beyond the maximum allowable (0x10ffff) 
 
 ### `0x20` Ref
 
@@ -304,6 +289,22 @@ The Symbol MUST have a length of 1-128 UTF-8 bytes
 A Keyword is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
 The Keyword MUST have a length of 1-128 UTF-8 bytes
+
+### `0x3c` - `0x3f` Character
+
+```
+Tag determines the length in bytes of the Unicode code point value
+0x3c <1 Byte>
+0x3d <2 Bytes>
+0x3e <3 Bytes>
+0x3f <4 Bytes> (reserved, not currently possible?)
+```
+
+A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
+
+A Character encoding is invalid if:
+- More bytes are used than necessary (i.e. a leading byte of zero)
+- The code point is beyond the maximum allowable (0x10ffff) 
 
 ### `0x80` Vector
 
