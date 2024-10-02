@@ -270,7 +270,7 @@ Importantly, this design allows:
 - Structural sharing of tree nodes, giving O(log n) update with path copying
 - Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 4096 bytes.
 
-### 0x32 Symbol
+### `0x32` Symbol
 
 ```
 0x32 <Count Byte = n> <n bytes UTF-8 String>
