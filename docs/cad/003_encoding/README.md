@@ -141,6 +141,8 @@ Encoding rules are:
 - The remaining bits from each byte are considered as a standard unsigned big-endian two's complement binary encoding.
 - The encoding is defined to be the shortest possible such encoding for any given integer.
 
+In data structures, a VLC Count is always used to specify the number of elements in the data structure.
+
 Note: VLC Counts are the same as VLC Integers, except that they are unsigned. Having this distinction is justified by frequent savings of one byte, especially when used as counts within small data structures.
 
 ### `0x00` Nil
@@ -165,7 +167,7 @@ Note: These Tags are chosen to aid human readability, such that the first hexade
 0x1n <n bytes of numeric data>
 ```
 
-A Long value is encoded by the Tag byte followed by `n` bytes representing the signed two's complement numeric value of the Integer. The Integer MUST be represented in the minimum possible number of bytes - excess leading bytes are an invalid encoding.
+A Long value is encoded by the Tag byte followed by `n` bytes representing the signed two's complement numeric value of the Integer. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
 
 Note: The value zero is conveniently encoded in this scheme as the single byte `0x10`
 
@@ -180,7 +182,7 @@ Note: This encoding is chosen in preference to a VLC encoding because:
 0x19 <VLC Count length of Integer = n> <n bytes of data>
 ```
 
-An Integer is represented by the Tag byte followed by the VLC encoded length of the Integer in bytes. 
+An Integer is represented by the Tag byte followed by the VLC encoded length of the Integer in bytes. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
 
 The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long).
 
@@ -193,7 +195,6 @@ With the exception of the Tag byte, The encoding of a BigInt is defined to be ex
 ```
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
-
 
 ### `0x20` Ref
 
@@ -376,16 +377,19 @@ A Set is encoded exactly the same as a Map, except:
 Where:
 
 <Entry> is either:
-- 0x00      (if no entry present at this position in Index)
+- 0x00                           (if no entry present at this position in Index)
 - 0x20 <Key Ref> <Value Ref>     (if entry present)
 
-<Depth> is an unsigned byte indicating the hex digit at which the entry / branch occurs
+<Depth> is an unsigned byte indicating the hex digit at which the entry / branch occurs. If an entry is present, depth must match the hex length of the entry key
 
 <Mask> is a 16 bit bitmap of which child Index nodes are present at the given depth (low bit = `0` ... high bit = `F`)
 
 Special cases:
 - If Count is 0 everything following the Count is omitted (the empty Index)
 - If Count is 1 the first byte of <Entry> and everything following the Entry is omitted (single Key / Value pair)
+- If count is 2+ then in order to be valid the Index node must have either:
+    - An entry at this location plus at least one child 
+    - No entry and at least 2 children which differ in the hex digit at this depth
 ```
 
 An Index serves as a specialised map with BlobLike keys (Blobs, Strings, Addresses etc.). Logically, it is a mapping from byte arrays to values. 
@@ -399,12 +403,12 @@ This encoding ensures that entries are encoded in lexicographic ordering. Unlike
 
 Where <Meta Ref> is either:
 - 0x00 (nil) if there is no metadata (considered as empty map)
-- A Ref to a non-empty map
+- A Ref to a non-empty Map containing the metadata
 
 The <Value Ref> can be any value.
 ```
 
-Logically, a `Syntax` value is a wrapped value with a metadata map.
+Logically, a `Syntax` value is a wrapped value with a metadata map. The metadata can be any Map of keys to values.
 
 ### `0x90` Signed
 
@@ -421,6 +425,14 @@ Where:
 The Signature is expected to be the Ed25519 signature of the Value Ref encoding. This means that the signed bytes will be either an embedded value (1-140 bytes), or an `0x20` Ref to a branch cell (33 bytes). This format is effective because it means the encoding of the Signed data value is sufficient to validate the Signature without any external references.
 
 The signature may or may not be valid: an invalid signature is still a valid value from an encoding perspective.
+
+### `0xFF` Illegal
+
+The `0xFF` tag is always illegal as a tag byte in ane encoding.
+
+### Reserved Tags
+
+Tag bytes not otherwise specified are reserved for future CADs. Implementations SHOULD treat all such tags as illegal and reject encodings they are unable to read.
 
 ### TODO: A few remaining tags
 
