@@ -2,20 +2,20 @@
 
 ## Overview
 
-Convex uses the standard **CAD3 Encoding** format that represents any valid Convex data value as a **sequence of bytes**. Encoding is an important capability for Convex because:
+Convex uses the standard **CAD3 Encoding** format that represents any valid Convex data value as a **sequence of bytes**. The CAD3 encoding is an important capability for Convex because:
 
 - It allows values to be efficiently **transmitted** over the network between peers and clients
 - It provides a standard format for **durable data storage** of values
-- It enables the definition of a cryptographic **Value ID** to identify any value as a "decentralised pointer", which also serves as the root of a Merkle DAG that is the encoding of the complete value.
+- It defines a cryptographic **value ID** to identify any value. This is a decentralised pointer, which also serves as the root of a Merkle DAG that represents the complete encoding of a value.
 
-The Encoding model breaks Values into a Merkle DAG of one or more **Cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
+The encoding model breaks values into a Merkle DAG of one or more **Cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
 
 ## Special Requirements
 
 Convex and related lattice infrastructure have some very specific requirements for the encoding format which necessitate the design of the encoding scheme design here:
 
 - Every distinct value must have one and only one **unique canonical encoding**, so that it can be hashed to a stable ID
-- It must be possible to read encode / decode `n` bytes of data in `O(n)` time **DoS resistance**
+- It must be possible to read encode / decode `n` bytes of data in `O(n)` time and space to ensure **DoS resistance**
 - There must be a fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers - this allows **streaming capabilities**
 - It must be an **efficient binary format** for both storage and transmission
 - It must be **self describing** - no additional schema is required to read an encoding
@@ -29,11 +29,38 @@ No existing standard was identified that meets these requirements, e.g.
 - XML and JSON are inefficient text based formats, and lack unique representations of the same data
 - Google's protocol buffers require external schemas (and does not usually guarantee a unique canonical encoding) 
 
-## Basic Rules
+## Examples
+
+### Small Integer value
+
+The Integer `19` is encoded as: 
+- tag of 0x11 (one byte integer) 
+- the hex value 0x13  
+
+```
+0x1113
+```
+
+### Vector with external reference
+
+A Vector (length 2) containing The Integer 19 and another non-embedded value is encoded as:
+- 0x80 tag for a Vector
+- 0x02 count of Vector elements
+- 0x1113 embedded encoding of the Integer 19
+- 0x20 tag for a non-embedded external value reference
+- The value ID = hash of the referenced value's encoding
+
+```
+0x800211132028daa385e6b97d3628e1deecb412c7d4e98135e204d0661c92ba885ff23d2b94
+```
+
+On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced value would need to be obtained in order to examine the second element - which could include petabytes of data. This is an example of a "partial" value.
+
+## Basic Rules and Concepts
 
 ### Cells
 
-The fundamental entities that are encoded are called Cells.
+The fundamental entities that are encoded are called cells.
 
 Cells may contain other cells by reference, and therefore a top-level cell can be regarded as a directed acyclic graph (DAG). Since cell encodings contain cryptographic hashes of the encodings of any referenced cells, this is furthermore a Merkle DAG.
 
@@ -47,7 +74,7 @@ Branches are an important optimisation, since they reduce the need to produce ma
 
 ### Encoding
 
-The encoding MUST be a sequence of bytes.
+A CAD3 encoding MUST be a sequence of bytes.
 
 Any given cell MUST map to one and only one encoding. 
 
@@ -59,17 +86,17 @@ The Encoding MUST have a maximum length of 8191 bytes. This ensure that a cell e
 
 ### Value ID
 
-The value ID of a cell is defined to be the unique SHA3-256 hash of the encoding of the cell.
+The value ID of a cell is the SHA3-256 hash of the encoding of the cell.
 
-Since all cells have a unique encoding, they therefore also a unique value ID (subject the the assumption that the probability of SHA3-256 collisions is extremely low).
+All cells have a unique encoding, therefore they also have a unique value ID (subject the the assumption that the probability of SHA3-256 collisions is extremely low).
 
 A value ID reference may be considered as a "decentralised pointer" to an immutable value. 
 
-Note: since only tree roots and branches are likely to be stored in storage systems, users should take care with value IDs that point to intermediate non-branch cells, as these may not be persisted in storage. If in doubt, navigate down from a known root or branch cell value ID.
+Note: since only tree roots and branches are likely to be stored in storage systems, care should be taken with value IDs that point to intermediate non-branch cells, as these may not be persisted in storage. If in doubt, navigate down from a known root or branch cell value ID.
 
 ### References 
 
-A cell encoding MAY contain references to other cells. There are two types of reference:
+A cell encoding MAY contain references ("Refs") to other cells. There are two types of reference:
 
 - Embedded, where the embedded cell's encoding is included within the parent cell encoding 
 - Branch, where an external reference is encoded as a byte sequence that includes the Value ID of the referenced cell (i.e. the branch)
@@ -81,8 +108,9 @@ From a performance perspective however, this distinction is extremely important:
 - Embedding allows multiple values to be included in the encoding of a single cell. For example a small Vector like `[1 2 3 4 5]` will be encoded within a single top level cell encoding, with the individual element values being embedded.
 - It reduces the number of SHA3-256 hash operations that need to be performed, since typically these need only be computed on branch cells.
 - It reduces the overall number of nodes in Merkle DAGs of Cells, reducing the number of individual calls to network and storage functionality.
+- A typical branch will have a relatively high branching factor (e.g. 10-30 child references) - this helps to navigate quickly down to leaf cells with the minimum number of IO operations.
 
-#### Embedded Cells
+#### Embedded References
 
 A cell may be defined as embedded in which case the cell's encoding is inserted into in the encoding of the parent cell.
 
@@ -92,9 +120,21 @@ An embedded cell MUST have an encoding of 140 bytes or less. This restriction he
 
 #### External References
 
-An external reference is a reference to a Cell that is not embedded, i.e. points to a branch cell.
+An external reference is a reference to a cell that is not embedded, i.e. points to a branch cell.
 
 An external reference MUST be encoded using the value ID of the target cell. This requirement ensures the integrity of a complete Merkle DAG of cells.
+
+### Data Structures
+
+Data structure (such a Maps, Vectors etc.) are designed to operate as trees of cells.
+
+Each child cell is itself a valid data structure representing a subset of the whole data structures. For example, a Vector with 256 elements is a tree root containing 16 references to child vectors with 16 elements each.
+
+This approach is important for several reasons:
+- It is a natural way to structure the components cells of the data structure as a Merkle DAG
+- The child cells can be re-used as valid data structures elsewhere (e.g. allowing structural sharing of common subsequences of vectors)
+- It ensures that each child cell is a valid cell with a unique encoding in its own right
+- It allows fast indexed and sorted access into data structures (similar to B-trees)
 
 ### CVM Values
 
@@ -115,12 +155,13 @@ Implementations MUST recognise an invalid encoding, and in particular:
 
 Implementations MUST be able to produce the unique valid encoding for any cell.
 
-### Cell life-cycle
+### Implementation interpretation
 
-Cells may be constructed in 3 ways:
-- Created during local processing (will not have encoding yet, but created on demand)
-- Received as external input and decoded (will already have encoding)
-- Loaded from storage (will have encoding, hash, and storage flags)
+Implementations using CAD3 encodings MAY assign semantic meaning to values on an application-specific basis.
+
+In practice this means:
+- Applications can define what a particular cell value means in context, e.g. the vector `[1 17 :owns]` might represent ownership in a graph where entity `1` owns entity `17`
+- Independent of semantic meaning, applications can read and encode arbitrary CAD3 data. 
 
 ## Encoding Format
 
@@ -159,18 +200,6 @@ Note: VLC Counts are the same as VLC Integers, except that they are unsigned. Ha
 
 The single byte `0x00` is the encoding for  `nil` value.
 
-### `0xb0` - `0xb1` Boolean
-
-```
-Encoding:
-0xb0 <=> false
-0xb1 <=> true
-```
-
-The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` respectively. 
-
-Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
-
 ### `0x10` - `0x18` Integer (Long)
 
 ```Encoding
@@ -200,11 +229,15 @@ With the exception of the Tag byte, The encoding of a BigInt is defined to be ex
 
 ### `0x1d` Double
 
+A Double is an IEEE754 double precision floating point value.
+
 ```
 0x1d <8 bytes IEEE 764>
 ```
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
+
+All IEEE754 values are supported except that the `NaN` value must be represented with the specific encoding `0x1d7ff8000000000000` in the CVM. This is to ensure a unique encoding of `NaN` values which are otherwise logically equivalent.
 
 ### `0x20` Ref
 
@@ -221,20 +254,28 @@ These rules are necessary to ensure uniqueness of the parent encoding (otherwise
 
 ### `0x21` Address
 
+Addresses are used to reference sequentially allocated accounts in Convex. 
+
 ```
 0x21 <VLC Count = address number>
 ```
 
 An Address value is encoded by the tag byte followed by a VLC Encoding of the 64-bit value of the Address. 
 
+The address number MUST be positive, i.e. a 63-bit positive integer.
+
 Since Addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short encoding.
+
+Addresses MAY be used by implementations outside the CVM for other types of sequentially allocated values.
 
 ### `0x30` String
 
-```
-If String is 4096 UTF-8 bytes or less:
+A String is a sequence of bytes with UTF-8 string encoding assumed.
 
-0x30 <VLC Count = n> <n bytes UTF-8 data>
+```
+If String is 4096 bytes or less:
+
+0x30 <VLC Count = n> <n bytes data>
 
 If String is more than 4096 Bytes:
 
@@ -252,11 +293,15 @@ Because child strings are likely to be non-embedded (because of encoding size) t
 Importantly, this design allows:
 - Arbitrary length Strings to be encoded, while still keeping each cell encoding smaller than the fixed maximum size
 - Structural sharing of tree nodes, giving O(log n) update with path copying
-- Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 1024 characters.
+- Low overhead because of the high branching factor: not many branch nodes are required and each leaf note will compactly store up to 4096 characters.
 
-Note with the exception of the Tag byte, String encoding is exactly the same as a Blob
+Note: UTF-8 encoding is assumed, but not enforced in encoding rules. Implementations MAY decide to allow invalid UTF-8.
+
+Note: with the exception of the Tag byte, String encoding is exactly the same as a Blob
 
 ### `0x31` Blob
+
+A Blob is an arbitrary length sequence of bytes (Binary Large OBject).
 
 ```
 If Blob is 4096 bytes or less:
@@ -270,18 +315,24 @@ If Blob is more than 4096 bytes:
 
 Every Blob encoding starts with the Tag byte and a VLC-encoded length.
 
-Encoding then splits depending on the Blob length `n`.
-- If 4096 bytes or less, the bytes of the Blob are encoded directly (`n*2` bytes total)
-- If more than 4096 byte, the Blob is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child Blob (4096, 65536, 1048576 etc.), and the last child contains all remaining Bytes. Up to 16 children are allowed before the tree must grow to the next level.
+Encoding then varies depending on the Blob length `n`.
+- If 4096 bytes or less, the bytes of the Blob are encoded directly (`n` bytes following the VLC Count)
+- If more than 4096 bytes, the Blob is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child Blob (4096, 65536, 1048576 etc.), and the last child contains all remaining bytes data. Up to 16 children are allowed before the tree must grow to the next level.
 
-Because child Blobs are likely to be non-embedded (because of Encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large Blob will have a top level cell encoding of a few hundred bytes, allowing for a few child Refs and a (perhaps Embedded) final child. 
+Implementations MAY include whatever data or encoding they wish within Blobs.
+
+Implementations SHOULD use Blobs for binary data where the data is not otherwise meaningfully represented as a CAD3 type. Examples might include PNG format image data, a binary database file, or text in an encoding other than UTF-8.
+
+Because child Blobs are likely to be non-embedded (because of encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large Blob will have a top level cell encoding of a few hundred bytes, allowing for a few child Refs and a final child for the remaining bytes (which may be embedded). 
 
 Importantly, this design allows:
 - Arbitrary length Blobs to be encoded, while still keeping each Blob encoding within a fixed size
-- Structural sharing of tree nodes, giving O(log n) update with path copying
+- Structural sharing of tree nodes, giving `O(log n)` updates with path copying
 - Relatively low overhead, because of the high branching factor: not many branch nodes are required and each leaf note will compactly store 4096 bytes.
 
 ### `0x32` Symbol
+
+Symbols are used for naming values, e.g. defined values in the environment of a Convex account.
 
 ```
 0x32 <Count Byte = n> <n bytes UTF-8 String>
@@ -289,9 +340,11 @@ Importantly, this design allows:
 
 A Symbol is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
-The Symbol MUST have a length of 1-128 UTF-8 bytes
+The Symbol MUST have a length of 1-128 UTF-8 bytes. Any other length is invalid. This guarantees that all Symbols are embedded.
 
 ### `0x33` Keyword
+
+Keywords are used for human readable values, e.g. names of keys in a larger data structure.
 
 ```
 0x32 <Count Byte = n> <n bytes UTF-8 String>
@@ -299,23 +352,32 @@ The Symbol MUST have a length of 1-128 UTF-8 bytes
 
 A Keyword is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
-The Keyword MUST have a length of 1-128 UTF-8 bytes
+The Keyword MUST have a length of 1-128 UTF-8 bytes. Any other length is invalid. This guarantees that all Symbols are embedded.
+
+Implementations SHOULD use keywords for known values that may appear in other data structures, are intended to be short and need to be human readable. Reasonable examples include:
+- the `:name` keyword for a key value in a Map describing a person
+- the `:expired` keyword at the end of a vector describing a smart contract that has expired
+- the `:NOBODY` keyword as an error code on the CVM
 
 ### `0x3c` - `0x3f` Character
 
+A Character is a Unicode character uniquely defined by its code point.
+
 ```
-Tag determines the length in bytes of the Unicode code point value
+The encoding is one of the following:
 0x3c <1 Byte>
 0x3d <2 Bytes>
 0x3e <3 Bytes>
-0x3f <4 Bytes> (reserved, not currently possible?)
+0x3f <4 Bytes> (reserved, not currently possible)
+
+Where the number of bytes is the minimal number of bytes required to represent the Unicode code point.
 ```
 
 A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
 
 A Character encoding is invalid if:
 - More bytes are used than necessary (i.e. a leading byte of zero)
-- The code point is beyond the maximum allowable (0x10ffff) 
+- The code point is beyond the maximum allowable (currently 0x10ffff) 
 
 ### `0x80` Vector
 
@@ -349,20 +411,22 @@ This Encoding has some elegant properties which make Convex Vectors particularly
 
 ### `0x81` List
 
-A List is encoded exactly the same as a Vector, except:
+A List is encoded the same as a Vector, except:
 - The tag byte is `0x81`
 - The elements are logically considered to be in reversed order (i.e. the last element encoded is the first element of the list)
 
 ### `0x82` Map
 
+A Map is a hash map from keys to values.
+
 ```
 If a leaf cell:
 
-0x80 <VLC Count = n> <Key Ref | Value Ref> (repeated n times, in order of key hashes)
+0x80 <VLC Count = n> <Key Ref | Value Ref>(repeated n times, in order of key hashes)
 
 If a non-leaf cell:
 
-0x80 <VLC Count = n> <Shift Byte> <Mask> <Child Refs> (repeated 2-16 times)
+0x80 <VLC Count = n> <Shift Byte> <Mask> <Child Refs>(repeated 2-16 times)
 
 Where:
 - <Shift Byte>   specifies the hex position where the map branches (0 = at the fist hex digit, etc.)
@@ -370,10 +434,13 @@ Where:
 - <Child Refs>    are Refs to Map cells which can be Leaf or non-Leaf nodes
 ```
 
-This encoding guaranteed that all entries are encoded in the order of key hashes. 
+All entries MUST be encoded in the order of key hashes. 
 
+A Map MAY contain arbitrary keys and values.
 
 ### `0x83` Set
+
+A Set is a logical set of included values.
 
 A Set is encoded exactly the same as a Map, except:
 - The tag byte is `0x83`
@@ -408,6 +475,8 @@ This encoding ensures that entries are encoded in lexicographic ordering. Unlike
 
 ### `0x88` Syntax
 
+A Syntax object is a value annotated with a metadata map.
+
 ```
 0x88 <Meta Ref> <Value Ref>
 
@@ -436,17 +505,153 @@ The Signature is expected to be the Ed25519 signature of the Value Ref encoding.
 
 The signature may or may not be valid: an invalid signature is still a valid value from an encoding perspective.
 
-### `0xFF` Illegal
+### `0x91` Signed (Short Version)
 
-The `0xFF` tag is always illegal as a tag byte in ane encoding.
+This is the same as `0x90` signed but excluding the public key
+
+### `0xA0` - `0xAF` Sparse Records
+
+A Sparse Record is an implementation-defined structure containing 0-63 fields. The fields are stored sparsely, with `nil` values omitted.
+
+```
+`0xAn` <VLC Count = inclusion mask> <Value Ref> (repeated for each set bit in inclusion mask)
+
+Where:
+- `n` is an implementation-defined hex value (0-15) which MAY be used to disambiguate distinct record types. 
+- The inclusion mask is an unsigned integer (63 bits max). 
+```
+
+The inclusion mask is a non-negative value indicating which fields are included in the Record as bit mask.
+
+The number of Value Refs MUST be equal to the number of `1` bits in the inclusion count, with the first Value Ref corresponding to the least significant `1` bit etc.
+
+Value Refs, if included, MUST NOT be `nil`. This is necessary to ensure unique encoding, since excluded fields are defined as `nil`.
+
+Implementations which require more than 64 fields MAY adopt their own scheme to further embed additional structures within the 63 fields available. Reasonable options include:
+- Group subsets of similar fields into child Records. This is especially useful if common groups of fields are frequently used in multiple places and logically grouped together.
+- Have the Record specify one field which contains a vector of additional fields
+- Use the first field (index 0) to specify the interpretation of following fields (which may contain arbitrary values as sub-structures)
+
+### `0xb0` - `0xb1` Boolean
+
+The possible Boolean values are `true` and `false`
+
+```
+Encoded as:
+0xb0 <=> false
+0xb1 <=> true
+```
+
+The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` respectively. 
+
+Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
+
+### `0xb2`-`0xbF` Byte Flags
+
+Byte flags are one byte encodings (similar to Booleans) available for application specific use.
+
+```
+`0xbn`
+
+Where
+- n = a hex value from 2-15 
+```
+
+Available for implementation specific values as a single byte marker, i.e. the complete value encoding is always exactly one byte. For example, the encoding `0xb2` might represent an "unknown" value in ternary logic.
+
+Values `0xb0` and `0xb1` are already reserved for the two boolean values, though an implementation MAY repurpose these as single byte values (along with `0x00` and `0x10`) providing these values are not needed for some other purpose.
+
+### `0xc0`-`0xcf` Codes
+
+Codes are values intended to represent values requiring special coded interpretation.
+
+```
+`0xcn` <Code Ref> <Value Ref>
+
+Where:
+- <Code Ref> is any value indicating what code is being used
+- <Value Ref> is any value representing the coded payload
+- n = a hex value from 0-15 
+```
+
+Implementations SHOULD use a small code value (e.g. a small Integer) to specify the precise type of value being encoded, and a corresponding value that is meaningful for the given code value.
+
+Implementations MAY in addition use the hex digit `n` to further disambiguate code types. In combination with the 18 valid valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
+
+### `0xd0`-`0xdf` Dense Records
+
+Data Records are arbitrary dense record types.
+
+```
+`0xdn` <VLC Count=n> <Continues as Vector Encoding>
+
+Where:
+- n = a hex value from 0-15 
+```
+
+Data Record encoding is exactly the same as a Vector, with the exception of the tag byte.
+
+Implementations MAY in addition use the hex digit `n` to further disambiguate record types. If this is insufficient, implementations SHOULD use the first or the last record value to indicate the type.
+
+### `0xff` Illegal
+
+The `0xff` tag is always illegal as a tag byte in any encoding.
+
+Implementations MUST treat and values encoded starting with `0xff` as an invalid encoding.
 
 ### Reserved Tags
 
-Tag bytes not otherwise specified are reserved for future CADs. Implementations SHOULD treat all such tags as illegal and reject encodings they are unable to read.
+Tag bytes or value ranges not otherwise specified are reserved for future CADs. 
+
+Decoder implementations MUST treat all such cases as illegal and reject encodings they are unable to read.
 
 ### TODO: A few remaining tags
 
 For details, please refer to the Convex implementation. Details in the source code :-)
+
+## Cell life-cycle
+
+### Construction 
+
+Cells may be constructed in 3 ways:
+- Created during local processing (will not have encoding yet, but created on demand)
+- Received as external input and decoded (will already have encoding)
+- Loaded from storage (will have encoding, hash, and storage flags)
+
+### Completion of partial cells (Acquisition)
+
+It may be the case that a tree of cells is partial, i.e. some referenced branches are not yet available. In such cases, processing SHOULD be deferred until the missing cells can be externally acquired.
+
+### Garbage collection
+
+Cells which are no longer referenced by any cells currently in use may be safely garbage collected (either from main memory or storage).
+
+## Cell validation
+
+Cell validation occurs in multiple steps:
+- Encoding correctness (is this a valid encoding?)
+- Structural correctness (is the whole tree of cells valid?)
+- Semantic correctness (does the value make sense in this context?)
+
+### Encoding correctness
+
+A cell's encoding can be checked for correctness in its up to the point of external references (i.e. you know you have `n` external references that appear to be 32 bit hash values, but the encoding or validity of those may or may not be known)
+
+### Structural correctness
+
+Checking for structural correctness requires traversing external references in order to validate:
+- The external reference is the hash of a valid cell encoding
+- Each cell referenced is of a valid type expected by the parent cell
+- All cells referenced meet any requirements for consistency with the parent cell (e.g. correct counts for child data structures)
+- All cells referenced are themselves structurally correct
+
+Checking for structural correctness is typically an `O(n)` operation in the number of cells checked. For performance reasons, it is usually valuable to cache the results of structural correctness checks so that they do not need to be recomputed - this is especially important for large data structures with structural sharing.
+
+### Semantic correctness
+
+Checking semantic correctness is to validate that the cell value makes sense / has meaning in the context that it is used. A cell could be structurally correct but contain values that are illegal in some application (e.g. a Vector that should contain all Integers actually containing a String).
+
+Checking for semantic correctness is application defined and outside the scope of CAD003.
 
 ## Implementation Notes
 
