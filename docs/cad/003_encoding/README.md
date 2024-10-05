@@ -167,9 +167,15 @@ In practice this means:
 
 ### Tag Byte
 
-The first byte of the Encoding is defined to be the "tag", which designates the type of the data value, and determines how the remainder of the Encoding should be interpreted.
+The first byte of the encoding is defined to be the "tag", which designates the general type of the data value, and determines how the remainder of the encoding should be interpreted.
 
-Implementations MUST reject an Encoding as Invalid if the Tag byte is not recognised as one defined in this document.
+Implementations MUST reject an encoding as invalid if it starts with a tag byte that is not defined in this document.
+
+Tags are designed with the following objectives:
+- The tag byte enables very fast branching regarding how to interpret the following bytes
+- We use enough unique tags so that the 1 byte conveys a meaningful amount of information. Every bit counts!
+- Plenty of tag bytes are still available for future extension
+- The hex values convey at least some meaning to experienced human readers. `nil` is `00`. Numbers start with `1`. booleans start with `b`. `ff` is fatal failure etc.
 
 ### VLC Integers
 
@@ -221,11 +227,11 @@ Note: This encoding is chosen in preference to a VLC encoding because:
 0x19 <VLC Count length of Integer = n> <n bytes of data>
 ```
 
-An Integer is represented by the Tag byte followed by the VLC encoded length of the Integer in bytes. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
+A "Big" Integer is represented by the tag byte `0x19` followed by the VLC encoded length of the Integer in bytes. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
 
 The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long).
 
-With the exception of the Tag byte, The encoding of a BigInt is defined to be exactly equal to a Blob with `n` bytes.
+With the exception of the tag byte, The encoding of a BigInt is defined to be exactly equal to a Blob with `n` bytes.
 
 ### `0x1d` Double
 
@@ -241,10 +247,15 @@ All IEEE754 values are supported except that the `NaN` value must be represented
 
 ### `0x20` Ref
 
+A Ref is a special encoding that points to another encoding using its value ID (cryptographic hash).
+
 ```
 0x20 <32 bytes Value ID>
 ```
-An external reference is encoded as the Tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
+
+An external reference is encoded as the tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
+
+An implementation MUST NOT allow a Ref as a a valid encoding in its own right: it must be included in another encoding.
 
 Ref encodings are used as substitutes for child values contained within other cell encodings subject to the following rules:
 - They MUST be used whenever the child cannot be embedded (i.e. is a branch cell). 
@@ -264,7 +275,7 @@ An Address value is encoded by the tag byte followed by a VLC Encoding of the 64
 
 The address number MUST be positive, i.e. a 63-bit positive integer.
 
-Since Addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short encoding.
+Since addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short encoding.
 
 Addresses MAY be used by implementations outside the CVM for other types of sequentially allocated values.
 
@@ -282,7 +293,7 @@ If String is more than 4096 Bytes:
 0x30 <VLC Count = n> <Child String Value>(repeated 2-16 times)
 ```
 
-Every String encoding starts with the Tag byte and a VLC-encoded length.
+Every String encoding starts with the tag byte and a VLC-encoded length.
 
 Encoding then splits depending on the String length `n`.
 - If 4096 characters or less, the UTF-8 bytes of the String are encoded directly (`n` bytes total)
@@ -297,7 +308,7 @@ Importantly, this design allows:
 
 Note: UTF-8 encoding is assumed, but not enforced in encoding rules. Implementations MAY decide to allow invalid UTF-8.
 
-Note: with the exception of the Tag byte, String encoding is exactly the same as a Blob
+Note: with the exception of the tag byte, String encoding is exactly the same as a Blob
 
 ### `0x31` Blob
 
@@ -313,15 +324,17 @@ If Blob is more than 4096 bytes:
 0x31 <VLC Count = n> <Child Blob Value>(repeated 2-16 times)
 ```
 
-Every Blob encoding starts with the Tag byte and a VLC-encoded length.
+Every Blob encoding starts with the tag byte and a VLC-encoded length.
 
 Encoding then varies depending on the Blob length `n`.
 - If 4096 bytes or less, the bytes of the Blob are encoded directly (`n` bytes following the VLC Count)
 - If more than 4096 bytes, the Blob is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child Blob (4096, 65536, 1048576 etc.), and the last child contains all remaining bytes data. Up to 16 children are allowed before the tree must grow to the next level.
 
-Implementations MAY include whatever data or encoding they wish within Blobs.
+Applications MAY include whatever data or encoding they wish within Blobs.
 
-Implementations SHOULD use Blobs for binary data where the data is not otherwise meaningfully represented as a CAD3 type. Examples might include PNG format image data, a binary database file, or text in an encoding other than UTF-8.
+Applications SHOULD use Blobs for binary data where the data is not otherwise meaningfully represented as a CAD3 type. Examples might include PNG format image data, a binary database file, or text in an encoding other than UTF-8.
+
+Applications SHOULD use Blobs for data which is normally represented as a string of bytes, e.g. cryptographic hashes or signatures.
 
 Because child Blobs are likely to be non-embedded (because of encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large Blob will have a top level cell encoding of a few hundred bytes, allowing for a few child Refs and a final child for the remaining bytes (which may be embedded). 
 
@@ -332,15 +345,17 @@ Importantly, this design allows:
 
 ### `0x32` Symbol
 
-Symbols are used for naming values, e.g. defined values in the environment of a Convex account.
+Symbols are used for naming things, e.g. a CNS name like `convex.core`.
 
 ```
 0x32 <Count Byte = n> <n bytes UTF-8 String>
 ```
 
-A Symbol is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
+A Symbol is encoded with the tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
 The Symbol MUST have a length of 1-128 UTF-8 bytes. Any other length is invalid. This guarantees that all Symbols are embedded.
+
+Applications SHOULD use Symbols when referring to named values that need to be externally looked up based on the context in which they are used e.g. values defined in the environment of a Convex account.
 
 ### `0x33` Keyword
 
@@ -350,14 +365,16 @@ Keywords are used for human readable values, e.g. names of keys in a larger data
 0x32 <Count Byte = n> <n bytes UTF-8 String>
 ```
 
-A Keyword is encoded with the Tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
+A Keyword is encoded with the tag byte, an unsigned count byte `n`, and `n` bytes of UTF-8 encoded characters.
 
 The Keyword MUST have a length of 1-128 UTF-8 bytes. Any other length is invalid. This guarantees that all Symbols are embedded.
 
-Implementations SHOULD use keywords for known values that may appear in other data structures, are intended to be short and need to be human readable. Reasonable examples include:
+Applications SHOULD use keywords for known values that may appear in other data structures, are intended to be short and need to be human readable. Reasonable examples include:
 - the `:name` keyword for a key value in a Map describing a person
 - the `:expired` keyword at the end of a vector describing a smart contract that has expired
 - the `:NOBODY` keyword as an error code on the CVM
+
+Applications SHOULD prefer Keywords over Symbols in most data structures, unless it is a name for something external to the data structure. 
 
 ### `0x3c` - `0x3f` Character
 
@@ -373,7 +390,7 @@ The encoding is one of the following:
 Where the number of bytes is the minimal number of bytes required to represent the Unicode code point.
 ```
 
-A Character value is encoded by the Tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
+A Character value is encoded by the tag byte followed by 1-4 bytes representing the Unicode code point as an unsigned integer.
 
 A Character encoding is invalid if:
 - More bytes are used than necessary (i.e. a leading byte of zero)
@@ -557,9 +574,9 @@ Where
 - n = a hex value from 2-15 
 ```
 
-Available for implementation specific values as a single byte marker, i.e. the complete value encoding is always exactly one byte. For example, the encoding `0xb2` might represent an "unknown" value in ternary logic.
+Applications MAY use byte flags as a efficient single byte value, i.e. the complete value encoding is always exactly one byte. For example, the encoding `0xb2` might represent an "unknown" value in ternary logic.
 
-Values `0xb0` and `0xb1` are already reserved for the two boolean values, though an implementation MAY repurpose these as single byte values (along with `0x00` and `0x10`) providing these values are not needed for some other purpose.
+Values `0xb0` and `0xb1` are already reserved for the two boolean values, though an application MAY repurpose these as single byte values (along with `0x00` and `0x10`) providing these values are not needed for some other purpose.
 
 ### `0xc0`-`0xcf` Codes
 
@@ -574,9 +591,9 @@ Where:
 - n = a hex value from 0-15 
 ```
 
-Implementations SHOULD use a small code value (e.g. a small Integer) to specify the precise type of value being encoded, and a corresponding value that is meaningful for the given code value.
+Applications SHOULD use a small code value (e.g. a small Integer) to specify the precise type of value being encoded, and a corresponding value that is meaningful for the given code value.
 
-Implementations MAY in addition use the hex digit `n` to further disambiguate code types. In combination with the 18 valid valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
+Applications MAY in addition use the hex digit `n` to further disambiguate code types. In combination with the 18 valid valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
 
 ### `0xd0`-`0xdf` Dense Records
 
@@ -604,10 +621,6 @@ Implementations MUST treat and values encoded starting with `0xff` as an invalid
 Tag bytes or value ranges not otherwise specified are reserved for future CADs. 
 
 Decoder implementations MUST treat all such cases as illegal and reject encodings they are unable to read.
-
-### TODO: A few remaining tags
-
-For details, please refer to the Convex implementation. Details in the source code :-)
 
 ## Cell life-cycle
 
@@ -654,6 +667,22 @@ Checking semantic correctness is to validate that the cell value makes sense / h
 Checking for semantic correctness is application defined and outside the scope of CAD003.
 
 ## Implementation Notes
+
+### Applications
+
+Applications are free to assign semantic meaning to CAD3 encoded values.
+
+This is an important aspect of the design: Just like HTTP does not enforce a specific meaning on content included in a PUT request, CAD3 does not specify how an application might choose to interpret specific CAD3 encoded values.
+
+Applications SHOULD ensure that they are able to read, persist and communicate arbitrary CAD3 encoded values, even if the semantic meaning may be unknown. This is important for several reasons:
+- The application SHOULD be robust and not fail due to unrecognised but legal encodings
+- The application MAY need to pass on these values to other systems that do understand them
+
+In practice the recommended approach is:
+- Applications should be written to work with generic CAD3 data
+- If a specific value is to be accessed and used, the application should verify semantic correctness
+    - If valid, application can proceed with the semantic meaning it defines
+    - If invalid, this is presumably an exception that needs handling (e.g. a malicious message from an external source that should be rejected)
 
 ### Convex JVM Implementation
 
