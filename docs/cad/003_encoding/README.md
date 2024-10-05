@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convex implements a standard **Encoding** format that represents any valid Convex data values as a **sequence of bytes**. Encoding is an important capability for Convex because:
+Convex uses the standard **CAD3 Encoding** format that represents any valid Convex data value as a **sequence of bytes**. Encoding is an important capability for Convex because:
 
 - It allows values to be efficiently **transmitted** over the network between peers and clients
 - It provides a standard format for **durable data storage** of values
@@ -12,11 +12,22 @@ The Encoding model breaks Values into a Merkle DAG of one or more **Cells** that
 
 ## Special Requirements
 
-Convex and related lattice infrastructure places some very specific requirements on the encoding format which necessitate the design of the encoding scheme design here:
+Convex and related lattice infrastructure have some very specific requirements for the encoding format which necessitate the design of the encoding scheme design here:
 
-- Every distinct value must have one and only one unique valid encoding, so that it can be hashed to a stable ID
-- It must be possible to read encode / decode `n` bytes of data in `O(n)` time (DoS resistance)
-- There must be a fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers
+- Every distinct value must have one and only one **unique canonical encoding**, so that it can be hashed to a stable ID
+- It must be possible to read encode / decode `n` bytes of data in `O(n)` time **DoS resistance**
+- There must be a fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers - this allows **streaming capabilities**
+- It must be an **efficient binary format** for both storage and transmission
+- It must be **self describing** - no additional schema is required to read an encoding
+- It must support **persistent data structures** for the immutable lattice data values used in Convex
+- We must be able to use the encodings to build a verifiable **Merkle tree** via hashes that reference other values
+- It supports the rich **data types** used in teh CVM (Maps, Sets, Vectors, Blobs etc.)
+- Any data structure of **arbitrary size** may be represented. The lattice is huge.
+- Support for **partial data**: we often need to transmit deltas of large data structures, so need a way to build these deltas and reconstruct the complete value when they are received (assuming existing data can fill the gaps)
+
+No existing standard was identified that meets these requirements, e.g.
+- XML and JSON are inefficient text based formats, and lack unique representations of the same data
+- Google's protocol buffers require external schemas (and does not usually guarantee a unique canonical encoding) 
 
 ## Basic Rules
 
@@ -44,7 +55,7 @@ Any two distinct (non-identical) cells MUST map to different encoding
 
 It MUST be possible to reconstruct the cell from its own encoding, to the extent that the cell represents the same Value (it is possible for implementations to use different internal formats if desired, providing these do not affect the CVM value semantics)
 
-The Encoding MUST have a maximum length of 8191 bytes. This ensure that a cell encoding will always fit within a reasonable fixed size buffer, and guarantees that most operations on cells can achieve `O(1)` complexity.
+The Encoding MUST have a maximum length of 8191 bytes. This ensure that a cell encoding will always fit within a reasonable fixed size buffer, and guarantees that most operations on can achieve `O(1)` complexity.
 
 ### Value ID
 
@@ -77,7 +88,7 @@ A cell may be defined as embedded in which case the cell's encoding is inserted 
 
 If a cell is embedded, it MUST NOT be included in the encoding of another cell by external reference. This restriction is required to guarantee uniqueness of encoding (if not enforced, child cells might be encoded as either an embedded reference or by external reference, thus giving two or more different encodings for the parent cell).
 
-An embedded cell MUST have an encoding of 140 bytes or less. This restriction helps ensure that cell encodings which may contain many child embedded references cannot exceed the overall 8191 byte limit. 
+An embedded cell MUST have an encoding of 140 bytes or less. This restriction helps to ensure that cell encodings which may contain many child embedded references cannot exceed the overall 8191 byte limit. 
 
 #### External References
 
@@ -91,10 +102,9 @@ Most cells represent valid CVM values, i.e. are permitted as first class values 
 
 Not all cells represent true CVM values, since cells may also be used for internal data structures within larger CVM values, or represent values that are only used outside the CVM.
 
-
 ### Valid and Invalid Encodings
 
-A sequence of bytes is a "valid" encoding is there exists a cell which produces the same sequence of bytes as its encoding. Conversely, a sequence of bytes is an invalid encoding if there is no cell which produces the same sequence of bytes as its encoding.
+A sequence of bytes is a "valid" encoding if there exists a cell which produces the same sequence of bytes as its encoding. Conversely, a sequence of bytes is an invalid encoding if there is no cell which produces the same sequence of bytes as its encoding.
 
 Implementations MUST be able to reconstruct a cell from any valid encoding.
 
@@ -108,7 +118,7 @@ Implementations MUST be able to produce the unique valid encoding for any cell.
 ### Cell life-cycle
 
 Cells may be constructed in 3 ways:
-- Created during local processing
+- Created during local processing (will not have encoding yet, but created on demand)
 - Received as external input and decoded (will already have encoding)
 - Loaded from storage (will have encoding, hash, and storage flags)
 
@@ -436,8 +446,20 @@ Tag bytes not otherwise specified are reserved for future CADs. Implementations 
 
 ### TODO: A few remaining tags
 
+For details, please refer to the Convex implementation. Details in the source code :-)
+
 ## Implementation Notes
 
-In the Convex JVM implementation, cells are represented by subclasses of the class `convex.core.data.ACell`. Having a common abstract base class is helpful for performance, allows for convenient implementation of common cell functionality, and ensures that all cell instances are designed to work with a common abstract class interface.
+### Convex JVM Implementation
 
-The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, chosen for efficiency and performance reasons. However there is no strict requirement that `nil` must be represented this way (for example, it could alternatively be a singleton value). 
+In the Convex JVM implementation, cells are represented by subclasses of the class `convex.core.data.ACell`. Having a common abstract base class allows for convenient implementation of common cell functionality, is helpful for performance, and ensures that all cell instances offer a common interface.
+
+The implementation allows for internal usage of "non-canonical" cells. These are cell instances that may break rules, e.g. encoding more than 4096 bytes in a single flat Blob. These are only used for temporary purposes (typically for performance reasons) and are always converted back to a canonical implementation for encoding purposes.
+
+The implementation keeps singleton "interned" references for various common values. This is mainly to avoid repeated memory allocation for such values. These currently include:
+- The two boolean values `true` and `false`
+- Small integers
+- Empty maps, sets, strings and blobs etc.
+- Static constants such as Strings, Keywords and Symbols used frequently in the CVM
+
+The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, again chosen for efficiency and performance reasons. However there is no strict requirement that `nil` must be represented this way (for example, it could alternatively be a singleton value). 
