@@ -597,7 +597,7 @@ Applications MAY in addition use the hex digit `n` to further disambiguate code 
 
 ### `0xd0`-`0xdf` Dense Records
 
-Data Records are arbitrary dense record types.
+Data Records are record types where every field value is encoded.
 
 ```
 `0xdn` <VLC Count=n> <Continues as Vector Encoding>
@@ -608,7 +608,7 @@ Where:
 
 Data Record encoding is exactly the same as a Vector, with the exception of the tag byte.
 
-Implementations MAY in addition use the hex digit `n` to further disambiguate record types. If this is insufficient, implementations SHOULD use the first or the last record value to indicate the type.
+Applications MAY in use the hex digit `n` to disambiguate record types. If this is insufficient, implementations SHOULD use the first or the last record value to indicate the type.
 
 ### `0xff` Illegal
 
