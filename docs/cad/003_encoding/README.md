@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convex uses the standard **CAD3 Encoding** format that represents any valid Convex data value as a **sequence of bytes**. The CAD3 encoding is an important capability for Convex because:
+Convex uses the standard **CAD3 Encoding** format that represents any valid lattice data value as a **sequence of bytes**. The CAD3 encoding is an important capability for Convex because:
 
 - It allows values to be efficiently **transmitted** over the network between peers and clients
 - It provides a standard format for **durable data storage** of values
@@ -14,20 +14,21 @@ The encoding model breaks values into a Merkle DAG of one or more **Cells** that
 
 Convex and related lattice infrastructure have some very specific requirements for the encoding format which necessitate the design of the encoding scheme design here:
 
-- Every distinct value must have one and only one **unique canonical encoding**, so that it can be hashed to a stable ID
-- It must be possible to read encode / decode `n` bytes of data in `O(n)` time and space to ensure **DoS resistance**
-- There must be a fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers - this allows **streaming capabilities**
-- It must be an **efficient binary format** for both storage and transmission
-- It must be **self describing** - no additional schema is required to read an encoding
-- It must support **persistent data structures** for the immutable lattice data values used in Convex
-- We must be able to use the encodings to build a verifiable **Merkle tree** via hashes that reference other values
-- It supports the rich **data types** used in teh CVM (Maps, Sets, Vectors, Blobs etc.)
-- Any data structure of **arbitrary size** may be represented. The lattice is huge.
-- Support for **partial data**: we often need to transmit deltas of large data structures, so need a way to build these deltas and reconstruct the complete value when they are received (assuming existing data can fill the gaps)
+- A **unique canonical encoding** for every value, such that it can be hashed to a stable ID
+- An **efficient binary format** for both storage and transmission
+- A **self describing** format - no additional schema is required to read an encoding
+- Provision of **immutable persistent data structures** for the lattice data values used in Convex
+- Automatic generation of a verifiable **Merkle tree** via references to other value IDs
+- Support for rich **data types** used in the CVM and lattice data (Maps, Sets, Vectors, Blobs etc.)
+- Data structure of **arbitrary size** may be represented. The lattice is huge.
+- Support for **partial data**: we often need to transmit deltas of large data structures, so need a way to build these deltas and reconstruct the complete structure when they are received (assuming existing data can fill the gaps)
+- Ability to read encode / decode `n` bytes of data in `O(n)` time and space to ensure **DoS resistance**
+- Fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers - this allows **streaming capabilities** including zero-copy operations.
 
 No existing standard was identified that meets these requirements, e.g.
 - XML and JSON are inefficient text based formats, and lack unique representations of the same data
 - Google's protocol buffers require external schemas (and does not usually guarantee a unique canonical encoding) 
+- ASN.1 generally relies on schemas and does't encode into bounded units suitable for building merkle trees (you can do it indirectly with a custom schema, but then it is no longer canonical...)
 
 ## Examples
 
@@ -44,10 +45,10 @@ The Integer `19` is encoded as:
 ### Vector with external reference
 
 A Vector (length 2) containing The Integer 19 and another non-embedded value is encoded as:
-- 0x80 tag for a Vector
-- 0x02 count of Vector elements
-- 0x1113 embedded encoding of the Integer 19
-- 0x20 tag for a non-embedded external value reference
+- `0x80` tag for a Vector
+- `0x02` count of Vector elements
+- `0x1113` embedded encoding of the Integer 19
+- `0x20` tag for a non-embedded external value reference
 - The value ID = hash of the referenced value's encoding
 
 ```
@@ -55,6 +56,33 @@ A Vector (length 2) containing The Integer 19 and another non-embedded value is 
 ```
 
 On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced value would need to be obtained in order to examine the second element - which could include petabytes of data. This is an example of a "partial" value.
+
+### A 1GB Blob
+
+A Blob of length 1GB, specified with:
+- `0x31` tag for a Blob
+- `0x8480808000` VLQ encoded length of 2^30
+- `0x20`+child Blob hash (repeated 16 times, each child is 64mb)
+
+```
+0x31848080800020af61c2faf10511466f73fe890524dccc056bddc79df37c7fbb
+  1823d5c8dae191202144a7641028ccd2259792d4c9626feb7f3cfb631eb7473d
+  3b95f1312fc4bf05202426c963ce5e0032fff92a028deec91a7466dd6d970cf4
+  78e510033854f6499120b2165e855dddd0daf62ba138ba0c1553a347b7f9f635
+  a589a2f9ab50be67c65120c7e6b0c74f27af4771ef06304fb02988bcd3bbe8f7
+  c2af84d3262d36f9ab75a620e8000a3edfa7bd1321c5d40e36a52c3c93d2be03
+  d976df15fd2323796c43435f201de13753be217f7fe3b89effaf7f2f5326bff4
+  94b50c1d86d96eeeb537bfcd5e205b2e93772a254a5196662707c68e851d16e3
+  a9386df7b40183daf82389d761032095ed2e62b005d363d33ccd4794ecc9f9f3
+  bae35979151ee1e340555e6d265a0820cf0902e3f9ca79469ed03e25085ad14b
+  dea6a03fe41299ce538837e1e3666e3a20d614113ed517586ec7fe3576a9ce90
+  66f4795efbe85315fa0f6872085a408d4120ff5d93db343c185b47484aef9bd8
+  e1c5d171e87762960b659344b0aeda6ba0ba20fb047cfd86c9b81883b7920a44
+  f5f8909f6360a5e2f2d2d4ee4639d554ab7801202ad7a5b7bafc6d323f3d6ec1
+  4288775095775eb7d72f63cebffae6a0438ccb1120afc2b4cb2ed7c26d7026b1
+  74a22979bf4cf09468d5a31d33dca1aad04df0b1cc207881f54f571cd0416e5a
+  f36bc6f133660bf8a60b4ded525332f9a314bea4ddea
+```
 
 ## Basic Rules and Concepts
 
@@ -177,9 +205,9 @@ Tags are designed with the following objectives:
 - Plenty of tag bytes are still available for future extension
 - The hex values convey at least some meaning to experienced human readers. `nil` is `00`. Numbers start with `1`. booleans start with `b`. `ff` is fatal failure etc.
 
-### VLC Integers
+### VLQ Integers
 
-Integers are normally encoded using a Variable Length Coding (VLC) format. This ensure that small integers have a 1-byte Encoding, and most 64-bit values encoded will have an encoded length shorter than 8 bytes, based on the expected distributions of 64-bit integers encountered in the system.
+Integers are normally encoded using a Variable Length Coding (VLQ) format. This ensure that small integers have a 1-byte Encoding, and most 64-bit values encoded will have an encoded length shorter than 8 bytes, based on the expected distributions of 64-bit integers encountered in the system.
 
 Encoding rules are:
 - The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
@@ -189,18 +217,18 @@ Encoding rules are:
 
 It should be noted that this system can technically support arbitrary sized integers, but in most contexts in Convex it is used for up to 64-bit integer values.
 
-### VLC Counts
+### VLQ Counts
 
-VLC Counts are unsigned integer values, typically used where negative numbers are not meaningful, e.g. the size or length of data structures, or for balances that are defined to be non-negative natural numbers. 
+VLQ Counts are unsigned integer values, typically used where negative numbers are not meaningful, e.g. the size or length of data structures, or for balances that are defined to be non-negative natural numbers. 
 
 Encoding rules are:
 - The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
 - The remaining bits from each byte are considered as a standard unsigned big-endian two's complement binary encoding.
 - The encoding is defined to be the shortest possible such encoding for any given integer.
 
-In data structures, a VLC Count is always used to specify the number of elements in the data structure.
+In data structures, a VLQ Count is always used to specify the number of elements in the data structure.
 
-Note: VLC Counts are the same as VLC Integers, except that they are unsigned. Having this distinction is justified by frequent savings of one byte, especially when used as counts within small data structures.
+Note: VLQ Counts are the same as VLQ Integers, except that they are unsigned. Having this distinction is justified by frequent savings of one byte, especially when used as counts within small data structures.
 
 ### `0x00` Nil
 
@@ -216,18 +244,18 @@ A Long value is encoded by the Tag byte followed by `n` bytes representing the s
 
 Note: The value zero is conveniently encoded in this scheme as the single byte `0x10`
 
-Note: This encoding is chosen in preference to a VLC encoding because:
-- The length of a small integer can be included in the tag, making it more efficient than VLC which requires continuation bits
+Note: This encoding is chosen in preference to a VLQ encoding because:
+- The length of a small integer can be included in the tag, making it more efficient than VLQ which requires continuation bits
 - It is consistent with the natural encoding for two's complement integers on most systems
 - The numerical part is consistent with the format for BigInts
 
 ### `0x19` Integer (BigInt)
 
 ```
-0x19 <VLC Count length of Integer = n> <n bytes of data>
+0x19 <VLQ Count length of Integer = n> <n bytes of data>
 ```
 
-A "Big" Integer is represented by the tag byte `0x19` followed by the VLC encoded length of the Integer in bytes. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
+A "Big" Integer is represented by the tag byte `0x19` followed by the VLQ encoded length of the Integer in bytes. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
 
 The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long).
 
@@ -268,10 +296,10 @@ These rules are necessary to ensure uniqueness of the parent encoding (otherwise
 Addresses are used to reference sequentially allocated accounts in Convex. 
 
 ```
-0x21 <VLC Count = address number>
+0x21 <VLQ Count = address number>
 ```
 
-An Address value is encoded by the tag byte followed by a VLC Encoding of the 64-bit value of the Address. 
+An Address value is encoded by the tag byte followed by a VLQ Encoding of the 64-bit value of the Address. 
 
 The address number MUST be positive, i.e. a 63-bit positive integer.
 
@@ -286,14 +314,14 @@ A String is a sequence of bytes with UTF-8 string encoding assumed.
 ```
 If String is 4096 bytes or less:
 
-0x30 <VLC Count = n> <n bytes data>
+0x30 <VLQ Count = n> <n bytes data>
 
 If String is more than 4096 Bytes:
 
-0x30 <VLC Count = n> <Child String Value>(repeated 2-16 times)
+0x30 <VLQ Count = n> <Child String Value>(repeated 2-16 times)
 ```
 
-Every String encoding starts with the tag byte and a VLC-encoded length.
+Every String encoding starts with the tag byte and a VLQ-encoded length.
 
 Encoding then splits depending on the String length `n`.
 - If 4096 characters or less, the UTF-8 bytes of the String are encoded directly (`n` bytes total)
@@ -317,17 +345,17 @@ A Blob is an arbitrary length sequence of bytes (Binary Large OBject).
 ```
 If Blob is 4096 bytes or less:
 
-0x31 <VLC Count = n> <n bytes>
+0x31 <VLQ Count = n> <n bytes>
 
 If Blob is more than 4096 bytes:
 
-0x31 <VLC Count = n> <Child Blob Value>(repeated 2-16 times)
+0x31 <VLQ Count = n> <Child Blob Value>(repeated 2-16 times)
 ```
 
-Every Blob encoding starts with the tag byte and a VLC-encoded length.
+Every Blob encoding starts with the tag byte and a VLQ-encoded length.
 
 Encoding then varies depending on the Blob length `n`.
-- If 4096 bytes or less, the bytes of the Blob are encoded directly (`n` bytes following the VLC Count)
+- If 4096 bytes or less, the bytes of the Blob are encoded directly (`n` bytes following the VLQ Count)
 - If more than 4096 bytes, the Blob is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child Blob (4096, 65536, 1048576 etc.), and the last child contains all remaining bytes data. Up to 16 children are allowed before the tree must grow to the next level.
 
 Applications MAY include whatever data or encoding they wish within Blobs.
@@ -401,11 +429,11 @@ A Character encoding is invalid if:
 ```
 If a leaf cell:
 
-0x80 <VLC Count = n> <Prefix Vector> <Value>(repeated 0-16 times)
+0x80 <VLQ Count = n> <Prefix Vector> <Value>(repeated 0-16 times)
 
 If a non-leaf cell:
 
-0x80 <VLC Count = n> <Child Vector>(repeated 2-16 times)
+0x80 <VLQ Count = n> <Child Vector>(repeated 2-16 times)
 ```
 
 A leaf cell is a Vector with Count `n` being 0, 16, or any other positive integer which is not an exact multiple of 16.
@@ -414,7 +442,7 @@ A Vector is defined as "packed" if its count is a positive multiple of 16. A lea
 
 A Vector is defined as "fully packed" if its Count is `16 ^ level`, where `level` is any positive integer. Intuitively, this represents a Vector which has the maximum number of elements before a new level in the tree must be added.
 
-All Vector encodings start with the tag byte and a VLC Count of elements in the Vector.
+All Vector encodings start with the tag byte and a VLQ Count of elements in the Vector.
 
 Subsequently:
 - For leaf cells, a packed prefix vector is encoded (which may be `nil`) that contains all elements up to the highest multiple of 16 less than the Count, followed by the Values
@@ -439,11 +467,11 @@ A Map is a hash map from keys to values.
 ```
 If a leaf cell:
 
-0x80 <VLC Count = n> <Key Ref | Value Ref>(repeated n times, in order of key hashes)
+0x80 <VLQ Count = n> <Key Ref | Value Ref>(repeated n times, in order of key hashes)
 
 If a non-leaf cell:
 
-0x80 <VLC Count = n> <Shift Byte> <Mask> <Child Refs>(repeated 2-16 times)
+0x80 <VLQ Count = n> <Shift Byte> <Mask> <Child Refs>(repeated 2-16 times)
 
 Where:
 - <Shift Byte>   specifies the hex position where the map branches (0 = at the fist hex digit, etc.)
@@ -466,7 +494,7 @@ A Set is encoded exactly the same as a Map, except:
 ### `0x84` Index
 
 ```
-0x84 <VLC Count = n> <Entry> <Depth> <Mask> <Child Refs> (repeated 1-16 times)
+0x84 <VLQ Count = n> <Entry> <Depth> <Mask> <Child Refs> (repeated 1-16 times)
 
 Where:
 
@@ -531,7 +559,7 @@ This is the same as `0x90` signed but excluding the public key
 A Sparse Record is an implementation-defined structure containing 0-63 fields. The fields are stored sparsely, with `nil` values omitted.
 
 ```
-`0xAn` <VLC Count = inclusion mask> <Value Ref> (repeated for each set bit in inclusion mask)
+`0xAn` <VLQ Count = inclusion mask> <Value Ref> (repeated for each set bit in inclusion mask)
 
 Where:
 - `n` is an implementation-defined hex value (0-15) which MAY be used to disambiguate distinct record types. 
@@ -600,7 +628,7 @@ Applications MAY in addition use the hex digit `n` to further disambiguate code 
 Data Records are record types where every field value is encoded.
 
 ```
-`0xdn` <VLC Count=n> <Continues as Vector Encoding>
+`0xdn` <VLQ Count=n> <Continues as Vector Encoding>
 
 Where:
 - n = a hex value from 0-15 
