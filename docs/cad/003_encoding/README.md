@@ -205,30 +205,20 @@ Tags are designed with the following objectives:
 - Plenty of tag bytes are still available for future extension
 - The hex values convey at least some meaning to experienced human readers. `nil` is `00`. Numbers start with `1`. booleans start with `b`. `ff` is fatal failure etc.
 
-### VLQ Integers
-
-Integers are normally encoded using a Variable Length Coding (VLQ) format. This ensure that small integers have a 1-byte Encoding, and most 64-bit values encoded will have an encoded length shorter than 8 bytes, based on the expected distributions of 64-bit integers encountered in the system.
-
-Encoding rules are:
-- The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
-- The remaining bits from each byte are considered as a standard big-endian two's complement binary encoding.
-- The highest two's complement bit (i.e. the 2nd highest bit of the first byte) is considered as a sign bit.
-- The Encoding is defined to be the shortest possible such encoding for any given integer.
-
-It should be noted that this system can technically support arbitrary sized integers, but in most contexts in Convex it is used for up to 64-bit integer values.
-
 ### VLQ Counts
 
-VLQ Counts are unsigned integer values, typically used where negative numbers are not meaningful, e.g. the size or length of data structures, or for balances that are defined to be non-negative natural numbers. 
+VLQ Counts are unsigned integer values expressed in a base-128 encoding using a Variable Length Quantity (VLQ) format. They are useful where values are usually small and negative numbers are not meaningful, e.g. the size or length of data structures.
 
 Encoding rules are:
 - The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
 - The remaining bits from each byte are considered as a standard unsigned big-endian two's complement binary encoding.
 - The encoding is defined to be the shortest possible such encoding for any given integer.
 
-In data structures, a VLQ Count is always used to specify the number of elements in the data structure.
+In data structures, a VLQ Count is frequently used to specify the number of elements in the data structure.
 
-Note: VLQ Counts are the same as VLQ Integers, except that they are unsigned. Having this distinction is justified by frequent savings of one byte, especially when used as counts within small data structures.
+It should be noted that this system can technically support arbitrary sized integers, however for use in CAD3 encoding it is limited to up to 63-bit integer values. It seems unlikely that anyone will ever actually need to construct or encode a data structure with this many elements, so this may be considered sufficiently future-proof.
+
+Note: In the Convex reference implementation a signed variant (VLC Long) is also available. This is not used in CAD3.
 
 ### `0x00` Nil
 
@@ -255,11 +245,13 @@ Note: This encoding is chosen in preference to a VLQ encoding because:
 0x19 <VLQ Count length of Integer = n> <n bytes of data>
 ```
 
-A "Big" Integer is represented by the tag byte `0x19` followed by the VLQ encoded length of the Integer in bytes. The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding.
+A "Big" Integer is represented by the tag byte `0x19` followed by the VLQ encoded length of the Integer in bytes. 
 
-The length MUST be at least `9` (otherwise the integer MUST be encoded as a Long).
+The Integer MUST be represented in the minimum possible number of bytes - excess leading sign bytes are an invalid encoding. This is necessary to ensure an unique encoding for every Integer.
 
-With the exception of the tag byte, The encoding of a BigInt is defined to be exactly equal to a Blob with `n` bytes.
+The length MUST be at least `9` (otherwise the integer MUST be encoded as the Long version of Integer).
+
+With the exception of the tag byte, The encoding of a BigInt is exactly the same as a Blob with `n` bytes.
 
 ### `0x1d` Double
 
@@ -554,25 +546,25 @@ The signature may or may not be valid: an invalid signature is still a valid val
 
 This is the same as `0x90` signed but excluding the public key
 
-### `0xA0` - `0xAF` Sparse Records
+### `0xa0` - `0xaf` Sparse Records
 
-A Sparse Record is an implementation-defined structure containing 0-63 fields. The fields are stored sparsely, with `nil` values omitted.
+A Sparse Record is an structure containing 0-63 fields. The fields are stored sparsely, with `nil` values omitted.
 
 ```
 `0xAn` <VLQ Count = inclusion mask> <Value Ref> (repeated for each set bit in inclusion mask)
 
 Where:
 - `n` is an implementation-defined hex value (0-15) which MAY be used to disambiguate distinct record types. 
-- The inclusion mask is an unsigned integer (63 bits max). 
+- The inclusion mask is an unsigned integer (63 bits max) represented with a VLQ Count. 
 ```
 
 The inclusion mask is a non-negative value indicating which fields are included in the Record as bit mask.
 
-The number of Value Refs MUST be equal to the number of `1` bits in the inclusion count, with the first Value Ref corresponding to the least significant `1` bit etc.
+The number of Value Refs MUST be equal to the number of `1` bits in the inclusion count, with the first Value Ref corresponding to the least significant `1` bit etc. For maximal encoding efficiency, it is recommended that the most commonly included fields are defined in the first 7 positions, which maximises the chance that the inclusion mask will only require one byte.
 
-Value Refs, if included, MUST NOT be `nil`. This is necessary to ensure unique encoding, since excluded fields are defined as `nil`.
+Value Refs, if included, MUST NOT be `nil`. This is necessary to ensure unique encoding, since excluded fields are already defined as `nil`.
 
-Implementations which require more than 64 fields MAY adopt their own scheme to further embed additional structures within the 63 fields available. Reasonable options include:
+Implementations which require more than 63 fields MAY adopt their own scheme to further embed additional structures within the 63 fields available. Reasonable options include:
 - Group subsets of similar fields into child Records. This is especially useful if common groups of fields are frequently used in multiple places and logically grouped together.
 - Have the Record specify one field which contains a vector of additional fields
 - Use the first field (index 0) to specify the interpretation of following fields (which may contain arbitrary values as sub-structures)
@@ -619,24 +611,27 @@ Where:
 - n = a hex value from 0-15 
 ```
 
-Applications SHOULD use a small code value (e.g. a small Integer) to specify the precise type of value being encoded, and a corresponding value that is meaningful for the given code value.
+Applications SHOULD use a small code value (e.g. a small Long, or a Byte Flag) to specify the precise type of value being encoded, and a corresponding value that is meaningful for the given code value.
 
-Applications MAY in addition use the hex digit `n` to further disambiguate code types. In combination with the 18 valid valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
+Applications MAY in addition use the hex digit `n` to further disambiguate code types. In combination with the 18 valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
 
-### `0xd0`-`0xdf` Dense Records
+Fun Idea: A 1-byte Lisp where `0x10` is an opening paren, `0x00` is a closing paren and `0xb0 - 0xbf` are the allowable tokens.
+
+### `0xd0`-`0xdf` Data Records
 
 Data Records are record types where every field value is encoded.
 
 ```
-`0xdn` <VLQ Count=n> <Continues as Vector Encoding>
+`0xdn` <VLQ Count=z> <Continues as Vector Encoding>
 
 Where:
 - n = a hex value from 0-15 
+- z = the number of fields in the record
 ```
 
 Data Record encoding is exactly the same as a Vector, with the exception of the tag byte.
 
-Applications MAY in use the hex digit `n` to disambiguate record types. If this is insufficient, implementations SHOULD use the first or the last record value to indicate the type.
+Applications MAY in use the hex digit `n` and/or the field length `z` to distinguish record types. If this is insufficient, applications SHOULD use the first or the last field value to indicate the type.
 
 ### `0xff` Illegal
 
