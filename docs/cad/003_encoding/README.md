@@ -793,14 +793,19 @@ In practice the recommended approach is:
 
 CAD3 encodings are designed to support various other data formats as a natural subset. Applications may find it useful to exploit these correspondences to efficiently store any data in CAD3 format.
 
-- JSON encodes naturally using Map, String, Vector, Double, Integer, Boolean and Nil
-- UTF-8 text encodes naturally as a String
-- Binary data naturally encodes as a Blob, or as a Code with the encoding format specified
-- Encrypted data is perfectly suited for storage in a Blob
-- S-expressions are naturally coded using Lists, Symbols and a selection of other values (Integers, Strings etc.)
-- XML can be encoded in multiple ways e.g.:
+- **JSON** encodes naturally using Map, String, Vector, Double, Integer, Boolean and Nil
+- **UTF-8** text encodes naturally as a String
+- **Binary data** naturally encodes as a Blob, or as a Code with the encoding format specified
+- **Encrypted data** is perfectly suited for storage in a Blob
+- **S-expressions** are naturally coded using Lists, Symbols and a selection of other values (Integers, Strings etc.)
+- **XML** can be encoded in multiple ways e.g.:
     - As a UTF-8 String
     - As a Vector where each element is either a content String or a markup value. The metadata map of a Syntax Object could be used to specify element attributes
+- **Tabular data** like **CSV** or **SQL** result sets is naturally represented as a Vector of Vectors. This has the added advantage of fast indexing by row number.
+- **Content addressable storage** is naturally represented with an Index, which has the advantage of fast indexed lookup by content ID
+- **Abstract Syntax Trees** are naturally encoded using Syntax Objects, where arbitrary metadata can be attached to nodes. The nodes themselves might contain a Vector of child nodes.
+
+Developers wishing to utilise such subsets SHOULD research and collaborate with other developers to establish common standards for embedding such data in CAD3 format. This is outside the scope of CAD3, but new CAD proposals defining such standards are welcome.
 
 ### Partial Implementations
 
