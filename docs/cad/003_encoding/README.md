@@ -28,7 +28,7 @@ Convex and related lattice infrastructure have some very specific requirements f
 No existing standard was identified that meets these requirements, e.g.
 - XML and JSON are inefficient text based formats, and lack unique representations of the same data
 - Google's protocol buffers require external schemas (and does not usually guarantee a unique canonical encoding) 
-- ASN.1 generally relies on schemas and does't encode into bounded units suitable for building merkle trees (you can do it indirectly with a custom schema, but then it is no longer canonical...)
+- ASN.1 is over-complex, generally relies on schemas and doesn't encode into bounded units suitable for building merkle trees or streaming data through fixed size buffers
 
 ## Examples
 
@@ -126,8 +126,8 @@ Note: since only tree roots and branches are likely to be stored in storage syst
 
 A cell encoding MAY contain references ("Refs") to other cells. There are two types of reference:
 
-- Embedded, where the embedded cell's encoding is included within the parent cell encoding 
-- Branch, where an external reference is encoded as a byte sequence that includes the Value ID of the referenced cell (i.e. the branch)
+- **Embedded**, where the embedded cell's encoding is included within the parent cell encoding 
+- **Branch**, where an external reference is encoded as a byte sequence that includes the Value ID of the referenced cell (i.e. the branch)
 
 From a functional perspective, the difference between an embedded cell and a branch cell is negligible, with the important exception that following a branch reference will require accessing a separate encoding (typically cached in memory, but if necessary loaded from storage).
 
@@ -185,9 +185,17 @@ Implementations MUST be able to produce the unique valid encoding for any cell.
 
 ### Extensibility
 
-CAD3 is designed for applications to use, and is therefore extensible.
+CAD3 is designed for applications to use, and is therefore **extensible**. 
+
+This is an important aspect of the design: Just like HTTP does not enforce a specific meaning on content included in a PUT request, CAD3 does not specify how an application might choose to interpret specific CAD3 encoded values.
 
 Applications using CAD3 encodings MAY assign semantic meaning to values on an application-specific basis.
+
+Applications SHOULD honour the logical meaning of defined CAD3 types, e.g.:
+- A CAD3 Integer should represent an integer value in the application (in some cases it might be repurposed e.g. as a code value)
+- A CAD3 String should be treated as a UTF-8 string if the application supports strings / text data.
+
+Applications SHOULD use the Blob type (`0x31`) for data which has a different binary encoding. This allows applications to encode arbitrary data in CAD3 structures with custom encodings or using other standards.
 
 Implementations MUST preserve CAD3 encoded values, even if they do not recognise the meaning. This ensures that implementations are compatible and can relay application specific data even if they do not understand it.
 
@@ -298,11 +306,11 @@ A Double is an IEEE754 double precision floating point value.
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
 
-All IEEE754 values are supported except that the `NaN` value must be represented with the specific encoding `0x1d7ff8000000000000` in the CVM. This is to ensure a unique encoding of `NaN` values which are otherwise logically equivalent.
+All IEEE754 values are supported except that the `NaN` value MUST be represented with the specific encoding `0x1d7ff8000000000000` when used within the CVM. This is to ensure a unique encoding of `NaN` values which are otherwise logically equivalent.
 
 ### `0x20` Ref
 
-A Ref is a special encoding that points to another encoding using its value ID (cryptographic hash).
+A Ref is a special encoding that points to a branch cell encoding using its value ID (cryptographic hash).
 
 ```
 0x20 <32 bytes Value ID>
@@ -312,11 +320,11 @@ An external reference is encoded as the tag byte followed by the 32-byte value I
 
 An implementation MUST NOT allow a Ref as a a valid encoding in its own right: it must be included in another encoding.
 
-Ref encodings are used as substitutes for child values contained within other cell encodings subject to the following rules:
+Ref encodings are used for child values contained within other cell encodings subject to the following rules:
 - They MUST be used whenever the child cannot be embedded (i.e. is a branch cell). 
 - They MUST NOT be used when the child cell is embedded. 
 
-These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two versions, one with an embedded child and the other with a external ref ).
+These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two or more encodings for many values, e.g. one with an embedded child and the other with a external branch ref ).
 
 ### `0x21` Address
 
@@ -581,7 +589,7 @@ The signature may or may not be valid: an invalid signature is still a valid val
 
 This is the same as `0x90` signed but excluding the public key
 
-### `0xa0` - `0xaf` Sparse Records
+### `0xA0` - `0xBF` Sparse Records
 
 A Sparse Record is an structure containing 0-63 fields. The fields are stored sparsely, with `nil` values omitted.
 
@@ -604,26 +612,26 @@ Implementations which require more than 63 fields MAY adopt their own scheme to 
 - Have the Record specify one field which contains a vector of additional fields
 - Use the first field (index 0) to specify the interpretation of following fields (which may contain arbitrary values as sub-structures)
 
-### `0xb0` - `0xb1` Boolean
+### `0xB0` - `0xB1` Byte Flags (Boolean)
 
-The possible Boolean values are `true` and `false`
+The possible Boolean values are `true` and `false`, which are coded as 1-byte Byte Flags.
 
 ```
 Encoded as:
-0xb0 <=> false
-0xb1 <=> true
+0xB0 <=> false
+0xB1 <=> true
 ```
 
 The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` respectively. 
 
 Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
 
-### `0xb2`-`0xbF` Byte Flags
+### `0xB2`-`0xBF` Byte Flags (Extensible)
 
 Byte flags are one byte encodings (similar to Booleans) available for application specific use.
 
 ```
-`0xbn`
+`0xBn`
 
 Where
 - n = a hex value from 2-15 
@@ -635,12 +643,12 @@ Values `0xb0` and `0xb1` are already reserved for the two boolean values, though
 
 Fun Idea: A 1-byte Lisp where `0x10` is an opening paren, `0x00` is a closing paren and `0xb0 - 0xbf` are the allowable tokens.
 
-### `0xc0`-`0xcf` Codes
+### `0xC0`-`0xCF` Codes
 
 Codes are values tagged with another value. 
 
 ```
-`0xcz` <Code Ref> <Value Ref>
+`0xCz` <Code Ref> <Value Ref>
 
 Where:
 - <Code Ref> is any value indicating what code is being used
@@ -654,12 +662,12 @@ Applications SHOULD use a small code value (e.g. a small Long, or a Byte Flag) t
 
 Applications MAY in addition use the hex digit `z` to further disambiguate code types. In combination with the 18 valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
 
-### `0xd0`-`0xdf` Data Records
+### `0xD0`-`0xDF` Data Records
 
 Data Records are record types where every field value is encoded (densely coded).
 
 ```
-`0xdz` <VLQ Count=n> <Continues as Vector Encoding>
+`0xDz` <VLQ Count = n> <Continues as Vector Encoding>
 
 Where:
 - z = a hex value from 0-15 
@@ -672,11 +680,11 @@ Applications MAY use the hex digit `z` and/or the field count `n` to distinguish
 
 The intention of Data records is that applications may interprest 
 
-### `0xff` Illegal
+### `0xFF` Illegal
 
-The `0xff` tag is always illegal as a tag byte in any encoding.
+The `0xFF` tag is always illegal as a tag byte in any encoding.
 
-Implementations MUST treat and values encoded starting with `0xff` as an invalid encoding.
+Implementations MUST treat and values encoded starting with `0xFF` as an invalid encoding.
 
 ### Reserved Tags
 
@@ -724,7 +732,7 @@ Checking for structural correctness is typically an `O(n)` operation in the numb
 
 ### Semantic correctness
 
-Checking semantic correctness is to validate that the cell value makes sense / has meaning in the context that it is used. A cell could be structurally correct but contain values that are illegal in some application (e.g. a Vector that should contain all Integers actually containing a String).
+Checking semantic correctness is to validate that the cell value makes sense / has meaning in the context that it is used. A cell could be structurally correct but contain values that are illegal in some application (e.g. a Vector that should contain Integers but actually contains a String).
 
 Checking for semantic correctness is application defined and outside the scope of CAD003.
 
@@ -733,8 +741,6 @@ Checking for semantic correctness is application defined and outside the scope o
 ### Applications
 
 Applications are free to assign semantic meaning to CAD3 encoded values.
-
-This is an important aspect of the design: Just like HTTP does not enforce a specific meaning on content included in a PUT request, CAD3 does not specify how an application might choose to interpret specific CAD3 encoded values.
 
 Applications SHOULD ensure that they are able to read, persist and communicate arbitrary CAD3 encoded values, even if the semantic meaning may be unknown. This is important for several reasons:
 - The application SHOULD be robust and not fail due to unrecognised but legal encodings
@@ -745,6 +751,18 @@ In practice the recommended approach is:
 - If a specific value is to be accessed and used, the application should verify semantic correctness
     - If valid, application can proceed with the semantic meaning it defines
     - If invalid, this is presumably an exception that needs handling (e.g. a malicious message from an external source that should be rejected)
+
+### Partial Implementations
+
+It is possible to write a partial implementation that understands only a subset of CAD3. This may be useful for e.g. embedded devices.
+
+Partial implementations MUST be able to decode any cell, and recognise it as valid / invalid from an encoding perspective. This is necessary for correctness and interoperability.
+
+Partial implementations MAY ignore CAD3 values that they cannot interpret. This means that they MUST at a minimum be able to:
+- calculate the length of an embedded value so that they can skip over it. This may require a bounded amount of recursion, as embedded values may embed other values inside them (up to a small depth limit limited by 140 bytes)
+- store the encoding of any value(s) they have ignored in the event that they re-encode the data for onward transmission
+
+Partial implementations MAY ignore branch references, and hence avoid the need to compute SHA3-256 hashes / look up child cells by reference. In this case, care must be taken that values are small enough that they always result in embedded encodings.
 
 ### Convex JVM Implementation
 
