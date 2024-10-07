@@ -110,7 +110,7 @@ Any two distinct (non-identical) cells MUST map to different encoding
 
 It MUST be possible to reconstruct the cell from its own encoding, to the extent that the cell represents the same Value (it is possible for implementations to use different internal formats if desired, providing these do not affect the CVM value semantics)
 
-The Encoding MUST have a maximum length of 8191 bytes. This ensure that a cell encoding will always fit within a reasonable fixed size buffer, and guarantees that most operations on can achieve `O(1)` complexity.
+The encoding MUST have a maximum length of 16383 bytes. This ensure that a cell encoding will always fit within a reasonable fixed size buffer, and guarantees that most operations on can achieve `O(1)` complexity.
 
 ### Value ID
 
@@ -144,7 +144,7 @@ A cell may be defined as embedded in which case the cell's encoding is inserted 
 
 If a cell is embedded, it MUST NOT be included in the encoding of another cell by external reference. This restriction is required to guarantee uniqueness of encoding (if not enforced, child cells might be encoded as either an embedded reference or by external reference, thus giving two or more different encodings for the parent cell).
 
-An embedded cell MUST have an encoding of 140 bytes or less. This restriction helps to ensure that cell encodings which may contain many child embedded references cannot exceed the overall 8191 byte limit. 
+An embedded cell MUST have an encoding of 140 bytes or less. This restriction helps to ensure that cell encodings which may contain many child embedded references cannot exceed the overall 16383 byte limit. 
 
 #### External References
 
@@ -183,13 +183,18 @@ Implementations MUST recognise an invalid encoding, and in particular:
 
 Implementations MUST be able to produce the unique valid encoding for any cell.
 
-### Implementation interpretation
+### Extensibility
 
-Implementations using CAD3 encodings MAY assign semantic meaning to values on an application-specific basis.
+CAD3 is designed for applications to use, and is therefore extensible.
+
+Applications using CAD3 encodings MAY assign semantic meaning to values on an application-specific basis.
+
+Implementations MUST preserve CAD3 encoded values, even if they do not recognise the meaning. This ensures that implementations are compatible and can relay application specific data even if they do not understand it.
 
 In practice this means:
-- Applications can define what a particular cell value means in context, e.g. the vector `[1 17 :owns]` might represent ownership in a graph where entity `1` owns entity `17`
-- Independent of semantic meaning, applications can read and encode arbitrary CAD3 data. 
+- Applications can define what a particular cell value means in context, e.g. the vector `[1 17 :owns]` might represent an edge in a graph where entity `1` "owns" entity `17`
+- Certain categories of values (`0xAn`, `0xCn`, `0xDn` and `0xEn`) are explicitly intended for application usage
+- Independent of semantic meaning, applications can encode and decode arbitrary CAD3 data using a suitable implementation library. 
 
 ## Encoding Format
 
@@ -205,6 +210,36 @@ Tags are designed with the following objectives:
 - Plenty of tag bytes are still available for future extension
 - The hex values convey at least some meaning to experienced human readers. `nil` is `00`. Numbers start with `1`. booleans start with `b`. `ff` is fatal failure etc.
 
+### Categories
+
+The high hex digit of each tag byte specifies the general category of teh data value. These are defined as follows:
+
+| Pattern  | Category             | Purpose |
+| -------- | -------------------- | -------- |
+| 0x0x     | Basic constants      | Special values like `nil` |
+| 0x1x     | Numerics             | Integers, Doubles |
+| 0x2x     | References           | Addresses, References to branch values |
+| 0x3x     | Strings and Blobs    | Raw Blob data, UTF-8 Strings etc. |
+| 0x4x     | Reserved             | Reserved for future use |
+| 0x5x     | Reserved             | Reserved for future use |
+| 0x6x     | Reserved             | Reserved for future use |
+| 0x7x     | Reserved             | Reserved for future use |
+| 0x8x     | Data Structures      | Containers for other values: Maps, Vectors, Lists, Sets etc. |
+| 0x9x     | Cryptography         | Digital Signatures etc. |
+| 0xAx     | Sparse Records       | For application usage, records that frequently omit fields  |
+| 0xBx     | Byte Flags           | One-byte flag values (0xB0 and 0xB1 used as booleans) |
+| 0xCx     | Coded Values         | For application usage, values tagged with an code value |
+| 0xDx     | Data Records         | For application usage, records that have densely packed fields |
+| 0xEx     | Extension Values     | For application usage |
+| 0xFx     | Special Values       | Mostly reserved, 0xFF is illegal |
+
+The categories have been designed with the following purposes in mind:
+- Include all key fundamental types for decentralised lattice data structures
+- Allow rapid recognition of general types based on the first hex digit
+- Extensibility: several categories are designed for flexible application usage 
+- Some degree of human interpretability (from looking at hex values)
+- Reasonable space for future extension
+
 ### VLQ Counts
 
 VLQ Counts are unsigned integer values expressed in a base-128 encoding using a Variable Length Quantity (VLQ) format. They are useful where values are usually small and negative numbers are not meaningful, e.g. the size or length of data structures.
@@ -218,7 +253,7 @@ In data structures, a VLQ Count is frequently used to specify the number of elem
 
 It should be noted that this system can technically support arbitrary sized integers, however for use in CAD3 encoding it is limited to up to 63-bit integer values. It seems unlikely that anyone will ever actually need to construct or encode a data structure with this many elements, so this may be considered sufficiently future-proof.
 
-Note: In the Convex reference implementation a signed variant (VLC Long) is also available. This is not used in CAD3.
+Note: In the Convex reference implementation a signed variant (VLC Long) is also available. This is not currently used in CAD3.
 
 ### `0x00` Nil
 
@@ -354,7 +389,7 @@ Applications MAY include whatever data or encoding they wish within Blobs.
 
 Applications SHOULD use Blobs for binary data where the data is not otherwise meaningfully represented as a CAD3 type. Examples might include PNG format image data, a binary database file, or text in an encoding other than UTF-8.
 
-Applications SHOULD use Blobs for data which is normally represented as a string of bytes, e.g. cryptographic hashes or signatures.
+Applications SHOULD use Blobs for data which is naturally represented as a string of bytes, e.g. cryptographic hashes or signatures.
 
 Because child Blobs are likely to be non-embedded (because of encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large Blob will have a top level cell encoding of a few hundred bytes, allowing for a few child Refs and a final child for the remaining bytes (which may be embedded). 
 
@@ -598,40 +633,44 @@ Applications MAY use byte flags as a efficient single byte value, i.e. the compl
 
 Values `0xb0` and `0xb1` are already reserved for the two boolean values, though an application MAY repurpose these as single byte values (along with `0x00` and `0x10`) providing these values are not needed for some other purpose.
 
+Fun Idea: A 1-byte Lisp where `0x10` is an opening paren, `0x00` is a closing paren and `0xb0 - 0xbf` are the allowable tokens.
+
 ### `0xc0`-`0xcf` Codes
 
-Codes are values intended to represent values requiring special coded interpretation.
+Codes are values tagged with another value. 
 
 ```
-`0xcn` <Code Ref> <Value Ref>
+`0xcz` <Code Ref> <Value Ref>
 
 Where:
 - <Code Ref> is any value indicating what code is being used
 - <Value Ref> is any value representing the coded payload
-- n = a hex value from 0-15 
+- z = a hex value from 0-15 
 ```
+
+Codes are intended for applications to represent values requiring special interpretation depending on the code used. e.g. the code could be used to represent the MIME content type for a Blob of data.
 
 Applications SHOULD use a small code value (e.g. a small Long, or a Byte Flag) to specify the precise type of value being encoded, and a corresponding value that is meaningful for the given code value.
 
-Applications MAY in addition use the hex digit `n` to further disambiguate code types. In combination with the 18 valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
-
-Fun Idea: A 1-byte Lisp where `0x10` is an opening paren, `0x00` is a closing paren and `0xb0 - 0xbf` are the allowable tokens.
+Applications MAY in addition use the hex digit `z` to further disambiguate code types. In combination with the 18 valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
 
 ### `0xd0`-`0xdf` Data Records
 
-Data Records are record types where every field value is encoded.
+Data Records are record types where every field value is encoded (densely coded).
 
 ```
-`0xdn` <VLQ Count=z> <Continues as Vector Encoding>
+`0xdz` <VLQ Count=n> <Continues as Vector Encoding>
 
 Where:
-- n = a hex value from 0-15 
-- z = the number of fields in the record
+- z = a hex value from 0-15 
+- n = the number of fields in the record
 ```
 
-Data Record encoding is exactly the same as a Vector, with the exception of the tag byte.
+Data Record encoding is exactly the same as a Vector, with the exception of the tag byte. Note that if there are more than 16 fields, this means there will be a child cells which are Vectors.
 
-Applications MAY in use the hex digit `n` and/or the field length `z` to distinguish record types. If this is insufficient, applications SHOULD use the first or the last field value to indicate the type.
+Applications MAY use the hex digit `z` and/or the field count `n` to distinguish record types. If this is insufficient, applications MAY use the first or the last field value to indicate the type, or embed a Data Record as a coded value (`0xCz`) to tag with an arbitrary type.
+
+The intention of Data records is that applications may interprest 
 
 ### `0xff` Illegal
 
