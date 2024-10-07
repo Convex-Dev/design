@@ -43,29 +43,33 @@ The Integer `19` is encoded as:
 0x1113  =  19
 ```
 
-### A 2-element Vector
+### A 3-element Vector
 
-A Vector containing The Integer 19 and the String "Hello" is encoded as:
+A Vector containing the Integer 101, the String "Hello" and an empty Set is encoded as:
 - `0x80` tag for a Vector
 - `0x02` count of Vector elements
-- `0x1113` embedded encoding of the Integer 19
+- `0x1164` embedded encoding of the Integer 101
 - `0x30` tag for a String
 - `0x05` length of String
 - `0x48656c6c6f` 5 bytes UTF-8 encoding of "Hello"
+- `0x83` tag for a Set
+- `0x00` number of elements in the set (i.e. empty)
 
 ```
-80021113300548656c6c6f  =  [19 "Hello"]
+80031165300548656c6c6f8300  =  [101 "Hello" #{}]
 ```
 
-### A 1GB Blob
+Note that the encoded representation (13 bytes) is shorter than the printed representation (17 bytes), even though it incorporates rich data types and self-describing structural information! This is a key design goal in general for CAD3
 
-A Blob of length 1gb, specified with:
+### A 4gb Blob
+
+A Blob of length 4gb, specified with:
 - `0x31` tag for a Blob
-- `0x8480808000` VLQ encoded length of 2^30
-- `0x20`+child value ID (repeated 16 times, each child is a 64mb Blob)
+- `0x9080808000` VLQ encoded length of 2^32
+- `0x20`+child value ID (repeated 16 times, each child is a 256mb Blob)
 
 ```
-0x31848080800020af61c2faf10511466f73fe890524dccc056bddc79df37c7fbb
+0x31908080800020af61c2faf10511466f73fe890524dccc056bddc79df37c7fbb
   1823d5c8dae191202144a7641028ccd2259792d4c9626feb7f3cfb631eb7473d
   3b95f1312fc4bf05202426c963ce5e0032fff92a028deec91a7466dd6d970cf4
   78e510033854f6499120b2165e855dddd0daf62ba138ba0c1553a347b7f9f635
@@ -84,7 +88,11 @@ A Blob of length 1gb, specified with:
   f36bc6f133660bf8a60b4ded525332f9a314bea4ddea
 ```
 
-On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced value would need to be obtained in order to examine the tree of child Blobs - which is a whole gigabyte of data assuming the remainder of the tree is valid. This is an example of a "partial" value.
+On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced values would need to be obtained in order to examine the tree of child Blobs - which is four whole gigabytes of data. This is an example of a "partial" value.
+
+This illustrates two key ideas in the CAD3 design:
+- it is possible to examine and validate the top levels of a Merkle tree of CAD3 data independently, and only retrieve / decode sub-trees where necessary.
+- there is very little overhead for large structures. On 4gb of random data, the overhead is ~1% (mainly from ~1.1 million cryptographic hashes, which are in any case valuable for integrity checking)
 
 ## Basic Rules and Concepts
 
