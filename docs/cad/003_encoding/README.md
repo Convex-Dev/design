@@ -2,11 +2,12 @@
 
 ## Overview
 
-Convex uses the standard **CAD3 Encoding** format that represents any valid lattice data value as a **sequence of bytes**. The CAD3 encoding is an important capability for Convex because:
+Convex uses the standard **CAD3 Encoding** format that represents data values as a **sequence of bytes**. The CAD3 encoding is an important capability for Convex because:
 
 - It allows values to be efficiently **transmitted** over the network between peers and clients
 - It provides a standard format for **durable data storage** of values
 - It defines a cryptographic **value ID** to identify any value. This is a decentralised pointer, which also serves as the root of a Merkle DAG that represents the complete encoding of a value.
+- CAD3 values are fundamental for enabling **lattice technology** for internet-scale decentralised data structures 
 
 The encoding model breaks values into a Merkle DAG of one or more **cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
 
@@ -23,7 +24,7 @@ Convex and related lattice infrastructure have some very specific requirements f
 - Data structure of **arbitrary size** may be represented. The lattice is huge.
 - Support for **partial data**: we often need to transmit deltas of large data structures, so need a way to build these deltas and reconstruct the complete structure when they are received (assuming existing data can fill the gaps)
 - Ability to read encode / decode `n` bytes of data in `O(n)` time and space to ensure **DoS resistance**
-- Fixed upper bound on the encoding size of any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers - this allows **streaming capabilities** including zero-copy operations.
+- **maximum size limit** on encodings for any value (excluding referenced children) so that reading and writing can occur in fixed sized buffers - this allows **streaming capabilities** including zero-copy operations.
 
 No existing standard was identified that meets these requirements, e.g.
 - XML and JSON are inefficient text based formats, and lack unique representations of the same data
@@ -202,12 +203,14 @@ Applications SHOULD honour the logical meaning of defined CAD3 types, e.g.:
 
 Applications SHOULD use the Blob type (`0x31`) for data which has a different binary encoding. This allows applications to encode arbitrary data in CAD3 structures with custom encodings or using other standards.
 
-Implementations MUST preserve CAD3 encoded values, even if they do not recognise the meaning. This ensures that implementations are compatible and can relay application specific data even if they do not understand it.
+Implementations MUST preserve CAD3 encoded values, even if they do not recognise the meaning. This ensures that implementations are compatible with all applications and systems can relay application specific data even if they do not understand it.
 
 In practice this means:
 - Applications can define what a particular cell value means in context, e.g. the vector `[1 17 :owns]` might represent an edge in a graph where entity `1` "owns" entity `17`
 - Certain categories of values (`0xAn`, `0xCn`, `0xDn` and `0xEn`) are explicitly intended for application usage
 - Independent of semantic meaning, applications can encode and decode arbitrary CAD3 data using a suitable implementation library. 
+
+Application developers SHOULD document their extensions so that other developers are able to interpret their extension values if required.
 
 ## Encoding Format
 
@@ -709,7 +712,11 @@ Where:
 - z = a hex value from 0-15 
 ```
 
-Extension values are arbitrary values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. For example, an application might define `0xEB` as an extension where the value is a String containing JSON data with a specific schema.
+Extension values are arbitrary values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. 
+
+Examples: 
+- an application might define `0xEB` as an extension where the value is a String containing JSON data with a specific schema.
+- another application might define `0xE0` as an enum where the values are the possible states of a finite state machine
 
 ### `0xFF` Illegal
 
