@@ -8,7 +8,7 @@ Convex uses the standard **CAD3 Encoding** format that represents any valid latt
 - It provides a standard format for **durable data storage** of values
 - It defines a cryptographic **value ID** to identify any value. This is a decentralised pointer, which also serves as the root of a Merkle DAG that represents the complete encoding of a value.
 
-The encoding model breaks values into a Merkle DAG of one or more **Cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
+The encoding model breaks values into a Merkle DAG of one or more **cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
 
 ## Special Requirements
 
@@ -18,7 +18,7 @@ Convex and related lattice infrastructure have some very specific requirements f
 - An **efficient binary format** for both storage and transmission
 - A **self describing** format - no additional schema is required to read an encoding
 - Provision of **immutable persistent data structures** for the lattice data values used in Convex
-- Automatic generation of a verifiable **Merkle tree** via references to other value IDs
+- Automatic generation of a verifiable **Merkle DAG** via references to other value IDs
 - Support for rich **data types** used in the CVM and lattice data (Maps, Sets, Vectors, Blobs etc.)
 - Data structure of **arbitrary size** may be represented. The lattice is huge.
 - Support for **partial data**: we often need to transmit deltas of large data structures, so need a way to build these deltas and reconstruct the complete structure when they are received (assuming existing data can fill the gaps)
@@ -62,7 +62,7 @@ On its own, the encoding above is a valid encoding for a single cell, but the en
 A Blob of length 1GB, specified with:
 - `0x31` tag for a Blob
 - `0x8480808000` VLQ encoded length of 2^30
-- `0x20`+child Blob hash (repeated 16 times, each child is 64mb)
+- `0x20`+child value ID (repeated 16 times, each child is a 64mb Blob)
 
 ```
 0x31848080800020af61c2faf10511466f73fe890524dccc056bddc79df37c7fbb
@@ -183,6 +183,11 @@ Implementations MUST recognise an invalid encoding, and in particular:
 
 Implementations MUST be able to produce the unique valid encoding for any cell.
 
+Note: Random byte strings are almost always invalid. This is a good thing, because it allows us to quickly reject corrupt or malicious data. This property is due to the multiple constraints on validity:
+- Quite a few tags are illegal / reserved
+- Within each value, there are significant constraints on validity (correct VLQ counts, embedded children must be 140 bytes or less etc.)
+- Even for an otherwise valid encoding, the length of the encoding must be exactly correct
+
 ### Extensibility
 
 CAD3 is designed for applications to use, and is therefore **extensible**. 
@@ -265,7 +270,9 @@ Note: In the Convex reference implementation a signed variant (VLC Long) is also
 
 ### `0x00` Nil
 
-The single byte `0x00` is the encoding for  `nil` value.
+The single byte `0x00` is the encoding for the `nil` value.
+
+`nil` is conventionally used to indicate the absence of a value in applications. 
 
 ### `0x10` - `0x18` Integer (Long)
 
@@ -353,25 +360,26 @@ If String is 4096 bytes or less:
 
 If String is more than 4096 Bytes:
 
-0x30 <VLQ Count = n> <Child String Value>(repeated 2-16 times)
+0x30 <VLQ Count = n> <Child Blob>(repeated 2-16 times)
 ```
 
 Every String encoding starts with the tag byte and a VLQ-encoded length.
 
 Encoding then splits depending on the String length `n`.
 - If 4096 characters or less, the UTF-8 bytes of the String are encoded directly (`n` bytes total)
-- If more than 4096 bytes, the String is broken up into a tree of child Strings, where each child except the last is the maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
+- If more than 4096 bytes, the String is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
 
 Because child strings are likely to be non-embedded (because of encoding size) they will usually be replaced with Refs (33 bytes length). Thus a typical large String will have a top level cell encoding of a few hundred bytes, allowing for a few child Refs and a (perhaps embedded) final child. 
 
 Importantly, this design allows:
 - Arbitrary length Strings to be encoded, while still keeping each cell encoding smaller than the fixed maximum size
 - Structural sharing of tree nodes, giving O(log n) update with path copying
-- Low overhead because of the high branching factor: not many branch nodes are required and each leaf note will compactly store up to 4096 characters.
+- Low overhead because of the high branching factor: not many branch nodes are required and each leaf note will compactly store up to 4096 characters
+- Most of the implementation can be shared with Blobs
 
 Note: UTF-8 encoding is assumed, but not enforced in encoding rules. Implementations MAY decide to allow invalid UTF-8.
 
-Note: with the exception of the tag byte, String encoding is exactly the same as a Blob
+Note: with the exception of the tag byte, String encoding is exactly the same as a Blob. This includes the fact that the children of Strings are in fact Blobs.
 
 ### `0x31` Blob
 
@@ -384,7 +392,7 @@ If Blob is 4096 bytes or less:
 
 If Blob is more than 4096 bytes:
 
-0x31 <VLQ Count = n> <Child Blob Value>(repeated 2-16 times)
+0x31 <VLQ Count = n> <Child Blob>(repeated 2-16 times)
 ```
 
 Every Blob encoding starts with the tag byte and a VLQ-encoded length.
@@ -500,21 +508,29 @@ A List is encoded the same as a Vector, except:
 A Map is a hash map from keys to values.
 
 ```
-If a leaf cell:
+If a map leaf cell:
 
-0x80 <VLQ Count = n> <Key Ref | Value Ref>(repeated n times, in order of key hashes)
+0x80 <VLQ Count = n> <Key><Value>... (key + value repeated n times, in order of key hashes)
 
-If a non-leaf cell:
+If a map tree cell:
 
-0x80 <VLQ Count = n> <Shift Byte> <Mask> <Child Refs>(repeated 2-16 times)
+0x80 <VLQ Count = n> <Shift Byte> <Mask> <Child>(repeated 2-16 times)
 
 Where:
-- <Shift Byte>   specifies the hex position where the map branches (0 = at the fist hex digit, etc.)
-- <Mask>    is a 16-bit bitmask indicating key hash hex valeus are included (low bit = `0` ... high bit = `F`)
-- <Child Refs>    are Refs to Map cells which can be Leaf or non-Leaf nodes
+- <Shift Byte>   specifies the hex position where the map branches (0 = at the first hex digit,.... 63 = last digit)
+- <Mask>    is a 16-bit bitmask indicating key hash hex values are included (low bit = `0` ... high bit = `F`)
+- <Child>    are Refs to Map cells which can be Leaf or non-Leaf nodes
 ```
 
+If the count n is 8 or less, the Map MUST be encoded as a map leaf cell, otherwise it MUST be encoded as a map tree cell. This is to ensure unique encoding. The number 8 is chosen so that all types of Map cells have up to 0-16 child values refs.
+
 All entries MUST be encoded in the order of key hashes. 
+- In a map leaf cell, this means that the `<Key><Value>` pairs are sorted by key hash
+- In a map tree, it means that the child maps are ordered according to the hex digit at the shift position
+
+All entries within a map tree cell (directly or indirectly) MUST have identical key hashes up to the position of the shift byte. Since hashes are 32 bytes, this means that the maximum possible shift byte value is 63 (though this is very unlikely to occur in practice: it would imply someone found at least 9 SHA-256 hashes differing only by the last 4 bits!)
+
+A map tree cell MUST have at least two children (if not, it should not exist since the branch must occur at a later hex digit). Again, this is necessary to ensure uniqueness of encoding.
 
 A Map MAY contain arbitrary keys and values.
 
@@ -524,18 +540,18 @@ A Set is a logical set of included values.
 
 A Set is encoded exactly the same as a Map, except:
 - The tag byte is `0x83`
-- The Value Refs are omitted
+- The Value elements in the entries are omitted
 
 ### `0x84` Index
 
 ```
-0x84 <VLQ Count = n> <Entry> <Depth> <Mask> <Child Refs> (repeated 1-16 times)
+0x84 <VLQ Count = n> <Entry> <Depth> <Mask> <Child>(repeated 1-16 times)
 
 Where:
 
 <Entry> is either:
-- 0x00                           (if no entry present at this position in Index)
-- 0x20 <Key Ref> <Value Ref>     (if entry present)
+- 0x00                   (if no entry present at this position in Index)
+- 0x20 <Key> <Value>     (if entry present)
 
 <Depth> is an unsigned byte indicating the hex digit at which the entry / branch occurs. If an entry is present, depth must match the hex length of the entry key
 
@@ -549,32 +565,34 @@ Special cases:
     - No entry and at least 2 children which differ in the hex digit at this depth
 ```
 
-An Index serves as a specialised map with BlobLike keys (Blobs, Strings, Addresses etc.). Logically, it is a mapping from byte arrays to values. 
+An Index serves as a specialised map with ordered keys. Logically, it is a mapping from byte arrays to values. 
+
+Key values MUST be Blobs, Strings, Addresses, Keywords or Symbols. These are regarded as "BlobLike" because they can be considered as a sequence of bytes like a Blob.
 
 This encoding ensures that entries are encoded in lexicographic ordering. Unlike the hash based Maps, an Index is constrained to use only BlobLike keys, and cannot store two keys which have the same Blob representation (though the keys will retain their original type).
 
 ### `0x88` Syntax
 
-A Syntax object is a value annotated with a metadata map.
+A Syntax Object is a value annotated with a Map of metadata.
 
 ```
-0x88 <Meta Ref> <Value Ref>
+0x88 <Meta> <Value>
 
-Where <Meta Ref> is either:
+Where <Meta> is a value which is either:
 - 0x00 (nil) if there is no metadata (considered as empty map)
-- A Ref to a non-empty Map containing the metadata
+- A a non-empty Map containing the metadata
 
-The <Value Ref> can be any value.
+The <Value> can be any value.
 ```
 
-Logically, a `Syntax` value is a wrapped value with a metadata map. The metadata can be any Map of keys to values.
+The metadata MUST be a Map of keys to values (`nil` is used as the empty Map, for efficiency)
 
 ### `0x90` Signed
 
 Represents a digitally signed data value.
 
 ```
-`0x90` <Public Key> <Signature> <Value Ref>
+`0x90` <Public Key> <Signature> <Value>
 
 Where:
 - Public Key is 32 bytes Ed25519 public key
@@ -648,11 +666,11 @@ Fun Idea: A 1-byte Lisp where `0x10` is an opening paren, `0x00` is a closing pa
 Codes are values tagged with another value. 
 
 ```
-`0xCz` <Code Ref> <Value Ref>
+`0xCz` <Code> <Value>
 
 Where:
-- <Code Ref> is any value indicating what code is being used
-- <Value Ref> is any value representing the coded payload
+- <Code> is any value indicating what code is being used
+- <Value> is any value representing the coded payload
 - z = a hex value from 0-15 
 ```
 
@@ -679,6 +697,19 @@ Data Record encoding is exactly the same as a Vector, with the exception of the 
 Applications MAY use the hex digit `z` and/or the field count `n` to distinguish record types. If this is insufficient, applications MAY use the first or the last field value to indicate the type, or embed a Data Record as a coded value (`0xCz`) to tag with an arbitrary type.
 
 The intention of Data records is that applications may interprest 
+
+### `0xE0`-`0xEF` Extension Values
+
+Extension values are arbitrary values allowing 16 application specific meanings.
+
+```
+`0xEz` <Child Value>
+
+Where:
+- z = a hex value from 0-15 
+```
+
+Extension values are arbitrary values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. For example, an application might define `0xEB` as an extension where the value is a String containing JSON data with a specific schema.
 
 ### `0xFF` Illegal
 
@@ -711,14 +742,18 @@ Cells which are no longer referenced by any cells currently in use may be safely
 
 ## Cell validation
 
-Cell validation occurs in multiple steps:
+Cell validation will typically occurs in multiple stages:
 - Encoding correctness (is this a valid encoding?)
 - Structural correctness (is the whole tree of cells valid?)
 - Semantic correctness (does the value make sense in this context?)
 
 ### Encoding correctness
 
-A cell's encoding can be checked for correctness in its up to the point of external references (i.e. you know you have `n` external references that appear to be 32 bit hash values, but the encoding or validity of those may or may not be known)
+A cell's encoding can be quickly checked for correctness up to the point of external branch references (i.e. you know you have `n` external references that appear to be 32 bit hash values, but the encoding or validity of those may or may not be known).
+
+Implementations SHOULD detect and reject invalid encodings as early as possible. 
+
+An invalid encoding MAY be considered sufficient evidence to discard the entire message in which it is received, since the source is provably not behaving correctly.
 
 ### Structural correctness
 
@@ -729,6 +764,8 @@ Checking for structural correctness requires traversing external references in o
 - All cells referenced are themselves structurally correct
 
 Checking for structural correctness is typically an `O(n)` operation in the number of cells checked. For performance reasons, it is usually valuable to cache the results of structural correctness checks so that they do not need to be recomputed - this is especially important for large data structures with structural sharing.
+
+Applications SHOULD NOT trust or re-transmit CAD3 messages unless they have validated for structural correctness. This is for security and robustness reasons: structurally incorrect messages are likely to cause errors or unexpected behaviour which an attacker might exploit.
 
 ### Semantic correctness
 
@@ -752,15 +789,28 @@ In practice the recommended approach is:
     - If valid, application can proceed with the semantic meaning it defines
     - If invalid, this is presumably an exception that needs handling (e.g. a malicious message from an external source that should be rejected)
 
+### Compatible Subsets
+
+CAD3 encodings are designed to support various other data formats as a natural subset. Applications may find it useful to exploit these correspondences to efficiently store any data in CAD3 format.
+
+- JSON encodes naturally using Map, String, Vector, Double, Integer, Boolean and Nil
+- UTF-8 text encodes naturally as a String
+- Binary data naturally encodes as a Blob, or as a Code with the encoding format specified
+- Encrypted data is perfectly suited for storage in a Blob
+- S-expressions are naturally coded using Lists, Symbols and a selection of other values (Integers, Strings etc.)
+- XML can be encoded in multiple ways e.g.:
+    - As a UTF-8 String
+    - As a Vector where each element is either a content String or a markup value. The metadata map of a Syntax Object could be used to specify element attributes
+
 ### Partial Implementations
 
-It is possible to write a partial implementation that understands only a subset of CAD3. This may be useful for e.g. embedded devices.
+It is possible to write a partial implementation that understands only a subset of CAD3. This may be useful e.g. for embedded devices.
 
 Partial implementations MUST be able to decode any cell, and recognise it as valid / invalid from an encoding perspective. This is necessary for correctness and interoperability.
 
 Partial implementations MAY ignore CAD3 values that they cannot interpret. This means that they MUST at a minimum be able to:
 - calculate the length of an embedded value so that they can skip over it. This may require a bounded amount of recursion, as embedded values may embed other values inside them (up to a small depth limit limited by 140 bytes)
-- store the encoding of any value(s) they have ignored in the event that they re-encode the data for onward transmission
+- store the encoding of any value(s) they have ignored if they need to re-encode the data for onward transmission
 
 Partial implementations MAY ignore branch references, and hence avoid the need to compute SHA3-256 hashes / look up child cells by reference. In this case, care must be taken that values are small enough that they always result in embedded encodings.
 
@@ -776,4 +826,4 @@ The implementation keeps singleton "interned" references for various common valu
 - Empty maps, sets, strings and blobs etc.
 - Static constants such as Strings, Keywords and Symbols used frequently in the CVM
 
-The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, again chosen for efficiency and performance reasons. However there is no strict requirement that `nil` must be represented this way (for example, it could alternatively be a singleton value). 
+The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, again chosen for efficiency and performance reasons. However there is no strict requirement that `nil` must be represented this way (for example, it could be a singleton value). 
