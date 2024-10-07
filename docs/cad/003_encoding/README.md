@@ -9,13 +9,13 @@ Convex uses the standard **CAD3 Encoding** format that represents data values as
 - It defines a cryptographic **value ID** to identify any value. This is a decentralised pointer, which also serves as the root of a Merkle DAG that represents the complete encoding of a value.
 - CAD3 values are fundamental for enabling **lattice technology** for internet-scale decentralised data structures 
 
-The encoding model breaks values into a Merkle DAG of one or more **cells** that are individually encoded. Cells are immutable, and may therefore be safely shared by different values, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
+The encoding model breaks values into a Merkle DAG of one or more **cells** that can be individually encoded. Cells are immutable, and may therefore be safely shared by different DAGs, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
 
 ## Special Requirements
 
 Convex and related lattice infrastructure have some very specific requirements for the encoding format which necessitate the design of the encoding scheme design here:
 
-- A **unique canonical encoding** for every value, such that it can be hashed to a stable ID
+- A **unique canonical encoding** for every value, such that it can be hashed to a stable **value ID**
 - An **efficient binary format** for both storage and transmission
 - A **self describing** format - no additional schema is required to read an encoding
 - Provision of **immutable persistent data structures** for the lattice data values used in Convex
@@ -90,9 +90,10 @@ A Blob of length 4gb, specified with:
 
 On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced values would need to be obtained in order to examine the tree of child Blobs - which is four whole gigabytes of data. This is an example of a "partial" value.
 
-This illustrates two key ideas in the CAD3 design:
-- it is possible to examine and validate the top levels of a Merkle tree of CAD3 data independently, and only retrieve / decode sub-trees where necessary.
-- there is very little overhead for large structures. On 4gb of random data, the overhead is ~1% (mainly from ~1.1 million cryptographic hashes, which are in any case valuable for integrity checking)
+This example illustrates some key benefits of the CAD3 design:
+- It is possible to examine and validate the top levels of CAD3 data structures independently, and only retrieve / decode sub-trees where necessary.
+- There is very little overhead for large structures. On 4gb of random data, the overhead is ~1% (mainly from ~1.1 million cryptographic hashes, which are in any case necessary for validation as a Merkle tree)
+- The entire tree is just 6 levels deep - so navigating down to any single byte only requires 5 lookups via value IDs.
 
 ## Basic Rules and Concepts
 
@@ -245,14 +246,14 @@ The high hex digit of each tag byte specifies the general category of teh data v
 | 0x1x     | Numerics             | Integers, Doubles |
 | 0x2x     | References           | Addresses, References to branch values |
 | 0x3x     | Strings and Blobs    | Raw Blob data, UTF-8 Strings etc. |
-| 0x4x     | Reserved             | Reserved for future use |
+| 0x4x     | Reserved             | Reserved for future use, possible N-dimensional arrays |
 | 0x5x     | Reserved             | Reserved for future use |
 | 0x6x     | Reserved             | Reserved for future use |
 | 0x7x     | Reserved             | Reserved for future use |
 | 0x8x     | Data Structures      | Containers for other values: Maps, Vectors, Lists, Sets etc. |
 | 0x9x     | Cryptography         | Digital Signatures etc. |
 | 0xAx     | Sparse Records       | For application usage, records that frequently omit fields  |
-| 0xBx     | Byte Flags           | One-byte flag values (0xB0 and 0xB1 used as booleans) |
+| 0xBx     | Byte Flags           | One-byte flag values (0xB0 and 0xB1 defined as CVM booleans) |
 | 0xCx     | Coded Values         | For application usage, values tagged with an code value |
 | 0xDx     | Data Records         | For application usage, records that have densely packed fields |
 | 0xEx     | Extension Values     | For application usage |
@@ -271,12 +272,12 @@ VLQ Counts are unsigned integer values expressed in a base-128 encoding using a 
 
 Encoding rules are:
 - The high bit of each byte is `1` if there are following bytes, `0` for the last bytes.
-- The remaining bits from each byte are considered as a standard unsigned big-endian two's complement binary encoding.
+- The remaining 7 bits from each byte are considered as a standard unsigned big-endian two's complement binary encoding.
 - The encoding is defined to be the shortest possible such encoding for any given integer.
 
 In data structures, a VLQ Count is frequently used to specify the number of elements in the data structure.
 
-It should be noted that this system can technically support arbitrary sized integers, however for use in CAD3 encoding it is limited to up to 63-bit integer values. It seems unlikely that anyone will ever actually need to construct or encode a data structure with this many elements, so this may be considered sufficiently future-proof.
+It should be noted that this system can technically support arbitrary sized integers, however for use in CAD3 encoding it is limited to 63-bit integer values. It seems unlikely that anyone will ever actually need to construct or encode a single data structure with this many elements, so this may be considered sufficiently future-proof.
 
 Note: In the Convex reference implementation a signed variant (VLC Long) is also available. This is not currently used in CAD3.
 
@@ -337,7 +338,7 @@ A Ref is a special encoding that points to a branch cell encoding using its valu
 
 An external reference is encoded as the tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
 
-An implementation MUST NOT allow a Ref as a a valid encoding in its own right: it must be included in another encoding.
+An implementation MUST NOT admit a Ref as a valid encoding in its own right: it must be included in another encoding.
 
 Ref encodings are used for child values contained within other cell encodings subject to the following rules:
 - They MUST be used whenever the child cannot be embedded (i.e. is a branch cell). 
@@ -353,7 +354,7 @@ Addresses are used to reference sequentially allocated accounts in Convex.
 0x21 <VLQ Count = address number>
 ```
 
-An Address value is encoded by the tag byte followed by a VLQ Encoding of the 64-bit value of the Address. 
+An Address is encoded by the tag byte followed by a VLQ Encoding of the 64-bit value of the Address. 
 
 The address number MUST be positive, i.e. a 63-bit positive integer.
 
@@ -839,12 +840,13 @@ Partial implementations MAY ignore branch references, and hence avoid the need t
 
 In the Convex JVM implementation, cells are represented by subclasses of the class `convex.core.data.ACell`. Having a common abstract base class allows for convenient implementation of common cell functionality, is helpful for performance, and ensures that all cell instances offer a common interface.
 
-The implementation allows for internal usage of "non-canonical" cells. These are cell instances that may break rules, e.g. encoding more than 4096 bytes in a single flat Blob. These are only used for temporary purposes (typically for performance reasons) and are always converted back to a canonical implementation for encoding purposes.
+The implementation allows for internal usage of "non-canonical" cells. These are `ACell` instances that may break normal rules, e.g. encoding more than 4096 bytes in a single flat Blob. These are used for temporary purposes (typically for performance reasons) and are always converted back to a canonical implementation for CAD3 encoding purposes.
 
 The implementation keeps singleton "interned" references for various common values. This is mainly to avoid repeated memory allocation for such values. These currently include:
-- The two boolean values `true` and `false`
-- Small integers
-- Empty maps, sets, strings and blobs etc.
+- Byte Flags including the two boolean values `true` and `false`
+- Small Integers (0-255)
+- ASCII Characters
+- Empty Maps, Sets, Strings and Blobs etc.
 - Static constants such as Strings, Keywords and Symbols used frequently in the CVM
 
-The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, again chosen for efficiency and performance reasons. However there is no strict requirement that `nil` must be represented this way (for example, it could be a singleton value). 
+The JVM `null` value is interpreted as the Convex `nil` value. This is an implementation decision, again chosen for efficiency and performance reasons. However there is no formal requirement that `nil` must be represented this way (for example, it could be a singleton value). 
