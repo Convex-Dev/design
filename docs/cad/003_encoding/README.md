@@ -40,27 +40,26 @@ The Integer `19` is encoded as:
 - the hex value 0x13  
 
 ```
-0x1113
+0x1113  =  19
 ```
 
-### Vector with external reference
+### A 2-element Vector
 
-A Vector (length 2) containing The Integer 19 and another non-embedded value is encoded as:
+A Vector containing The Integer 19 and the String "Hello" is encoded as:
 - `0x80` tag for a Vector
 - `0x02` count of Vector elements
 - `0x1113` embedded encoding of the Integer 19
-- `0x20` tag for a non-embedded external value reference
-- The value ID = hash of the referenced value's encoding
+- `0x30` tag for a String
+- `0x05` length of String
+- `0x48656c6c6f` 5 bytes UTF-8 encoding of "Hello"
 
 ```
-0x800211132028daa385e6b97d3628e1deecb412c7d4e98135e204d0661c92ba885ff23d2b94
+80021113300548656c6c6f  =  [19 "Hello"]
 ```
-
-On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced value would need to be obtained in order to examine the second element - which could include petabytes of data. This is an example of a "partial" value.
 
 ### A 1GB Blob
 
-A Blob of length 1GB, specified with:
+A Blob of length 1gb, specified with:
 - `0x31` tag for a Blob
 - `0x8480808000` VLQ encoded length of 2^30
 - `0x20`+child value ID (repeated 16 times, each child is a 64mb Blob)
@@ -84,6 +83,8 @@ A Blob of length 1GB, specified with:
   74a22979bf4cf09468d5a31d33dca1aad04df0b1cc207881f54f571cd0416e5a
   f36bc6f133660bf8a60b4ded525332f9a314bea4ddea
 ```
+
+On its own, the encoding above is a valid encoding for a single cell, but the encoding of the referenced value would need to be obtained in order to examine the tree of child Blobs - which is a whole gigabyte of data assuming the remainder of the tree is valid. This is an example of a "partial" value.
 
 ## Basic Rules and Concepts
 
