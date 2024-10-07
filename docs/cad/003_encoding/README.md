@@ -306,12 +306,12 @@ The length MUST be at least `9` (otherwise the integer MUST be encoded as the Lo
 
 With the exception of the tag byte, The encoding of a BigInt is exactly the same as a Blob with `n` bytes.
 
-### `0x1d` Double
+### `0x1D` Double
 
 A Double is an IEEE754 double precision floating point value.
 
 ```
-0x1d <8 bytes IEEE 764>
+0x1D <8 bytes IEEE 764>
 ```
 
 A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
