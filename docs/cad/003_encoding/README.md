@@ -338,13 +338,13 @@ A Ref is a special encoding that points to a branch cell encoding using its valu
 
 An external reference is encoded as the tag byte followed by the 32-byte value ID (which is in turn defined as the SHA3-256 hash of the encoding of the referenced value). They are not themselves cell values, rather they represent a reference to another cell
 
-An implementation MUST NOT admit a Ref as a valid encoding in its own right: it must be included in another encoding.
+An implementation MUST NOT admit a Ref as a valid cell encoding in its own right: it can only be included to represent a child value in another encoding.
 
 Ref encodings are used for child values contained within other cell encodings subject to the following rules:
 - They MUST be used whenever the child cannot be embedded (i.e. is a branch cell). 
 - They MUST NOT be used when the child cell is embedded. 
 
-These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two or more encodings for many values, e.g. one with an embedded child and the other with a external branch ref ).
+These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two or more encodings for many values, e.g. one with an embedded child and the other with a external branch ref).
 
 ### `0x21` Address
 
@@ -378,7 +378,7 @@ If String is more than 4096 Bytes:
 
 Every String encoding starts with the tag byte and a VLQ-encoded length.
 
-Encoding then splits depending on the String length `n`.
+Encoding then depends on the String length `n`.
 - If 4096 characters or less, the UTF-8 bytes of the String are encoded directly (`n` bytes total)
 - If more than 4096 bytes, the String is broken up into a tree of child Blobs, where each child except the last is the maximum sized child possible for a child string (1024, 16384, 262144 etc.), and the last child contains all remaining characters. Up to 16 children are allowed before the tree must grow to the next level.
 
@@ -390,9 +390,9 @@ Importantly, this design allows:
 - Low overhead because of the high branching factor: not many branch nodes are required and each leaf note will compactly store up to 4096 characters
 - Most of the implementation can be shared with Blobs
 
-Note: UTF-8 encoding is assumed, but not enforced in encoding rules. Implementations MAY decide to allow invalid UTF-8.
+Note: UTF-8 encoding is assumed, but not enforced in CAD3 encoding rules. Applications SHOULD determine their own rules for handling invalid UTF-8.
 
-Note: with the exception of the tag byte, String encoding is exactly the same as a Blob. This includes the fact that the children of Strings are in fact Blobs.
+Note: with the exception of the tag byte, String encoding is exactly the same as a Blob. This includes the fact that the children of Strings are in fact Blobs. This is useful because it facilitates structural sharing between large Strings and Blobs. 
 
 ### `0x31` Blob
 
@@ -531,7 +531,7 @@ If a map tree cell:
 
 Where:
 - <Shift Byte>   specifies the hex position where the map branches (0 = at the first hex digit,.... 63 = last digit)
-- <Mask>    is a 16-bit bitmask indicating key hash hex values are included (low bit = `0` ... high bit = `F`)
+- <Mask>    is a 16-bit bit mask indicating key hash hex values are included (low bit = `0` ... high bit = `F`)
 - <Child>    are Refs to Map cells which can be Leaf or non-Leaf nodes
 ```
 
