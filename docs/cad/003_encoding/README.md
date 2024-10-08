@@ -117,9 +117,9 @@ A CAD3 encoding MUST be a sequence of bytes.
 
 Any given cell MUST map to one and only one encoding. 
 
-Any two distinct (non-identical) cells MUST map to different encoding
+Any two distinct (non-identical) cells MUST map to different encodings
 
-It MUST be possible to reconstruct the cell from its own encoding, to the extent that the cell represents the same Value (it is possible for implementations to use different internal formats if desired, providing these do not affect the CVM value semantics)
+It MUST be possible to reconstruct the cell from its own encoding, to the extent that the cell represents the same value (it is possible for implementations to use different internal formats if desired, providing these do not affect value equality semantics)
 
 The encoding MUST have a maximum length of 16383 bytes. This ensure that a cell encoding will always fit within a reasonable fixed size buffer, and guarantees that most operations on can achieve `O(1)` complexity.
 
@@ -129,9 +129,9 @@ The value ID of a cell is the SHA3-256 hash of the encoding of the cell.
 
 All cells have a unique encoding, therefore they also have a unique value ID (subject the the assumption that the probability of SHA3-256 collisions is extremely low).
 
-A value ID reference may be considered as a "decentralised pointer" to an immutable value. 
+A value ID reference may be utilised as a "decentralised pointer" to an immutable value, or used as an index for content addressable storage.
 
-Note: since only tree roots and branches are likely to be stored in storage systems, care should be taken with value IDs that point to intermediate non-branch cells, as these may not be persisted in storage. If in doubt, navigate down from a known root or branch cell value ID.
+Note: since only tree roots and branches are likely to be stored in storage systems, care should be taken with value IDs that point to intermediate non-branch cells, as these may not be persisted in storage. If in doubt, navigate down from a known root or value ID.
 
 ### References 
 
@@ -535,7 +535,7 @@ Where:
 - <Child>    are Refs to Map cells which can be Leaf or non-Leaf nodes
 ```
 
-If the count n is 8 or less, the Map MUST be encoded as a map leaf cell, otherwise it MUST be encoded as a map tree cell. This is to ensure unique encoding. The number 8 is chosen so that all types of Map cells have up to 0-16 child values refs.
+If the count n is 15 or less, the Map MUST be encoded as a map leaf cell, otherwise it MUST be encoded as a map tree cell. This is to ensure unique encoding. The number 15 is chosen for optimal binary search and so that all types of Map cells have 0-16 child value refs.
 
 All entries MUST be encoded in the order of key hashes. 
 - In a map leaf cell, this means that the `<Key><Value>` pairs are sorted by key hash
@@ -620,7 +620,7 @@ The signature may or may not be valid: an invalid signature is still a valid val
 
 This is the same as `0x90` signed but excluding the public key
 
-### `0xA0` - `0xBF` Sparse Records
+### `0xA0` - `0xAF` Sparse Records
 
 A Sparse Record is an structure containing 0-63 fields. The fields are stored sparsely, with `nil` values omitted.
 
