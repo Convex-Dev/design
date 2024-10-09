@@ -18,7 +18,9 @@ Convex Coins are initially issued in two ways:
 - 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle.
 - 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.). Contributions must benefit the ecosystem as a whole.
 
-Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.)
+Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.). 
+
+Coins used for transaction fees (or deliberately burned) are removed from the coin supply and a placed in a special "Reward Pool" which is released back to peer operators and stakers over time as a reward for maintaining the network. 
 
 This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise). There is a maximum supply cap of 1,000,000,000 Convex coins, though it will take a long time to get there. The total Coin supply at Protonet launch is estimated to be ~1-2m Convex Coins.
 
@@ -98,13 +100,15 @@ The following overall tokenomic flows are possible:
 
 ### Coin Supply
 
-The issued coin supply is VARIABLE based on coin issuance via the Release Curve or contributor awards.
-
-The Network MUST implement a technical fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
+The issued coin supply is VARIABLE based on coin issuance via the Release Curve or contributor awards. It is denominated in Convex Coins.
 
 Each Convex Coin MUST be sub-divided into 1,000,000,000 base units, referred to informally as "coppers" 
 
-The Network must treat Convex Coins and coppers identically, i.e. the implementation should consider the range of possible coin values to be a value from `0` to `10^18`.
+The Network must treat Convex Coins and coppers identically, i.e. the implementation should consider the range of possible coin values to be a value from `0` to `10^18`, where `10^9` is a Convex Coin.
+
+Coins that are used for transaction fees (or deliberately burned) are removed from the coin supply and placed in a special Reward Pool that is used to pay rewards to peer operators and stakers. In this way, the coin economy becomes fully circular after initial issuance.
+
+The Network MUST implement a technical fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
 
 Note: The maximum supply cap is chosen so that all valid coin balances can be expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
 
@@ -121,9 +125,9 @@ The Network MUST divide the total initial supply of Convex Coins into two quanti
 
 #### Reserve accounts
 
-The genesis MUST create a set of reserve accounts (`#0` to `#7`) which represent unissued coins. Such coins MUST NOT be considered part of the current coin supply. 
+The genesis MUST create a set of reserve accounts (`#1` to `#7`) which represent unissued coins. Such coins MUST NOT be considered part of the current coin supply. 
 
-By reserving these accounts, we maintain the invariant that the total supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed, but the majority of these are not yet part of the current total supply.
+By reserving these amounts, we maintain the technical balancing rule that the total supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed - however the majority of these may not yet part of the current coin supply.
 
 Any cryptographic keys for reserve accounts MUST be kept securely and governed according to the release tokenomics described in this CAD. The Convex Foundation will use air-gapped systems initially for this purpose. 
 
@@ -158,6 +162,15 @@ The Release Curve formula MAY be adjusted in the event of significant economic e
 
 To account for transaction costs, effective financial management or purchaser convenience, the Foundation MAY group the release of some coins into rounds, provided that such rounds MUST be broadly consistent with the overall Release Curve.  
 
+### Reward Pool
+
+The Peer Reward Pool is stored in the special account `#0`. 
+
+Transactions Fees for execution of transactions are deposited in the Reward Pool (this occurs at the end of each block of transactions successfully submitted by a peer and confirmed in consensus).
+
+Over time, this Reward Pool is used to make payments for peers that are participating correctly in maintaining network consensus, thus giving a return to stakers.
+
+Account `#0` is also an address to which users can optionally "burn" coins. Such coins are removed from the coin supply, but will be available for future distribution as peer rewards.
 
 ### Coin Purchases
 
@@ -209,7 +222,7 @@ Transactions executed on the Convex network are subject to fees that reflect the
 
 Transaction fees are intended to be small, to encourage adoption and use of the Convex network. Transaction fees MUST NOT be zero to mitigate against denial of service (DoS) attacks on the network.
 
-Transaction fees MUST be collected at the point of transaction execution, and placed in a pool for subsequent distribution to peer operators. This process MUST occur automatically as part of the network protocol. 
+Transaction fees MUST be collected at the point of transaction execution, and placed in the Reward Pool for subsequent distribution to peer operators. This process MUST occur automatically as part of the network protocol. 
 
 ## Other considerations
 
