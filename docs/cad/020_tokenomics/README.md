@@ -14,8 +14,10 @@ This does not in any way constitute financial or legal advice. Participants in t
 
 Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for their services.
 
+![Convex High Level Tokenomics](tokenomics.png)
+
 Convex Coins are initially issued in two ways:
-- 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle.
+- 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle. 
 - 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.). Contributions must benefit the ecosystem as a whole.
 
 Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.). 
@@ -152,11 +154,15 @@ The governance body MUST ensure these accounts are securely controlled by author
 
 ### Release Curve
 
+The release curve determines the price at which new coins are issued. There is an important economic principle behind this: more **coins only get released when prices go up** (i.e. hit new highs). This gives coin purchasers the assurance that they will never get diluted by new coin releases at lower prices, while still allowing for the coin supply to be increased as ecosystem demand grows.
+
 Coin purchases MUST be priced in fiat currency or equivalent, consistent with the Release Curve defined in this section.
 
 The price of a Coin on the release curve is defined as `$100 * x / (1-x)` where `x` is the proportion of coins released out of the total allocation for coin purchasers, and `$` represents United States dollars or equivalent currency.
 
-Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, the Convex Foundation would have a significant treasury sufficient to develop and maintain the Convex ecosystem in perpetuity.
+![Convex Coin Release Curve](release-curve.png)
+
+Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, one would expect the Convex Foundation to have a significant treasury sufficient to support the Convex ecosystem in perpetuity.
 
 The Release Curve formula MAY be adjusted in the event of significant economic events affecting the relative value of fiat currencies used (e.g. sustained high rates of inflation). The Foundation MUST consult with the ecosystem and provide a robust rationale for any such changes.
 
@@ -232,7 +238,7 @@ Some tokenomic analysis depend on the concept of "Fully Diluted Value", by multi
 
 Such analysis is generally invalid and SHOULD NOT be applied in the case of Convex, because full dilution cannot occur under the release curve model at the current price and such a number is effectively meaningless.
 
-Analysts SHOULD NOT consider FDV in relation to Convex, and instead use the market capitalisation of issued coins (i.e. the current supply), which more accurately represents the coin ecosystem. This is also more consistent with other tokens that do not have a fixed supply.
+Analysts SHOULD use the market capitalisation of issued coins (i.e. the current coin supply multiplied by the market price) as the overall valuation for the Convex Coin, which more accurately represents the coin ecosystem. This is also consistent with valuation approached other tokens that do not have a fixed supply.
 
 ### Testnets
 
