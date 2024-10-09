@@ -79,7 +79,7 @@ Removing all peer stake can be done by setting stake to `0`, though typically it
 
 ## Changing Delegated Stake
 
-Changing delegated stake on any peer can be done with teh `set-stake` command:
+Changing delegated stake on any peer can be done with the `set-stake` command:
 
 ```clojure
 ;; note: stake is denominated in coppers
