@@ -170,21 +170,11 @@ The price of a Coin on the release curve is defined as `$100 * x / (1-x)` where 
 
 ![Convex Coin Release Curve](release-curve.png)
 
-Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, one would expect the Convex Foundation to have a significant treasury sufficient to support the Convex ecosystem in perpetuity.
+Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, one would expect the Convex Foundation to have a significant treasury available to give strong economic support to the Convex ecosystem in perpetuity.
 
 The Release Curve formula MAY be adjusted in the event of significant economic events affecting the relative value of fiat currencies used (e.g. sustained high rates of inflation). The Foundation MUST consult with the ecosystem and provide a robust rationale for any such changes.
 
 To account for transaction costs, effective financial management or purchaser convenience, the Foundation MAY group the release of some coins into rounds, provided that such rounds MUST be broadly consistent with the overall Release Curve.  
-
-### Reward Pool
-
-The Peer Reward Pool is stored in the special account `#0`. 
-
-Transactions Fees for execution of transactions are deposited in the Reward Pool (this occurs at the end of each block of transactions successfully submitted by a peer and confirmed in consensus).
-
-Over time, this Reward Pool is used to make payments for peers that are participating correctly in maintaining network consensus, thus giving a return to stakers.
-
-Account `#0` is also an address to which users can optionally "burn" coins. Such coins are removed from the coin supply, but will be available for future distribution as peer rewards.
 
 ### Coin Purchases
 
@@ -223,12 +213,13 @@ The Convex Foundation MAY require contributors to verify their legal identity (K
 The Convex Foundation SHOULD aim to ensure that the rate of awards remains broadly consistent with the ratio 25% : 75% relative to purchases from the release curve, with the understanding that this ratio may deviate from target in the short term.
 
 The Convex Foundation SHOULD explore options for decentralised governance of awards. In the long term, decentralised governance SHOULD apply to all awards.
+earn future awards.
 
 ### Vesting 
 
-Early coin purchases via the FCPA (up to and during Protonet phase) are subject to a vesting schedule, reflecting the desire that early purchasers should remain committed to the ecosystem for a period of time, and to mitigate the risk of large simultaneous sales of coins.
+Early coin purchases via the FCPA (up to and during Protonet phase) are subject to a vesting schedule, reflecting the desire that early purchasers should remain committed to the ecosystem for a period of time, and to mitigate the potential destabilising effect of large simultaneous sales of coins.
 
-Coin awards will not be subject to any vesting schedule as they are considered already "earned" by contributors. However, contributors are likely to wish to remain involved for other reasons e.g. building applications on top of Convex or wishing to earn future awards.
+Coin awards will not be subject to any vesting schedule as they are considered already "earned" by contributors. However, contributors are likely to wish to remain involved for other reasons e.g. building applications on top of Convex or wishing to stake their coins in various ways. 
 
 ### Transaction Fees
 
@@ -238,7 +229,25 @@ Transaction fees are intended to be small, to encourage adoption and use of the 
 
 Transaction fees MUST be collected at the point of transaction execution, and placed in the Reward Pool for subsequent distribution to peer operators. This process MUST occur automatically as part of the network protocol. 
 
+### Reward Pool
+
+The Peer Reward Pool is stored in the special account `#0`. 
+
+Transactions Fees for execution of transactions are deposited in the Reward Pool (this occurs at the end of each block of transactions successfully submitted by a peer and confirmed in consensus).
+
+Over time, this Reward Pool is used to make payments for peers that are participating actively and correctly in maintaining network consensus, thus giving a return to stakers.
+
+Account `#0` is also an address to which users can optionally "burn" coins. Such coins are removed from the coin supply, but will be available for future distribution as peer rewards.
+
+The Convex Foundation MAY, at its discretion, issue coins and immediately "burn" them in order to increase the incentives for peer operators to participate. Such coins will be considered to come out of the 25% available for contributor awards.
+
 ## Other considerations
+
+### Secondary sale
+
+Once issued, Convex Coins may be traded on secondary markets, e.g. via private sale or on digital asset exchanges. Such exchanges are beyond the scope of CAD020 and do not effect the overall coin supply (since they represent transfers between users and/or actors with coins that are already part of the coin supply).
+
+For example: It is entirely legitimate business model to purchase coins from the Release Curve and offer them for sale to retail users of the network. This is good for the ecosystem because it enables innovation and diversity in the ways that Convex Coins are made available to end users.
 
 ### Fully Diluted Value
 
