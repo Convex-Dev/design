@@ -14,11 +14,15 @@ This does not in any way constitute financial or legal advice. Participants in t
 
 Convex serves as a public utility network, where participants are free to transact on a decentralised basis. As such, there is a requirement for and economic protocol whereby users of the network can fairly compensate the providers of infrastructure for their services.
 
+![Convex High Level Tokenomics](tokenomics.png)
+
 Convex Coins are initially issued in two ways:
-- 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle.
+- 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle. 
 - 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.). Contributions must benefit the ecosystem as a whole.
 
-Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.)
+Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.). 
+
+Coins used for transaction fees (or deliberately burned) are removed from the coin supply and a placed in a special "Reward Pool" which is released back to peer operators and stakers over time as a reward for maintaining the network. 
 
 This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise). There is a maximum supply cap of 1,000,000,000 Convex coins, though it will take a long time to get there. The total Coin supply at Protonet launch is estimated to be ~1-2m Convex Coins.
 
@@ -98,19 +102,21 @@ The following overall tokenomic flows are possible:
 
 ### Coin Supply
 
-The issued coin supply is VARIABLE based on coin issuance via the Release Curve or contributor awards.
-
-The Network MUST implement a technical fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
+The issued coin supply is VARIABLE based on coin issuance via the Release Curve or contributor awards. It is denominated in Convex Coins.
 
 Each Convex Coin MUST be sub-divided into 1,000,000,000 base units, referred to informally as "coppers" 
 
-The Network must treat Convex Coins and coppers identically, i.e. the implementation should consider the range of possible coin values to be a value from `0` to `10^18`.
+The Network must treat Convex Coins and coppers identically, i.e. the implementation should consider the range of possible coin values to be a value from `0` to `10^18`, where `10^9` is a Convex Coin.
+
+Coins that are used for transaction fees (or deliberately burned) are removed from the coin supply and placed in a special Reward Pool that is used to pay rewards to peer operators and stakers. In this way, the coin economy becomes fully circular after initial issuance.
+
+The Network MUST implement a technical fixed maximum coin supply cap of 1,000,000,000 Convex Coins. The number of issued coins at any time may be less than this amount, but can never exceed this amount.
 
 Note: The maximum supply cap is chosen so that all valid coin balances can be expressed within a 64-bit long value, which allows for efficient implementation on most modern CPU architectures.
 
 ### Genesis
 
-The genesis process in Convex includes the process of creating the initial Global State and establishing the first peer on the network, to which others can then connect. This genesis state is important for tokenomics because it established the initial coin allocation and the rules by which future colin allocations may be made.
+The genesis process in Convex includes the process of creating the initial Global State and establishing the first peer on the network, to which others can then connect. This genesis state is important for tokenomics because it established the initial coin allocation and the rules by which future coin allocations may be made.
 
 #### Top Level Coin Allocation
 
@@ -121,9 +127,9 @@ The Network MUST divide the total initial supply of Convex Coins into two quanti
 
 #### Reserve accounts
 
-The genesis MUST create a set of reserve accounts (`#0` to `#7`) which represent unissued coins. Such coins MUST NOT be considered part of the current coin supply. 
+The genesis MUST create a set of reserve accounts (`#1` to `#7`) which represent unissued coins. Such coins MUST NOT be considered part of the current coin supply. 
 
-By reserving these accounts, we maintain the invariant that the total supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed, but the majority of these are not yet part of the current total supply.
+By reserving these amounts, we maintain the technical invariant that the total maximum supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed - however the majority of these may not yet part of the current coin supply.
 
 Any cryptographic keys for reserve accounts MUST be kept securely and governed according to the release tokenomics described in this CAD. The Convex Foundation will use air-gapped systems initially for this purpose. 
 
@@ -140,24 +146,35 @@ The genesis account MUST NOT have access to the majority of the reserve account 
 
 #### Distribution account(s)
 
-The genesis process SHOULD produce one or more secondary distribution accounts that will hold Convex coins temporarily before distribution to award recipients or purchasers.
+The genesis process SHOULD define one or more secondary distribution accounts that will hold Convex coins temporarily before distribution to award recipients or purchasers.
 
 The distribution accounts SHOULD NOT hold large balances of coins, and are only intended for short term holdings of coins that are already allocated to recipients (e.g. purchasers who have purchased coins, but not yet provided a public key or account into which the coins can be delivered). These balances are considered as issued (i.e. part of the current coin supply) but not yet distributed, i.e. still in the control of the governance body.
 
 The governance body MUST ensure these accounts are securely controlled by authorised individuals to ensure legitimate distributions are made.
 
+### Memory Exchange Pool
+
+A certain amount of Convex Coins are placed in an AMM exchange for CVM memory allowances. Such coins are in effect locked under a smart contract, though should still be considered part of the overall coin supply as they are technically available for use (e.g. people selling back memory allowances).
+
+The memory allowances themselves are a secondary native token used purely for memory accounting purposes.
+
+See [CAD006 Memory Accounting](../006_memory/README.md) for more details.
+
 ### Release Curve
+
+The release curve determines the price at which new coins are issued. There is an important economic principle behind this: more **coins only get released when prices go up** (i.e. hit new highs). This gives coin purchasers the assurance that they will never get diluted by new coin releases at lower prices, while still allowing for the coin supply to be increased as ecosystem demand grows.
 
 Coin purchases MUST be priced in fiat currency or equivalent, consistent with the Release Curve defined in this section.
 
 The price of a Coin on the release curve is defined as `$100 * x / (1-x)` where `x` is the proportion of coins released out of the total allocation for coin purchasers, and `$` represents United States dollars or equivalent currency.
 
-Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, the Convex Foundation would have a significant treasury sufficient to develop and maintain the Convex ecosystem in perpetuity.
+![Convex Coin Release Curve](release-curve.png)
+
+Note: The constant value `$100` is chosen so that once `50%` of all coins are issued, the market cap of Convex Coins would be equal to `$50bn`. At this stage, one would expect the Convex Foundation to have a significant treasury available to give strong economic support to the Convex ecosystem in perpetuity.
 
 The Release Curve formula MAY be adjusted in the event of significant economic events affecting the relative value of fiat currencies used (e.g. sustained high rates of inflation). The Foundation MUST consult with the ecosystem and provide a robust rationale for any such changes.
 
 To account for transaction costs, effective financial management or purchaser convenience, the Foundation MAY group the release of some coins into rounds, provided that such rounds MUST be broadly consistent with the overall Release Curve.  
-
 
 ### Coin Purchases
 
@@ -196,12 +213,13 @@ The Convex Foundation MAY require contributors to verify their legal identity (K
 The Convex Foundation SHOULD aim to ensure that the rate of awards remains broadly consistent with the ratio 25% : 75% relative to purchases from the release curve, with the understanding that this ratio may deviate from target in the short term.
 
 The Convex Foundation SHOULD explore options for decentralised governance of awards. In the long term, decentralised governance SHOULD apply to all awards.
+earn future awards.
 
 ### Vesting 
 
-Early coin purchases via the FCPA (up to and during Protonet phase) are subject to a vesting schedule, reflecting the desire that early purchasers should remain committed to the ecosystem for a period of time, and to mitigate the risk of large simultaneous sales of coins.
+Early coin purchases via the FCPA (up to and during Protonet phase) are subject to a vesting schedule, reflecting the desire that early purchasers should remain committed to the ecosystem for a period of time, and to mitigate the potential destabilising effect of large simultaneous sales of coins.
 
-Coin awards will not be subject to any vesting schedule as they are considered already "earned" by contributors. However, contributors are likely to wish to remain involved for other reasons e.g. building applications on top of Convex or wishing to earn future awards.
+Coin awards will not be subject to any vesting schedule as they are considered already "earned" by contributors. However, contributors are likely to wish to remain involved for other reasons e.g. building applications on top of Convex or wishing to stake their coins in various ways. 
 
 ### Transaction Fees
 
@@ -209,9 +227,44 @@ Transactions executed on the Convex network are subject to fees that reflect the
 
 Transaction fees are intended to be small, to encourage adoption and use of the Convex network. Transaction fees MUST NOT be zero to mitigate against denial of service (DoS) attacks on the network.
 
-Transaction fees MUST be collected at the point of transaction execution, and placed in a pool for subsequent distribution to peer operators. This process MUST occur automatically as part of the network protocol. 
+Transaction fees MUST be collected at the point of transaction execution, and placed in the Reward Pool for subsequent distribution to peer operators. This process MUST occur automatically as part of the network protocol. 
+
+### Reward Pool
+
+The Peer Reward Pool is stored in the special account `#0`. 
+
+Transactions Fees for execution of transactions are deposited in the Reward Pool (this occurs at the end of each block of transactions successfully submitted by a peer and confirmed in consensus).
+
+Over time, this Reward Pool is used to make payments for peers that are participating actively and correctly in maintaining network consensus, thus giving a return to stakers.
+
+Account `#0` is also an address to which users can optionally "burn" coins. Such coins are removed from the coin supply, but will be available for future distribution as peer rewards.
+
+The Convex Foundation MAY, at its discretion, issue coins and immediately "burn" them in order to increase the incentives for peer operators to participate. Such coins will be considered to come out of the 25% available for contributor awards.
 
 ## Other considerations
+
+### Secondary sale
+
+Once issued, Convex Coins may be traded on secondary markets, e.g. via private sale or on digital asset exchanges. Such exchanges are beyond the scope of CAD020 and do not effect the overall coin supply (since they represent transfers between users and/or actors with coins that are already part of the coin supply).
+
+For example: It is entirely legitimate business model to purchase coins from the Release Curve and offer them for sale to retail users of the network. This is good for the ecosystem because it enables innovation and diversity in the ways that Convex Coins are made available to end users.
+
+### Wrapped / Locked Coins
+
+It is possible to lock Convex Coins in an actor account / smart contract. Examples:
+- Holding a deposit in escrow for a smart contract
+- Liquidity pools on the Torus DEX
+- "Wrapping" Convex Coins as CAD029 fungible token
+
+Such coins are considered part of the coin supply, even though they are not immediately available for users: the rationale for this is that they can still be redeemed or withdrawn under various circumstances.
+
+### Lost coins
+
+It is possible to put coins beyond any possible future use in certain ways, e.g.:
+- Transferring them to an actor account which has no way to return them
+- Permanently losing the private key to a user account
+
+Such coins are considered "lost". While technically still part of the coin supply, for practical purposes they are gone forever. 
 
 ### Fully Diluted Value
 
@@ -219,7 +272,7 @@ Some tokenomic analysis depend on the concept of "Fully Diluted Value", by multi
 
 Such analysis is generally invalid and SHOULD NOT be applied in the case of Convex, because full dilution cannot occur under the release curve model at the current price and such a number is effectively meaningless.
 
-Analysts SHOULD NOT consider FDV in relation to Convex, and instead use the market capitalisation of issued coins (i.e. the current supply), which more accurately represents the coin ecosystem. This is also more consistent with other tokens that do not have a fixed supply.
+Analysts SHOULD use the market capitalisation of issued coins (i.e. the current coin supply multiplied by the market price) as the overall valuation for the Convex Coin, which more accurately represents the coin ecosystem. This is also consistent with valuation approaches for other tokens that do not have a fixed supply.
 
 ### Testnets
 

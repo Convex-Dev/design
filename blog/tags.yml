@@ -22,3 +22,13 @@ lisp:
   label: Lisp
   permalink: /lisp
   description: Convex Reader
+
+cad3:
+  label: CAD3
+  permalink: /cad3
+  description: CAD3 encoding and data formats
+
+lattice:
+  label: Lattice
+  permalink: /lattice
+  description: Lattice Technology
