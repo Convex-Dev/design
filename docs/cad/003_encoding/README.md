@@ -709,7 +709,7 @@ Data Record encoding is exactly the same as a Vector, with the exception of the 
 
 Applications MAY use the hex digit `z` and/or the field count `n` to distinguish record types. If this is insufficient, applications MAY use the first or the last field value to indicate the type, or embed a Data Record as a coded value (`0xCz`) to tag with an arbitrary type.
 
-The intention of Data records is that applications may interprest 
+The intention of Data records is that applications may interpret these as records in their own custom format. For example, a record might represent a listing on a decentralised market place with fields such as Asset ID, Price, Seller ID, Listing description, Creation Time, Time Limit etc.  
 
 ### `0xE0`-`0xEF` Extension Values
 
