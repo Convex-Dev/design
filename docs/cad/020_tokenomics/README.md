@@ -249,6 +249,23 @@ Once issued, Convex Coins may be traded on secondary markets, e.g. via private s
 
 For example: It is entirely legitimate business model to purchase coins from the Release Curve and offer them for sale to retail users of the network. This is good for the ecosystem because it enables innovation and diversity in the ways that Convex Coins are made available to end users.
 
+### Wrapped / Locked Coins
+
+It is possible to lock Convex Coins in an actor account / smart contract. Examples:
+- Holding a deposit in escrow for a smart contract
+- Liquidity pools on the Torus DEX
+- "Wrapping" Convex Coins as CAD029 fungible token
+
+Such coins are considered part of the coin supply, even though they are not immediately available for users: the rationale for this is that they can still be redeemed or withdrawn under various circumstances.
+
+### Lost coins
+
+It is possible to put coins beyond any possible future use in certain ways, e.g.:
+- Transferring them to an actor account which has no way to return them
+- Permanently losing the private key to a user account
+
+Such coins are considered "lost". While technically still part of the coin supply, for practical purposes they are gone forever. 
+
 ### Fully Diluted Value
 
 Some tokenomic analysis depend on the concept of "Fully Diluted Value", by multiplying the current price of tokens by some maximum supply cap.
