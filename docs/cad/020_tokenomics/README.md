@@ -129,7 +129,7 @@ The Network MUST divide the total initial supply of Convex Coins into two quanti
 
 The genesis MUST create a set of reserve accounts (`#1` to `#7`) which represent unissued coins. Such coins MUST NOT be considered part of the current coin supply. 
 
-By reserving these amounts, we maintain the technical balancing rule that the total supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed - however the majority of these may not yet part of the current coin supply.
+By reserving these amounts, we maintain the technical balancing rule that the total maximum supply cap of 1,000,000,000 Convex Gold is constant and coins cannot be created or destroyed - however the majority of these may not yet part of the current coin supply.
 
 Any cryptographic keys for reserve accounts MUST be kept securely and governed according to the release tokenomics described in this CAD. The Convex Foundation will use air-gapped systems initially for this purpose. 
 
@@ -151,6 +151,14 @@ The genesis process SHOULD produce one or more secondary distribution accounts t
 The distribution accounts SHOULD NOT hold large balances of coins, and are only intended for short term holdings of coins that are already allocated to recipients (e.g. purchasers who have purchased coins, but not yet provided a public key or account into which the coins can be delivered). These balances are considered as issued (i.e. part of the current coin supply) but not yet distributed, i.e. still in the control of the governance body.
 
 The governance body MUST ensure these accounts are securely controlled by authorised individuals to ensure legitimate distributions are made.
+
+### Memory Exchange Pool
+
+A certain amount of Convex Coins are placed in an AMM exchange for CVM memory allowances. Such coins are in effect locked under a smart contract, though should still be considered part of the overall coin supply as they are technically available for use (e.g. people selling back memory allowances).
+
+The memory allowances themselves are a secondary native token used purely for memory accounting purposes.
+
+See [CAD006 Memory Accounting](../006_memory/README.md)
 
 ### Release Curve
 
@@ -238,7 +246,7 @@ Some tokenomic analysis depend on the concept of "Fully Diluted Value", by multi
 
 Such analysis is generally invalid and SHOULD NOT be applied in the case of Convex, because full dilution cannot occur under the release curve model at the current price and such a number is effectively meaningless.
 
-Analysts SHOULD use the market capitalisation of issued coins (i.e. the current coin supply multiplied by the market price) as the overall valuation for the Convex Coin, which more accurately represents the coin ecosystem. This is also consistent with valuation approached other tokens that do not have a fixed supply.
+Analysts SHOULD use the market capitalisation of issued coins (i.e. the current coin supply multiplied by the market price) as the overall valuation for the Convex Coin, which more accurately represents the coin ecosystem. This is also consistent with valuation approaches for other tokens that do not have a fixed supply.
 
 ### Testnets
 
