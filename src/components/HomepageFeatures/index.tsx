@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import DocusaurusSvg from './docusaurus.svg';
 
 type FeatureItem = {
   title: string;
@@ -11,7 +12,7 @@ type FeatureItem = {
 const FeatureList: FeatureItem[] = [
   {
     title: 'Lattice Technology',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('@site/static/img/Torus-82.svg').default,
     description: (
       <>
         The Lattice is the innovation at the heart of Convex - decentralised, infinitely scalable, cryptographically secure. 
@@ -20,7 +21,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Developer Power',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    Svg: require('@site/static/img/Torus-11.svg').default,
     description: (
       <>
         Convex gives developers superpowers: fully interactive REPL development and the power of "One Line DeFi"
@@ -29,7 +30,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Blazing Performance',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    Svg: require('@site/static/img/Torus-81.svg').default,
     description: (
       <>
         With zero block delay and near-instant transaction confirmation, you can build the perfect experience for your users. 
