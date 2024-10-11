@@ -28,6 +28,13 @@ function HomepageHeader() {
             to="/docs/overview/lattice">
             The Lattice
           </Link>
+          <div style={{width:20}} />
+          <Link
+            className="button button--secondary button--lg"
+            to="https://drive.usercontent.google.com/download?id=11-LGSul_5nvQDl_7MJKc7BCg8XDdUYSv"
+            download="convex.jar">
+            Download
+          </Link>
           
         </div>
       </div>
