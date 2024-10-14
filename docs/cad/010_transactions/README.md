@@ -36,7 +36,7 @@ A `Transfer` is a transaction requesting the transfer of Convex Coins from a use
 
 A transfer transaction MUST specify an amount to transfer, as an integer.
 
-The Source Account MUST be the origin account for the transaction, i.e. transfers can only occur from the account which has the correct digital signature
+The source Account MUST be the origin account for the transaction, i.e. transfers can only occur from the account which has the correct digital signature
 
 Both accounts MUST be valid, otherwise the transaction MUST fail
 
@@ -63,10 +63,10 @@ An Invoke Transaction MUST include a payload of CVM Code. This may be either:
 
 High volume users MAY consider pre-compilation of CVM code to avoid additional compilation juice fees.
 
-An Invoke Transaction MUST fail if:
+An Invoke transaction MUST fail if:
 - The CVM Code is not valid for execution (e.g. a syntax error in compilation)
 - The Origin Account has insufficient balance to pay for Juice required by the code execution
-- The execution of CVM Code causes any Error (e.g. a `:TRUST` Error casued by attempting an unathorised operation on an Actor)
+- The execution of CVM Code causes any Error (e.g. a `:TRUST` Error caused by attempting an unauthorised operation on an actor)
 
 Otherwise, the CVM State MUST be updated by the result of executing the CVM Code for the Origin Account
 
@@ -106,7 +106,7 @@ Transaction results MUST be returned in a `Result` record which contains the fol
 - `:id` - the message ID of the transaction to correlate with the client
 - `:result` - the final result of the transaction (will be the error message if an error occurred)
 - `:error` - the error code (MUST `nil` if no error occurred, otherwise can be any Keyword)
-- `:log` - a vector of log entries cerated (may be omitted if no logs events occurred)
+- `:log` - a vector of log entries created (may be omitted if no logs events occurred)
 - `:info` - a Map of information reported by the peer to the client, which SHOULD include:
  - `:tx` - the 32-byte SHA3-256 hash of the signed transaction
  - `:loc` - the location of the transaction in consensus, as a vector `[block-index transaction-index]`
