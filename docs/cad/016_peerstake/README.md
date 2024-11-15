@@ -14,7 +14,7 @@ The total Stake of a seer determines its voting weight in the CPoS consensus alg
 
 Stake involves taking a risk and performing useful work for the network to earn rewards.
 
-A peer operator that stakes on it own peer ("peer stake") is warranting that it has **fully secured its peer key used for operational participation in consensus**. The work they do is ensuring this peer is properly managed, secured and maintains network consensus correctly. It may lose its stake if this key is compromised (typically this would mean that the peer server is itself compromised). It may also lose its stake if the controller account is compromised.
+A peer operator that stakes on its own peer ("peer stake") is warranting that it has **fully secured its peer key used for operational participation in consensus**. The work they do is ensuring this peer is properly managed, secured and maintains network consensus correctly. It may lose its stake if this key is compromised (typically this would mean that the peer server is itself compromised). It may also lose its stake if the controller account is compromised.
 
 Delegated stakers are warranting that they **trust the peer operator to maintain consensus and earn rewards while properly protecting the peer controller account**. The work they do is in evaluating peer operators and betting their coins that the peer operators performs their role honestly and effectively. Their delegated stake is not at risk if the peer itself is compromised or crashes, but *is* at risk if the controller account is compromised.
 
