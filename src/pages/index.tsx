@@ -31,9 +31,8 @@ function HomepageHeader() {
           <div style={{width:20}} />
           <Link
             className="button button--secondary button--lg"
-            to="https://drive.usercontent.google.com/download?id=11-LGSul_5nvQDl_7MJKc7BCg8XDdUYSv"
-            download="convex.jar">
-            Download
+            to="https://drive.google.com/drive/folders/1AZdyuZOmC70i_TtuEW3uEKvjYLOqIMiv?usp=drive_link">
+            Downloads
           </Link>
           
         </div>
