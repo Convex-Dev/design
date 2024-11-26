@@ -695,7 +695,7 @@ Applications MAY in addition use the hex digit `z` to further disambiguate code 
 
 ### `0xD0`-`0xDF` Data Records
 
-Data Records are record types where every field value is encoded (densely coded).
+Data Records are record types where every field value is encoded (i.e. the record is densely coded).
 
 ```
 `0xDz` <VLQ Count = n> <Continues as Vector Encoding>
@@ -705,27 +705,32 @@ Where:
 - n = the number of fields in the record
 ```
 
-Data Record encoding is exactly the same as a Vector, with the exception of the tag byte. Note that if there are more than 16 fields, this means there will be a child cells which are Vectors.
+Data Record encoding is exactly the same as a Vector, with the exception of the tag byte. Note that if there are more than 16 fields, this means there will be a child prefix cell which is a Vector.
 
 Applications MAY use the hex digit `z` and/or the field count `n` to distinguish record types. If this is insufficient, applications MAY use the first or the last field value to indicate the type, or embed a Data Record as a coded value (`0xCz`) to tag with an arbitrary type.
 
 The intention of Data records is that applications may interpret these as records in their own custom format. For example, a record might represent a listing on a decentralised market place with fields such as Asset ID, Price, Seller ID, Listing description, Creation Time, Time Limit etc.  
 
+The CVM interprets certain Data Records as CVM-specific record types (e.g. the `convex.core.cvm.State` type).
+
 ### `0xE0`-`0xEF` Extension Values
 
-Extension values are arbitrary values allowing 16 application specific meanings.
+Extension values are enumeration-style values allowing 16 application specific ranges, and 2^63 possible values for each. Typically, applications might use them for encoding known enumerations, such as a reference into an array of constant values.
 
 ```
-`0xEz` <Child Value>
+`0xEz` <VLQ Count = value>
 
 Where:
 - z = a hex value from 0-15 
+- value = any non-negative Long value (0 - 2^63-1)
 ```
 
-Extension values are arbitrary values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. 
+Extension values are arbitrary non-negative integer values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. 
+
+Extension values are considered "BlobLike" and can therefore be used a a key in an Index
 
 Examples: 
-- an application might define `0xEB` as an extension where the value is a String containing JSON data with a specific schema.
+- an application might define `0xE5` as an extension where the value references a known JSON schema.
 - another application might define `0xE0` as an enum where the values are the possible states of a finite state machine
 
 ### `0xFF` Illegal

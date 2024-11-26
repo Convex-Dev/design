@@ -7,9 +7,9 @@ tags: [convex, lattice]
 
 # Lattice Technology
 
-Lattice technology is the breakthrough that the decentralised digital world has been waiting for. 
+Lattice technology is the game-changer the decentralised digital world has been craving. 
 
-Imagine an infinitely scalable, self-repairing, decentralised cloud of data and compute resources accessed by self-sovereign individuals, secured with strong cryptographic technology and backed up by powerful consensus algorithms. Anybody can participate, nobody can control it. This is the promise of the Lattice.
+Picture a limitless, self-healing, decentralized cloud of data and computing power. Accessible by everyone, it's secured by robust cryptography and consensus mechanisms. Think of it as a global, democratic network where no single entity holds the reins. This is the power of The Lattice.
 
 ## How the Lattice works
 
@@ -17,16 +17,18 @@ Imagine an infinitely scalable, self-repairing, decentralised cloud of data and 
 
 The Lattice is based on the mathematical / algebraic concept of a [lattice](https://en.wikipedia.org/wiki/Lattice_(order)). **Lattice values** are elements of a set where there is a *merge* function that can combine any two lattice values.
 
-By repeated merges of lattice values, the system is guaranteed to converge to a single lattice value (in the sense of eventual consistency). This enables the Lattice to operate as a [Conflict-free Replicated Data Type (CRDT)](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type).
+By repeated merges of lattice values, the system is guaranteed to converge to a single lattice value (known as the "supremum" of the set of lattice values being merged). Consensus is achieved automatically, without any locking or over-complex consensus protocols.
+
+The Lattice effectively operates as a [Conflict-free Replicated Data Type (CRDT)](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type). This system is guaranteed to be eventually consistent as long as the nodes in the network are able to transmit values to each other, and this doesn't even need to be continuous or use any special protocol - occasional random gossip of lattice values is sufficient!
 
 ### Lattice innovations
 
-Lattice technology augments the idea of the CRDT in several key ways:
-- Adding cryptographic security to enable secure decentralised operation (digital signatures and cryptographic hashes).
-- Ability to create consensus over an ordering of transactions (essential for transaction security, e.g. the double-spend problem) 
-- Use of powerful immutable persistent data structures as the lattice values. These can be of arbitrary size and contain arbitrary data, but only the differences need to be transmitted and processed - similar to the "git" version control system. 
-- Lattice data structures are also Merkle trees, proving strong integrity guarantees and fast identity checking.
-- Enforcement of rules regarding which incoming lattice values are "accepted" by a participant: this prevents malicious actors from disrupting the Lattice as a whole. Merging a bad lattice value is generally pointless: in most cases all it means is that a participant wastes resources producing a lattice value that will subsequently be ignored by others, so there is an incentive for all participants to immediately reject such values.
+Lattice technology augments the concept of a CRDT in several key ways:
+- Adding **cryptographic security** to enable secure decentralised operation (digital signatures and cryptographic hashes).
+- Ability to create **consensus over an ordering** of transactions (essential for transaction security, e.g. the double-spend problem) 
+- Use of powerful **immutable persistent data structures** as the lattice values. These can be of arbitrary size and contain arbitrary data, but only the differences need to be transmitted and processed - similar to the "git" version control system. This is enabled by the powerful [CAD3 encoding format](../cad/003_encoding/README.md).
+- Lattice data structures are also **Merkle trees**, proving strong integrity guarantees and fast verification.
+- Enforcement of rules regarding **conditional acceptance** of incoming lattice values: this prevents malicious actors from disrupting the Lattice as a whole. Merging a bad lattice value is generally pointless: in most cases all it means is that a participant wastes resources producing a lattice value that will subsequently be ignored by others, so there is an incentive for all participants to immediately reject such values.
 
 ### Merge Context
 

@@ -14,7 +14,7 @@ The total Stake of a seer determines its voting weight in the CPoS consensus alg
 
 Stake involves taking a risk and performing useful work for the network to earn rewards.
 
-A peer operator that stakes on it own peer ("peer stake") is warranting that it has **fully secured its peer key used for operational participation in consensus**. The work they do is ensuring this peer is properly managed, secured and maintains network consensus correctly. It may lose its stake if this key is compromised (typically this would mean that the peer server is itself compromised). It may also lose its stake if the controller account is compromised.
+A peer operator that stakes on its own peer ("peer stake") is warranting that it has **fully secured its peer key used for operational participation in consensus**. The work they do is ensuring this peer is properly managed, secured and maintains network consensus correctly. It may lose its stake if this key is compromised (typically this would mean that the peer server is itself compromised). It may also lose its stake if the controller account is compromised.
 
 Delegated stakers are warranting that they **trust the peer operator to maintain consensus and earn rewards while properly protecting the peer controller account**. The work they do is in evaluating peer operators and betting their coins that the peer operators performs their role honestly and effectively. Their delegated stake is not at risk if the peer itself is compromised or crashes, but *is* at risk if the controller account is compromised.
 
@@ -22,11 +22,31 @@ It should be observed that the most important thing from a security perspective 
 
 ## Rewards
 
-Stakers are rewarded with a share of Convex Coins earned from
+Stakers are rewarded with a share of Convex Coins earned from:
 - Transaction fees executed on the network affecting the CVM global stake
-- Reward Pools set by the Convex Foundation
+- Reward Pools build up over time set by the Convex Foundation
 
-Rewards are divided as follows:
+### Transaction fee handling
+
+Transaction fees are accumulated for all transactions executed within a complete block submitted by a peer.
+
+When a block of transactions is successfully executed:
+- 50% are given to the peer and its stakers immediately
+- The remainder is added to the the common reward pool 
+
+### Reward pool distribution
+
+Rewards are delivered from the reward pools based on peer stake and active time elapsed.
+
+Active time elapsed is calculated when a block is successfully executed in consensus for a given peer. Active time is calculated as:
+- The difference between the timestamp of CVM state for this Block and the last such timestamp for the same peer
+- Subject to a maximum of 6000ms * total coin supply / total peer stake
+
+i.e. if the peer's total stake is 1% of the coin supply, it must submit a block at least once every ten minutes to maintain 100% active time. This mechanism is designed to ensure that peers must participate regularly and correctly in order to obtain full rewards.
+
+### Staking split
+
+When rewards are given to a peer, they are divided as follows:
 - The total reward is divided over all Peers according to Peer Stake
 - For each Peer:
   - 50% is allocated to the Peer itself (added to peer stake)

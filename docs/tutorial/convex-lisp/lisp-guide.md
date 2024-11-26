@@ -8,6 +8,17 @@ tags: [convex, developer, lisp]
 
 This guide is for developers interested in learning the basics of Convex Lisp. We assume a general familiarity with programming concepts, but no prior experience in Lisp. We will take you through the basics of the language. Veteran Lisp hackers may wish to skip this section, though there are some unique features in Convex Lisp worth noting. 
 
+Newbies could load the Convex desktop https://docs.convex.world/docs/products/convex-desktop and enter sample code via the Client Terminal.
+![image](https://github.com/user-attachments/assets/0877790e-ecb8-407c-989d-bf52a7db00fe)  
+
+Like this:
+
+![image](https://github.com/user-attachments/assets/5a38c88f-94d5-44b4-bbc6-7e918eed8b77)
+
+You can cut and paste into the lower part of the screen.
+
+
+
 <!--
 ## Setup
 
