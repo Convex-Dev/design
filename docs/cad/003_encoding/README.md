@@ -693,6 +693,8 @@ Applications SHOULD use a small code value (e.g. a small Long, or a Byte Flag) t
 
 Applications MAY in addition use the hex digit `z` to further disambiguate code types. In combination with the 18 valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
 
+Lisp aficionados and hackers may find appeal in the fact that e.g. `0xC0` can be used to represent a Cons cell. While Convex Lisp does not use this, it is a perfectly valid application of extension types.
+
 ### `0xD0`-`0xDF` Data Records
 
 Data Records are record types where every field value is encoded (i.e. the record is densely coded).
