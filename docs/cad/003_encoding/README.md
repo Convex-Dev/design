@@ -346,22 +346,6 @@ Ref encodings are used for child values contained within other cell encodings su
 
 These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two or more encodings for many values, e.g. one with an embedded child and the other with a external branch ref).
 
-### `0x21` Address
-
-Addresses are used to reference sequentially allocated accounts in Convex. 
-
-```
-0x21 <VLQ Count = address number>
-```
-
-An Address is encoded by the tag byte followed by a VLQ Encoding of the 64-bit value of the Address. 
-
-The address number MUST be positive, i.e. a 63-bit positive integer.
-
-Since addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short encoding.
-
-Addresses MAY be used by implementations outside the CVM for other types of sequentially allocated values.
-
 ### `0x30` String
 
 A String is a sequence of bytes with UTF-8 string encoding assumed.
@@ -728,6 +712,8 @@ Where:
 ```
 
 Extension values are arbitrary non-negative integer values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. 
+
+For example, Convex uses the extension value `0xEA` to indicate an Address. Since Addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short VLQ encoding.
 
 Extension values are considered "BlobLike" and can therefore be used a a key in an Index
 
