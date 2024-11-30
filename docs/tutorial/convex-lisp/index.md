@@ -9,6 +9,8 @@ Convex Lisp is a powerful modern Lisp for decentralised systems.
 
 It is designed from the ground up to support immutable lattice data structures and functional programming for robust but flexible decentralised programs.
 
+You don't need to know Convex Lisp to use Convex, but it's a powerful tool for developers wishing to build dApps and digital assets. Most of the core Convex on-chain tools are written in and designed to be used from Convex Lisp.
+
 ## Why Lisp?
 
 The CVM is designed to be able to support many different languages and paradigms. However, we wanted a powerful language that would empower developers on Convex from the beginning, and chose Lisp as the first language on the CVM for a number of reasons:
