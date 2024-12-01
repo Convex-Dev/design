@@ -244,7 +244,7 @@ The high hex digit of each tag byte specifies the general category of teh data v
 | -------- | -------------------- | -------- |
 | 0x0x     | Basic constants      | Special values like `nil` |
 | 0x1x     | Numerics             | Integers, Doubles |
-| 0x2x     | References           | Addresses, References to branch values |
+| 0x2x     | References           | References to branch values |
 | 0x3x     | Strings and Blobs    | Raw Blob data, UTF-8 Strings etc. |
 | 0x4x     | Reserved             | Reserved for future use, possible N-dimensional arrays |
 | 0x5x     | Reserved             | Reserved for future use |
@@ -345,22 +345,6 @@ Ref encodings are used for child values contained within other cell encodings su
 - They MUST NOT be used when the child cell is embedded. 
 
 These rules are necessary to ensure uniqueness of the parent encoding (otherwise, there would be two or more encodings for many values, e.g. one with an embedded child and the other with a external branch ref).
-
-### `0x21` Address
-
-Addresses are used to reference sequentially allocated accounts in Convex. 
-
-```
-0x21 <VLQ Count = address number>
-```
-
-An Address is encoded by the tag byte followed by a VLQ Encoding of the 64-bit value of the Address. 
-
-The address number MUST be positive, i.e. a 63-bit positive integer.
-
-Since addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short encoding.
-
-Addresses MAY be used by implementations outside the CVM for other types of sequentially allocated values.
 
 ### `0x30` String
 
@@ -693,6 +677,8 @@ Applications SHOULD use a small code value (e.g. a small Long, or a Byte Flag) t
 
 Applications MAY in addition use the hex digit `z` to further disambiguate code types. In combination with the 18 valid one byte encodings, this gives a reasonably generous 288 distinct code types before another byte is required.
 
+Lisp aficionados and hackers may find appeal in the fact that e.g. `0xC0` can be used to represent a Cons cell. While Convex Lisp does not use this, it is a perfectly valid application of extension types.
+
 ### `0xD0`-`0xDF` Data Records
 
 Data Records are record types where every field value is encoded (i.e. the record is densely coded).
@@ -726,6 +712,8 @@ Where:
 ```
 
 Extension values are arbitrary non-negative integer values with a one byte tag, where the low byte of the tag is available for applications to define a special meaning for the value. 
+
+For example, Convex uses the extension value `0xEA` to indicate an Address. Since Addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short VLQ encoding.
 
 Extension values are considered "BlobLike" and can therefore be used a a key in an Index
 
