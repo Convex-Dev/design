@@ -627,21 +627,7 @@ Implementations which require more than 63 fields MAY adopt their own scheme to 
 - Have the Record specify one field which contains a vector of additional fields
 - Use the first field (index 0) to specify the interpretation of following fields (which may contain arbitrary values as sub-structures)
 
-### `0xB0` - `0xB1` Byte Flags (Boolean)
-
-The possible Boolean values are `true` and `false`, which are coded as 1-byte Byte Flags.
-
-```
-Encoded as:
-0xB0 <=> false
-0xB1 <=> true
-```
-
-The two Boolean Values `true` or `false` have the Encodings `0xb1` and `0xb0` respectively. 
-
-Note: These Tags are chosen to aid human readability, such that the first hexadecimal digit `b` suggests "binary" or "boolean", and the second hexadecimal digit represents the bit value.  
-
-### `0xB2`-`0xBF` Byte Flags (Extensible)
+### `0xB0`-`0xBF` Byte Flags (Extensible)
 
 Byte flags are one byte encodings (similar to Booleans) available for application specific use.
 
@@ -649,12 +635,12 @@ Byte flags are one byte encodings (similar to Booleans) available for applicatio
 `0xBn`
 
 Where
-- n = a hex value from 2-15 
+- n = a hex value from 0-15 
 ```
 
 Applications MAY use byte flags as a efficient single byte value, i.e. the complete value encoding is always exactly one byte. For example, the encoding `0xb2` might represent an "unknown" value in ternary logic.
 
-Values `0xb0` and `0xb1` are already reserved for the two boolean values, though an application MAY repurpose these as single byte values (along with `0x00` and `0x10`) providing these values are not needed for some other purpose.
+Values `0xb0` and `0xb1` are typically used for the two boolean values, though an application MAY repurpose these as single byte values (along with `0x00` and `0x10`) providing these values are not needed for some other purpose.
 
 Fun Idea: A 1-byte Lisp where `0x10` is an opening paren, `0x00` is a closing paren and `0xb0 - 0xbf` are the allowable tokens.
 
@@ -720,6 +706,10 @@ Extension values are considered "BlobLike" and can therefore be used a a key in 
 Examples: 
 - an application might define `0xE5` as an extension where the value references a known JSON schema.
 - another application might define `0xE0` as an enum where the values are the possible states of a finite state machine
+
+### `0xF0` - `0xFE` Reserved
+
+These values are reserved for possible future CAD3 extensions. at present they are illegal
 
 ### `0xFF` Illegal
 
