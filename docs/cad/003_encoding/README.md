@@ -244,7 +244,7 @@ The high hex digit of each tag byte specifies the general category of teh data v
 | -------- | -------------------- | -------- |
 | 0x0x     | Basic constants      | Special values like `nil` |
 | 0x1x     | Numerics             | Integers, Doubles |
-| 0x2x     | References           | Addresses, References to branch values |
+| 0x2x     | References           | References to branch values |
 | 0x3x     | Strings and Blobs    | Raw Blob data, UTF-8 Strings etc. |
 | 0x4x     | Reserved             | Reserved for future use, possible N-dimensional arrays |
 | 0x5x     | Reserved             | Reserved for future use |
