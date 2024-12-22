@@ -94,7 +94,7 @@ The significance of this capability cannot be understated:
 
 ## Special Symbols
 
-You might notice symbols like `*address*`, conventionally surrounded with asterisks. These are *special symbols* which get special treatment by the CVM. They are not static values, but dunamiocally calculated on demand by the CVM. Commonly used ones are:
+You might notice symbols like `*address*`, conventionally surrounded with asterisks. These are *special symbols* which get special treatment by the CVM. They are not static values, but dynamically calculated on demand by the CVM. Commonly used ones are:
 
 - `*address*` the address of the current account, e.g. `#15656`
 - `*balance*` the Convex Coin balance of the account
