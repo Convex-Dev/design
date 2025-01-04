@@ -107,7 +107,7 @@ The first log entry SHOULD by a short uppercase string value that describes the 
 The standard values for a transfer "TR" log event are:
 
 ```clojure
-["TR" sender receiver quantity data]
+[:TR sender receiver quantity data]
 ```
 
 Where:
@@ -125,13 +125,29 @@ Transfer events of this type SHOULD be emitted by the actor implementing the ass
 The standard values for a minting "MINT" log event are:
 
 ```clojure
-["TR" minter amount new-supply]
+["MINT" minter amount new-supply]
 ```
 
 Where:
 - `minter` is the account performing the minting operation
 - `amount` is the quantity minted (negative for burn)
 - `new-supply` is the new total supply of the token
+
+#### NFT Transfers
+
+When sending a uniquely identified asset such as an NFT, conventional log values are:
+
+```clojure
+[:TR sender receiver quantity data]
+```
+
+Where:
+- `sender` is the account address of the asset sender
+- `receiver` is the account address of the receiver
+- `id` is the unique ID of the asset
+- `data` is any additional data attached to the transfer (e.g. a map containing a payment reference)
+
+Note: since NFT transfers may involve a set of NFTs, this can result in multiple log entries for a single transfer. This approach is preferred because it allows individual NFTs to be tracked.
 
 ### Log Indexing
 
@@ -142,7 +158,7 @@ The exact structure of log indexes are implementation details left to the peer o
 By default peers SHOULD maintain the following indexes into the log, for all log entries that they retain:
 - block -> log start and end position (allows fast location of log entries for a given block)
 - [ address | first value | second value | third value ] -> vector of log positions
-- An index on the each of the first 4 fields of the log data, if these are Blob Like values that can be indexed
+- An index on the each of the first 4 fields of the log data, if these are Blob-like values that can be indexed
 
 Values are included in the index if present and bloblike, otherwise empty blob. 
 
