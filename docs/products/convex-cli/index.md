@@ -41,11 +41,10 @@ Put this in your PowerShell profile (typically `Profile.ps1` in `$home/documents
 
 ### Linux
 
-Make a small shell script (with `chmod +x`) as follows:
+Run the following bash command (or add to your `~/.bashrc`) as follows:
 
 ```
-#!/bin/bash
-java -jar /path/to/convex.jar $@
+alias convex="java -jar ~/convex.jar"
 ```
 
-Put this in `/usr/local/bin` and you should be good to go.
+This will create an alias to the `convex.jar` so you can type `convex ....` in any directory to access the full set of CLI features.
