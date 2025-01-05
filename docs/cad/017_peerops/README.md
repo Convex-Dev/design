@@ -4,9 +4,9 @@
 
 Operating a peer is an important responsibility in the Convex Network. 
 
-Anyone can run a peer, and they are responsible for maintaining the Consensus of the Network. 
+Anyone can run a peer, and they are responsible for maintaining the Consensus of the Network. They must place a minimum stake of 1000 Convex Coins.
 
-Most users of the Convex Network do not need to run a peer - they connect to peers via clients software that submits transactions and queries information on their behalf. 
+Most users of the Convex Network do not need to run a peer - they connect to peers via client software that submits transactions and queries information on their behalf. The peer API is open to client requests by default: Peer operators who wish to restrict this may need to set up additional configuration or infrastructure.
 
 This document primarily contains recommendations for peer operators
 
@@ -15,32 +15,54 @@ This document primarily contains recommendations for peer operators
 Running a Peer requires:
 
 - An Internet-connected Server
-- At least 100 MBits/sec continuous bandwidth
+- At least 100 MBits/sec continuous network bi-directional bandwidth
 - A modern processor with at least 8 dedicated Cores
-- At least 8 GB RAM (32 Gb Recommended)
-- At least 2 TB fast Storage (NVMe Recommended)
+- At least 8 GB RAM (32 GB Recommended)
+- At least 1 TB fast Storage (NVMe Recommended)
 - A secure modern operating system (Linux recommended) with good support for memory mapped files
 - Java 21 or above
 
 The network should be configured with:
-- a publicly accessible IP address (IPv4 or IPv6)
+- a publicly accessible IP address (IPv4 or IPv6). Dual stack networking support is required in the OS.
 - firewall access to the server via TCP on a chosen port (the Convex protocol default `18888` is recommended)
-- a trusted DNS entry (e.g. `peer.mycompany.com`)
+- a trusted DNS entry (e.g. `peer.mycompany.com`) is recommended
+- HTTPS certificates recommended for the HTTPS REST API
 
 The DNS entry is optional, but it will help significantly with discoverability / user access to your peer.
 
 ## Configuration
 
+### Accounts
+
+In order to operate a peer you will need a Peer Controller account. This can be any account on the Convex network, e.g. `#1678` with at least 1000 Convex Coins.
+
 ### Peer Config
 
 Peers can be configured at launch in various ways.
 
-Peers SHOULD configure the number of concurrent outgoing Peer connections according to their available bandwidth. 20 recommended for Peers with fast connections.
+#### Outgoing connections
+
+Peers MAY configure the number of concurrent outgoing Peer connections according to their available bandwidth. 20 (the default) recommended for Peers with sufficient outgoing bandwidth. There are trade-offs here:
+- With more outgoing connections, your transactions will reach consensus faster
+- You must weight this up against bandwidth costs
+- If the number is too low your published blocks may get lost if the destinations do not relay them.
+
+TODO: describe mechanism to set connection count controls
 
 
 
 ## Startup
 
+## Syncing
+
+Your peer will need to synchronize with teh network by connecting to at least one existing peer.
+
+The following peers are available at time of writing for synchronisation:
+```
+peer.convex.live:18888
+```
+
+TODO: CLI commend top start peer with target host
 
 ## Shutdown
 
@@ -56,7 +78,9 @@ It may occur that a peer becomes temporarily disconnected from the peer network.
 
 Peers are designed to automatically recover from temporary network failure and re-establish connections when possible. Peers with normal configuration SHOULD periodically re-attempt to connect with other peers randomly until connection with the Network is re-established.
 
-Peer Operators SHOULD provide for an alternative way to connect to the main network, if only for the purposes of withrawing the Peer's Stake (Peers are at risk of penalisation if they remain disconnected for too long).
+Peer Operators SHOULD provide for an alternative way to connect to the main network, if only for the purposes of withdrawing the Peer's Stake. For example, a peer operator may monitor the connectivity of their peer and use Convex Desktop to de-stake the peer if it loses connections.
+
+TODO: describe best way to monitor this. Perhaps API peer health endpoint?
 
 ### Security Breach
 
@@ -68,22 +92,34 @@ Peer Operators SHOULD attempt to withdraw their Stake immediately, possibly thro
 
 Peers are required to post a Peer Stake to participate in consensus.
 
+### Setting a stake
+
+### Withdrawing stake
+
+### Stake penalties
+
+In Protonet, there is no slashing of stake (i.e. peers are not formally penalised for incorrect behaviour).
+
+In the future peers may be automatically penalised for provably incorrect behaviour.
+
 ## Key Management
 
 ## Connection Management
 
 A Convex Peer is designed to automatically manage P2P connections to the Network during normal operations. In most cases, assuming good network connectivity, a Peer should require no manual intervention to control connections to other Peers.
 
+
+
 ### Incoming Connections
 
-Peers treat incoming connections as regular Clients, i.e. they afford no particular special priviledges to incoming connections from other Peers. The purpose of this is to ensure that Bad Peers have no particular ability to influence a Peer that they connect to. 
+Peers treat incoming connections as regular Clients, i.e. they afford no particular special privileges to incoming connections from other Peers. The purpose of this is to ensure that Bad Peers have no particular ability to influence a Peer that they connect to. 
 
 ### Outgoing connections
 
 A Peer maintains a managed list of outgoing connections (i.e. connections to which they broadcast their Beliefs).
 
 Outgoing connections follow the following rules:
-- **Validated hosts**: Peers MUST only connect to Peers accesible on the network via the host address specified for the destination Peer in the current consensus, **or** if they are explicitly instructed to connect to a specific host address by the Peer Operator (e.g. when joining the Network). This minimises the chance of connecting to Bad Peers.
+- **Validated hosts**: Peers MUST only connect to Peers accessible on the network via the host address specified for the destination Peer in the current consensus, **or** if they are explicitly instructed to connect to a specific host address by the Peer Operator (e.g. when joining the Network). This minimises the chance of connecting to Bad Peers.
 - **Random elimination**: Peers SHOULD eliminate connections at random for low-staked Peers. This allows the Peer network to stay dynamic, and give an opportunity for new Peers to be connected to
 - **Stake-weighted selection** Peers MUST connect to other Peers preferentially according to stake, so that Bad Peers do not have a significant chance of isolating a Peer
 - **Target connection count**: Peers should attempt to maintain a number of outgoing connections to Peers as configured by the Peer Operator. This allows Peer Operators to control their bandwidth usage.
