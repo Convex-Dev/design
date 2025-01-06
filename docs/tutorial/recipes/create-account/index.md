@@ -83,6 +83,10 @@ You can do this with the following code:
   (set-controller *caller*)))
 ```
 
+:::note
+The `(assert *caller*)`expression is optional, but works as an extra safety check. If you execute this on its own in a transaction, it will fail because `*caller*` is `nil` in a top level transaction. But it will pass the check in the deployed code, because `*caller*` would be the account address running the `deploy`. This is important, because you don't want to accidentally overwrite the key of your own account and set the controller to `nil`!
+:::
+
 ## Putting it all together
 
 So we've seen that a good strategy for issuing new accounts is to create them with the correct public key, set a controller for account recovery, and send some CVM so the new user can get going.
@@ -120,3 +124,25 @@ A better option is to set it to the account address of someone you trust:
 (set-controller #14) ;; Assuming #14 is a someone you trust to restore your account in an emergency
 ```
 
+## Checking it all works
+
+It's worth checking that a new account is created correctly.
+
+Remember to run this in "Query" mode so that you don't pay any transaction fees:
+
+```clojure
+(account #1567)
+
+;; Result will look something like this:
+=> {:sequence 0,
+    :key 0x89b5142678bfef7a2245af5ae5b9ab1e10c282b375fa297c5aaeccc48ac97cac,
+    :balance 5000000000,
+    :allowance 0,
+    :holdings nil,
+    :controller #202,
+    :environment nil,
+    :metadata nil,
+    :parent nil}
+```
+
+Remember to verify the `:key`, `:controller` and `:balance` are what you expect, if they are, then you are all good!
