@@ -24,7 +24,7 @@ Once issued, coins are fully transferable and can circulate freely according to 
 
 Coins used for transaction fees (or deliberately burned) are removed from the coin supply and a placed in a special "Reward Pool" which is released back to peer operators and stakers over time as a reward for maintaining the network. 
 
-This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise). There is a maximum supply cap of 1,000,000,000 Convex coins, though it will take a long time to get there. The total Coin supply at Protonet launch is estimated to be ~1-2m Convex Coins.
+This model strikes the right balance between enabling long term sustainable growth and recognising those who bring value to the Convex ecosystem (financially or otherwise). There is a maximum supply cap of 1,000,000,000 Convex coins, though it will take a long time to get there. The total Coin supply at Protonet launch is 1m Convex Coins, initially held by Convex Foundation account(s) prior to onward distribution.
 
 ## Rationale / Discussion
 
