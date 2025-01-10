@@ -27,6 +27,16 @@ It is therefore necessary to place a bound on the size of resources used. This i
 
 Where input to Convex may be effectively unbounded (e.g. the size of data structures such as Vectors), implementations MUST NOT attempt O(n) or greater operations on such structures unless these operations are protected by resource constraints (e.g. accounting for juice costs, memory allowances). 
 
+### Conflict-free replication
+
+We have designed lattice technology so that it can operate as a conflict-free replicated data type: this enables scalable systems without the need for locking and synchronisation between distributed processes. Arguably this is the *only* practical way to achieve decentralised consensus at the scales we envisage.
+
+This places some restrictions on technical implementation:
+- Message handling should be idempotent, i.e. repeated receipt of identical messages should have no effect (and consume minimal resources)
+- Data structures must be designed for efficient CRDT merge operations
+- Systems must be designed to operate on the latest concurrent immutable state, with the knowledge that this state may change as it converges towards eventual consistency
+- Situations which are ordering-dependent must use CPoS to reach consensus on ordering (this mostly applies to the ordering of Convex transactions at present, but may apply to other lattice merge operations in future)
+
 ## General Design Philosophy
 
 ### Security First

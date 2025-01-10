@@ -182,15 +182,15 @@ The 75% allocation for Coin Purchasers MUST be distributed on the basis of purch
 
 The distribution MUST be administered by the Convex Foundation, or an entity acting on its behalf in accordance with relevant local regulations.
 
-Coins purchases MUST be delivered to purchasers only after the release of the main network.
+Coins purchases MUST be delivered to purchasers on demand after the release of the main network. Coin distribution MAY start early (during Protonet phase) subject to purchasers accepting the risk of doing so.
 
 Coin purchasers MUST meet all relevant regulatory, legal and other requirements that may be defined to ensure that they are permitted to purchase Convex coins in their respective jurisdictions.
 
-The Convex Foundation SHOULD sell coins on an equal, non-discriminatory basis to any purchaser that meets the necessary criteria.
+The Convex Foundation MUST sell coins on an equal, non-discriminatory basis to any purchaser that meets any relevant criteria.
 
 The Convex Foundation MAY place restrictions on the rate that coins are distributed to early purchasers, giving consideration to the potential impact of large numbers of coins being issued at the same time.
 
-In the long term, distribution of coins from coin purchasers MAY be operated on a fully decentralised basis, if technology and decentralised governance capabilities prove sufficiently robust to enable such a system.
+In the long term, distribution of coins from coin purchasers SHOULD be operated on a fully decentralised basis, once technology, financial and decentralised governance capabilities are sufficiently robust to enable such a system (for example, having nation state currencies directly available on Convex).
 
 The funds raised from coin purchases MUST be used in accordance with the objectives of the Foundation. For example, these may be used to fund ongoing development of the network, invest in key ecosystem initiatives, and as an incentive to reward those who contribute to the Convex ecosystem.
 
@@ -237,7 +237,7 @@ Transactions Fees for execution of transactions are deposited in the Reward Pool
 
 Over time, this Reward Pool is used to make payments for peers that are participating actively and correctly in maintaining network consensus, thus giving a return to stakers.
 
-Account `#0` is also an address to which users can optionally "burn" coins. Such coins are removed from the coin supply, but will be available for future distribution as peer rewards.
+Account `#0` is also an address to which users can optionally "burn" coins. Such coins are removed from the circulating coin supply, but will be available for future distribution as peer rewards.
 
 The Convex Foundation MAY, at its discretion, issue coins and immediately "burn" them in order to increase the incentives for peer operators to participate. Such coins will be considered to come out of the 25% available for contributor awards.
 
