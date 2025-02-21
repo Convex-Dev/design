@@ -128,6 +128,15 @@ const config: Config = {
           ],
         },
         {
+          title: 'Tools',
+          items: [
+            {
+              label: 'REPL',
+              to: '/docs/tools/convex-repl',
+            },
+          ],
+        },
+        {
           title: 'Community',
           items: [
             {
