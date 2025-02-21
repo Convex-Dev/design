@@ -69,9 +69,11 @@ const ConvexREPL: React.FC = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e as any);
+    if (e.key === 'Enter' ) {
+      if (!e.shiftKey) {
+        e.preventDefault();
+        handleSubmit(e as any);
+      }
     }
   };
 
@@ -125,9 +127,8 @@ const ConvexREPL: React.FC = () => {
           <span className="prompt">&gt;</span>
           <textarea
             ref={inputRef}
-            cols={"40"} 
+            cols={40} 
             rows={5}
-            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
