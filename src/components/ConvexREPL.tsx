@@ -84,7 +84,6 @@ const ConvexREPL: React.FC = () => {
   return (
     <div className="lisp-repl-container">
       <div className="repl-header">
-        <h3>Convex REPL</h3>
         <div className="mode-selector">
           <label htmlFor="mode-select">Mode: </label>
           <select
