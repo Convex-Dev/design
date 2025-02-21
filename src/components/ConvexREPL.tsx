@@ -8,11 +8,14 @@ interface REPLHistoryEntry {
   error?: string;
 }
 
+type Mode = 'Query' | 'Transact';
+
 const ConvexREPL: React.FC = () => {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<REPLHistoryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<Mode>('Query'); // New mode state
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const historyRef = useRef<HTMLDivElement>(null);
 
   // REST endpoint URL - replace with your actual endpoint
@@ -46,8 +49,8 @@ const ConvexREPL: React.FC = () => {
     } catch (error) {
       return {
         input: expr,
-        output: null,
-        error: error.response?.data?.error || 'Network error or invalid expression',
+        output: error.response?.data?.value,
+        error: error.response?.data?.errorCode || 'Network error or invalid expression',
       };
     } finally {
       setIsLoading(false);
@@ -72,10 +75,26 @@ const ConvexREPL: React.FC = () => {
     }
   };
 
+  const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setMode(e.target.value as Mode);
+  };
+
   return (
     <div className="lisp-repl-container">
       <div className="repl-header">
         <h3>Convex REPL</h3>
+        <div className="mode-selector">
+          <label htmlFor="mode-select">Mode: </label>
+          <select
+            id="mode-select"
+            value={mode}
+            onChange={handleModeChange}
+            disabled={isLoading}
+          >
+            <option value="query">Query</option>
+            <option value="transact">Transact</option>
+          </select>
+        </div>
         <span className="repl-info">
           Type Convex expressions and press Enter to evaluate
         </span>
@@ -104,17 +123,26 @@ const ConvexREPL: React.FC = () => {
       <form onSubmit={handleSubmit} className="repl-input-form">
         <div className="input-wrapper">
           <span className="prompt">&gt;</span>
-          <input
+          <textarea
             ref={inputRef}
+            cols={"40"} 
+            rows={5}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Enter Lisp expression (e.g., (+ 2 3))"
+            placeholder="Enter Lisp expression e.g. (+ 2 3)"
             disabled={isLoading}
             className="repl-input"
           />
         </div>
+        <button
+          type="submit"
+          disabled={isLoading || !input.trim()}
+          className="execute-button"
+        >
+          {isLoading ? 'Executing...' : 'Execute'}
+        </button>
       </form>
     </div>
   );
