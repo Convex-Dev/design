@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import './ConvexREPL.css'; 
 
 interface REPLHistoryEntry {
   input: string;
@@ -74,7 +75,7 @@ const ConvexREPL: React.FC = () => {
   return (
     <div className="lisp-repl-container">
       <div className="repl-header">
-        <h3>Lisp REPL</h3>
+        <h3>Convex REPL</h3>
         <span className="repl-info">
           Type Convex expressions and press Enter to evaluate
         </span>
