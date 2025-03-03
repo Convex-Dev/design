@@ -22,7 +22,7 @@ Tokengine is developed by Convex Ecosystem Services Limited in collaboration wit
 ### Convex 
 
 Tokengine supports the following on Convex Protonet:
-- Convex coins and 
+- Convex coins
 - CAD029 token 
 
 ### EVM
