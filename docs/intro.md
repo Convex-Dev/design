@@ -4,7 +4,9 @@ sidebar_position: 1
 
 # Welcome to Convex: Powering the Future of Decentralised Economies
 
-**Convex** is a revolutionary high-performance platform for decentralised economic systems, open-source and accessible to developers and users worldwide. Designed to transcend the limitations of traditional blockchains, Convex delivers the true promise of Web3: unparalleled flexibility, scalability, and speed for high-volume, interactive applications. From mobile apps and instant payments to immersive gaming experiences, Convex empowers developers to build the next generation of decentralised applications (dApps) with ease and efficiency.
+**Convex** is a revolutionary high-performance platform for decentralised economic systems, open-source and accessible to developers and users worldwide. 
+
+Designed to transcend the limitations of traditional blockchains, Convex delivers the true promise of Web3: unparalleled flexibility, scalability, and speed for high-volume, interactive applications. From mobile apps and instant payments to immersive gaming experiences, Convex empowers developers to build the next generation of decentralised applications (dApps) with ease and efficiency.
 
 ## Why Convex Stands Out
 
