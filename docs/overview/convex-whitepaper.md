@@ -8,9 +8,9 @@ permalink: white-paper
 
 ## Introduction
 
-Imagine a world where value flows seamlessly between individuals, organizations, and systems—free from intermediaries, high costs, or centralised control. This is the promise of decentralized economic systems, powered by peer-to-peer digital asset exchanges and smart contracts. These systems herald an Internet of Value, where economic activity thrives on open, efficient, and secure networks, fundamentally reshaping how we transact and interact globally.
+Imagine a world where value flows seamlessly between individuals, organisations, and systems—free from intermediaries, high costs, or centralised control. This is the promise of decentralised economic systems, powered by peer-to-peer digital asset exchanges and smart contracts. These systems herald an Internet of Value, where economic activity thrives on open, efficient, and secure networks, fundamentally reshaping how we transact and interact globally.
 
-At the core of this vision lies the ability to exchange value securely through cryptographic keys, managed autonomously by individuals. This self-sovereign approach eliminates reliance on centralized authorities, enabling trustless, direct transactions between participants anywhere in the world. Yet, despite their transformative potential, existing decentralised networks—primarily built on blockchain technology—face critical limitations: sluggish performance, exorbitant energy consumption, prolonged transaction confirmation times, security vulnerabilities, and prohibitive costs. These shortcomings have hindered widespread adoption, confining blockchain to niche applications rather than revolutionizing the global economy.
+At the core of this vision lies the ability to exchange value securely through cryptographic keys, managed autonomously by individuals. This self-sovereign approach eliminates reliance on centralised authorities, enabling trustless, direct transactions between participants anywhere in the world. Yet, despite their transformative potential, existing decentralised networks—primarily built on blockchain technology—face critical limitations: sluggish performance, exorbitant energy consumption, prolonged transaction confirmation times, security vulnerabilities, and prohibitive costs. These shortcomings have hindered widespread adoption, confining blockchain to niche applications rather than revolutionising the global economy.
 
 Enter Convex (CONVergent EXecution), a groundbreaking engine designed to overcome these barriers and unlock the full potential of decentralised systems. Convex introduces a novel consensus mechanism, Convergent Proof of Stake (CPoS), which leverages a conflict-free replicated data type (CRDT) to achieve rapid, stable, and secure consensus. Unlike traditional blockchains, CPoS is leaderless, allowing multiple peers to submit transaction blocks simultaneously, slashing latency to sub-second confirmation times. This makes Convex not only faster but also viable for soft real-time and consumer applications—something no other decentralised system has achieved at scale.
 
@@ -46,9 +46,9 @@ The seven key properties that are essential to this vision are that it must be:
 * **Global** - a single, global network for everybody, without artificial boundaries. Potential is maximised when everyone can transact with everyone else with a shared global state.
 * **Open** - a decentralised, technology independent system where anyone can participate without asking for permission. No barriers to entry.
 * **Automated** - able to support atomic, end-to-end transactions that are reliably executed using trusted and reliable smart contracts.
-* **Secure** - protecting against all types of security threats so that users can be confident of the safety of their digital assets and transactions.
+* **Secure** - protecting against security threats so that users can be confident of the safety of their digital assets and transactions.
 * **Extensible** - capable of supporting unlimited innovation in the types of assets and applications created. Like the Internet, it must not constrain what people can build, and it must make it easy to innovate.
-* **Fast** - quick enough to confirm economic transaction in seconds, meeting the demands of consumer applications.
+* **Fast** - quick enough to confirm economic transactions in less than a second, meeting the demands of consumer applications and retail payments.
 * **Cheap** - inexpensive to utilise, so that nobody is excluded by high costs and most kinds of applications are economically viable.
 
 Convex has been designed from the ground up to provide these properties.
