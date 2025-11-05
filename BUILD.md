@@ -4,7 +4,7 @@ This project uses [pnpm](https://pnpm.io/) as the package manager. The project i
 
 ## Prerequisites
 
-- Node.js 18 or higher
+- Node.js 24 or higher
 - pnpm (installed automatically via Corepack if `packageManager` is set in `package.json`)
 
 ## Installation
