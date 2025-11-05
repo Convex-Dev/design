@@ -206,7 +206,7 @@ If you pass an illegal number of arguments, you will get an `:ARITY` error:
 
 ### The Core library
 
-The Convex core runtime library provides a wide variety of useful functions that you can see in the [Reference](/documentation/reference). Some simple examples to try out:
+The Convex core runtime library provides a wide variety of useful functions. Some simple examples to try out:
 
 ```clojure
 ;; Addition: '+' is a variable arity function that cab take multiple arguments
