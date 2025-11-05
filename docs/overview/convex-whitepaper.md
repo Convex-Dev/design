@@ -6,23 +6,17 @@ permalink: white-paper
 ---
 # Convex White Paper
 
-## Abstract
+## Introduction
 
-Decentralised economic systems enable peer-to-peer value exchange involving digital assets and services, facilitated by smart contracts. In the long term, we can foresee an **Internet of Value** where a significant proportion of economic activity is enabled by open economic systems with low transaction costs and free from centralised control.
+Imagine a world where value flows seamlessly between individuals, organisations, and systems—free from intermediaries, high costs, or centralised control. This is the promise of decentralised economic systems, powered by peer-to-peer digital asset exchanges and smart contracts. These systems herald an Internet of Value, where economic activity thrives on open, efficient, and secure networks, fundamentally reshaping how we transact and interact globally.
 
-Value exchange within such systems is protected at the protocol level by cryptographic keys that can be issued and managed on a **self-sovereign basis**. With these capabilities in place, efficient and secure transactions between any participants become possible without any dependency on centralised authorities or intermediaries.
+At the core of this vision lies the ability to exchange value securely through cryptographic keys, managed autonomously by individuals. This self-sovereign approach eliminates reliance on centralised authorities, enabling trustless, direct transactions between participants anywhere in the world. Yet, despite their transformative potential, existing decentralised networks—primarily built on blockchain technology—face critical limitations: sluggish performance, exorbitant energy consumption, prolonged transaction confirmation times, security vulnerabilities, and prohibitive costs. These shortcomings have hindered widespread adoption, confining blockchain to niche applications rather than revolutionising the global economy.
 
-However, existing decentralised networks have **notable weaknesses**; poor performance, high energy consumption, long transaction confirmation times, vulnerability to various security issues and high transaction costs. Early implementations based on blockchains successfully demonstrated the possibilities of decentralisation but have fundamental limitations that make these weaknesses difficult, or even impossible, to resolve. As a result, blockchain technology has **not yet been widely adopted** in the economy as a whole.
+Enter Convex (CONVergent EXecution), a groundbreaking engine designed to overcome these barriers and unlock the full potential of decentralised systems. Convex introduces a novel consensus mechanism, Convergent Proof of Stake (CPoS), which leverages a conflict-free replicated data type (CRDT) to achieve rapid, stable, and secure consensus. Unlike traditional blockchains, CPoS is leaderless, allowing multiple peers to submit transaction blocks simultaneously, slashing latency to sub-second confirmation times. This makes Convex not only faster but also viable for soft real-time and consumer applications—something no other decentralised system has achieved at scale.
 
-Convex (CONVergent EXecution) is an engine for open economic systems that resolves these issues. Convex rapidly achieves consensus with a novel algorithm called **Convergent Proof of Stake** (CPoS). It merges Beliefs shared by Peers using a function that is idempotent, commutative and associative. This system provably converges to a stable consensus by forming a Conflict-free Replicated Data Type (CRDT). In the presence of malicious or faulty peers, consensus is protected by a full Byzantine Fault Tolerance.
+Complementing CPoS is the Convex Virtual Machine (CVM), a robust execution and storage system rooted in lambda calculus. The CVM delivers immutable, persistent data structures and content-addressable storage, enabling a fully decentralised global computer capable of executing complex smart contracts with unparalleled security and efficiency.
 
-The CPoS algorithm solves the "double spend" problem by implementing a continuous *decentralised sort* of transactions that enter the network. Once an ordering of transactions is confirmed up to some position, it is stable and immutable from the perspective of all participants, thus preventing double spend and transaction rollback.
-
-Importantly, CPoS is a "leaderless" approach that allows multiple Peers to submit blocks of transactions into the network simultaneously. This property dramatically improving the latency between submitting a transaction and receiving a confirmed result. Early tests suggest that the global Convex Network may be able to confirm transactions **under one second** - substantially quicker than any competing approaches and making Convex viable for a wide range of **soft realtime** and consumer applications.
-
-Convex augments the CPoS algorithm with an execution engine and storage system - the **Convex Virtual Machine (CVM)**. Building on the lambda calculus, Convex provides immutable persistent data structures and content addressable storage. 
-
-Combined with the consensus algorithm, the CVM provides a fully decentralised, global computer capable of executing arbitrary smart contracts with decentralised ownership and security. 
+By addressing the fundamental flaws of existing decentralised networks, Convex paves the way for a new era of economic systems—ones that are fast, scalable, energy-efficient, and secure. This white paper explores how Convex redefines decentralised economies, offering a scalable foundation for the Internet of Value and empowering a future where trust, efficiency, and innovation converge.
 
 ## Context
 
@@ -52,9 +46,9 @@ The seven key properties that are essential to this vision are that it must be:
 * **Global** - a single, global network for everybody, without artificial boundaries. Potential is maximised when everyone can transact with everyone else with a shared global state.
 * **Open** - a decentralised, technology independent system where anyone can participate without asking for permission. No barriers to entry.
 * **Automated** - able to support atomic, end-to-end transactions that are reliably executed using trusted and reliable smart contracts.
-* **Secure** - protecting against all types of security threats so that users can be confident of the safety of their digital assets and transactions.
+* **Secure** - protecting against security threats so that users can be confident of the safety of their digital assets and transactions.
 * **Extensible** - capable of supporting unlimited innovation in the types of assets and applications created. Like the Internet, it must not constrain what people can build, and it must make it easy to innovate.
-* **Fast** - quick enough to confirm economic transaction in seconds, meeting the demands of consumer applications.
+* **Fast** - quick enough to confirm economic transactions in less than a second, meeting the demands of consumer applications and retail payments.
 * **Cheap** - inexpensive to utilise, so that nobody is excluded by high costs and most kinds of applications are economically viable.
 
 Convex has been designed from the ground up to provide these properties.

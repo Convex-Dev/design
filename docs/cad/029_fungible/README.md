@@ -66,6 +66,33 @@ Typically this might be implemented with a fixed constant definition of total su
   max-supply)
 ```
 
+### CAIP-19 encoding
+
+CAD29 tokens MUST be possible to reference with a CAIP19 token ID.
+
+This enables CAD29 assets to be uniquely referenced as a CAIP cross-chain asset for interoperability.
+
+The token ID MUST be in the format:
+
+```
+// For CAD29 tokens represented by a single actor
+cad29:<AddressNumber>
+
+Example:
+"cad29:789"
+
+// For scoped CAD29 assets
+cad29:<AddressNumber>-<urlEncode<Scope>>
+
+Examples:
+"cad29:890-56778"
+"cad29:891-%5B%2339%20%23789%5D"
+```
+
+Note: As per RFC3986: "For consistency, URI producers and normalizers should use uppercase hexadecimal digits for all percent-encodings."
+
+In order to be canonical, CAD29 token IDs expressed in CAIP-19 format MUST use uppercase hex URL encoding.
+
 ## convex.fungible library
 
 Fungible tokens MAY be constructed using any actor that presents a callable interface according to this specification

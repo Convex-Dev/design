@@ -28,19 +28,11 @@ Snapshots of the `convex.jar` file are currently available here: [Convex Snapsho
 
 If Java is correctly configured, you should be able to run Convex Desktop simply by double-clicking on the `convex.jar` file which will run Convex Desktop as an executable. On some systems, you may need to grant permissions to run a downloaded executable file.
 
-Alternatively to run Convex Desktop, you can run the following commend from the command prompt, script or GUI shortcut:
+Alternatively, to run Convex Desktop, you can run the following command from the command prompt, script or GUI shortcut:
 
 ```
 java -jar convex.jar desktop
 ```
-
-### Hello
-
-## Foo
-
-# DeskTop 
-
-Source code for Docusaurus on Desktop
 
 ## Introduction for non-crypto Developers
 
@@ -76,7 +68,7 @@ Source code for Docusaurus on Desktop
 
 - Click Generate – 12 words appear in seed Phrase
 - Enter Passphrase (lower case)
-- Record both someway safe. DON’T LOSE
+- Record both somewhere safe. DON’T LOSE
 - Ignore Key Derivation
 - Copy Private Ed25519 seed somewhere safe. DON’T LOSE. DON’T SHARE. This is also known as Private Key
 - Copy Ed25519 Public Key. Can be shared
