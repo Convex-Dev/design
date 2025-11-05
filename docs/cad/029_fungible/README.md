@@ -70,7 +70,7 @@ Typically this might be implemented with a fixed constant definition of total su
 
 CAD29 tokens MUST be possible to reference with a CAIP19 token ID.
 
-This enables CAD29 assets to be uniquely referenced as a CAIP cross-chain asset
+This enables CAD29 assets to be uniquely referenced as a CAIP cross-chain asset for interoperability.
 
 The token ID MUST be in the format:
 
@@ -88,6 +88,10 @@ Examples:
 "cad29:890-56778"
 "cad29:891-%5B%2339%20%23789%5D"
 ```
+
+Note: As per RFC3986: "For consistency, URI producers and normalizers should use uppercase hexadecimal digits for all percent-encodings."
+
+In order to be canonical, CAD29 token IDs expressed in CAIP-19 format MUST use uppercase hex URL encoding.
 
 ## convex.fungible library
 
