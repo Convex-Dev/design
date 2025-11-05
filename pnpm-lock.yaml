@@ -2337,7 +2337,7 @@ packages:
 
   'doctest@file:':
     resolution: {directory: '', type: directory}
-    engines: {node: '>=18.0'}
+    engines: {node: '>=24.0'}
 
   dom-converter@0.2.0:
     resolution: {integrity: sha512-gd3ypIPfOMr9h5jIKq8E3sHOTCjeirnl0WK5ZdS1AW0Odt0b1PaWaHdJ4Qk4klv+YB9aJBS7mESXjFoDQPu6DA==}
