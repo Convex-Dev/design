@@ -22,7 +22,12 @@ const config: Config = {
   trailingSlash: false,
 
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+
+  markdown: {
+    hooks: {
+onBrokenMarkdownLinks: 'warn'
+    },
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -134,11 +139,16 @@ const config: Config = {
               label: 'REPL',
               to: '/docs/tools/convex-repl',
             },
+            {
+              label: 'Explorer',
+              to: 'https://peer.convex.live/explorer',
+            },
           ],
         },
         {
           title: 'Community',
           items: [
+  
             {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/convex',
@@ -156,6 +166,10 @@ const config: Config = {
         {
           title: 'More',
           items: [
+            {
+              label: 'convex.world',
+              href: 'https://convex.world',
+            },
             {
               label: 'Blog',
               to: '/blog',
