@@ -9,20 +9,21 @@ We care primarily about two different measurements of performance:
 
 Convex performance is based around a key idea: We implement consensus using a **CRDT** (conflict-free replicated data type) where the Peers achieve consensus by simply sharing a Belief data structure which is repeatedly merged with other Beliefs to form consensus. CRDTs are guaranteed to eventually converge to a consistent value under reasonable assumptions, which gives the desired properties of safety and liveness to the network. Peers, therefore, have a simple primary task: merge and propagate new beliefs to the network as quickly as possible.
 
-Here are some performance figured validated in the EU's Next Generation Internet (NGI) OntoChain Project. 
+Here are some early performance figured validated in the EU's Next Generation Internet (NGI) OntoChain Project. 
 ![CompareETH2](https://github.com/user-attachments/assets/0ed23d0b-85dc-4aa6-91f7-8fc6903bcf40)
 
+Since then, we have had a host of improvements allowing for much higher transaction throughput and lower transaction latency.
 
 ## Latency
 
-Latency can be seen as the total time to achieve some specified result. From the perspective of a Client, this would typically be the sum of the following six sequential stages (with approximate contributions to latency given as examples):
+Latency is the time to achieve some specified result (between the cause and the effect). From the perspective of a Convex client executing an end-to-end transaction, this would typically be due to six sequential stages (approximate contributions to latency given as examples):
 
 1. Digitally signing a transaction (1ms)
-2. Sending the signed transaction to a Peer (50ms)
+2. Sending the signed transaction to a Peer (30ms)
 3. Having the transaction included in a Block (5ms)
 4. Confirming the Block in consensus (200ms)
 5. Computing the result of the transaction / CVM state updates (10ms)
-6. Returning the result to the Client (50ms)
+6. Returning the result to the Client (30ms)
 
 In some cases, a client may not need to wait for all six stages, for example, a client that trusts the reliability and correctness of the Peer they connect to may be happy to assume that their transaction will be successfully processed after Stage 2.
 
