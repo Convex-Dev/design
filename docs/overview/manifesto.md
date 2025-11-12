@@ -209,7 +209,7 @@ The use of the Convex Coin as part of the protocol does not in any way prevent o
 
 Convex serves its community and ecosystem, enabling them to build technology and create value for society through many different applications. 
 
-We honour this with radical fairness: **100% of Convex Coins are initially issued for contribution**. No pre-mines for insiders. No VC dumps. Awards are scaled according to value contributed - whether open-source code, revenue-generating dApps, community mentorship, or purchasing coins from the foundation to accelerate the ecosystem.
+We honour this with radical fairness: **100% of Convex Coins are initially issued for contribution**. No "pre-mines" for insiders. No VC dumps. Awards are scaled according to value contributed - whether open-source code, widely adopted dApps, community mentorship, or purchasing coins from the foundation to accelerate the ecosystem.
 
 Once issued, Convex Coins circulate freely on a self-sovereign basis, available for all to use. 
 

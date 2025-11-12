@@ -8,7 +8,7 @@ tags: [convex, developer, lisp]
 
 This guide is for developers interested in learning the basics of Convex Lisp. We assume a general familiarity with programming concepts, but no prior experience in Lisp. We will take you through the basics of the language. Veteran Lisp hackers may wish to skip this section, though there are some unique features in Convex Lisp worth noting. 
 
-Newbies could load the Convex desktop https://docs.convex.world/docs/products/convex-desktop and enter sample code via the Client Terminal.
+It is easy to get started with Convex desktop https://docs.convex.world/docs/products/convex-desktop and enter sample code via the Client Terminal.
 ![image](https://github.com/user-attachments/assets/0877790e-ecb8-407c-989d-bf52a7db00fe)  
 
 Like this:
@@ -40,7 +40,7 @@ The classic Lisp expression is a list enclosed in parentheses `(...)` where the 
 => 5
 ```
 
-It's important to not that each element in the expression is itself an expression. It's expressions all the way down. So you can nest expressions arbitrarily to create more complex structures:
+Each element in the expression is itself an expression. It's expressions all the way down. So you can nest expressions arbitrarily to create more complex structures:
 
 ```
 (- (* 10 10) (* 5 5))
@@ -48,6 +48,8 @@ It's important to not that each element in the expression is itself an expressio
 ```
 
 There are many different types of expressions (many of which are introduced in this guide). But the syntax is of Lisp is ultimately just a tree of nested expressions. It is this simplicity and consistency which gives Lisp its power.
+
+**NOTE**: Lisp expressions use whitespace as separators. Whitespace includes spaces, tables, commas and carriage returns so you can format expressions as you like.
 
 ## Literals
 

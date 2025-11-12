@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 # Convex Coins
 
 ## About Convex Coins
