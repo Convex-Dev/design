@@ -205,27 +205,23 @@ The use of the Convex Coin as part of the protocol does not in any way prevent o
 
 ## Community Recognition
 
-**Convex Coins will be issued to people or organisations that contribute to developing Convex and the broader ecosystem**
+**Convex Coins will be issued based on ecosystem contribution**
 
-Convex serves its community and ecosystem, enabling them to build technology and create value for society through many different applications. We recognise and reward this by ensuring that **all** Convex Coins are initially issued based on contribution to the ecosystem. Rewarding contributors to the community is a fair and pragmatic: their combined contributions enable us deliver on this manifesto.
+Convex serves its community and ecosystem, enabling them to build technology and create value for society through many different applications. 
 
-Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex), community (e.g. answering new user questions) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used for the benefit of the ecosystem). We endeavour to ensure that grants of coins are fair and proportional to the value of contributions.
+We honour this with radical fairness: **100% of Convex Coins are initially issued for contribution**. No pre-mines for insiders. No VC dumps. Awards are scaled according to value contributed - whether open-source code, revenue-generating dApps, community mentorship, or purchasing coins from the foundation to accelerate the ecosystem.
 
-This works as an effective way of distributing Convex Coins so that the native currency can be widely circulated and used. 
-
-Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
+Once issued, Convex Coins circulate freely on a self-sovereign basis, available for all to use. 
 
 ## Good Governance
 
-**Convex is governed in the long-term interests of users as a public utility network** 
+**Convex is governed as a perpetual public utility for its users** 
 
-Good governance of the network is essential for several reasons: the network and protocol must be maintained and upgraded, and the interests of all ecosystem participants must be fairly protected.
+Networks thrive when governance serves the commons, not cabals. Convex commits to this from genesis: upgrades that endure, protections that scale, capabilities that serve.
 
-Governance must be sustainable, in the sense that adequate provision should be made to allow for continued investment in the core technology and infrastructure, supporting the common needs of ecosystem participants. To ensure this, the Convex Foundation will manage a long-term endowment fund, comprising both an initial allocation of Convex Coins and proceeds from the sale of Convex Coins to initial purchasers. 
+Initially, governance role will be stewarded via the Convex Foundation, a non-profit organisation registered in the United Kingdom. It will have responsibility for protocol-level upgrades to the network and initial issuance oc Convex coins.
 
-Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom.
-
-We will implement decentralised governance in the longer term. This will happen once we have sufficient confidence that it is practical, secure and fully serves the interest of Convex users and society as a whole.
+Decentralised governance is the destination: on-chain, credentialed, and attack-resistant. We transition only when battle-tested—ensuring every voice counts, every upgrade benefits users, and the network remains censorship-proof forever.
 
 Key governance roles include:
 - Authorising official updates to the peer network or protocol
