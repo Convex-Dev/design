@@ -2,22 +2,22 @@
 
 ## About Convex Coins
 
-Convex Coins are the native currency of Convex. It's a utility token that lets you use the full power of the Convex Network. It's also a scarce resource: the coin supply is limited by design.  
+Convex Coins (CVM) are the native utility token of Convex. They are used to transact on the Convex Network.  
 
-Convex Coins can be subdivided into coppers. 1 Convex Coin = 1,000,000,000 coppers (one billion). This means that you can use small fractions of a Convex Coins: useful for precise calculations of micropayments etc.
+Convex Coins can be subdivided into one billion coppers. `1 Convex Coin = 1,000,000,000 coppers`. This means that you can use small fractions of a Convex Coins, which may be useful for precise calculations or micropayments.
 
 
 ## Receiving Coins
 
-Receiving coins is generally a good thing. You might receive Convex Coins for multiple reasons:
-- You purchased some from the release curve
-- You were awarded coins from the Convex Foundation as a contributor
-- Someone is making a payment to you, e.g. for goods and services that you provide
-- You are using an app that makes use of Convex Coins
+You might receive Convex Coins for multiple reasons:
+- Purchasing from the release curve
+- Being awarded coins as a Convex contributor
+- Receiving a payment, e.g. for goods and services that you provide
+- Using a dApp that makes use of Convex Coins
 
 So how do you actually receive them? They are a digital asset, after all, and you can't put them in your pocket.
 
-To receive coins you need a Convex account. Convex accounts are recorded as part of the Convex global state, which is updated, verified and protected by peers of the decentralised network. Accounts hold a balance of Convex Coins and are designated with an address which looks like:
+To receive coins you need a **Convex account**. Convex accounts are recorded as part of the Convex global state, which is updated, verified and protected by peers of the decentralised network. Accounts hold a balance of Convex Coins and are designated with an address which looks like:
 
 ```
 #23798
@@ -27,9 +27,9 @@ If you have an account you use already, that's great: you can just provide the a
 
 ### Getting an Account
 
-If you don't have an account, then any other user of the network can create one for you. If you are new to Convex, the person or organisation sending you coins will normally do this for you.
+Any user of the network can create an account for you. If you are new to Convex, the person or organisation sending you coins will normally do this for you. If you are a developer looking to build on Convex, hop on the Discord and a friendly person will probably give you one :-)
 
-However, it is very important to secure the new account so that only you can access it. Accounts and the coins they contain are protected by strong cryptography, so to do this you will need to provide an Ed25519 public key. This is usually shown as a 32-byte hex string that looks like:
+It is important to secure the new account so that only you can access it. Accounts and the coins they contain are protected by strong cryptography, so to do this you will need to provide an **Ed25519 public key**. This is usually shown as a 32-byte hex string that looks like:
 
 ```
 0xe3B4746e32f32Eb7B1c6Af045dd7238ee5eea71B33c8b5CD91a22BcDAc5b0c54
@@ -58,12 +58,12 @@ Passphrase: hello1234567890ZZ
 
 Note: The BIP39 path is always `m/44/864/0/0/0` by default. You don't need to remember this if you use the default, but if you change this then make sure you back this up too!
 
-**DOUBLE CHECK**: Make sure you can independently recreate your key pair from the mnemonic and passphrase you have written down. If you can't then you have probably made a mistake and it would be safer to create a new one! 
+**DOUBLE CHECK**: Make sure you can independently recreate your key pair from the mnemonic and passphrase you have written down.
 
 ### Creating extra accounts
 
 Once you have an account, you might want more than one. This can be useful for multiple reasons:
-- Security: if you lose they key to one account, the others are safe
+- Security: if you lose the key to one account, the others are safe
 - Separating accounts for different purposes, e.g. developer work vs. savings
 - Having an account that is shared with others with a limited balance
 - Privacy: You don't want all your transactions going through a single account 

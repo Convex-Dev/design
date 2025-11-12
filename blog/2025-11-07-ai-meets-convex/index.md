@@ -1,6 +1,6 @@
 ---
 slug: ai-meets-convex
-title: When AI Meets the Lattice – A New Era of Autonomous Economic Agents
+title: AI Meets the Lattice – A new era of autonomous economic agents
 authors: [manus]
 tags: [convex, ai, mcp, digital-assets, automation]
 ---

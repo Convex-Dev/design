@@ -7,7 +7,7 @@ tags: [convex, developer, lisp]
 
 Convex Lisp is a powerful modern Lisp for decentralised systems.
 
-It is designed from the ground up to support immutable lattice data structures and functional programming for robust but flexible decentralised programs.
+It supports immutable lattice data structures and functional programming for robust but flexible decentralised programs.
 
 You don't need to know Convex Lisp to use Convex, but it's a powerful tool for developers wishing to build dApps and digital assets. Most of the core Convex on-chain tools are written in and designed to be used from Convex Lisp.
 
@@ -28,6 +28,6 @@ Convex Lisp was heavily inspired by [Clojure](https://clojure.org/), from which 
 
 ## Interesting technical notes
 
-- Convex Lisp is a **Lisp-1** (i.e. keeps function and data values in the same namespace).This is simpler than a Lisp-2 and seems more appropriate for a functional programming language, where functions are regularly treated as first class values.
+- Convex Lisp is a **Lisp-1** (i.e. keeps function and data values in the same namespace). This is simpler than a Lisp-2 and seems more appropriate for a functional programming language, where functions are regularly treated as first class values.
 - Convex Lisp is designed for **orthogonal persistence**. Developers don't need to care where data or code is stored: it is loaded and cached on demand. This powerful capability means that the CVM can operate code and data data structures much larger than system RAM without imposing any burden on developers.
 - Convex Lisp data structures (and therefore code) are all represented as **Merkle trees** using strong cryptographic hashes. This has the interesting property of making all code and data **content-addressable** and cryptographically **verifiable**. As well as making Convex Lisp ideally suited for running on the lattice technology used by Convex, this opens interesting possibility for new kinds of systems based on immutable and verifiable distributed code bases.
