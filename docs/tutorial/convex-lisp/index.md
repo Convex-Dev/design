@@ -3,7 +3,7 @@ slug: convex-lisp
 title: Convex Lisp
 authors: [mikera]
 tags: [convex, developer, lisp]
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 Convex Lisp is a powerful modern Lisp for decentralised systems.

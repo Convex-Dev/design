@@ -4,13 +4,9 @@ title: Evolution
 sidebar_position: 2
 ---
 
-Convex is designed for real-time dApps. Contracts can evolve by streaming state changes and responding to events as they happen, enabling collaborative experiences without central servers.
+Convex is designed for real-time dApps and self-sovereign economic systems.
 
-## Why Evolution Matters
-
-- **User Experience**: instant feedback keeps interfaces responsive and trustworthy.
-- **Automation**: off-chain services can react the moment an actor emits new data.
-- **Observability**: teams can watch production behaviour and intervene quickly.
+This is a rapidly evolving space, and it is likely that actors will need to be upgraded to access new capabilities. While in an ideal world, you might want actors be be completely immutable in terms of their behaviour, in practice this is often not desirable and you want to upgrade and evolve them.
 
 
 ## Upgradable Actors
@@ -100,4 +96,40 @@ Compromise of the controller account is the biggest risk, as this account may be
 ### Bundle the upgrade code with checks
 
 By adding checks to the upgrade code that fail if an assumption is not met, you can ensure an automatic rollback of any failed upgrade
+
+## Immutable actors
+
+If you are sure your actor logic will never change, you can make it immutable. This is done by:
+
+- Setting `*key*` to `nil` so that no external transactions will be accepted
+- Setting `*controller*` to `nil` so that no external transactions will be accepted
+- Ensuring there are no callable functions that can make changes to any code (e.g. using `eval` or `defn`) 
+
+The above are true by default when you call `deploy`, so the following will make an immutable actor:
+
+```clojure
+(deploy 
+  ;; Accept any offered coins
+  '(defn ^:callable receive-coin [_ _ _] (accept *offer*))
+
+  ;; Let anyone collect coins (a public donation, if you like....)
+  '(defn ^:callable collect-coins [] (transfer *caller* *balance*)))
+```
+
+If you have an existing actor that you want to make immutable, you will need to remove any upgradability. This can be done with something like the following (if you are the controller of the actor):
+
+```clojure
+(eval-as ACTOR
+  '(do 
+     ;; Safety check to make sure we are not accidentally making ourselves immutable!
+     ;; - Must execute in a called account (in this case via eval-as)
+     ;; - Must not run in the account of the *caller* itself
+     (assert *caller* (not (= *caller* *address*)))  
+     
+     (set-controller nil)     ;; Remove controller
+     (set-key nil)            ;; Remove any external account key
+     (undef upgrade-function) ;; Remove any callable function that allows upgrades
+     ))
+```
+
 

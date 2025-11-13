@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Managing Convex Coins
 
 Convex coins are the native utility token on Convex. Convex coins can be used in several ways:

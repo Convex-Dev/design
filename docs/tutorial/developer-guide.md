@@ -9,5 +9,5 @@ To learn about the basic currency and accounts on Convex start with [Convex Coin
 
 To write code for the CVM, check out the guide for [Convex Lisp](/docs/tutorial/convex-lisp/convex-lisp)
 
-If you are interested in developing smart contracts, autonomous actors and economic systems on Convex, check out [Actors](/docs/tutorial/contracts/convex-lisp)
+If you are interested in developing smart contracts, autonomous actors and economic systems on Convex, check out [Actors](/docs/tutorial/actors)
 
