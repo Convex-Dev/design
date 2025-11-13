@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Recipes
 
 This section contains a bunch of ready-to-cook examples.

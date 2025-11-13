@@ -6,67 +6,63 @@ tags: [convex, community, philosophy]
 
 # The Convex Manifesto
 
-Building Open, Decentralized Economies for the 21st Century
+Building Open, Decentralised Economies for the 21st Century
 
-For too long, our societies have been shackled by inefficient and inequitable economic systems. Centralised institutions wield excessive power, exploiting monopolistic control over much of our economic activity. Transaction costs are exorbitant, hindering progress and imposing unnecessary burdens on individuals. Countless people are unfairly excluded from financial and economic participation. Our current economic models are inflicting irreversible damage on the natural world we all share.
+For too long, centralised gatekeepers have dominated our economies - extracting rents, inflating costs, and excluding billions from meaningful participation. These outdated systems stifle innovation, widen inequality, and accelerate environmental collapse.
 
-Artificial intelligence is rapidly transforming the digital economy, and indeed, the entire world. At this pivotal moment in human history, it is imperative that control over data, computational power, and the economy as a whole is returned to the hands of individuals.
+Artificial intelligence is now reshaping every aspect of the digital world at unprecedented speed. In this defining era, we must reclaim sovereignty over data, compute, and value itself.
 
-Convex is a public, decentralised system for real-time peer-to-peer exchange of data and value, designed as a foundational layer for the digital economy in the age of AI. As such, it provides the bedrock for the kind of economics we envision – fair, inclusive, efficient and sustainable.
+Convex is the public, decentralized foundation for real-time, peer-to-peer exchange of data and value. Engineered for the AI age, it delivers the fair, inclusive, efficient, and sustainable economic infrastructure the world demands.
 
-This manifesto outlines our core beliefs and principles.
+This manifesto articulates the principles powering Convex and the open economy it enables. Join us in building it.
 
 ## Open Economic Systems
 
 **Convex facilitates open economic systems: interactions where participants are free to create mutual value for each other**
 
-Voluntary value exchange is a "win-win" where participants are each better off than they were before the exchange. This is a net good that must be encouraged: the alternatives are coercion and/or paternalistic control.
+Voluntary exchange is the ultimate win-win, leaving every participant better off without coercion or gatekeepers. This engine of human prosperity must be unleashed at scale, not stifled by monopolistic control.
 
-We define value broadly: it may be represented through currency, information, ownership of some asset, access to a service, membership of a society etc. As such, Convex must be sufficiently extensible that it can represent any kind of value exchange including potential future innovations.
+Value is boundless: currency, data, assets, services, access, reputation, or yet-unimagined forms. Convex is engineered as an extensible foundation, ready to represent *any* exchange—today and tomorrow - fuelling endless innovation in the AI-driven economy.
 
 ## Self Sovereignty
 
 **Participants are self-sovereign agents: free to transact on their own behalf**
 
-The ability to participate in the digital economy is a fundamental right. Every individual has the right to choose what interactions to participate in (or not). Unfortunately, this principle is under threat as powerful institutions and centralised systems gain the power to exclude, censor or extract monopolistic rents. We must give this sovereignty back to individuals.
+Participation in the digital economy is a human right. No one should be censored, excluded, or forced to pay tribute to gatekeepers. Convex returns control over data, assets, and choices to users.
 
-While we ensure the possibility for participants to act in a self-sovereign manner, they may choose to delegate or appoint a representative to act for them, for example a provider of financial services. This is acceptable as long as it is a free choice by participants, and they are not forced into such arrangements.
+Delegation is always optional: users may appoint agents, wallets, or services to act on their behalf, but only by explicit, revocable consent - never compulsion.
 
-It is important to note that self-sovereignty does not negate the obligation for participants to act within the law and fulfil societal obligations such as paying appropriate taxes or avoiding harm to other parties. Our vision of self-sovereignty is therefore consistent with the *Golden Rule*.
+Self-sovereignty coexists with responsibility. Users remain bound by law, taxes, and the *Golden Rule*: treat others as you wish to be treated. Convex enforces no harm, only freedom within fair boundaries.
 
 ## Sustainability
 
-**Convex provides efficient and sustainable systems for all humanity** 
+**Convex delivers efficient, sustainable, zero-waste infrastructure**
 
-The system of value exchange must be ecologically responsible, supporting economic activity without unnecessary waste or environmental costs. It is unacceptable that many of our current systems of value exchange produce massive waste, with the costs primarily borne by innocent third parties and future generations.
+Economic systems must fuel human progress without plundering the Earth. Today’s centralized giants devour 5–10% of global GDP in fees and friction, while offloading pollution, e-waste, and climate costs onto the innocent and unborn. This is theft from future generations.
 
-Centralised systems are a poor solution: large organisations and the complex services that support them represent a very high ecological footprint. Perhaps 5-10% of the entire global economy is dedicated to financial services and transaction costs related to value exchange. We must do better.
+Convex rejects extravagance. We ban energy-hungry Proof of Work and embrace *Convergent Proof of Stake (CPoS)* - a consensus engine that outperforms PoW in speed and security using a fraction of the power. Every transaction is lean, auditable, and ecologically defensible.
 
-We will only use technology or services that are ecologically justifiable. This rules out protocols that waste computational resources such as Proof of Work (PoW) as an acceptable consensus mechanism.  
+Decentralisation means we can’t police every app built atop Convex, but we architect the foundation for sustainability: minimal overhead, maximal reuse, and incentives that reward green behaviour. By slashing systemic waste, Convex paves the way for an economy that regenerates rather than extracts—proof that abundance and stewardship can coexist.
 
-Fortunately, Convergent Proof of Stake (CPoS) enables us to offer better performance and security than PoW without wasting energy or other computational resources. CPoS also maintains the same (to a lesser degree) computational advantage over PoS and other consensus networks whose designs neglect crucial sustainability considerations. For the foreseeable future, we will use CPoS as an efficient consensus mechanism.
-
-Because Convex is an open, decentralised system, it is not possible for us to directly enforce that business conducted on top of Convex is fully sustainable. However, we hope for a world where all economic activity is conducted on a sustainable basis, and Convex will make important contributions towards that goal.
 
 ## Fair Access
 
 **Everyone deserves equal, fair and direct access to the mechanisms of value exchange, enabling universal participation in the digital economy**
 
-For too long, economic participation to many parts of the economy has been severely restricted, with high costs and barriers to entry preventing fair access to financial capabilities such as banking, financial markets and secure ownership of assets.
+FBillions remain locked out: unbanked, overcharged, or barred from markets by geography, identity, or greed. Traditional finance hoards opportunity behind walls of paperwork, KYC, and monopolistic rents.
 
-The problem is exacerbated when we look globally: many people throughout the world have no significant access to financial technology and capabilities.
-
-Access to Convex should therefore be possible for everyone on a self-sovereign, first-class basis without being required to use privileged gatekeepers or pay middlemen. This requires that the Convex network is open and censorship resistant.
+Convex tears down those walls. Anyone with an internet connection joins on equal footing: self-sovereign, first-class, and permissionless. No middlemen. No censorship. The network stays open, resilient, and globally reachable, turning exclusion into universal inclusion overnight.
 
 ## Real-time Transactions
 
 **Users must be provided with real-time, interactive, atomic transactions**
 
-Real-time performance is of particular importance for the adoption of many user-focused applications of decentralised technology, e.g. mobile payments, gaming and metaverse economies.
+Users demand seamless experiences: instant mobile payments, fluid gaming economies, immersive metaverses. Clunky blockchains with seconds/minutes delay kill adoption and usability.
 
-While perfectly instantaneous transactions are impossible in a global decentralised network (due to speed of light, network propagation etc.), low latency is still a critical goal. From a practical perspective, latency is the difference in time between a user taking an action (e.g. pressing a button to initiate a transaction) and seeing the result (e.g. receiving a confirmed transaction result).
+Physics sets limits, but Convex is limited only by the speed of light. **CPoS** is leaderless, slashing latency to milliseconds. Zero block delay. No mempool. No front-running.
 
-Atomicity of transactions is also critical - without this, users are exposed to undue risks that may be created if part of a transaction fails to complete or requires separate settlement later. Lack of atomic transactions also exposes users to significant security risks - timing attacks, front running etc.
+Atomicity is ironclad: every transaction executes fully or rolls back completely. Turing-complete logic with automatic failure protection eliminates the risk of partial failures.
+
 
 ## The Global State
 
@@ -209,31 +205,27 @@ The use of the Convex Coin as part of the protocol does not in any way prevent o
 
 ## Community Recognition
 
-**Convex Coins will be issued to people or organisations that contribute to developing Convex and the broader ecosystem**
+**Convex Coins will be issued based on ecosystem contribution**
 
-Convex serves its community and ecosystem, enabling them to build technology and create value for society through many different applications. We recognise and reward this by ensuring that **all** Convex Coins are initially issued based on contribution to the ecosystem. Rewarding contributors to the community is a fair and pragmatic: their combined contributions enable us deliver on this manifesto.
+Convex serves its community and ecosystem, enabling them to build technology and create value for society through many different applications. 
 
-Contributions may be technology (e.g. writing code, developer advocacy), business (e.g. delivering a commercial use case on Convex), community (e.g. answering new user questions) or financial (i.e. being an initial purchaser of coins, where the funds raised will be used for the benefit of the ecosystem). We endeavour to ensure that grants of coins are fair and proportional to the value of contributions.
+We honour this with radical fairness: **100% of Convex Coins are initially issued for contribution**. No "pre-mines" for insiders. No VC dumps. Awards are scaled according to value contributed - whether open-source code, widely adopted dApps, community mentorship, or purchasing coins from the foundation to accelerate the ecosystem.
 
-This works as an effective way of distributing Convex Coins so that the native currency can be widely circulated and used. 
-
-Once Convex Coins are initially issued, they are the property of the holder and secured by the holder's cryptographic keys. The holder may then utilise them as they choose, which may include paying for network services or transferring them to others as part of a value exchange.
+Once issued, Convex Coins circulate freely on a self-sovereign basis, available for all to use. 
 
 ## Good Governance
 
-**Convex is governed in the long-term interests of users as a public utility network** 
+**Convex is governed as a perpetual public utility for its users** 
 
-Good governance of the network is essential for several reasons: the network and protocol must be maintained and upgraded, and the interests of all ecosystem participants must be fairly protected.
+Networks thrive when governance serves the commons, not cabals. Convex commits to this from genesis: upgrades that endure, protections that scale, capabilities that serve.
 
-Governance must be sustainable, in the sense that adequate provision should be made to allow for continued investment in the core technology and infrastructure, supporting the common needs of ecosystem participants. To ensure this, the Convex Foundation will manage a long-term endowment fund, comprising both an initial allocation of Convex Coins and proceeds from the sale of Convex Coins to initial purchasers. 
+Initially, governance role will be stewarded via the Convex Foundation, a non-profit organisation registered in the United Kingdom. It will have responsibility for protocol-level upgrades to the network and initial issuance oc Convex coins.
 
-Initially, the governance role will be performed by the Convex Foundation, a non-profit organisation registered in the United Kingdom.
-
-In the longer term, we will implement decentralised governance. This will happen once we have sufficient confidence that it is practical to implement, secure against plausible threats and fully serves the interest of Convex users and society as a whole.
+Decentralised governance is the destination: on-chain, credentialed, and attack-resistant. We transition only when battle-tested—ensuring every voice counts, every upgrade benefits users, and the network remains censorship-proof forever.
 
 Key governance roles include:
 - Authorising official updates to the peer network or protocol
-- Preventing forks in the global state: the purpose of the global state is to act as a reliable single source of truth. As a public utility that records important economic information on a decentralised basis, the network must avoid forks since these present a significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
+- Safeguarding the global state: the purpose of the global state is to act as a reliable single source of truth. As a public utility that records important economic information on a decentralised basis, the network must avoid forks since these present a significant risk of confusion and loss to participants in the ecosystem. Forks are not desirable in a system designed to act as a single source of truth for asset ownership, contract state and account balances etc. 
 - Ensuring that issuance of Convex Coins is fair, secure and consistent with out principles of rewarding ecosystem contribution
 
 

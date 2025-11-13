@@ -7,7 +7,7 @@ The Convex CLI (Command Line Interface) is a powerful tool for interacting with 
 ## Installation
 
 The Convex CLI requires:
-- A recent version of Java (21+, Java 22 recommended)
+- A recent version of Java (21+, Java 25 recommended)
 - A copy of the `convex.jar` executable jar file
 
 Java is available from multiple providers, we recommend:
@@ -24,7 +24,7 @@ To run the CLI, you simply need to run the following:
 java -jar convex.jar <arguments>
 ```
 
-It is usually more convenient to have a script, alias or batch file which executes the Java command. This means that you can simply type `convex ....` from any directory to access the CLI. The remainder of this document assumes you are using such a script.
+It is often convenient to have a script, alias or batch file which executes the Java command to run the CLI. This means that you can simply type `convex ....` from any directory to access the CLI. The remainder of this document assumes you are using such a script.
 
 ### Windows
 

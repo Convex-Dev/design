@@ -14,7 +14,7 @@ Convex Desktop is a GUI tool for interacting with Convex. Designed for developer
 ## Installation
 
 Convex Desktop requires:
-- A recent version of Java (21+, Java 22 recommended)
+- A recent version of Java (21+, Java 25 recommended)
 - A GUI based operating system (e.g. Windows, Linux or MacOS)
 - A copy of the `convex.jar` executable jar file
 
@@ -26,7 +26,7 @@ Snapshots of the `convex.jar` file are currently available here: [Convex Snapsho
 
 ## Running Convex Desktop
 
-If Java is correctly configured, you should be able to run Convex Desktop simply by double-clicking on the `convex.jar` file which will run Convex Desktop as an executable. On some systems, you may need to grant permissions to run a downloaded executable file.
+If Java is configured to run by default for `.jar` files in your OS, you should be able to run Convex Desktop simply by double-clicking on the `convex.jar` file which will run Convex Desktop as an executable. On some systems, you may need to grant permissions to run a downloaded executable file.
 
 Alternatively, to run Convex Desktop, you can run the following command from the command prompt, script or GUI shortcut:
 
@@ -35,12 +35,6 @@ java -jar convex.jar desktop
 ```
 
 ## Introduction for non-crypto Developers
-
-### What is Convex?
-
-- A platform for building decentralised applications (dApps)  
-- Provides sub-second performance at 10k+ transactions per second (TPS) on a public or private network  
-- Immutable data stores, securely encrypted
 
 ### Convex Desktop
 
@@ -53,8 +47,6 @@ java -jar convex.jar desktop
 
 ### Getting Started
 
-- Compatible with Windows, Linux, and MacOS
-- Requires Java 21 or higher
 - Download the latest convex.jar from Convex Snapshots
 - Learn Convex Lisp for more advanced functions
 
@@ -69,12 +61,13 @@ java -jar convex.jar desktop
 - Click Generate – 12 words appear in seed Phrase
 - Enter Passphrase (lower case)
 - Record both somewhere safe. DON’T LOSE
-- Ignore Key Derivation
-- Copy Private Ed25519 seed somewhere safe. DON’T LOSE. DON’T SHARE. This is also known as Private Key
+- Key Derivation defaults to `m/44/864/0/0/0` (the SLIP-10 standard for Convex). You can change this, but if you do, make sure that you SAFELY record this too. 
+- Copy Private Ed25519 seed somewhere safe. DON’T SHARE. This is also known as Private Key
 - Copy Ed25519 Public Key. Can be shared
-- Remember identicon.  It will be useful later
+- Check out your identicon.  It will be useful later to recognise your key.
 - Normalise mnemonic sets lower case
 - Click Add to keyring
+
 ## Step 1b: Hacker Tools Load Keystore
 <img width="460" alt="image" src="https://github.com/user-attachments/assets/213b510c-de97-45db-a5cf-fedfabcb310f" />
 

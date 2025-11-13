@@ -9,17 +9,17 @@ tags: [convex, community, tutorial]
 An Account is a record of identification and ownership within Convex. Accounts may be either:
 
 * **User Accounts**: Accounts that are controlled by external users, where access is controlled by digital signatures on transactions.
-* **Actor Accounts**: Accounts that are managed by an autonomous Actor, where behavior is 100% deterministic according the associated CVM code.
+* **Actor Accounts**: Accounts that are managed by an autonomous actor, where behaviour is 100% deterministic according to the associated CVM code for the actor.
 
-## Account Key
+## Account Key (Public Key)
 
-An Account Key is a 32-byte Value used as a public key to control access to an Account.
+An account key is a 32-byte value (blob) used as a public key to control access to an account.
 
 It is generally shown as a hexadecimal string, looking something like:
 
 `0x89b5142678bfef7a2245af5ae5b9ab1e10c282b375fa297c5aaeccc48ac97cac`
 
-Technically, the Account Key of a User Account is an `Ed25519` Public Key. You must be in possession of the corresponding private key in order to digitally sign transactions for that Account. Actor Accounts have Addresses that are generated via SHA3-256 hash functions (and therefore do not have a corresponding private key, and no transactions can be submitted for them).
+Technically, the account key of a user account is an `Ed25519` public key. You must be in possession of the corresponding private key in order to digitally sign transactions for that Account. Actor accounts have a `nil` account key (therefore they do not have a corresponding private key, and no transactions can be submitted for them).
 
 ## Actor
 
@@ -29,30 +29,34 @@ An Actor is defined with exactly one Account, but may send messages to and contr
 
 ## Address
 
-An Address is a numerical value used to refer to Accounts. An Address is valid if it refers to an existing Account (User or Actor) in the CVM State.
+An address is a numerical value used to refer to accounts. An address is valid if it refers to an existing Account (User or Actor) in the CVM state.
 
-An Address is conventionally displayed as a number with with a `#` prefix e.g.:
+Addresses are conventionally displayed as a number with with a `#` prefix e.g.:
 
 `#1245`
 
-Addresses are issued sequentially for new Accounts by the CVM.
+Addresses are issued sequentially for new accounts by the CVM.
 
 
 ## Belief
 
-A Belief is a specialised Value containing a Peer's combined view of Consensus.
+A belief is a specialised value containing a Peer's combined view of consensus.
 
-The Belief data structure most notably contains Orderings of Blocks either confirmed in Consensus or proposed for Consensus by different Peers.
+The belief data structure most notably contains orderings of blocks either confirmed in consensus or proposed for consensus by different peers.
 
 ## Belief Merge Function
 
-A specialised function that can be used to merge Beliefs from different Peers.
+A specialised function that can be used to merge Beliefs from different peers.
 
-Each Peer runs a Belief Merge function as part of the Consensus Algorithm.
+Each Peer runs a belief merge function as part of the CPoS algorithm.
 
 ## Blob
 
-A Value representing an arbitrary sequence of bytes.
+A value representing an arbitrary sequence of bytes. It is typically displayed in hex with a leading `0x`
+
+```
+0x0123456789abcdef
+```
 
 ## Block
 
@@ -64,9 +68,17 @@ A Block must be digitally signed by the proposing Peer to be valid for inclusion
 
 ## Blockchain
 
-A system that maintains an appendable sequence of Blocks where each block contains a cryptographic hash of the previous block (and hence its integrity can be validated recursively all the way back to the original block).
+A system that maintains an append-only sequence of blocks where each block contains a cryptographic hash of the previous block (and hence its integrity can be validated recursively all the way back to the original block).
 
-Technically, Convex is not a blockchain because Blocks are not required to contain a hash of any previous Block. This gives Convex a technical advantage because Blocks can therefore be handled in parallel and re-ordered by the higher level Consensus Algorithm after creation.
+Technically, Convex is *not* a blockchain because blocks are not required to contain a hash of any previous block. This gives Convex a technical advantage because blocks can therefore be handled in parallel and re-ordered by the consensus algorithm after creation.
+
+## Cell
+
+A cell is a self-contained unit of a larger CVM value. Cells are linked immutably as a Merkle tree and handled transparently by the system, allowing developers to work with massive datasets without worrying about fragmentation. Scale your ideas infinitely on Convex. For more details see [CAD3 Encoding](../cad/encoding)
+
+## Coin (Convex Coin)
+
+The native currency of the Convex Network, denoted as CVM. Convex Coins are used to pay for transaction fees, computation, and economic incentives within the ecosystem. Hold CVM to participate in governance, stake for yields, or power your dApps— the fuel for a booming decentralised economy.
 
 ## Consensus Algorithm
 
@@ -93,6 +105,10 @@ Convex Lisp prioritises features that are well suited to the development of dece
 * Emphasis on functional programming to reduce error and improve logical clarity
 * Use of immutable, persistent data structures
 * Actor-based model enabling trusted autonomous execution of code for Smart Contracts
+
+## CPoS (Convergent Proof of Stake)
+
+CPoS is Convex's breakthrough consensus mechanism that guarantees convergence on a single, fork-free global state using belief merge functions and stake-weighted peer coordination. Unlike traditional PoS, CPoS enables parallel block processing and sub-second finality—perfect for high-throughput dApps that demand speed and reliability.
 
 ## CRDT
 
@@ -153,6 +169,10 @@ Etch is the underlying Convex storage subsystem - "A database for information th
 
 Etch implements Converge Immutable Storage for Data Objects.
 
+## Fee
+
+The cost paid in Convex Coins to execute a transaction on the network. Fees compensate peers for computation and ensure spam resistance. Convex's efficient design keeps fees ultra-low, making micro-transactions viable and attracting mass adoption.
+
 ## Fork
 
 A Fork in a consensus system is, in general, where two or more different groups diverge in agreement on the value of shared Global State.
@@ -204,9 +224,9 @@ In normal use of the Convex system, the Ordering maintained by a Peer will be co
 
 ## Peer
 
-A Peer is a system that participates in the operation of the decentralised Convex Network, and in particular helps to achieve Consnesus.
+A Peer is a system that participates in the operation of the decentralised Convex Network, and in particular helps to achieve consensus.
 
-Peers are required to use a private key to sign certain messages as they participate in the Consensus Protocol. Because of this, a Peer's Stake may be at risk if the system is not adequately secured. Peer operators therefore have a strong incentive to maintain good security for their systems.
+Peers are required to use a private key to sign certain messages as they participate in the consensus protocol. Because of this, a Peer's stake may be at risk if the system is not adequately secured. Peer operators therefore have a strong incentive to maintain good security for their systems.
 
 ## Private Key
 
@@ -220,11 +240,15 @@ A cryptographic key that can be used to validate transactions.
 
 Public Keys may be safely shared with others, as they do not allow digital signatures to be created without the corresponding private key. User Accounts in Convex use an Ed25519 Public Key as the Account Keys, which enables any Peer to validate that a transaction for a given user has been signed with the correct Private Key.
 
+## Query
+
+A read-only operation submitted to the CVM that executes code against the current State without modifying it. Queries are free (no fees) and instant, ideal for dApp frontends. Query the state with confidence: real-time insights to delight users and drive engagement.
+
 ## Schedule
 
-The Schedule is a feature in the CVM enabling CVM code to be scheduled for future execution. Once included in the Schedule, such code is *unstoppable* - it's execution is guaranteed by the protocol.
+The schedule is a feature in the CVM enabling CVM code to be scheduled for future execution. Once included in the schedule, such code is *unstoppable* - it's execution is guaranteed by the protocol.
 
-Scheduled code may be used to implement actors that take periodic actions, smart contracts that have defined behavior after a certain period of time etc.
+Scheduled code may be used to implement actors that take periodic actions, smart contracts that have defined behaviour after a certain period of time etc.
 
 ## Smart Contract
 
@@ -234,15 +258,15 @@ Typically a Smart Contract would be implemented using an Actor, but it is possib
 
 ## Stake
 
-A Stake is an asset with economic value put at risk by some entity in order to prove commitment to its participation in some economic transaction and / or good future behavior.
+A stake is an asset with economic value put at risk by some entity in order to prove commitment to its participation in some economic transaction and / or good future behaviour.
 
-Convex uses a mechanism called Delegated Proof of Stake to admit Peers for participation in the Consensus algorithm. Other forms of stakes may be used in Smart Contracts.
+Convex uses a staking mechanism to admit peers for participation in the CPoS algorithm. Other forms of stakes may be used in smart contracts.
 
 ## Stake Weighted Voting
 
-Convex uses Stakes to determine the voting weight of each Peer in the Consensus Algorithm.
+Convex uses stakes to determine the voting weight of each Peer in the Consensus Algorithm.
 
-Benefits for a Peer having a higher effective voting stake are:
+Benefits for a peer having a higher effective voting stake are:
 
 * Slightly more influence over which Blocks get ordered first, if two blocks are simultaneously submitted for consensus
 * They may also benefit from slightly improved overall latency for Blocks that they submit.
@@ -274,17 +298,17 @@ where:
 
 ## Transaction
 
-A Transaction is an operation that can be submitted by Clients for execution on the Convex Network. A Transaction must be linked to a User Account, and must be digitally signed by the Private Key corresponding to the Account Key in order to be valid.
+A transaction is an operation that can be submitted by clients for execution on the Convex Network. A transaction must be linked to a user account, and must be digitally signed by the private key corresponding to the account key in order to be valid.
 
-Transactions must be digitally signed by the owner of the Account in order to be valid.
+Transactions must be digitally signed by the owner of the account in order to be valid.
 
 ## Value
 
-A Value is a first-class, immutable piece of information managed by Convex. A Value can be simple (e.g. the number `1`) or composite (e.g., a vector containing other values like `[1 2 [3 4] :foo]`)
+A value is a first-class, immutable piece of information managed by Convex. A value can be simple (e.g. the number `1`) or composite (e.g., a vector containing other values like `[1 2 [3 4] :foo]`)
 
 Value types include:
 
-* Primitive values (numbers, strings, symbols, binary Blobs)
+* Primitive values (numbers, strings, symbols, binary blobs)
 * Data Structures representing composites of many values (including other data structure)
 * Executable CVM code ("Ops")
 * Some special values used by the CVM, e.g. Blocks
@@ -293,8 +317,8 @@ Values may be processed by code within the CVM, and are the fundamental building
 
 ## Wallet
 
-A Wallet is an application or device that stores keys (especially private keys) for Convex Accounts, enabling access and control over digital assets held by those accounts.
+A Wallet is an application or device that stores keys (especially private keys) for Convex accounts, enabling access and control over digital assets held by those accounts.
 
-Wallet functionality may be provided by a Dapp, or embedded in any system that communicates with the Convex Network. It may also be a specialised hardware device (Hardware Wallet).
+Wallet functionality may be provided by a dApp, or embedded in any system that communicates with the Convex Network. It may also be a specialised hardware device (hardware wallet).
 
 Wallet security is paramount: if access to the private keys in a wallet is compromised, any on-chain digital assets (coins, tokens, smart contract rights etc.) may be at risk.

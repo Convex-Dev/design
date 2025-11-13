@@ -6,7 +6,7 @@ tags: [convex, ecosystem, applications]
 
 Convex is a general purpose, programmable decentralised network with global state. As such, there is no inherent limit on the nature of applications that can be built. Here are some of the things that Convex can be used for, and are being actively developed within the Convex community:
 
-## Tokensiation
+## Tokenisation
 
 Convex offers a uniquely powerful system for the development of tokenised assets and applications. Tokens in Convex usually support the [CAD029](cad/029_fungible/README.md) token standard, which offers multiple advantages over the common ERC20 standard.
 
@@ -45,9 +45,9 @@ Convex provides the ideal substrate for the convergence of real and virtual worl
 
 Our metaverse innovation includes the world's [first fully on-chain 3D game world](https://www.youtube.com/watch?v=op2NccyMEBE).
 
-## Payments and Retail CBDCs
+## Payments and Digital Currencies
 
-Convex supports an [advanced model of digital currencies](https://www.youtube.com/live/XHxEnqBwgN8?feature=shared&t=95) with customisable governance, suitable for CBDCs and other currencies with trusted issuers. Our [open source mobile wallet](https://github.com/Convex-Dev/convexity) (Convexity) makes these easily accessible and convenient for users, and can be customised to create branded experiences with additional functionality. [Here's a demo](https://www.youtube.com/watch?v=2a40mRkcuag).
+Convex supports an [advanced model of digital currencies](https://www.youtube.com/live/XHxEnqBwgN8?feature=shared&t=95) with customisable governance, suitable for everything from stablecoins and flatcoins to branded community currencies. Our [open source mobile wallet](https://github.com/Convex-Dev/convexity) (Convexity) makes these easily accessible and convenient for users, and can be customised to create branded experiences with additional functionality. [Here's a demo](https://www.youtube.com/watch?v=2a40mRkcuag).
 
 With incredible performance, low costs and low latency, Convex digital currencies are ideal for consumer use cases such as digital payments, international transfers and retail purchases.
 
