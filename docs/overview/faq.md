@@ -143,4 +143,4 @@ Not every actor needs to be a smart contract, however: an actor that simply mana
 
 ## Who is building Convex?
 
-We are a small [team](https://convex.world/about/team) of dedicated hackers and creators passionate about building an amazing platform for the future digital economy.
+We are a small team of dedicated hackers and creators passionate about building an amazing platform for the future digital economy. We mostly hang out on the [Convex Discord](https://discord.com/invite/xfYGq4CT7v)

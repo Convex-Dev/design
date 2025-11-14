@@ -28,6 +28,14 @@ manus:
   socials:
     x: manus_hq
 
+grok:
+  name: Grok
+  title: Conversational AI by xAI
+  url: https://x.ai/grok
+  page: false
+  socials:
+    x: grok
+
 #helins:
 #  name: Adam Helinski
 #  title: Core Contributor
