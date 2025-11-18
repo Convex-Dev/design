@@ -5,7 +5,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 const config: Config = {
-  title: 'Convex',
+  title: 'Convex Docs',
   tagline: 'Home of Lattice Technology',
   favicon: 'img/Convex.png',
 

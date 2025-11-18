@@ -52,3 +52,33 @@ automation:
   label: Automation
   permalink: /automation
   description: Automated workflows powered by Convex
+
+tokenomics:
+  label: Tokenomics
+  permalink: /tokenomics
+  description: Token distribution, economics, and release mechanisms
+
+cvm:
+  label: CVM
+  permalink: /cvm
+  description: Convex Virtual Machine topics and technical details
+
+agents:
+  label: Agents
+  permalink: /agents
+  description: Autonomous agents and AI-driven economic actors
+
+realtime:
+  label: Real-time
+  permalink: /realtime
+  description: Real-time transactions and instant updates
+
+defi:
+  label: DeFi
+  permalink: /defi
+  description: Decentralised finance applications and protocols
+
+web3:
+  label: Web3
+  permalink: /web3
+  description: Web3 ecosystem and decentralised peer-to-peer applications
