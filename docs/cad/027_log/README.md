@@ -40,8 +40,7 @@ As an example, a decentralised auction house might choose to log when items are 
 (log :SOLD asset-id buyer price)
 ```
 
-Other than the juice cost for the `log` instruction, logging has no effect on CVM State
-
+Other than the juice cost for `log` instruction execution, logging has no effect on CVM State
 
 ### Log Record
 
@@ -49,7 +48,7 @@ Other than the juice cost for the `log` instruction, logging has no effect on CV
 
 A log entry consists of:
 - The `*address*` that caused the `log` entry to be created (never nil)
-- The `*scope*` present at the time of logging (may be `nil`)
+- The `*scope*` present at the time of logging (this will usually be `nil`)
 - The location of the transaction, as a `[block-number transaction-number]` pair
 - A vector of the values logged
 
@@ -79,7 +78,7 @@ Scheduled transactions are assigned negative numbers.
 
 #### Position 4: Log Data
 
-The log data is a Vector of values representing the arguments to the `log` function.
+The log data is a vector of values representing the arguments to the `log` function.
 
 Log data SHOULD be structured according to application requirements and consistency with relevant logging standards.
 
@@ -151,7 +150,7 @@ Note: since NFT transfers may involve a set of NFTs, this can result in multiple
 
 ### Log Indexing
 
-Peers SHOULD index log records for efficient access any query by interested parties.
+Peers SHOULD index log records for efficient access and query by interested parties.
 
 The exact structure of log indexes are implementation details left to the peer operator.
 

@@ -56,11 +56,11 @@ The *Convex Consensus Lattice* drives a secure, decentralised global state machi
 
 Lattice values are *Beliefs*, which are shared by peers and merged using the belief merge function, as defined in the [Convex White Paper](convex-whitepaper.md).
 
-The Consensus Lattice performs the functions of a typical L1 blockchain:
+Convex performs many of the functions of a typical L1 blockchain, but without the drawbacks:
 - A transparent global state machine with Byzantine fault-tolerant consensus.
 - Self-sovereign accounts for managing digital assets, secured by digital signatures.
-- Turing-complete smart contracts and autonomous actors on the Convex Virtual Machine (CVM)—"unstoppable code" in action.
-- Storage of arbitrary data as trust roots for decentralised applications.
+- Turing-complete smart contracts and autonomous actors on the Convex Virtual Machine (CVM) - "unstoppable code" in action.
+- Trusted storage of data for usage by decentralised applications.
 
 This region blends blockchain-grade security with the Lattice’s lightweight, conflict-free design, making it a powerhouse for decentralised economic systems.
 

@@ -1,10 +1,10 @@
-# CAD032: Convex Reader
+# CAD032: CVX Reader
 
 ## Overview
 
 Convex presents users with a rich variety of decentralised data structures.
 
-There is a common requirement for such data structures to be presented in text format. The Reader is a software component than can read CVM Values from a standard `.CVX` file format.
+There is a common requirement for such data structures to be presented in text format. The Reader is a software component that can read CVM Values from a standard `.CVX` file format.
 
 The Convex reader format is defined in an [ANTLR grammar](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/antlr4/convex/core/lang/reader/antlr/Convex.g4)
 
@@ -27,7 +27,7 @@ Most basic values are available as literals in the reader.
 
 ;; Strings 
 "Hello World"                
-"My name is \"Shady"\"    ; escaping works like Java
+"My name is \"Shady\""    ; escaping works like Java
 
 ;; Booleans
 true
@@ -70,11 +70,14 @@ mysym1456757
 +++<>+++
 ```
 
-Symbols cannot start with a number, `:` or `#` (since these map to other readable types). These characters are valid anywhere else in the symbol however.
+Symbols cannot start with a number, `:` or `#` (since these map to other readable types). These characters *are* valid elsewhere in the symbol.
 
 Symbols MUST be 1-128 UTF-8 characters in length. This restriction has two purposes:
 - It ensure that symbols are *always* embedded values
 - It discourages excessive name lengths: symbols are intended for human readability!
+- Empty symbols would be problematic for many reasons
+
+Note: 
 
 ### Keywords
 
@@ -167,11 +170,15 @@ Example usage:
 ```java
 import convex.core.lang.Reader
 
+// These will throw a ClassCastException if the value is not of the correct type
 AVector<ACell> myVector = Reader.read("[1 2 3]");
 AInteger myVector = Reader.read("546456456");
+Symbol sym = Reader.read("foobar");
 ```
 
-
+:::danger
+If receiving symbols as strings from untrusted sources, ensure these are passed through the reader and result in a valid symbol rather than used directly. This is to avoid possible code injection attacks. The string `"filler-symbol (malicious-code)"` is an instructive example.
+:::
 
 ## Conventions
 
