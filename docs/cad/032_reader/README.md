@@ -4,7 +4,7 @@
 
 Convex presents users with a rich variety of decentralised data structures.
 
-There is a common requirement for such data structures to be presented in text format. The Reader is a software component
+There is a common requirement for such data structures to be presented in text format. The Reader is a software component than can read CVM Values from a standard `.CVX` file format.
 
 The Convex reader format is defined in an [ANTLR grammar](https://github.com/Convex-Dev/convex/blob/develop/convex-core/src/main/antlr4/convex/core/lang/reader/antlr/Convex.g4)
 
