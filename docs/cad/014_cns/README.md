@@ -2,14 +2,19 @@
 
 The Convex name system (CNS) is a globally accessible naming service available on the CVM. It performs the important function of providing trusted names for user accounts and other services on the CVM, and acts as a root of trust for the broader ecosystem of lattice technology services.
 
+CNS provides trusted mutable references to resources via user-friendly names. When you resolve
+`convex.trust`, you get the CURRENT trusted implementation, not a frozen historical version.
+
 ## Motivation
 
 Similar to DNS on the Internet, there is a need for a naming system which provides:
 
 - Meaningful human readable names
 - A mapping to resources on the network
-- Secure facilities for managing this information
+- Trusted and secure facilities for managing this information
 
+This is intentional: it allows ecosystem-wide upgrades without requiring
+modifications to source code or changing stored identifiers.
 
 ## User API
 
@@ -45,7 +50,7 @@ The resolve function returns `nil` if the CNS name referred to does not exist.
 The `read` function is similar to `resolve, but returns the entire CNS record:
 
 ```clojure
-()
+(@convex.cns/resolve 'convex.asset)
 ```
 
 ## Specification
@@ -117,7 +122,7 @@ Nothing in Convex requires the use of CNS. It MUST be possible to create working
 
 ### Direct addressing
 
-Instead of CNS, it is perfectly legitimate to directly use addresses that are known:
+Instead of CNS, it is perfectly legitimate to directly use addresses that are known and trusted:
 
 ```clojure
 (call #16789 (known-actor-function :foo))
@@ -148,3 +153,27 @@ Examination of the resulting CVM ops will confirm that the result of `~(resolve 
 Users and application developers SHOULD adopt canonical CNS names, as other systems may not be able to resolve against an unrecognised CNS root.
 
 Alternative CNS implementations MAY however be deployed with a different CNS root. Users will need to refer to the correct entry point for the alternative implementation.
+
+## Security Considerations
+
+### Deploy-time binding
+
+It is important to note that `import` typically resolves at deployment time (i.e. then the `deploy` command is executed). This is intended behaviour, as it ensure the current on-chain CNS value is used. However it does imply that the same source code deployed at different times MAY resolve to different implementations, if the CNS value is updated in the interim.
+
+Developers SHOULD consider the following for production usage:
+  - Pinning to a specific address e.g. `(import #5678 :as foolib)`
+  - Asserting a particular version e.g. `(assert (= 0xa412bce98da16e4b6790069a108d2d902a9929df76af3bcabaf7cf22df470108 (hash (encoding (account foolib)))))`
+  - Checking resolution is as expected post deployment e.g. `foolib` as defined in the account refers to the intended library.
+
+### Controller Trust
+
+CNS records are as secure as their controllers. 
+
+For mission-critical actor code handling significant value, users SHOULD verify:
+- Controller addresses match expectations and are trusted
+- Controllers of parent nodes are similarly trusted
+- Accounts referenced via CNS resolution are similarly secure 
+
+### Root Control
+
+CNS root namespace and some key libraries are controlled by secure governance accounts, at least for the Protonet stage (typically #6). It is likely some of these will be made completely immutable once fully battle-tested.
