@@ -901,11 +901,11 @@ To support this usage, `call` may optionally support the provision of a *scope* 
 
 A scoped call operates in the same way as any other call, except that the special value `*scope*` will be set to the value passed in the scope vector (in this case `:scope-value`). `*scope*` will be `nil` if no such scope value is used.
 
-Values or identifies used as a `*scope*` are defined by the actor: any CVM values may be used. It is however STRONGLY RECOMMEDED to enforce unique IDs e.g. allocating IDs using an incrementing integer counter for each entity created. 
+Values or identifies used as a `*scope*` are defined by the actor: any CVM values may be used. It is however STRONGLY RECOMMENDED to enforce unique IDs e.g. allocating IDs using an incrementing integer counter for each entity created. 
 
 Usage of scoped calls is ultimately an interface design decision for creators of actors. It is possible to achieve the same functionality with an additional ID argument to the call, for example. Experience suggests however that using scoped addresses simplifies writing generic user code that must refer to multiple entities provided by multiple actors, so it is RECOMMENDED to do so if your actor manages multiple entities.
 
-In most cases, entities managed by an actor will have a limited lifecycle. It is STONGLY RECOMMENDED that:
+In most cases, entities managed by an actor will have a limited lifecycle. It is STRONGLY RECOMMENDED that:
 - Live entities are stored in a data structure indexed by `*scope*` for efficient access and existence checks (this should normally be a hash-map or index)
 - Actors provide a facility to delete expired entities (this allows memory reclaim to the benefit of whoever does the cleanup) 
 - Scoped calls that reference a deleted/non-existent entity should fail
@@ -1004,7 +1004,6 @@ The `^` symbol may be used to add metadata to a value and create a Syntax object
  => ^{} [1 2 3]
 
 ;; A keyword can be used as a shortcut to set a single metadata flag to true
-```clojure
 (= ^:mark [1] ^{:mark true} [1])
  => true
 ```
