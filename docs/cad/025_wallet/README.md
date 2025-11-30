@@ -27,12 +27,12 @@ There is no strict requirement for HD wallets to organise keys in any particular
 
 Wallets MAY generate Ed25519 key pairs in accordance with the BIP43 / BIP44 standard, in the format:
 
-`m/44/888/<convex-address>/0/<sequence-number>`
+`m/44/864/<convex-address>/0/<sequence-number>`
 
 Where:
  - `<convex-address>` is the address of the Convex account for which the key is specified
  - `<sequence-number>` is the sequence number of the transaction used to set the public key
- - `888` is a placeholder coin type for the Convex Coin until confirmed in SLIP-0044
+ - `864` is the registered coin type for the Convex Coin (CVM) in [SLIP-0044](https://raw.githubusercontent.com/satoshilabs/slips/master/slip-0044.md)
 
 If the address is not known at the time of key generation, wallets SHOULD generate a temporary key pair, and rotate the public key of the account to the above once the address is known.
 
@@ -42,7 +42,7 @@ The advantage of this method is that if the user knows their Convex address, it 
 
 Alternatively wallets MAY generate Ed25519 key pairs using the conventional BIP44 approach:
 
-`m/44/888/<account-index-from-zero>/0/<key-index>`
+`m/44/864/<account-index-from-zero>/0/<key-index>`
 
 In this case, wallets / apps bear a greater responsibility for handing the mapping from wallet accounts to Convex accounts / addresses.
 
@@ -60,7 +60,7 @@ Wallets SHOULD use the sequence number of the transaction used to rotate the key
 1. the rotated key can be re-derived by observing transaction / state history
 2. there is no risk of re-using the same key because sequence numbers increase monotonically
 
-e.g. assuming the key is rotated in the first transaction for account `#1234`, the derivation path is `m/44/888/1234/0/1`
+e.g. assuming the key is rotated in the first transaction for account `#1234`, the derivation path is `m/44/864/1234/0/1`
 
 ## Account linkage
 
@@ -76,6 +76,6 @@ Passphrase: `test`
 
 BIP39 Seed: `d46c4e60d0137e7ee0acc8b836d76d9a0458705caa128899709f576bade690b3c7cba49ece50a211193b9eb7803be49d02c8ddae02c3b88790ac17fa72f219a6`
 
-Derivation path: `m/44/888/1234/0/1`
+Derivation path: `m/44/864/1234/0/1`
 
 Ed25519 Private key seed: `2172bb864deb4f978ad6360beefe205d38a6839c011dc4f37592769007c8321f`
