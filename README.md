@@ -6,8 +6,8 @@ This repository is dedicated to Convex Design and Documentation.
 
 ## Key Documents
 
-- [Convex Manifesto](papers/manifesto.md)
-- [Convex White Paper (Draft)](papers/convex-whitepaper.md)
+- [Convex Manifesto](docs/overview/manifesto.md)
+- [Convex White Paper](docs/overview/convex-whitepaper.md)
 
 ## Current CADs
 
@@ -57,6 +57,7 @@ The main [Convex repository](https://github.com/Convex-Dev/convex) is the primar
 - `convex-core` - the core Convex data structures and algorithms including CPoS
 - `convex-peer` - Convex peer implementation and P2P networking
 - `convex-gui` - Convex Desktop GUI Application
+- `convex-cli` - Convex CLI utilities
 - `convex-restapi` - REST API Server implementation
 
 | Name                                                         | Description                                   | Status     | Lead Dev.

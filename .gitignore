@@ -18,9 +18,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
 # For Eclipse
 /.project
 /.settings/
 
-.lsp/.cache/db.transit.json
+.lsp/.cache

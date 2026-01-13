@@ -34,7 +34,7 @@ Events are emitted via builtin CVM `log` function which adds a log entry for the
 (log val1 val2 val3 ....)
 ```
 
-As an example, a decentralised auction house might choose to log when items are sold with this folloing code
+As an example, a decentralised auction house might choose to log when items are sold with this following code
 
 ```clojure
 (log :SOLD asset-id buyer price)
@@ -87,7 +87,7 @@ Conventionally, the first element of the log data SHOULD be a Keyword that descr
 
 ### Interaction with rollbacks
 
-The log MUST NOT be apdated with any log entries created within code that was rolled back (either due to an explicit `rollback` or failure of some atomic expression or transaction).
+The log MUST NOT be updated with any log entries created within code that was rolled back (either due to an explicit `rollback` or failure of some atomic expression or transaction).
 
 The reason for this is that the Log should only include *things that happened* rather than any operations that are rolled back.
 
@@ -107,16 +107,47 @@ The first log entry SHOULD by a short uppercase string value that describes the 
 The standard values for a transfer "TR" log event are:
 
 ```clojure
-["TR" sender receiver quantity data]
+[:TR sender receiver quantity data]
 ```
 
 Where:
 - `sender` is the account address of the asset sender
 - `receiver` is the account address of the receiver
 - `quantity` is the quantity of the asset transferred, as per CAD19
+- `sender-bal` is the new sender balance
+- `receiver-bal` is the new receiver balance
 - `data` is any additional data attached to the transfer (e.g. a map containing a payment reference)
 
 Transfer events of this type SHOULD be emitted by the actor implementing the asset, with a `*scope*` set as appropriate.
+
+#### Minting
+
+The standard values for a minting "MINT" log event are:
+
+```clojure
+["MINT" minter amount new-supply]
+```
+
+Where:
+- `minter` is the account performing the minting operation
+- `amount` is the quantity minted (negative for burn)
+- `new-supply` is the new total supply of the token
+
+#### NFT Transfers
+
+When sending a uniquely identified asset such as an NFT, conventional log values are:
+
+```clojure
+[:TR sender receiver quantity data]
+```
+
+Where:
+- `sender` is the account address of the asset sender
+- `receiver` is the account address of the receiver
+- `id` is the unique ID of the asset
+- `data` is any additional data attached to the transfer (e.g. a map containing a payment reference)
+
+Note: since NFT transfers may involve a set of NFTs, this can result in multiple log entries for a single transfer. This approach is preferred because it allows individual NFTs to be tracked.
 
 ### Log Indexing
 
@@ -127,7 +158,7 @@ The exact structure of log indexes are implementation details left to the peer o
 By default peers SHOULD maintain the following indexes into the log, for all log entries that they retain:
 - block -> log start and end position (allows fast location of log entries for a given block)
 - [ address | first value | second value | third value ] -> vector of log positions
-- An index on the each of the first 4 fields of the log data, if these are Blob Like values that can be indexed
+- An index on the each of the first 4 fields of the log data, if these are Blob-like values that can be indexed
 
 Values are included in the index if present and bloblike, otherwise empty blob. 
 
@@ -160,7 +191,7 @@ This juice cost represents the cost imposed on peers for maintaining log entries
 
 Peers MAY determine their own retention policy for historical log records.
 
-Peers MUST maintain logs for at least one month, for the purpioses of transaction confirmation by clients and recipients.
+Peers MUST maintain logs for at least one month, for the purposes of transaction confirmation by clients and recipients.
 
 It is RECOMMENDED that Peers retain at least 1 year of log records.
 

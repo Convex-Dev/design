@@ -17,11 +17,24 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link
+          <Link 
             className="button button--secondary button--lg"
             to="/docs/intro">
             Convex Intro
           </Link>
+          <div style={{width:20}} />
+          <Link
+            className="button button--secondary button--lg"
+            to="/docs/overview/lattice">
+            The Lattice
+          </Link>
+          <div style={{width:20}} />
+          <Link
+            className="button button--secondary button--lg"
+            to="https://drive.google.com/drive/folders/1AZdyuZOmC70i_TtuEW3uEKvjYLOqIMiv?usp=drive_link">
+            Downloads
+          </Link>
+          
         </div>
       </div>
     </header>
@@ -33,7 +46,7 @@ export default function Home(): JSX.Element {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />">
+      description="Convex Design and Documentation">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

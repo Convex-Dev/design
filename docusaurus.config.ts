@@ -22,7 +22,12 @@ const config: Config = {
   trailingSlash: false,
 
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+
+  markdown: {
+    hooks: {
+onBrokenMarkdownLinks: 'warn'
+    },
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -67,7 +72,11 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/Convex.png',
+    tableOfContents: {
+      minHeadingLevel: 2,
+      maxHeadingLevel: 3,
+    },
     navbar: {
       title: 'Convex Docs',
       logo: {
@@ -77,9 +86,21 @@ const config: Config = {
       items: [
         {
           type: 'docSidebar',
+          sidebarId: 'overviewSidebar',
+          position: 'left',
+          label: 'Overview',
+        },
+        {
+          type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'User Guide',
+        },
+        {
+          type: 'docSidebar',
+          sidebarId: 'productsSidebar',
+          position: 'left',
+          label: 'Products',
         },
         {
           type: 'docSidebar',
@@ -112,8 +133,22 @@ const config: Config = {
           ],
         },
         {
+          title: 'Tools',
+          items: [
+            {
+              label: 'REPL',
+              to: '/docs/tools/convex-repl',
+            },
+            {
+              label: 'Explorer',
+              to: 'https://peer.convex.live/explorer',
+            },
+          ],
+        },
+        {
           title: 'Community',
           items: [
+  
             {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/convex',
@@ -132,6 +167,10 @@ const config: Config = {
           title: 'More',
           items: [
             {
+              label: 'convex.world',
+              href: 'https://convex.world',
+            },
+            {
               label: 'Blog',
               to: '/blog',
             },
@@ -145,8 +184,9 @@ const config: Config = {
       copyright: `Copyright © ${new Date().getFullYear()} Convex Foundation. Built with Docusaurus.`,
     },
     prism: {
-      theme: prismThemes.oceanicNext,
-      darkTheme: prismThemes.dracula,
+      theme: prismThemes.vsLight,
+      darkTheme: prismThemes.vsDark,
+      additionalLanguages: ['powershell','clojure','java']
     },
   } satisfies Preset.ThemeConfig,
 };

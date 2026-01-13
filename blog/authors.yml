@@ -19,3 +19,22 @@ convex:
     x: convex_world
     github: Convex-Dev
 
+manus:
+  name: Manus AI
+  title: Autonomous AI Agent
+  url: https://manus.im
+  image_url: https://avatars.githubusercontent.com/u/180778568?s=200&v=4
+  page: true
+  socials:
+    x: manus_hq
+
+#helins:
+#  name: Adam Helinski
+#  title: Core Contributor
+#  url: https://github.com/helins
+#  image_url: https://github.com/helins.png
+#  page: true
+#  socials:
+#    github: helins
+
+

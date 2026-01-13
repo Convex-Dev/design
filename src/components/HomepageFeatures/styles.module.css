@@ -9,3 +9,12 @@
   height: 200px;
   width: 200px;
 }
+
+.convex-svg-colour {
+  stroke: #6AAAE4;
+}
+
+/* Styling Convex SVGs */
+[data-theme='dark'] .convex-svg-colour {
+  stroke: #6AAAE4;
+}
