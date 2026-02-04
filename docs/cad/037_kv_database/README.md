@@ -32,47 +32,58 @@ Traditional distributed databases solve these problems with consensus protocols,
 The KV Database occupies the `:kv` path in the standard lattice ROOT:
 
 ```
-KeyedLattice {
+ROOT {
     :data → DataLattice
-    :fs   → OwnerLattice(MapLattice(DLFSLattice))
-    :kv   → OwnerLattice(MapLattice(KVStoreLattice))
+    :fs   → OwnerLattice → MapLattice → DLFSLattice
+    :kv   → OwnerLattice → MapLattice → KVStoreLattice
 }
 ```
 
 The full path to a specific replica is:
 
 ```
-:kv / <owner-key> → SignedData({<db-name> → Index<AString, KVEntry>})
+:kv / <owner-key> → Signed({<db-name> → {key → KVEntry, ...}, ...})
 ```
 
 Where:
-- **owner-key** (AccountKey) — the Ed25519 public key of the node owning this replica
-- **SignedData** — the owner's signed map of database names to KV store states
-- **db-name** (AString) — the database name, scoped per owner
+- **owner-key** — the owner identity (see Owner Types below)
+- **Signed(...)** — the owner's signed map of database names to KV store states
+- **db-name** — a string database name, scoped per owner
 
 This structure means each owner has their own namespace of databases within their signed state, matching the `:fs` pattern. Different owners can independently create databases with the same name without conflict.
+
+### Owner Types
+
+The OwnerLattice supports multiple owner identity types, each with its own verification scheme. See [CAD038: Lattice Authentication](../038_lattice_auth/README.md) for the full specification.
+
+| Owner Type | Key Format | Verification | Use Case |
+|-----------|------------|-------------|----------|
+| Public Key | 32-byte Ed25519 public key | Direct equality with signer | Individual nodes, simple deployments |
+| Convex Address | Address (#0, #1337, etc.) | Account lookup for authorised keys | Organisations, multi-key accounts |
+| DID Identifier | String ("did:key:...", "did:convex:...") | DID resolution | Cross-system identity, standards compliance |
+
+All three types ultimately verify against the Ed25519 public key embedded in the signed data. The OwnerLattice performs verification at O(delta) cost during merge — only entries that differ between the local and incoming maps are checked. See CAD038 for the two-layer verification model (owner authorisation + signature validity).
 
 ### Lattice Composition
 
 ```
-OwnerLattice
-  └── SignedLattice
-        └── MapLattice<AString, KVStoreLattice>
-              └── KVStoreLattice (singleton)
-                    └── IndexLattice<AString, AVector<ACell>>
-                          └── KVEntryLattice (singleton)
-                                └── per-type merge (LWW, structural, or PN-counter)
+OwnerLattice           ← per-owner merge with auth (CAD038)
+  └── SignedLattice    ← Ed25519 signature verification
+        └── MapLattice ← per-database-name merge
+              └── KVStoreLattice
+                    └── per-key merge
+                          └── per-type merge (LWW, structural, or PN-counter)
 ```
 
-**OwnerLattice** at the top level merges per-owner using SignedLattice, which validates Ed25519 signatures before accepting values.
+**OwnerLattice** at the top level merges per-owner, verifying that the signer is authorised for the owner identity and that Ed25519 signatures are valid before accepting values ([CAD038](../038_lattice_auth/README.md)).
 
 **MapLattice** inside the signed value merges per-database-name, allowing each owner to maintain multiple named databases.
 
-**KVStoreLattice** merges the KV store contents using IndexLattice with KVEntryLattice for per-key merge.
+**KVStoreLattice** merges per-key using type-specific merge strategies for each KV entry.
 
 ### KV Entries
 
-Each owner signs a map of `{db-name → Index<AString, KVEntry>}`, where each key in a KV store maps to a **KV Entry**, a positional vector:
+Each owner signs a map of `{db-name → {key → KVEntry, ...}}`, where each key in a KV store maps to a **KV Entry**, a positional vector:
 
 ```
 [value, type, utime, expire]
@@ -80,10 +91,10 @@ Each owner signs a map of `{db-name → Index<AString, KVEntry>}`, where each ke
 
 | Index | Field | Type | Description |
 |-------|-------|------|-------------|
-| 0 | value | ACell | The stored value (structure depends on type) |
-| 1 | type | CVMLong | Type tag (see Data Types below) |
-| 2 | utime | CVMLong | Last modification timestamp (epoch millis) |
-| 3 | expire | CVMLong | Expiry timestamp (0 = no expiry) |
+| 0 | value | any | The stored value (structure depends on type) |
+| 1 | type | integer | Type tag (see Data Types below) |
+| 2 | utime | integer | Last modification timestamp (epoch millis) |
+| 3 | expire | integer / nil | Expiry timestamp (nil = no expiry) |
 
 #### Tombstones
 
@@ -97,12 +108,12 @@ Implementations SHOULD support garbage collection of expired entries and old tom
 
 | Type Tag | Name | Value Structure | Merge Strategy |
 |----------|------|-----------------|----------------|
-| 0 | String | Any ACell | LWW by timestamp |
-| 1 | Hash | `Index<AString, [value, timestamp]>` | Per-field LWW |
-| 2 | Set | `Index<ABlob, [member, addTime, removeTime]>` | Max timestamps per member |
-| 3 | Sorted Set | `Index<ABlob, [member, score, addTime, removeTime]>` | Max timestamps; score from latest add |
-| 4 | List | `AVector<ACell>` | LWW by timestamp |
-| 5 | Counter | `Index<AString, [positive, negative]>` | PN-Counter (max per replica per column) |
+| 0 | Value | Any value | LWW by timestamp |
+| 1 | Hash | `{field → [value, timestamp], ...}` | Per-field LWW |
+| 2 | Set | `{member-hash → [member, addTime, removeTime], ...}` | Max timestamps per member |
+| 3 | Sorted Set | `{member-hash → [member, score, addTime, removeTime], ...}` | Max timestamps; score from latest add |
+| 4 | List | Vector of values | LWW by timestamp |
+| 5 | Counter | `{replica-id → [positive, negative], ...}` | PN-Counter (max per replica per column) |
 
 ### Merge Semantics
 
@@ -111,7 +122,7 @@ KV entry merge follows these rules, evaluated in order:
 1. **Equal entries** — return own (identity)
 2. **One side nil** — return the other (with foreign value check)
 3. **Same type, mergeable** (hash, set, sorted set, counter) — structural merge with max timestamp
-4. **Otherwise** (string, list, or type conflict) — newer timestamp wins (LWW)
+4. **Otherwise** (value, list, or type conflict) — newer timestamp wins (LWW)
 5. **Tombstone vs live** — newer timestamp wins
 
 These rules satisfy the lattice properties:
@@ -119,7 +130,7 @@ These rules satisfy the lattice properties:
 - **Associative**: merge(merge(a, b), c) = merge(a, merge(b, c))
 - **Idempotent**: merge(a, a) = a
 
-#### String/List Merge (LWW)
+#### Value/List Merge (LWW)
 
 The entry with the greater timestamp wins. Equal timestamps favour the first operand for determinism.
 
@@ -149,25 +160,26 @@ Combines set membership semantics with scores. Each member tracks add/remove tim
 
 Entries MAY have an expiry timestamp at position 3.
 
-- **0** means no expiry
-- A positive value is the absolute epoch millis at which the entry expires
+- **nil** means no expiry
+- An integer value is the absolute epoch millis at which the entry expires
 
 Implementations SHOULD check expiry on read and return nil for expired entries. Implementations SHOULD provide a garbage collection operation to remove expired entries.
 
-### Signed Replicas
+### Ownership and Authentication
 
-Each node signs its database map with an Ed25519 key pair. The signed state is:
+Each owner's data is signed with an Ed25519 key pair and verified during lattice merge by the OwnerLattice ([CAD038](../038_lattice_auth/README.md)). The signed state per owner is:
 
 ```
-SignedData({db-name → Index<AString, KVEntry>})
+Signed({db-name → {key → KVEntry, ...}, ...})
 ```
 
 The signed value is a map of database names to KV store states, allowing each owner to maintain multiple databases under a single signed envelope.
 
-This provides:
-- **Authentication** — only the key holder can produce valid signatures
+Verification during merge provides:
+- **Authentication** — only authorised signers can produce accepted values for an owner
 - **Integrity** — any tampering invalidates the signature
-- **Non-repudiation** — the signer cannot deny authorship
+- **Flexible ownership** — owners may be public keys, Convex addresses, or DID identifiers
+- **Multi-key support** — address and DID owners may authorise multiple signing keys (e.g. organisational accounts)
 
 ### Replication Model
 
@@ -177,7 +189,7 @@ The KV Database uses a **merge-on-write** replication model:
 2. The node publishes its replica into the lattice at `:kv` (the OwnerLattice level)
 3. Lattice Nodes (CAD036) automatically propagate signed replicas to peers
 4. On the receiving side, the OwnerLattice merge combines signed entries from all owners
-5. The application reads the merged owner map and calls `mergeReplicas()` to absorb remote data into the local KV store, extracting the specific database by name from each owner's signed map
+5. The application reads the merged owner map and absorbs remote data into the local KV store, extracting the specific database by name from each owner's signed map
 
 ```
 ┌──────────┐         ┌──────────┐         ┌──────────┐
@@ -203,14 +215,14 @@ The KV Database uses a **merge-on-write** replication model:
 
 #### Selective Merge
 
-Applications MAY filter which replicas to merge using a predicate on the owner's AccountKey. This enables:
+Applications MAY filter which replicas to merge using a predicate on the owner identity. This enables:
 - Trusting only known peers
 - Ignoring revoked or untrusted keys
 - Implementing access control lists
 
-#### Signature Validation
+#### Authentication
 
-`mergeReplicas()` MUST validate signatures before merging. Entries with invalid signatures MUST be rejected. After deserialisation, owner keys MAY appear as raw blobs rather than typed AccountKey instances; implementations MUST handle this by resolving the key from its blob representation.
+Lattice merge MUST validate both owner authorisation and cryptographic signatures before accepting incoming values ([CAD038](../038_lattice_auth/README.md)). Entries where the signer is not authorised for the claimed owner, or where the signature is invalid, MUST be rejected.
 
 ## Operations
 
@@ -219,7 +231,7 @@ Applications MAY filter which replicas to merge using a predicate on the owner's
 | Operation | Description |
 |-----------|-------------|
 | `get(key)` | Get value for key (nil if absent or expired) |
-| `set(key, value)` | Set string value |
+| `set(key, value)` | Set value |
 | `set(key, value, ttl)` | Set with TTL in milliseconds |
 | `del(key)` | Delete key (creates tombstone) |
 | `exists(key)` | Check if key exists and is not expired |
@@ -295,6 +307,8 @@ Lists use LWW merge on the entire list. They are not CRDT-friendly for concurren
 
 A reference implementation is provided in the Convex `convex-core` and `convex-peer` modules (Java).
 
+KV entries use the `AVector<ACell>` type for positional vectors, `CVMLong` for integer fields, and `Index<AString, ...>` for sorted string-keyed maps. Owner keys are represented as `AccountKey`, `Address`, or `AString` instances in the `ACell` hierarchy. After deserialisation, owner keys may appear as raw `ABlob` instances; the implementation resolves these to `AccountKey` via `OwnerLattice.resolveKey()`.
+
 ### Classes
 
 | Specification Concept | Java Class | Package |
@@ -318,7 +332,7 @@ A reference implementation is provided in the Convex `convex-core` and `convex-p
 AKeyPair keyPair = AKeyPair.generate();
 KVDatabase db = KVDatabase.create("mydb", keyPair, "node-1");
 
-// String operations
+// Value operations
 db.kv().set("user:alice", Strings.create("Alice"));
 db.kv().set("config:timeout", CVMLong.create(30000));
 
@@ -404,3 +418,4 @@ db1.mergeReplicas(ownerMap);
 - [CAD035: Lattice Cursors](../035_cursors/README.md) - Cursor system for atomic state access
 - [CAD036: Lattice Node](../036_lattice_node/README.md) - Network replication infrastructure
 - [CAD028: DLFS](../028_dlfs/README.md) - Distributed filesystem (similar lattice pattern)
+- [CAD038: Lattice Authentication](../038_lattice_auth/README.md) - Owner verification during merge
