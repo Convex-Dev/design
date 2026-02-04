@@ -329,11 +329,13 @@ Nodes MAY implement these standard lattice types:
 | SignedLattice | Validates signatures, merges child | nil |
 | OwnerLattice | Per-owner signed data maps | Empty map |
 
-The standard ROOT lattice structure:
+The standard ROOT lattice structure uses a `KeyedLattice` backed by an `Index<Keyword, ACell>`, which provides lexicographic key ordering and compatibility with both CVM keyword paths and JSON string paths (keywords and strings share the same blob representation in the Index):
+
 ```
-KeyedLattice {
+KeyedLattice (Index<Keyword, ACell>) {
     :data → DataLattice
     :fs   → OwnerLattice(MapLattice(DLFSLattice))
+    :kv   → MapLattice(OwnerLattice(KVStoreLattice))
 }
 ```
 
@@ -446,3 +448,4 @@ node.close();
 - [CAD024: Data Lattice](../024_data_lattice/README.md) - Theoretical foundation
 - [CAD028: DLFS](../028_dlfs/README.md) - Distributed filesystem
 - [CAD035: Lattice Cursors](../035_cursors/README.md) - Cursor system
+- [CAD037: KV Database](../037_kv_database/README.md) - Replicated key-value store
