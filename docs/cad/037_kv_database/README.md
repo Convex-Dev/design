@@ -35,39 +35,44 @@ The KV Database occupies the `:kv` path in the standard lattice ROOT:
 KeyedLattice {
     :data → DataLattice
     :fs   → OwnerLattice(MapLattice(DLFSLattice))
-    :kv   → MapLattice(OwnerLattice(KVStoreLattice))
+    :kv   → OwnerLattice(MapLattice(KVStoreLattice))
 }
 ```
 
 The full path to a specific replica is:
 
 ```
-:kv / <db-name> / <owner-key> → SignedData(Index<AString, KVEntry>)
+:kv / <owner-key> → SignedData({<db-name> → Index<AString, KVEntry>})
 ```
 
 Where:
-- **db-name** (AString) — the database name, a global namespace shared by all nodes
 - **owner-key** (AccountKey) — the Ed25519 public key of the node owning this replica
-- **SignedData** — the KV store state signed by the owner's key pair
+- **SignedData** — the owner's signed map of database names to KV store states
+- **db-name** (AString) — the database name, scoped per owner
+
+This structure means each owner has their own namespace of databases within their signed state, matching the `:fs` pattern. Different owners can independently create databases with the same name without conflict.
 
 ### Lattice Composition
 
 ```
-KVStoreLattice (singleton)
-  └── IndexLattice<AString, AVector<ACell>>
-        └── KVEntryLattice (singleton)
-              └── per-type merge (LWW, structural, or PN-counter)
+OwnerLattice
+  └── SignedLattice
+        └── MapLattice<AString, KVStoreLattice>
+              └── KVStoreLattice (singleton)
+                    └── IndexLattice<AString, AVector<ACell>>
+                          └── KVEntryLattice (singleton)
+                                └── per-type merge (LWW, structural, or PN-counter)
 ```
 
-**MapLattice** at the database-name level merges per-name using OwnerLattice.
+**OwnerLattice** at the top level merges per-owner using SignedLattice, which validates Ed25519 signatures before accepting values.
 
-**OwnerLattice** at the owner level merges per-owner using SignedLattice, which validates Ed25519 signatures before accepting values.
+**MapLattice** inside the signed value merges per-database-name, allowing each owner to maintain multiple named databases.
 
 **KVStoreLattice** merges the KV store contents using IndexLattice with KVEntryLattice for per-key merge.
 
 ### KV Entries
 
-Each key in a KV store maps to a **KV Entry**, a positional vector:
+Each owner signs a map of `{db-name → Index<AString, KVEntry>}`, where each key in a KV store maps to a **KV Entry**, a positional vector:
 
 ```
 [value, type, utime, expire]
@@ -151,11 +156,13 @@ Implementations SHOULD check expiry on read and return nil for expired entries. 
 
 ### Signed Replicas
 
-Each node signs its KV store state with an Ed25519 key pair. The signed state is:
+Each node signs its database map with an Ed25519 key pair. The signed state is:
 
 ```
-SignedData(Index<AString, KVEntry>)
+SignedData({db-name → Index<AString, KVEntry>})
 ```
+
+The signed value is a map of database names to KV store states, allowing each owner to maintain multiple databases under a single signed envelope.
 
 This provides:
 - **Authentication** — only the key holder can produce valid signatures
@@ -166,11 +173,11 @@ This provides:
 
 The KV Database uses a **merge-on-write** replication model:
 
-1. Each node maintains its own signed replica
-2. The node publishes its replica into the lattice at `:kv / <db-name>`
+1. Each node maintains its own signed replica (a map of database names to KV stores)
+2. The node publishes its replica into the lattice at `:kv` (the OwnerLattice level)
 3. Lattice Nodes (CAD036) automatically propagate signed replicas to peers
 4. On the receiving side, the OwnerLattice merge combines signed entries from all owners
-5. The application reads the merged owner map and calls `mergeReplicas()` to absorb remote data into the local KV store
+5. The application reads the merged owner map and calls `mergeReplicas()` to absorb remote data into the local KV store, extracting the specific database by name from each owner's signed map
 
 ```
 ┌──────────┐         ┌──────────┐         ┌──────────┐
@@ -181,7 +188,7 @@ The KV Database uses a **merge-on-write** replication model:
 │          │         │          │         │          │
 │ export() │         │ export() │         │ export() │
 │    ↓     │         │    ↓     │         │    ↓     │
-│ :kv/db/A │◄───────►│ :kv/db/B │◄───────►│ :kv/db/C │
+│  :kv/A   │◄───────►│  :kv/B   │◄───────►│  :kv/C   │
 │          │  Lattice │          │  Lattice │          │
 │          │   Merge  │          │   Merge  │          │
 └──────────┘         └──────────┘         └──────────┘
@@ -189,9 +196,9 @@ The KV Database uses a **merge-on-write** replication model:
       └────────────────────┼────────────────────┘
                            │
               All converge to same owner map:
-              { A→signed(storeA),
-                B→signed(storeB),
-                C→signed(storeC) }
+              { A→signed({db→storeA}),
+                B→signed({db→storeB}),
+                C→signed({db→storeC}) }
 ```
 
 #### Selective Merge
@@ -376,15 +383,16 @@ server2.addPeer(ConvexRemote.connect(addr(19800)));
 KVDatabase db1 = KVDatabase.create("shared", key1, "node-1");
 db1.kv().set("key", Strings.create("value"));
 
-// Publish signed replica to lattice
-AHashMap<ACell, ACell> kvMap = Maps.of(dbName, db1.exportReplica());
-server1.updateLocalPath(kvMap, Keywords.KV);
+// Publish signed replica to lattice at :kv (OwnerLattice level)
+// exportReplica returns {ownerKey → signed({dbName → kvStore})}
+AHashMap<ACell, ACell> replica = (AHashMap) db1.exportReplica();
+server1.updateLocalPath(replica, Keywords.KV);
 
 // Sync — LatticePropagator broadcasts automatically
 server1.sync();
 
-// Read merged owner map from peer's lattice
-AHashMap<?,?> ownerMap = (AHashMap) kvMap.get(dbName);
+// Read merged owner map from lattice at :kv
+AHashMap<?,?> ownerMap = (AHashMap) server1.getCursor().get(Keywords.KV);
 db1.mergeReplicas(ownerMap);
 ```
 

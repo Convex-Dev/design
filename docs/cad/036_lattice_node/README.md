@@ -307,6 +307,22 @@ Given a path, nodes resolve the applicable sub-lattice:
 2. For each path key, navigate to child lattice
 3. Use child lattice's merge semantics for that path
 
+#### JSON Key Compatibility
+
+Lattice paths internally use CVM-native key types (Keywords, AccountKeys, etc.), but JSON-based APIs address paths using JSON-native types (strings, integers). Each lattice level provides a `resolveKey` function that translates an external key to the canonical CVM key for that level:
+
+| Lattice Level | JSON Key | Canonical CVM Key |
+|---------------|----------|-------------------|
+| KeyedLattice (root) | `"kv"` | Keyword `:kv` |
+| OwnerLattice | `"0x49b44c..."` | ABlob (parsed hex) |
+| SignedLattice | `"value"` | Keyword `:value` |
+| Vector-valued (e.g. DLFSLattice) | `"0"` | AInteger `0` (parsed numeric string for vector position) |
+| MapLattice / IndexLattice | `"mykey"` | AString (identity) |
+
+The reverse mapping (`toJSONKey`) converts canonical keys back to JSON representations: Keywords become their name strings, blobs become hex strings, and other types pass through unchanged.
+
+JSON-based callers MUST resolve each path element through `resolveKey` before using standard lattice operations. CVM-native code that already uses canonical key types does not need resolution.
+
 ### Thread Safety
 
 Lattice Nodes MUST be thread-safe:
