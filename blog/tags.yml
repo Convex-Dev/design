@@ -52,3 +52,8 @@ automation:
   label: Automation
   permalink: /automation
   description: Automated workflows powered by Convex
+
+sql:
+  label: SQL
+  permalink: /sql
+  description: SQL database capabilities on Convex lattice

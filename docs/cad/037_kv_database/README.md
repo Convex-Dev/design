@@ -2,7 +2,7 @@
 
 ## Overview
 
-The KV Database is a replicated key-value store built on the [Data Lattice](../024_data_lattice/README.md). It provides Redis-like data structure operations with CRDT merge semantics, cryptographic signing of replicas, and automatic network replication via [Lattice Nodes](../036_lattice_node/README.md).
+The KV Database is a replicated key-value store built on the [Lattice](../024_data_lattice/README.md). It provides Redis-like data structure operations with CRDT merge semantics, cryptographic signing of replicas, and automatic network replication via [Lattice Nodes](../036_lattice_node/README.md).
 
 Each KV Database is a named, multi-writer store where independent nodes maintain signed replicas. Replicas converge through lattice merge without coordination, enabling offline-first distributed applications with rich data types.
 
@@ -325,6 +325,8 @@ KV entries use the `AVector<ACell>` type for positional vectors, `CVMLong` for i
 | List operations | `KVList` | `convex.lattice.kv` |
 | Index lattice (generic) | `IndexLattice` | `convex.lattice.generic` |
 
+The `KVDatabaseTest` and `LatticeKVTest` classes provide comprehensive test coverage for database operations, replication, and merge semantics.
+
 ### Example: Local KV Operations
 
 ```java
@@ -414,7 +416,7 @@ db1.mergeReplicas(ownerMap);
 
 - [CAD002: CVM Values](../002_values/README.md) - Value types used in KV entries
 - [CAD003: Encoding](../003_encoding/README.md) - Binary encoding format
-- [CAD024: Data Lattice](../024_data_lattice/README.md) - Theoretical foundation
+- [CAD024: Lattice](../024_data_lattice/README.md) - Theoretical foundation
 - [CAD035: Lattice Cursors](../035_cursors/README.md) - Cursor system for atomic state access
 - [CAD036: Lattice Node](../036_lattice_node/README.md) - Network replication infrastructure
 - [CAD028: DLFS](../028_dlfs/README.md) - Distributed filesystem (similar lattice pattern)
