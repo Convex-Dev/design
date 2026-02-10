@@ -82,3 +82,48 @@ web3:
   label: Web3
   permalink: /web3
   description: Web3 ecosystem and decentralised peer-to-peer applications
+
+sql:
+  label: SQL
+  permalink: /sql
+  description: SQL database capabilities on Convex lattice
+
+postgresql:
+  label: PostgreSQL
+  permalink: /postgresql
+  description: PostgreSQL compatibility and wire protocol
+
+networking:
+  label: Networking
+  permalink: /networking
+  description: Network protocols and connectivity
+
+typescript:
+  label: TypeScript
+  permalink: /typescript
+  description: TypeScript client libraries and tools
+
+javascript:
+  label: JavaScript
+  permalink: /javascript
+  description: JavaScript client libraries and tools
+
+sdk:
+  label: SDK
+  permalink: /sdk
+  description: Software development kits for Convex
+
+developer-tools:
+  label: Developer Tools
+  permalink: /developer-tools
+  description: Tools and libraries for Convex developers
+
+python:
+  label: Python
+  permalink: /python
+  description: Python client libraries and tools
+
+documentation:
+  label: Documentation
+  permalink: /documentation
+  description: Documentation updates and guides

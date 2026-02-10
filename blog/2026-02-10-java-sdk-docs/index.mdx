@@ -1,0 +1,267 @@
+---
+slug: java-sdk-documentation
+title: Java SDK Documentation Now Available
+authors: [claude]
+tags: [java, sdk, developer-tools, convex, documentation]
+---
+
+We're excited to announce comprehensive documentation for the **Java SDK** for Convex! Java developers can now build on the Convex decentralised lattice with native JVM performance and familiar Java patterns.
+
+<!-- truncate -->
+
+## What is convex-java?
+
+The `convex-java` module is the official Java client library for the Convex decentralised lattice network. It provides native JVM performance with zero overhead, enabling enterprise-grade applications with familiar Java patterns.
+
+```xml
+<dependency>
+    <groupId>world.convex</groupId>
+    <artifactId>convex-java</artifactId>
+    <version>0.8.2</version>
+</dependency>
+```
+
+## Key Features
+
+### ☕ Native JVM Performance
+
+Pure Java implementation leveraging the full power of the JVM:
+
+```java
+import convex.api.Convex;
+import convex.core.Result;
+import convex.core.crypto.AKeyPair;
+import convex.core.lang.Reader;
+
+Convex convex = Convex.connect("https://mikera1337-convex-testnet.hf.space");
+
+// Native Java types
+Address address = Address.create(1234);
+AKeyPair keyPair = AKeyPair.generate();
+Result result = convex.query(Reader.read("(balance #13)")).get();
+```
+
+### ⚡ Async with CompletableFuture
+
+Non-blocking operations using Java's CompletableFuture:
+
+```java
+CompletableFuture<Result> future = convex.query(
+    Reader.read("(balance #123)")
+);
+
+future.thenAccept(result -> {
+    System.out.println("Balance: " + result.getValue());
+});
+```
+
+### 🔐 Ed25519 Key Management
+
+Full support for Ed25519 cryptographic keys with AKeyPair:
+
+```java
+// Generate new key pair
+AKeyPair keyPair = AKeyPair.generate();
+
+// Create from seed
+byte[] seed = loadSecureSeed();
+AKeyPair keyPair = AKeyPair.create(seed);
+
+// Export for backup
+byte[] seedBackup = keyPair.getSeed();
+Files.write(Path.of("keypair.dat"), seedBackup);
+```
+
+### 🌐 Multiple Client Types
+
+Choose the right client for your use case:
+
+```java
+// JSON API client (REST)
+Convex convex = Convex.connect("https://mikera1337-convex-testnet.hf.space");
+
+// Direct peer connection (binary protocol)
+Convex convex = Convex.connect(
+    InetSocketAddress.createUnresolved("peer.convex.live", 18888)
+);
+```
+
+### 🔄 Automatic Transaction Management
+
+SDK handles transaction preparation and signing:
+
+```java
+// SDK handles everything
+convex.setKeyPair(keyPair);
+convex.setAddress(Address.create(1234));
+
+Result result = convex.transact(
+    Reader.read("(def my-value 42)")
+).get();
+
+System.out.println("Result: " + result.getValue());
+```
+
+## Copper and Convex Coins
+
+Like Bitcoin's satoshis or Ethereum's wei, Convex uses **copper** as the smallest currency unit:
+
+**1 Convex Coin = 1,000,000,000 copper**
+
+All amounts in the API use copper:
+
+```java
+// Query balance in copper
+Result result = convex.query(
+    Reader.read("(balance #123)")
+).get();
+
+long balanceCopper = ((Number) result.getValue()).longValue();
+double balanceCoins = balanceCopper / 1_000_000_000.0;
+
+System.out.println("Balance: " + balanceCoins + " CVX");
+```
+
+## Complete Example
+
+```java
+import convex.api.Convex;
+import convex.core.Result;
+import convex.core.crypto.AKeyPair;
+import convex.core.cvm.Address;
+import convex.core.lang.Reader;
+
+public class ConvexExample {
+    public static void main(String[] args) throws Exception {
+        // Connect to network
+        Convex convex = Convex.connect("https://mikera1337-convex-testnet.hf.space");
+        System.out.println("✓ Connected to Convex");
+
+        // Generate key pair
+        AKeyPair keyPair = AKeyPair.generate();
+        System.out.println("✓ Generated key pair");
+
+        // Set up account
+        convex.setKeyPair(keyPair);
+        convex.setAddress(Address.create(1234));
+        System.out.println("✓ Account configured");
+
+        // Query balance
+        Result balanceResult = convex.query(
+            Reader.read("(balance #13)")
+        ).get();
+
+        long balance = ((Number) balanceResult.getValue()).longValue();
+        System.out.println("✓ Account #13 balance: " +
+            (balance / 1_000_000_000.0) + " CVX");
+
+        // Execute transaction (requires funded account)
+        Result txResult = convex.transact(
+            Reader.read("(+ 1 2 3)")
+        ).get();
+
+        System.out.println("✓ Transaction result: " + txResult.getValue());
+
+        convex.close();
+        System.out.println("✓ Done");
+    }
+}
+```
+
+## Why Java?
+
+Java is the language of choice for:
+
+- **Enterprise Applications** - Spring Boot, Jakarta EE, microservices
+- **High Performance** - JVM optimization, native threads, efficient GC
+- **Android Development** - Mobile applications
+- **Big Data** - Hadoop, Spark, Kafka integration
+- **Legacy Systems** - Integration with existing Java infrastructure
+
+The Java SDK brings Convex to these ecosystems, enabling:
+
+- Enterprise blockchain integration
+- High-throughput transaction processing
+- Android wallet applications
+- Big data analytics of on-chain activity
+
+## Thread Safety
+
+The Java SDK is designed for concurrent use:
+
+```java
+ExecutorService executor = Executors.newFixedThreadPool(10);
+
+for (int i = 0; i < 100; i++) {
+    int id = i;
+    executor.submit(() -> {
+        Result result = convex.query(
+            Reader.read("(balance #" + id + ")")
+        ).get();
+        System.out.println("Account #" + id + ": " + result.getValue());
+    });
+}
+```
+
+**Important**: Avoid concurrent transactions from the same account due to sequence number management. Queries are safe for concurrent use.
+
+## Getting Started
+
+Ready to build on Convex with Java? Check out our comprehensive documentation:
+
+- **[Java SDK Guide](https://docs.convex.world/docs/tutorial/client-sdks/java)** - Complete documentation
+- **[Quickstart Tutorial](https://docs.convex.world/docs/tutorial/client-sdks/java/quickstart)** - Build your first app
+- **[Query Guide](https://docs.convex.world/docs/tutorial/client-sdks/java/queries)** - Read network state
+- **[Transaction Guide](https://docs.convex.world/docs/tutorial/client-sdks/java/transactions)** - Submit transactions
+- **[Account Management](https://docs.convex.world/docs/tutorial/client-sdks/java/accounts)** - Manage keys and accounts
+- **[Maven Central](https://search.maven.org/artifact/world.convex/convex-java)** - Releases and versions
+- **[Javadoc](https://javadoc.io/doc/world.convex/convex-java)** - API reference
+- **[GitHub Repository](https://github.com/Convex-Dev/convex)** - Source code (convex-java module)
+
+## Java SDK vs Other SDKs
+
+All SDKs provide full access to Convex, but differ in style:
+
+| Feature | Java | Python | TypeScript |
+|---------|------|--------|------------|
+| **I/O Pattern** | CompletableFuture async | Synchronous | Promise-based async |
+| **Naming** | camelCase | snake_case | camelCase |
+| **Types** | Native (Address, AKeyPair) | Account object | Interfaces |
+| **Key Creation** | `AKeyPair.generate()` | `KeyPair()` | `KeyPair.generate()` |
+| **Performance** | Native JVM (fastest) | Python runtime | Node.js runtime |
+
+Choose based on your ecosystem:
+- **Java** - For enterprise, Android, high-performance backend
+- **Python** - For scripting, automation, data science
+- **TypeScript** - For web apps, React, Node.js services
+
+## What's Next?
+
+With Java, Python, and TypeScript SDKs now production-ready, we're working on:
+
+- **Rust SDK** - Zero-cost abstractions for systems programming
+- **Spring Boot Starter** - First-class Spring Framework integration
+- **Android Examples** - Mobile wallet and dApp templates
+- **Reactive Streams** - Integration with Project Reactor and RxJava
+
+Stay tuned by following us on [Discord](https://discord.com/invite/xfYGq4CT7v) or watching the [GitHub repository](https://github.com/Convex-Dev/convex)!
+
+## Join the Ecosystem
+
+Convex is building the future of decentralised economies - fair, inclusive, and sustainable systems powered by lattice technology. With Java, Python, and TypeScript SDKs, it's easier than ever to build on this revolutionary platform.
+
+Whether you're building enterprise blockchain solutions, mobile wallets, or exploring new economic models, we can't wait to see what you create!
+
+**Get started today:**
+
+```xml
+<dependency>
+    <groupId>world.convex</groupId>
+    <artifactId>convex-java</artifactId>
+    <version>0.8.2</version>
+</dependency>
+```
+
+---
+
+*Questions? Join our [Discord community](https://discord.com/invite/xfYGq4CT7v) or open an issue on [GitHub](https://github.com/Convex-Dev/convex/issues).*

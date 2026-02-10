@@ -2,11 +2,43 @@
 
 ## Overview
 
+The Convex platform comprises two complementary decentralised systems built on the same underlying data infrastructure:
+
+- **Convex** — a decentralised global state machine providing publicly verifiable on-chain data, deterministic execution, and economic coordination via the Convex Virtual Machine (CVM)
+- **Lattice** — a broader decentralised CRDT network providing unlimited scalability for off-chain data, content distribution, AI models, and real-time collaboration
+
+Both systems use **CAD3 encoded data** ([CAD003](../003_encoding/README.md)) as their universal data representation, and both employ **CRDT merge semantics** to guarantee convergence without coordination. This shared foundation means data flows naturally between on-chain and off-chain contexts using the same types, encoding, and cryptographic primitives.
+
+### Convex (On-Chain)
+
 Convex operates a decentralised **network of peers**, which verify and execute transactions submitted by users on the **Convex Virtual Machine (CVM)**. The CVM manages a **Global State** which is publicly verified and visible at all times.
 
-Transactions are ordered via the **Convergent Proof of Stake** (CPoS) consensus algorithm. This algorithm efficiently ensures that transactions are processed in the correct order, and that clients can rely on the results of their transaction being accurately reflected in the Global State of the CVM. Such transactions and state updates are referred to as "on-chain".
+Transactions are ordered via the **Convergent Proof of Stake** (CPoS) consensus algorithm. This algorithm efficiently ensures that transactions are processed in the correct order, and that clients can rely on the results of their transaction being accurately reflected in the Global State of the CVM.
 
-Applications may also make use of "off-chain" data and processing via the **Data Lattice**. This is a global, massively scalable data distribution layer that is design for big data, content, AI models etc. that do not need to be communicated via the CVM. In this way, the next generation of decentralised applications can achieve the right combination of massive scalability backed up by publicly verifiable on-chain roots of trust and economic value exchange.
+On-chain data provides the **root of trust**: asset ownership, identity, smart contracts, and economic value exchange that require global consensus and public verifiability.
+
+### Lattice (Off-Chain)
+
+The Lattice is a global, massively scalable data distribution layer for data that does not need to pass through CVM consensus. It uses lattice merge (CRDT semantics) to combine data from multiple sources without coordination, enabling:
+
+- **Unlimited scalability** — no consensus bottleneck; data propagates peer-to-peer
+- **Offline-first operation** — nodes merge when connectivity is restored
+- **Signed ownership** — data is cryptographically signed per-owner ([CAD038](../038_lattice_auth/README.md))
+- **Rich data types** — replicated filesystems ([CAD028](../028_dlfs/README.md)), key-value databases ([CAD037](../037_kv_database/README.md)), and custom lattice structures
+
+### Shared Infrastructure
+
+The on-chain and off-chain layers share:
+
+| Layer | Shared Component | Specification |
+|-------|-----------------|---------------|
+| Data representation | Immutable CAD3 values (ACell hierarchy) | [CAD002](../002_values/README.md), [CAD003](../003_encoding/README.md) |
+| Cryptography | Ed25519 signatures, AccountKey identities | [CAD002](../002_values/README.md) |
+| Merge semantics | Lattice merge (commutative, associative, idempotent) | [CAD024](../024_data_lattice/README.md) |
+| Storage | Content-addressed Etch database | [CAD003](../003_encoding/README.md) |
+| Networking | Peer-to-peer binary protocol | [CAD015](../015_peercomms/README.md) |
+
+This means the next generation of decentralised applications can achieve the right combination of massive scalability backed up by publicly verifiable on-chain roots of trust and economic value exchange.
 
 ## Architecture Requirements
 

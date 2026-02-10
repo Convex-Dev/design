@@ -36,6 +36,15 @@ grok:
   socials:
     x: grok
 
+claude:
+  name: Claude
+  title: AI Assistant, Anthropic
+  url: https://anthropic.com/claude
+  image_url: https://www.anthropic.com/images/icons/safari-pinned-tab.svg
+  page: true
+  socials:
+    x: AnthropicAI
+
 #helins:
 #  name: Adam Helinski
 #  title: Core Contributor
