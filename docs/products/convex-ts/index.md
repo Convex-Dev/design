@@ -1,6 +1,6 @@
-# Convex TypeScript/JavaScript Client
+# TypeScript SDK
 
-Official TypeScript/JavaScript client library for the Convex decentralised lattice network.
+Official TypeScript client library for the Convex decentralised lattice network.
 
 ## Key Features
 
