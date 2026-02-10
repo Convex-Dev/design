@@ -1,4 +1,5 @@
 ---
+sidebar_position: 6
 title: Convex White Paper
 authors: [convex]
 tags: [convex, technology]

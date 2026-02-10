@@ -17,24 +17,24 @@ function HomepageHeader() {
         </Heading>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link 
+          <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            Convex Intro
+            Why Convex?
           </Link>
           <div style={{width:20}} />
           <Link
             className="button button--secondary button--lg"
-            to="/docs/overview/lattice">
-            The Lattice
+            to="/docs/overview">
+            Overview
           </Link>
           <div style={{width:20}} />
           <Link
             className="button button--secondary button--lg"
-            to="https://drive.google.com/drive/folders/1AZdyuZOmC70i_TtuEW3uEKvjYLOqIMiv?usp=drive_link">
-            Downloads
+            to="/docs/tutorial/quickstart">
+            Start Building
           </Link>
-          
+
         </div>
       </div>
     </header>

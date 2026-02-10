@@ -1,4 +1,5 @@
 ---
+sidebar_position: 8
 title: FAQ
 authors: [convex]
 tags: [convex]

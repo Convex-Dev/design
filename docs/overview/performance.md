@@ -1,3 +1,8 @@
+---
+sidebar_position: 4
+title: Performance
+---
+
 # Performance
 
 Convex offers outstanding performance for decentralised applications. Our objective is to offer the best combination of decentralised security and interactive performance for applications in categories such as DeFi, gaming and the metaverse with large numbers of concurrent users.

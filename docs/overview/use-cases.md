@@ -1,4 +1,5 @@
 ---
+sidebar_position: 3
 title: Use Cases
 authors: [convex]
 tags: [convex, ecosystem, applications]

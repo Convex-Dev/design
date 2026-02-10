@@ -5,6 +5,29 @@ title: User Guide
 
 Convex offers a comprehensive, full-stack solution for building decentralised applications (dApps) and open economic systems.
 
+## Core Concepts
+
+### Convex Coins
+
+Learn about the native currency and accounts:
+- **[Convex Coins](coins)** - Native utility token (CVM)
+- **[Faucet Guide](coins/faucet)** - Getting test funds
+
+### Smart Contracts
+
+Build on-chain logic with Convex:
+- **[Convex Lisp](convex-lisp)** - The on-chain programming language
+- **[Actors](actors)** - Smart contracts and autonomous actors
+- **[Recipes](recipes)** - Practical how-to guides
+
+### Network Operations
+
+Run and operate peer infrastructure:
+- **[Peer Operations](peer-operations)** - Complete operations guide
+- **[Local Testnets](peer-operations/local-testnets)** - Development environments
+
+---
+
 ## Learning Paths
 
 Choose your path based on what you want to build:
@@ -79,35 +102,15 @@ Connect to Convex from your application using official client libraries:
 
 For command-line interaction, see the [Convex CLI](/docs/products/convex-cli).
 
-## Core Concepts
-
-### Convex Coins
-
-Learn about the native currency and accounts:
-- **[Convex Coins](coins)** - Native utility token (CVM)
-- **[Faucet Guide](coins/faucet)** - Getting test funds
-
-### Smart Contracts
-
-Build on-chain logic with Convex:
-- **[Convex Lisp](convex-lisp)** - The on-chain programming language
-- **[Actors](actors)** - Smart contracts and autonomous actors
-- **[Recipes](recipes)** - Practical how-to guides
-
-### Network Operations
-
-Run and operate peer infrastructure:
-- **[Peer Operations](peer-operations)** - Complete operations guide
-- **[Local Testnets](peer-operations/local-testnets)** - Development environments
+---
 
 ## Quick Links
 
 **I want to...**
 
-- 🚀 **Build my first app** → [Choose SDK](client-sdks) → Follow quickstart
+- 🚀 **Build my first app** → [Quick Start](quickstart) → [Choose SDK](client-sdks)
 - 🌐 **Connect to a network** → [Networks Guide](networks)
 - 💰 **Get test funds** → [Faucet Guide](coins/faucet)
 - 📜 **Write smart contracts** → [Convex Lisp](convex-lisp)
 - 🖥️ **Run a peer** → [Peer Operations](peer-operations)
 - 🔍 **Look up terms** → [Glossary](glossary)
-

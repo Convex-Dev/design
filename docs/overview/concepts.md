@@ -1,4 +1,5 @@
 ---
+sidebar_position: 1
 title: Key Concepts
 authors: [convex]
 tags: [convex]

@@ -1,7 +1,7 @@
 ---
 title: Lattice Technology
 authors: [convex, mikera]
-sidebar_position: 1
+sidebar_position: 2
 tags: [convex, lattice]
 ---
 

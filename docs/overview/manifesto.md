@@ -1,4 +1,5 @@
 ---
+sidebar_position: 7
 title: Manifesto
 authors: [convex]
 tags: [convex, community, philosophy]
