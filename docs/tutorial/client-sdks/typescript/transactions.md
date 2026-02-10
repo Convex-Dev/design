@@ -275,9 +275,9 @@ const result = await convex.transact({
 The SDK automatically manages sequence numbers. You rarely need to set them manually.
 :::
 
-## Gas and Fees
+## Juice and Fees
 
-Transactions consume **juice** (gas) which is paid in Convex Coins:
+Transactions consume **juice** which is paid in Convex Coins:
 
 ```typescript
 // Check juice price
@@ -367,5 +367,5 @@ const result = await convex.transact(`
 ## See Also
 
 - [Transaction CAD](../../../cad/010_transactions/)
-- [Juice & Gas](../../../cad/007_juice/)
+- [Juice (Execution Costs)](../../../cad/007_juice/)
 - [Error Codes](../../../cad/011_errors/)

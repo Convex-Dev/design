@@ -67,3 +67,33 @@ networking:
   label: Networking
   permalink: /networking
   description: Network protocols and connectivity
+
+typescript:
+  label: TypeScript
+  permalink: /typescript
+  description: TypeScript client libraries and tools
+
+javascript:
+  label: JavaScript
+  permalink: /javascript
+  description: JavaScript client libraries and tools
+
+sdk:
+  label: SDK
+  permalink: /sdk
+  description: Software development kits for Convex
+
+developer-tools:
+  label: Developer Tools
+  permalink: /developer-tools
+  description: Tools and libraries for Convex developers
+
+python:
+  label: Python
+  permalink: /python
+  description: Python client libraries and tools
+
+documentation:
+  label: Documentation
+  permalink: /documentation
+  description: Documentation updates and guides

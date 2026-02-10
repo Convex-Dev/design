@@ -1,0 +1,217 @@
+---
+slug: python-sdk-documentation
+title: Python SDK Documentation Now Available
+authors: [claude]
+tags: [python, sdk, developer-tools, convex, documentation]
+---
+
+We're excited to announce comprehensive documentation for the **Python SDK** for Convex! Python developers can now build on the Convex decentralised lattice with Pythonic idioms and patterns.
+
+<!-- truncate -->
+
+## What is convex-api?
+
+The `convex-api` package is the official Python client library for the Convex decentralised lattice network. It provides a Pythonic interface with synchronous I/O, `snake_case` naming, and familiar exception handling.
+
+```bash
+pip install convex-api
+```
+
+## Key Features
+
+### 🐍 Pythonic API
+
+Idiomatic Python with familiar patterns:
+
+```python
+from convex_api import Convex, KeyPair
+
+convex = Convex('https://peer.convex.live')
+key_pair = KeyPair()
+account = convex.create_account(key_pair)
+
+# Pythonic method names
+balance = convex.get_balance(account)
+info = convex.get_account_info(account)
+```
+
+### 📦 Account Objects
+
+Encapsulate address, key pair, and optional name:
+
+```python
+from convex_api import Account, KeyPair
+
+key_pair = KeyPair()
+account = Account(key_pair, address=1234, name='alice')
+
+print(f'Address: {account.address}')
+print(f'Public Key: {account.public_key}')
+```
+
+### 🔐 Flexible Key Management
+
+Multiple ways to create and import keys:
+
+```python
+# Generate new keys
+key_pair = KeyPair()
+
+# Import from encrypted file
+key_pair = KeyPair.import_from_file('my_keys.pem', 'password')
+
+# Import from mnemonic phrase
+key_pair = KeyPair.import_from_mnemonic('word1 word2 word3 ...')
+
+# Export for backup
+key_pair.export_to_file('backup.pem', 'password')
+mnemonic = key_pair.export_to_mnemonic
+```
+
+### 🔄 Automatic Sequence Retry
+
+Handles concurrency gracefully by automatically retrying sequence conflicts:
+
+```python
+# Automatically retries up to 20 times on sequence errors
+result = convex.transact('(def x 42)', account)
+```
+
+### 🌐 CNS Integration
+
+Built-in Convex Name Service support:
+
+```python
+# Register account name
+convex.register_account_name('alice', account)
+
+# Resolve names
+address = convex.resolve_account_name('alice')
+address = convex.resolve_name('convex.trust')
+```
+
+## Copper and Convex Coins
+
+Like Bitcoin's satoshis or Ethereum's wei, Convex uses **copper** as the smallest currency unit:
+
+**1 Convex Coin = 1,000,000,000 copper**
+
+All amounts in the API use copper:
+
+```python
+# Request 0.1 Convex Coins (100 million copper)
+convex.request_funds(100_000_000, account)
+
+# Transfer 0.05 Convex Coins (50 million copper)
+convex.transfer('#456', 50_000_000, account)
+
+# Display balance in Convex Coins
+balance_copper = convex.get_balance(account)
+balance_coins = balance_copper / 1_000_000_000
+print(f'Balance: {balance_coins} CVX')
+```
+
+## Complete Example
+
+```python
+from convex_api import Convex, KeyPair
+
+def main():
+    # Connect to network
+    convex = Convex('https://peer.convex.live')
+
+    # Create account
+    key_pair = KeyPair()
+    account = convex.create_account(key_pair)
+
+    # Save keys for later
+    key_pair.export_to_file('my_account.pem', 'secret_password')
+
+    # Request test funds
+    convex.request_funds(100_000_000, account)
+
+    # Check balance
+    balance = convex.get_balance(account)
+    print(f'Balance: {balance / 1_000_000_000} CVX')
+
+    # Execute transaction
+    result = convex.transact('(map inc [1 2 3 4])', account)
+    print(f'Result: {result.value}')  # [2, 3, 4, 5]
+
+    # Transfer funds
+    recipient_keys = KeyPair()
+    recipient = convex.create_account(recipient_keys)
+    convex.transfer(recipient.address, 10_000_000, account)
+
+    print(f'Transferred 0.01 CVX to #{recipient.address}')
+
+if __name__ == '__main__':
+    main()
+```
+
+## Why Python?
+
+Python is the language of choice for:
+
+- **Data Science & ML** - NumPy, Pandas, TensorFlow, PyTorch
+- **Automation & Scripting** - System administration, DevOps, CI/CD
+- **Web Development** - Django, Flask, FastAPI
+- **Scientific Computing** - Jupyter notebooks, research
+
+The Python SDK brings Convex to these ecosystems, enabling:
+
+- AI agents that transact on-chain
+- Automated trading and DeFi bots
+- Data analysis of on-chain activity
+- Backend services in Python web frameworks
+
+## Getting Started
+
+Ready to build on Convex with Python? Check out our comprehensive documentation:
+
+- **[Python SDK Guide](https://docs.convex.world/docs/tutorial/client-sdks/python)** - Complete documentation
+- **[Quickstart Tutorial](https://docs.convex.world/docs/tutorial/client-sdks/python/quickstart)** - Build your first app
+- **[Query Guide](https://docs.convex.world/docs/tutorial/client-sdks/python/queries)** - Read network state
+- **[Transaction Guide](https://docs.convex.world/docs/tutorial/client-sdks/python/transactions)** - Submit transactions
+- **[Account Management](https://docs.convex.world/docs/tutorial/client-sdks/python/accounts)** - Manage keys and accounts
+- **[PyPI Package](https://pypi.org/project/convex-api/)** - Install from PyPI
+- **[GitHub Repository](https://github.com/Convex-Dev/convex-api-py)** - Source code and examples
+
+## Python SDK vs TypeScript SDK
+
+Both SDKs provide full access to Convex, but differ in style:
+
+| Feature | Python | TypeScript |
+|---------|--------|------------|
+| **I/O Pattern** | Synchronous | Promise-based async |
+| **Naming** | `snake_case` | `camelCase` |
+| **Account** | Account object | Setter methods |
+| **Key Creation** | `KeyPair()` constructor | `KeyPair.generate()` static method |
+| **Errors** | Exception-based | Try/catch or Result types |
+
+Choose based on your ecosystem:
+- **Python** - For scripting, automation, data science
+- **TypeScript** - For web apps, React, Node.js services
+
+## What's Next?
+
+With Python and TypeScript SDKs now production-ready, we're working on:
+
+- **Java SDK** - Native JVM integration for enterprise applications
+- **Rust SDK** - Zero-cost abstractions for systems programming
+- **Async Python** - `asyncio` support for concurrent applications
+- **React Hooks** - First-class React integration for TypeScript
+
+Stay tuned by following us on [Discord](https://discord.com/invite/xfYGq4CT7v) or watching the [GitHub repositories](https://github.com/Convex-Dev)!
+
+## Join the Ecosystem
+
+Convex is building the future of decentralised economies - fair, inclusive, and sustainable systems powered by lattice technology. With Python and TypeScript SDKs, it's easier than ever to build on this revolutionary platform.
+
+Whether you're building AI agents, DeFi applications, or exploring new economic models, we can't wait to see what you create!
+
+**Get started today:** `pip install convex-api`
+
+---
+
+*Questions? Join our [Discord community](https://discord.com/invite/xfYGq4CT7v) or open an issue on [GitHub](https://github.com/Convex-Dev/convex-api-py/issues).*

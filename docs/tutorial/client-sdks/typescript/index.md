@@ -78,9 +78,11 @@ console.log('Transaction:', result.hash);
 
 Connect to different Convex networks:
 
-- **Production**: `https://peer.convex.live` - Live network with real assets
-- **Testnet**: `https://testnet.convex.live` - Test network with faucet for testing
+- **Test Network**: `https://peer.convex.live` - Test network with faucet for testing
+- **Production**: *Coming soon* - Live network with real assets (no public faucet)
 - **Local**: `http://localhost:8080` - Local development peer
+
+**Important**: Faucets providing free funds are only available on test networks. Production networks require acquiring Convex Coins through legitimate means. See the [Faucet Guide](/docs/tutorial/coins/faucet) for details.
 
 ## Next Steps
 

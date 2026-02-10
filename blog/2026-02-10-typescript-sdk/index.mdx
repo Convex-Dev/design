@@ -1,0 +1,162 @@
+---
+slug: typescript-sdk-release
+title: Introducing the Official TypeScript SDK for Convex
+authors: [claude]
+tags: [typescript, javascript, sdk, developer-tools, convex]
+---
+
+We're excited to announce the official **TypeScript SDK** for Convex! Build web applications, Node.js services, and React dApps with full type safety and modern JavaScript tooling.
+
+<!-- truncate -->
+
+## What is convex.ts?
+
+The `@convex-world/convex-ts` package is a production-ready TypeScript client library that provides a clean, modern API for interacting with the Convex decentralised lattice network. Whether you're building a web app, backend service, or React dApp, this SDK has you covered.
+
+```bash
+npm install @convex-world/convex-ts
+```
+
+## Key Features
+
+### 🔍 Read-Only Queries
+
+Query the Convex network without needing an account or keys:
+
+```typescript
+import { Convex } from '@convex-world/convex-ts';
+
+const convex = new Convex('https://peer.convex.live');
+const result = await convex.query('(balance #13)');
+console.log('Balance:', result.value);
+```
+
+### 🔐 Full Account Support
+
+Use your existing Convex account with Ed25519 key pairs:
+
+```typescript
+import { KeyPair } from '@convex-world/convex-ts';
+
+const keyPair = KeyPair.fromSeed(yourSeed);
+convex.setAccount('#1678', keyPair);
+
+// Query your balance
+const info = await convex.getAccountInfo();
+console.log('Balance:', info.balance / 1_000_000_000, 'Convex Coins');
+
+// Transfer coins
+await convex.transfer('#456', 1_000_000_000);
+```
+
+### 🔌 Pluggable Signers
+
+Extensible signer interface for hardware wallets, browser extensions, and HSM:
+
+```typescript
+class HardwareWalletSigner implements Signer {
+  getPublicKey(): Uint8Array {
+    return this.cachedPublicKey;
+  }
+
+  async sign(message: Uint8Array): Promise<Uint8Array> {
+    // Prompts user on hardware device
+    return await this.wallet.signMessage(message);
+  }
+}
+
+convex.setSigner(new HardwareWalletSigner(wallet));
+```
+
+### 📘 Full TypeScript Support
+
+Complete type definitions for IntelliSense and compile-time checking:
+
+```typescript
+import type { TransactionResult, AccountInfo } from '@convex-world/convex-ts';
+
+const result: TransactionResult = await convex.transfer('#456', 1_000_000_000);
+
+if (result.status === 'success') {
+  console.log('Transaction hash:', result.hash);
+}
+```
+
+### 🌐 Environment Agnostic
+
+Works everywhere JavaScript runs - **zero DOM dependencies**:
+
+- ✅ **Node.js** - Backend services and scripts
+- ✅ **Browsers** - Web applications
+- ✅ **Deno** - Modern JavaScript runtime
+- ✅ **Bun** - Fast all-in-one toolkit
+
+### ⚛️ React Integration
+
+Hooks and components coming soon via `@convex-world/convex-react`:
+
+```typescript
+// Coming soon!
+import { useConvexQuery } from '@convex-world/convex-react';
+
+function Balance({ address }) {
+  const { data, loading } = useConvexQuery(`(balance ${address})`);
+  return <div>Balance: {data?.value}</div>;
+}
+```
+
+## Why TypeScript?
+
+The Convex network is powered by the Java-based Convex Virtual Machine (CVM), but we know that modern web developers live in the JavaScript ecosystem. The TypeScript SDK bridges this gap, providing:
+
+- **Modern ESM** - Native ES modules with proper `import` statements
+- **Type Safety** - Catch errors at compile time, not runtime
+- **IntelliSense** - Full autocomplete in VS Code and other editors
+- **Zero Config** - Works out of the box with modern tools
+- **Future-Proof** - Built on web standards
+
+## JavaScript Too!
+
+Don't use TypeScript? No problem! The SDK works perfectly with plain JavaScript. We've created a [dedicated JavaScript guide](/docs/tutorial/client-sdks/javascript) with idiomatic examples:
+
+```javascript
+// Plain JavaScript - no TypeScript required!
+import { Convex } from '@convex-world/convex-ts';
+
+const convex = new Convex('https://peer.convex.live');
+const result = await convex.query('(balance #13)');
+console.log('Balance:', result.value);
+```
+
+## Getting Started
+
+Ready to build on Convex with TypeScript? Check out our comprehensive documentation:
+
+- **[TypeScript SDK Guide](/docs/tutorial/client-sdks/typescript)** - Complete documentation
+- **[Quickstart Tutorial](/docs/tutorial/client-sdks/typescript/quickstart)** - Build your first app
+- **[API Reference](/docs/tutorial/client-sdks/typescript/index#key-features)** - Full API docs
+- **[npm Package](https://www.npmjs.com/package/@convex-world/convex-ts)** - Install from npm
+- **[GitHub Repository](https://github.com/Convex-Dev/convex.ts)** - Source code and examples
+
+## What's Next?
+
+The TypeScript SDK is just the beginning. We're working on:
+
+- **Java SDK** - Native JVM integration for high-performance applications
+- **Python SDK** - Pythonic API for data science and automation
+- **Rust SDK** - Zero-cost abstractions for systems programming
+- **React Hooks** - First-class React integration
+
+Stay tuned by following us on [Discord](https://discord.com/invite/xfYGq4CT7v) or watching the [GitHub repository](https://github.com/Convex-Dev/convex.ts)!
+
+## Join the Ecosystem
+
+Convex is building the future of decentralised economies - fair, inclusive, and sustainable systems powered by lattice technology. The TypeScript SDK makes it easier than ever to build on this revolutionary platform.
+
+Whether you're building a DeFi application, a decentralised marketplace, or exploring new economic models, we can't wait to see what you create!
+
+**Get started today:** `npm install @convex-world/convex-ts`
+
+---
+
+*Questions? Join our [Discord community](https://discord.com/invite/xfYGq4CT7v) or open an issue on [GitHub](https://github.com/Convex-Dev/convex.ts/issues).*

@@ -41,7 +41,7 @@ It is important to secure the new account so that only you can access it. Accoun
 
 Account are *psuedonymous*: The account public key or address alone doesn't identify you as an individual, but it is possible that others may discover additional information that associates you with the account. 
 
-### Creating an Ed255198 key pair
+### Creating an Ed25519 key pair
 
 You can create an Ed25519 key pair any way you like - there are multiple tools and software solutions that can do this for you and help you to secure your private keys.
 

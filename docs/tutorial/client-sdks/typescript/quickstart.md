@@ -70,8 +70,10 @@ For this step, you'll need:
 :::tip Getting an Account
 If you don't have an account yet, you can:
 - Use the [Convex Desktop](../../products/convex-desktop) application to create one
-- Request test coins from the [testnet faucet](https://testnet.convex.live/faucet)
+- Request test coins from the [testnet faucet](https://testnet.convex.live/faucet) (**test networks only**)
 - Connect to a local peer for development
+
+**Note**: Faucets only work on test networks. On production networks, someone must create an account for you and transfer initial funds. See the [Faucet Guide](/docs/tutorial/coins/faucet) for details.
 :::
 
 Create `src/account.ts`:

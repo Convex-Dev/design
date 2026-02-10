@@ -33,23 +33,31 @@ Use Convex from plain JavaScript (no TypeScript required).
 
 ---
 
-### Java (Coming Soon)
+### Java
 
-Native JVM client for high-performance applications.
+Native JVM client for high-performance enterprise applications.
 
-- **Status**: 🚧 In development
+- **Status**: ✅ Production ready
+- **Package**: `world.convex:convex-java` (on Maven Central)
 - **Environments**: JVM (Java 21+)
-- **Use Cases**: Backend services, enterprise applications
+- **Features**: Native performance, CompletableFuture async, zero overhead
+- **Repository**: [github.com/Convex-Dev/convex](https://github.com/Convex-Dev/convex) (convex-java module)
+
+**[Get Started with Java →](java/)**
 
 ---
 
-### Python (Coming Soon)
+### Python
 
-Pythonic client for data science and scripting.
+Pythonic client for scripting, automation, and data science.
 
-- **Status**: 🚧 Planned
-- **Features**: Async/await support, type hints
-- **Use Cases**: Data analysis, automation, machine learning
+- **Status**: ✅ Production ready
+- **Package**: `convex-api` (on PyPI)
+- **Environments**: Python 3.8+
+- **Features**: Synchronous I/O, Account objects, automatic sequence retry
+- **Repository**: [github.com/Convex-Dev/convex-api-py](https://github.com/Convex-Dev/convex-api-py)
+
+**[Get Started with Python →](python/)**
 
 ---
 
