@@ -57,3 +57,13 @@ sql:
   label: SQL
   permalink: /sql
   description: SQL database capabilities on Convex lattice
+
+postgresql:
+  label: PostgreSQL
+  permalink: /postgresql
+  description: PostgreSQL compatibility and wire protocol
+
+networking:
+  label: Networking
+  permalink: /networking
+  description: Network protocols and connectivity
