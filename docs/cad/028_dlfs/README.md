@@ -2,6 +2,7 @@
 
 ## Overview
 
+<<<<<<< HEAD
 The Data Lattice File System (DLFS) is a decentralised virtual file system built on the [Data Lattice](../024_data_lattice/README.md). It provides automatic synchronisation, conflict-free replication, and cryptographic verification of file data across distributed networks.
 
 ## Motivation
