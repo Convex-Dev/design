@@ -101,19 +101,19 @@ const info = await convex.getAccountInfo();
 console.log('Address:', info.address);
 console.log('Balance:', info.balance / 1_000_000_000, 'coins');
 console.log('Sequence:', info.sequence);
-console.log('Public key:', Buffer.from(info.publicKey).toString('hex'));
+console.log('Public key:', info.publicKey);
 ```
 
 ### Check Balance
 
 ```typescript
-// Your account balance
-const info = await convex.getAccountInfo();
-const balanceInCoins = info.balance / 1_000_000_000;
+// Your native coin balance
+const result = await convex.balance();
+console.log('Balance:', result.value, 'copper');
 
-// Any account balance (via query)
-const result = await convex.query('(balance #123)');
-const balance = Number(result.value);
+// Another account's balance
+const other = await convex.balance('#123');
+console.log('Other balance:', other.value);
 ```
 
 ## Key Pair Formats
@@ -186,8 +186,10 @@ convex.setAccount(process.env.CONVEX_ADDRESS!, keyPair);
 ### Verify Seed Length
 
 ```typescript
+import { KeyPair, hexToBytes } from '@convex-world/convex-ts';
+
 function loadKeyPair(seedHex: string): KeyPair {
-  const seedBytes = Buffer.from(seedHex, 'hex');
+  const seedBytes = hexToBytes(seedHex);
 
   if (seedBytes.length !== 32) {
     throw new Error(`Invalid seed length: expected 32 bytes, got ${seedBytes.length}`);
@@ -251,29 +253,20 @@ await manager.useAccount(convex, '#9999');
 await convex.transfer('#789', 2000000);
 ```
 
-### Multi-Signature Patterns
+### Switching Between Accounts
 
 ```typescript
-// Multiple signers for one account (requires smart contract)
-const signers = [
-  KeyPair.fromSeed(seed1),
-  KeyPair.fromSeed(seed2),
-  KeyPair.fromSeed(seed3)
-];
+// Use different accounts with the same client
+const kp1 = KeyPair.fromSeed(seed1);
+const kp2 = KeyPair.fromSeed(seed2);
 
-// Collect signatures
-const message = 'transfer 1000000 to #456';
-const signatures = await Promise.all(
-  signers.map(kp => sign(message, kp.privateKey))
-);
+// Transact as first account
+convex.setAccount('#1678', kp1);
+await convex.transfer('#456', 1_000_000);
 
-// Submit multi-sig transaction
-const result = await convex.transact({
-  data: {
-    message,
-    signatures: signatures.map(sig => Buffer.from(sig).toString('hex'))
-  }
-});
+// Switch to second account
+convex.setAccount('#9999', kp2);
+await convex.transfer('#789', 2_000_000);
 ```
 
 ## Security Best Practices
@@ -336,31 +329,46 @@ console.log(qrCode);
 
 ## Account Creation
 
-### On-Chain Account Creation
+### Create via REST API
 
-Creating a new account on-chain (requires an existing funded account):
+The simplest way to create an account — no existing account needed:
 
 ```typescript
-// From an existing account, fund a new account
-const newKeyPair = KeyPair.generate();
-const newPublicKey = newKeyPair.publicKeyHex;
+import { Convex, KeyPair } from '@convex-world/convex-ts';
 
-const result = await convex.transact(`
-  (create-account ${newPublicKey})
-`);
+const convex = new Convex('https://peer.convex.live');
 
-console.log('New account created:', result.result);
+// Generate a fresh key pair
+const keyPair = KeyPair.generate();
+
+// Create account with faucet funding (test networks only)
+const info = await convex.createAccount(keyPair, 100_000_000);
+console.log('New address:', info.address);
+console.log('Balance:', info.balance);
+
+// Set the new account on the client
+convex.setAccount(info.address, keyPair);
 ```
+
+### Top Up with Faucet
+
+Request additional funds for an existing account (test networks only):
+
+```typescript
+await convex.faucet('#1678', 100_000_000);
+```
+
+:::warning Faucets are test-only
+Faucets are only available on test networks. On production networks, someone must transfer initial funds to your account.
+:::
 
 ## Next Steps
 
-- **[Signers](./signers)** - Hardware wallet and custom signers
-- **[Keystore](./keystore)** - Encrypted key storage
-- **[Transactions](./transactions)** - Using your account
-- **[Security Best Practices](../../../cad/023_keystore/)** - Advanced security
+- **[Signers](./signers)** — Hardware wallet and custom signers
+- **[Asset Handles](./assets)** — Token and CNS management
+- **[Transactions](./transactions)** — Using your account
 
 ## See Also
 
 - [Ed25519 Signature Scheme](https://ed25519.cr.yp.to/)
 - [BIP39 Mnemonic Codes](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki)
-- [Accounts CAD](../../../cad/004_accounts/)

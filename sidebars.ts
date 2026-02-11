@@ -66,6 +66,7 @@ const sidebars: SidebarsConfig = {
             'tutorial/client-sdks/typescript/queries',
             'tutorial/client-sdks/typescript/transactions',
             'tutorial/client-sdks/typescript/accounts',
+            'tutorial/client-sdks/typescript/assets',
             'tutorial/client-sdks/typescript/signers',
           ],
         },

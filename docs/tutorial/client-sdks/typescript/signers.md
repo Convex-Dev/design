@@ -445,11 +445,9 @@ convex.setSigner(timeoutSigner);
 
 ## Next Steps
 
-- **[Keystore](./keystore)** - Encrypted key storage
-- **[Accounts](./accounts)** - Account management
-- **[Transactions](./transactions)** - Submit transactions
+- **[Accounts](./accounts)** — Account management
+- **[Transactions](./transactions)** — Submit transactions
 
 ## See Also
 
 - [Ed25519 Signatures](https://ed25519.cr.yp.to/)
-- [Hardware Wallet Security](../../../cad/023_keystore/)

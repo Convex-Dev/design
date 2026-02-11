@@ -15,6 +15,7 @@ The `@convex-world/convex-ts` package provides a modern, type-safe way to intera
 - **🔍 Read-Only Queries** - Query network state without needing an account or keys
 - **🔐 Account Management** - Full support for Ed25519 key pairs and account operations
 - **💸 Transactions** - Submit and track transactions with complete type safety
+- **🪙 Asset Handles** - Fluent API for fungible tokens, generic assets, and CNS
 - **🔌 Pluggable Signers** - Extensible signer interface for hardware wallets, browser extensions, and HSM
 - **💾 Secure Keystore** - Encrypted key storage with password protection
 - **📘 Full TypeScript Support** - Complete type definitions for IntelliSense and compile-time checks
@@ -56,7 +57,7 @@ console.log('Balance:', result.value);
 If you have a Convex account and Ed25519 seed:
 
 ```typescript
-import { Convex, KeyPair } from '@convex-world/convex-ts';
+import { Convex, KeyPair, ConvexError } from '@convex-world/convex-ts';
 
 // Connect to network
 const convex = new Convex('https://peer.convex.live');
@@ -66,12 +67,16 @@ const keyPair = KeyPair.fromSeed('your-32-byte-seed-hex');
 convex.setAccount('#1678', keyPair);
 
 // Query your balance
-const info = await convex.getAccountInfo();
-console.log('Balance:', info.balance / 1_000_000_000, 'Convex Coins');
+const balance = await convex.balance();
+console.log('Balance:', balance / 1_000_000_000, 'Convex Coins');
 
 // Transfer coins
 const result = await convex.transfer('#456', 1_000_000_000);
-console.log('Transaction:', result.hash);
+if (result.errorCode) {
+  console.error('Transfer failed:', result.errorCode);
+} else {
+  console.log('Transfer result:', result.value);
+}
 ```
 
 ## Network URLs
@@ -98,6 +103,7 @@ Connect to different Convex networks:
           <li><a href="./queries">Querying State</a></li>
           <li><a href="./transactions">Submitting Transactions</a></li>
           <li><a href="./accounts">Account Management</a></li>
+          <li><a href="./assets">Asset Handles</a></li>
         </ul>
       </div>
     </div>
@@ -110,9 +116,6 @@ Connect to different Convex networks:
       <div className="card__body">
         <ul>
           <li><a href="./signers">Signer Interface</a></li>
-          <li><a href="./keystore">Encrypted Keystore</a></li>
-          <li><a href="./react">React Integration</a></li>
-          <li><a href="./api-reference">API Reference</a></li>
         </ul>
       </div>
     </div>

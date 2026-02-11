@@ -28,10 +28,21 @@ console.log('Balance:', result.value);
 
 ## Query with Address Context
 
-Some queries need an address context (the `*address*` special variable):
+Some queries need an address context (the `*address*` special variable). You can set a default address on the client:
 
 ```typescript
-// Query using address context
+// Set a default address for subsequent queries
+convex.setAddress('#1678');
+
+// Now query() automatically includes this address
+const result = await convex.query('*balance*');
+console.log('Balance:', result.value);
+```
+
+You can also pass address context explicitly using the object form:
+
+```typescript
+// Query using explicit address context
 const result = await convex.query({
   address: '#1678',
   source: '*balance*'  // Uses the context address
@@ -41,21 +52,34 @@ console.log('Balance:', result.value);
 ```
 
 :::tip When to Use Address Context
-Use the object form with `address` when:
+Use `setAddress()` or the object form with `address` when:
 - Your query references `*address*` or other address-specific variables
 - You need to execute code as if you were a specific account
 - Querying actor-specific state
 
-For most queries, the simple string form is sufficient.
+When `setAddress()` has been called, `query()` with a plain string automatically includes the address. For queries that don't depend on a context address, the simple string form is sufficient.
 :::
 
 ## Common Query Patterns
 
 ### Account Balances
 
+The preferred way to check balances is with the `balance()` convenience method:
+
+```typescript
+// Balance of the client's current address
+const myBalance = await convex.balance();
+
+// Balance of a specific account
+const balance = await convex.balance('#13');
+```
+
+You can also query balances using Convex Lisp:
+
 ```typescript
 // Specific account
-const balance = await convex.query('(balance #123)');
+const result = await convex.query('(balance #123)');
+console.log('Balance:', result.value);
 
 // Multiple accounts
 const accounts = ['#9', '#10', '#11'];
@@ -68,7 +92,7 @@ for (const addr of accounts) {
 ### Mathematical Expressions
 
 ```typescript
-// Execute Convex Lisp math
+// Execute Convex Lisp maths
 const result = await convex.query('(+ 1 2 3 4 5)');
 console.log('Sum:', result.value);  // 15
 
@@ -83,26 +107,21 @@ console.log('Result:', calc.value);  // 75
 // Query a smart contract
 const result = await convex.query('(call #789 (get-price :BTC))');
 console.log('BTC Price:', result.value);
-
-// With parameters
-const tokenInfo = await convex.query(`
-  (call *registry* (cns-resolve :my-token))
-`);
-console.log('Token:', tokenInfo.value);
 ```
 
-### Registry Lookups
+### CNS Lookups
+
+The Convex Name Service (CNS) provides human-readable names for on-chain addresses. You can resolve CNS names directly or via a handle:
 
 ```typescript
-// CNS (Convex Name Service) lookups
-const address = await convex.query(`
-  (call *registry* (cns-resolve :convex.trust))
-`);
+// Direct CNS resolution
+const result = await convex.query('@convex.core');
+console.log('Address:', result.result);
 
-// CAD (Convex Architecture Document) lookups
-const cadInfo = await convex.query(`
-  (call *registry* (lookup :CAD001))
-`);
+// Or via a CNS handle
+const handle = convex.cns('convex.core');
+const resolved = await handle.resolve();
+console.log('Address:', resolved.result);
 ```
 
 ## Handling Query Results
@@ -113,27 +132,44 @@ Query results have this structure:
 
 ```typescript
 interface Result {
-  value: any;           // The query result value
-  errorCode?: string;   // Present if query failed
-  info?: any;          // Additional information
+  value?: any;        // JSON-converted CVM value
+  result?: string;    // CVM printed representation (e.g. "#8" for an address)
+  errorCode?: string; // Error code (triggers throw)
+  info?: ResultInfo;  // Execution metadata (juice, fees, trace, etc.)
 }
 ```
+
+The `value` field contains the JSON-converted return value, whilst `result` contains the CVM printed representation as a string. For example, an address would appear as `"#8"` in `result` but may be a number in `value`.
 
 ### Error Handling
 
+In v0.3.0, `query()` and `transact()` automatically throw a `ConvexError` when the CVM returns an error (i.e. when `errorCode` is present in the response). Use try/catch to handle errors:
+
 ```typescript
+import { Convex, ConvexError } from '@convex-world/convex-ts';
+
+const convex = new Convex('https://peer.convex.live');
+
 try {
   const result = await convex.query('(balance #123)');
-
-  if (result.errorCode) {
-    console.error('Query failed:', result.errorCode);
-  } else {
-    console.log('Success:', result.value);
-  }
+  console.log('Success:', result.value);
 } catch (error) {
-  console.error('Network error:', error);
+  if (error instanceof ConvexError) {
+    // CVM error — the query was executed but failed
+    console.error('CVM error code:', error.code);
+    console.error('Execution info:', error.info);  // juice, fees, trace, etc.
+    console.error('Full result:', error.result);
+  } else {
+    // Network or other error
+    console.error('Network error:', error);
+  }
 }
 ```
+
+The `ConvexError` class provides:
+- `error.code` — the CVM error code string (e.g. `"NOBODY"`, `"UNDECLARED"`)
+- `error.info` — a `ResultInfo` object with execution metadata (juice, fees, trace, etc.)
+- `error.result` — the full `Result` object from the response
 
 ### Type Checking
 
@@ -204,39 +240,14 @@ const [balance1, balance2, balance3] = await Promise.all([
 ]);
 ```
 
-### Cache Results
-
-Cache query results when appropriate:
-
-```typescript
-class ConvexCache {
-  private cache = new Map<string, { value: any; expires: number }>();
-
-  async query(convex: Convex, source: string, ttl = 5000) {
-    const cached = this.cache.get(source);
-    if (cached && Date.now() < cached.expires) {
-      return cached.value;
-    }
-
-    const result = await convex.query(source);
-    this.cache.set(source, {
-      value: result,
-      expires: Date.now() + ttl
-    });
-
-    return result;
-  }
-}
-```
-
 ### Optimise Query Logic
 
 ```typescript
-// ❌ Bad: Multiple round trips
+// Bad: Multiple round trips
 const balance = await convex.query('(balance #123)');
 const sequence = await convex.query('(account-sequence #123)');
 
-// ✅ Good: Single query
+// Good: Single query
 const result = await convex.query(`
   {:balance (balance #123)
    :sequence (account-sequence #123)}
@@ -245,12 +256,6 @@ const result = await convex.query(`
 
 ## Next Steps
 
-- **[Transactions](./transactions)** - Learn to modify state
-- **[Convex Lisp Guide](../../convex-lisp/)** - Master the query language
-- **[API Reference](./api-reference)** - Complete API documentation
-
-## See Also
-
-- [Convex Lisp Tutorial](../../convex-lisp/)
-- [Actors & Smart Contracts](../../actors/)
-- [Network State & Values](../../../cad/002_values/)
+- **[Transactions](./transactions)** — Learn to modify state
+- **[Asset Handles](./assets)** — Fluent API for tokens, assets, and CNS
+- **[Convex Lisp Guide](/docs/tutorial/convex-lisp/)** — Master the query language

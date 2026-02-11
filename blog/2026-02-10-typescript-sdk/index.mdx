@@ -19,7 +19,7 @@ npm install @convex-world/convex-ts
 
 ## Key Features
 
-### 🔍 Read-Only Queries
+### Read-Only Queries
 
 Query the Convex network without needing an account or keys:
 
@@ -31,25 +31,117 @@ const result = await convex.query('(balance #13)');
 console.log('Balance:', result.value);
 ```
 
-### 🔐 Full Account Support
+### Full Account Support
 
-Use your existing Convex account with Ed25519 key pairs:
+Create accounts, transfer coins, and manage keys with Ed25519 key pairs:
 
 ```typescript
-import { KeyPair } from '@convex-world/convex-ts';
+import { Convex, KeyPair } from '@convex-world/convex-ts';
 
-const keyPair = KeyPair.fromSeed(yourSeed);
-convex.setAccount('#1678', keyPair);
+const convex = new Convex('https://peer.convex.live');
+const keyPair = KeyPair.generate();
+
+// Create a new account with faucet funds (testnets)
+const info = await convex.createAccount(keyPair, 100_000_000);
+convex.setAccount(info.address, keyPair);
 
 // Query your balance
-const info = await convex.getAccountInfo();
-console.log('Balance:', info.balance / 1_000_000_000, 'Convex Coins');
+const account = await convex.getAccountInfo();
+console.log('Balance:', account.balance / 1_000_000_000, 'Convex Coins');
 
 // Transfer coins
 await convex.transfer('#456', 1_000_000_000);
 ```
 
-### 🔌 Pluggable Signers
+### Account Handles
+
+Manage any account with a lightweight handle — query balances, keys, controllers, and sequence numbers:
+
+```typescript
+const account = convex.account('#13');
+
+const balance = await account.balance();
+const sequence = await account.getSequence();
+const key = await account.getKey();
+const controller = await account.getController();
+
+// Write operations auto-detect authority:
+// direct execution when you ARE the account (key authority),
+// eval-as when you are the account's controller
+await account.setController('#99');
+await account.setKey('aabbccdd...');
+```
+
+### Asset Handles
+
+Interact with on-chain assets using typed handles. `FungibleToken` for CAD29 fungible tokens, and `AssetHandle` for any asset type:
+
+```typescript
+// CAD29 fungible token
+const token = convex.fungible('#128');
+const bal = await token.balance();            // your balance
+await token.transfer('#13', 1000);            // transfer
+await token.mint(5000);                       // mint (if token owner)
+const supply = await token.supply();          // total supply
+
+// Generic asset (works with any asset type)
+const asset = convex.asset('#256');
+await asset.transfer('#13', 100);
+await asset.offer('#13', '#{:foo :bar}');     // structured quantities
+```
+
+### Convex Name System (CNS)
+
+Resolve and manage CNS names — the decentralised name system for Convex addresses:
+
+```typescript
+const handle = convex.cns('convex.core');
+const result = await handle.resolve();        // → #8
+
+await convex.cns('user.mike').set('#1678');           // update mapping
+await convex.cns('user.mike').setController('#99');   // transfer control
+```
+
+### Structured Error Handling
+
+CVM errors are thrown as `ConvexError` with machine-readable codes:
+
+```typescript
+import { ConvexError } from '@convex-world/convex-ts';
+
+try {
+  await convex.query('(assert false)');
+} catch (e) {
+  if (e instanceof ConvexError) {
+    console.log(e.code);    // 'ASSERT'
+    console.log(e.message); // human-readable description
+  }
+}
+```
+
+### Key Storage
+
+Securely store and manage Ed25519 key pairs with AES-GCM encryption:
+
+```typescript
+import { LocalStorageKeyStore, MemoryKeyStore } from '@convex-world/convex-ts';
+
+// Browser — backed by localStorage
+const store = new LocalStorageKeyStore();
+
+// Node.js / testing — backed by in-memory Maps
+const store = new MemoryKeyStore();
+
+// Store and retrieve keys
+await store.storeKeyPair('my-wallet', keyPair, 'password123');
+const restored = await store.getKeyPair('my-wallet', 'password123');
+
+// Session management — unlock once, use without password
+await store.unlock('my-wallet', 'password123');
+const kp = store.getUnlockedKeyPair('my-wallet');
+```
+
+### Pluggable Signers
 
 Extensible signer interface for hardware wallets, browser extensions, and HSM:
 
@@ -68,52 +160,74 @@ class HardwareWalletSigner implements Signer {
 convex.setSigner(new HardwareWalletSigner(wallet));
 ```
 
-### 📘 Full TypeScript Support
+### Full TypeScript Support
 
 Complete type definitions for IntelliSense and compile-time checking:
 
 ```typescript
-import type { TransactionResult, AccountInfo } from '@convex-world/convex-ts';
+import type { Result, AccountInfo, AddressLike } from '@convex-world/convex-ts';
 
-const result: TransactionResult = await convex.transfer('#456', 1_000_000_000);
+const result: Result = await convex.query('*balance*');
+console.log(result.value);  // parsed value
+console.log(result.result); // raw CVM result string
+```
 
-if (result.status === 'success') {
-  console.log('Transaction hash:', result.hash);
+### Environment Agnostic
+
+Works everywhere JavaScript runs — **zero DOM dependencies**:
+
+- **Node.js** — Backend services and scripts
+- **Browsers** — Web applications
+- **Deno** — Modern JavaScript runtime
+- **Bun** — Fast all-in-one toolkit
+
+### React Integration
+
+First-class React hooks via `@convex-world/convex-react`:
+
+```bash
+npm install @convex-world/convex-react
+```
+
+```tsx
+import { ConvexProvider, useQuery, useTransact, useAccount } from '@convex-world/convex-react';
+
+function App() {
+  return (
+    <ConvexProvider url="https://peer.convex.live">
+      <Wallet />
+    </ConvexProvider>
+  );
+}
+
+function Wallet() {
+  const { balance, address } = useAccount();
+  const { data } = useQuery(`(balance #13)`);
+  const { transact } = useTransact();
+
+  return (
+    <div>
+      <p>My balance: {balance}</p>
+      <p>Account #13 balance: {data?.value}</p>
+      <button onClick={() => transact('(transfer #13 1000)')}>
+        Send 1000
+      </button>
+    </div>
+  );
 }
 ```
 
-### 🌐 Environment Agnostic
-
-Works everywhere JavaScript runs - **zero DOM dependencies**:
-
-- ✅ **Node.js** - Backend services and scripts
-- ✅ **Browsers** - Web applications
-- ✅ **Deno** - Modern JavaScript runtime
-- ✅ **Bun** - Fast all-in-one toolkit
-
-### ⚛️ React Integration
-
-Hooks and components coming soon via `@convex-world/convex-react`:
-
-```typescript
-// Coming soon!
-import { useConvexQuery } from '@convex-world/convex-react';
-
-function Balance({ address }) {
-  const { data, loading } = useConvexQuery(`(balance ${address})`);
-  return <div>Balance: {data?.value}</div>;
-}
-```
+Queries automatically re-fetch after every successful transaction — no manual cache invalidation needed.
 
 ## Why TypeScript?
 
 The Convex network is powered by the Java-based Convex Virtual Machine (CVM), but we know that modern web developers live in the JavaScript ecosystem. The TypeScript SDK bridges this gap, providing:
 
-- **Modern ESM** - Native ES modules with proper `import` statements
-- **Type Safety** - Catch errors at compile time, not runtime
-- **IntelliSense** - Full autocomplete in VS Code and other editors
-- **Zero Config** - Works out of the box with modern tools
-- **Future-Proof** - Built on web standards
+- **Modern ESM** — Native ES modules with proper `import` statements
+- **Type Safety** — Catch errors at compile time, not runtime
+- **IntelliSense** — Full autocomplete in VS Code and other editors
+- **Zero Config** — Works out of the box with modern tools
+- **Future-Proof** — Built on web standards
 
 ## JavaScript Too!
 
@@ -132,26 +246,26 @@ console.log('Balance:', result.value);
 
 Ready to build on Convex with TypeScript? Check out our comprehensive documentation:
 
-- **[TypeScript SDK Guide](/docs/tutorial/client-sdks/typescript)** - Complete documentation
-- **[Quickstart Tutorial](/docs/tutorial/client-sdks/typescript/quickstart)** - Build your first app
-- **[API Reference](/docs/tutorial/client-sdks/typescript/index#key-features)** - Full API docs
-- **[npm Package](https://www.npmjs.com/package/@convex-world/convex-ts)** - Install from npm
-- **[GitHub Repository](https://github.com/Convex-Dev/convex.ts)** - Source code and examples
+- **[TypeScript SDK Guide](/docs/tutorial/client-sdks/typescript)** — Complete documentation
+- **[Quickstart Tutorial](/docs/tutorial/client-sdks/typescript/quickstart)** — Build your first app
+- **[API Reference](/docs/tutorial/client-sdks/typescript/index#key-features)** — Full API docs
+- **[npm Package](https://www.npmjs.com/package/@convex-world/convex-ts)** — Install from npm
+- **[GitHub Repository](https://github.com/Convex-Dev/convex.ts)** — Source code and examples
 
 ## What's Next?
 
-The TypeScript SDK is just the beginning. We're working on:
+We're continuing to expand the SDK ecosystem:
 
-- **Java SDK** - Native JVM integration for high-performance applications
-- **Python SDK** - Pythonic API for data science and automation
-- **Rust SDK** - Zero-cost abstractions for systems programming
-- **React Hooks** - First-class React integration
+- **Java SDK** — Native JVM integration for high-performance applications
+- **Python SDK** — Pythonic API for data science and automation
+- **Rust SDK** — Zero-cost abstractions for systems programming
+- **WebSocket Subscriptions** — Real-time state change notifications
 
 Stay tuned by following us on [Discord](https://discord.com/invite/xfYGq4CT7v) or watching the [GitHub repository](https://github.com/Convex-Dev/convex.ts)!
 
 ## Join the Ecosystem
 
-Convex is building the future of decentralised economies - fair, inclusive, and sustainable systems powered by lattice technology. The TypeScript SDK makes it easier than ever to build on this revolutionary platform.
+Convex is building the future of decentralised economies — fair, inclusive, and sustainable systems powered by lattice technology. The TypeScript SDK makes it easier than ever to build on this revolutionary platform.
 
 Whether you're building a DeFi application, a decentralised marketplace, or exploring new economic models, we can't wait to see what you create!
 

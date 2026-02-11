@@ -69,11 +69,10 @@ For this step, you'll need:
 
 :::tip Getting an Account
 If you don't have an account yet, you can:
-- Use the [Convex Desktop](../../products/convex-desktop) application to create one
-- Request test coins from the [testnet faucet](https://testnet.convex.live/faucet) (**test networks only**)
+- Use `convex.createAccount(keyPair, faucetAmount)` to create one on a test network
 - Connect to a local peer for development
 
-**Note**: Faucets only work on test networks. On production networks, someone must create an account for you and transfer initial funds. See the [Faucet Guide](/docs/tutorial/coins/faucet) for details.
+**Note**: Faucets only work on test networks. On production networks, someone must create an account for you and transfer initial funds.
 :::
 
 Create `src/account.ts`:
@@ -140,13 +139,7 @@ async function main() {
   console.log(`Transferring ${amount / 1_000_000_000} Convex Coins to ${recipient}...`);
 
   const result = await convex.transfer(recipient, amount);
-
-  if (result.status === 'success') {
-    console.log('✅ Transaction successful!');
-    console.log('   Hash:', result.hash);
-  } else {
-    console.error('❌ Transaction failed:', result.error);
-  }
+  console.log('✅ Transfer complete! Returned:', result.value);
 }
 
 main().catch(console.error);
@@ -191,11 +184,11 @@ main().catch(console.error);
 
 Now that you've completed the quickstart, explore:
 
-- **[Queries](./queries)** - Learn advanced query patterns
-- **[Transactions](./transactions)** - Understand transaction lifecycle
-- **[Accounts](./accounts)** - Key pair generation and management
-- **[Signers](./signers)** - Hardware wallet integration
-- **[React Integration](./react)** - Build React dApps
+- **[Queries](./queries)** — Learn advanced query patterns
+- **[Transactions](./transactions)** — Understand transaction lifecycle
+- **[Accounts](./accounts)** — Key pair generation and management
+- **[Asset Handles](./assets)** — Token and CNS management
+- **[Signers](./signers)** — Hardware wallet integration
 
 ## Common Issues
 
@@ -233,8 +226,8 @@ async function main() {
 
   // 3. Execute a transaction
   console.log('=== Transaction ===');
-  const result = await convex.transact('(def my-data {:timestamp (timestamp) :message "Hello Convex"})');
-  console.log('Transaction:', result.hash);
+  const result = await convex.transact('(def my-data {:timestamp *timestamp* :message "Hello Convex"})');
+  console.log('Stored:', result.result);
 
   // 4. Query back the data
   const data = await convex.query('my-data');
