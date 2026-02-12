@@ -1,6 +1,6 @@
 convex:
   label: Convex
-  permalink: /facebook
+  permalink: /convex
   description: Convex Foundation
 
 welcome:
@@ -127,3 +127,8 @@ documentation:
   label: Documentation
   permalink: /documentation
   description: Documentation updates and guides
+
+java:
+  label: Java
+  permalink: /java
+  description: Java client libraries and tools
