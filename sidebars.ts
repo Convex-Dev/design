@@ -156,6 +156,21 @@ const sidebars: SidebarsConfig = {
       ],
     },
 
+    // AI Agents - MCP integration, account management, agentic economics
+    {
+      type: 'category',
+      label: 'AI Agents',
+      link: {
+        type: 'doc',
+        id: 'tutorial/agents/index',
+      },
+      items: [
+        'tutorial/agents/mcp',
+        'tutorial/agents/account-management',
+        'tutorial/agents/agentic-economics',
+      ],
+    },
+
     // Recipes - practical how-to guides
     {
       type: 'category',
