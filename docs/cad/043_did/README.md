@@ -58,7 +58,48 @@ This enables:
 - Equivalent semantics to `did:convex` when the host is a Convex peer
 - Compatibility with the broader `did:web` ecosystem for non-Convex hosts
 
+Convex peers SHOULD serve DID documents at the standard `did:web` resolution paths:
+
+- `GET /.well-known/did.json` — the peer's own DID document
+- `GET /{identifier}/did.json` — DID document for a specific account
+
 See the [did:web Method Specification](https://w3c-ccg.github.io/did-method-web/) for the full method definition.
+
+## DID Documents
+
+A Convex DID document follows the [W3C DID Core](https://www.w3.org/TR/did-core/) structure. For user accounts with an Ed25519 key, the document includes a verification method and authentication relationship:
+
+```json
+{
+  "@context": "https://www.w3.org/ns/did/v1",
+  "id": "did:web:peer.convex.live:13",
+  "controller": "did:web:peer.convex.live:13",
+  "verificationMethod": [{
+    "id": "did:web:peer.convex.live:13#key-1",
+    "type": "Ed25519VerificationMethod2020",
+    "controller": "did:web:peer.convex.live:13",
+    "publicKeyMultibase": "z6Mkf5rGMoatrSj1..."
+  }],
+  "authentication": ["did:web:peer.convex.live:13#key-1"],
+  "alsoKnownAs": [
+    "did:convex:13",
+    "did:key:z6Mkf5rGMoatrSj1..."
+  ]
+}
+```
+
+### `alsoKnownAs`
+
+DID documents SHOULD include an [`alsoKnownAs`](https://www.w3.org/TR/did-core/#also-known-as) property linking equivalent identifiers across methods:
+
+- **`did:convex`** — always included, mapping to the canonical on-chain account address
+- **`did:key`** — included when the account has an Ed25519 public key, using the [multicodec](https://github.com/multiformats/multicodec) prefix `0xed01` for Ed25519
+
+This enables verifiers to confirm that a `did:web`, `did:convex`, and `did:key` identifier all refer to the same subject.
+
+### Actor Accounts
+
+Actor accounts (smart contracts) do not have public keys. Their DID documents contain `id`, `controller`, and `alsoKnownAs` (with `did:convex`) but omit `verificationMethod` and `authentication`.
 
 ## On-Chain Representation
 
@@ -70,7 +111,7 @@ DID documents and verification methods stored on-chain using Convex data structu
 - Integration with CAD019 assets and CAD014 CNS names
 
 :::note
-This CAD is currently under development. The specification will cover DID document formats, resolution algorithms, authentication flows, and integration patterns with existing Convex infrastructure.
+This CAD is currently under development. The specification will be extended to cover DID document storage on-chain, resolution algorithms for `did:convex`, authentication flows, and verifiable credential anchoring.
 :::
 
 ## References
