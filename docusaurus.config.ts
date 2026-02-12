@@ -48,6 +48,25 @@ onBrokenMarkdownLinks: 'warn'
     },
   ],
 
+  // Redirects for old URLs that may be linked from external sites.
+  // Internal links should use the correct path directly — this plugin
+  // is only for preserving inbound links that would otherwise 404
+  // after a page move or rename.
+  plugins: [
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        redirects: [
+          // convex-lisp index had slug: convex-lisp, removed 2026-02-11
+          {
+            from: '/docs/tutorial/convex-lisp/convex-lisp',
+            to: '/docs/tutorial/convex-lisp',
+          },
+        ],
+      },
+    ],
+  ],
+
   presets: [
     [
       'classic',
