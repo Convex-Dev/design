@@ -62,6 +62,26 @@ onBrokenMarkdownLinks: 'warn'
             from: '/docs/tutorial/convex-lisp/convex-lisp',
             to: '/docs/tutorial/convex-lisp',
           },
+          // linked from convex.world as /docs/overview/agentic-architecture
+          {
+            from: '/docs/overview/agentic-architecture',
+            to: '/docs/tutorial/agents',
+          },
+          // linked from convex.world as /docs/cad/virtual-machine
+          {
+            from: '/docs/cad/virtual-machine',
+            to: '/docs/cad/cvmex',
+          },
+          // linked from convex.world as /docs/sdk
+          {
+            from: '/docs/sdk',
+            to: '/docs/tutorial/client-sdks',
+          },
+          // linked from convex.world and llms.txt as /docs/tools
+          {
+            from: '/docs/tools',
+            to: '/docs/products/convex-mcp',
+          },
         ],
       },
     ],
