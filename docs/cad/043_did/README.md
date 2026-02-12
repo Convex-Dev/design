@@ -40,6 +40,8 @@ The Ed25519 public key in a `did:key` identifier can be used directly as a Conve
 - Off-chain verification prior to on-chain account creation
 - Interoperability with external DID ecosystems
 
+See the [did:key Method Specification](https://w3c-ccg.github.io/did-method-key/) for the full method definition.
+
 ### `did:web`
 
 Clients in the Convex ecosystem SHOULD support the `did:web` method for resolving identities hosted at web domains. When a `did:web` identifier points to a Convex peer, it works equivalently to `did:convex` — the peer resolves the identity against on-chain state and returns a standard DID document.
@@ -55,6 +57,8 @@ This enables:
 - Resolution via standard HTTPS without specialised Convex tooling
 - Equivalent semantics to `did:convex` when the host is a Convex peer
 - Compatibility with the broader `did:web` ecosystem for non-Convex hosts
+
+See the [did:web Method Specification](https://w3c-ccg.github.io/did-method-web/) for the full method definition.
 
 ## On-Chain Representation
 
