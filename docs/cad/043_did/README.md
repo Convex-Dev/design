@@ -8,21 +8,23 @@ This CAD specifies Decentralised Identity (DID) support for the Convex network, 
 
 ### `did:convex`
 
-The native Convex DID method, where identities are anchored to Convex accounts. A `did:convex` identifier maps directly to an on-chain account address or CNS name:
+The native Convex DID method, where identities are anchored to Convex accounts. A `did:convex` identifier is either a numeric account address or a CNS name:
 
 ```
 did:convex:13
-did:convex:cns:user.mike
+did:convex:user.mike
 ```
 
-The numeric form resolves directly to an account address (`#13`). The `cns:` path resolves via the Convex Name System, providing human-readable identifiers that map to accounts on-chain.
+The method-specific identifier is self-describing: purely numeric identifiers resolve to account addresses (`#13`), while non-numeric identifiers resolve as Convex Name System names. No prefix is needed to distinguish the two forms.
+
+Convex models a single universal global state, so `did:convex` identifiers contain no network qualifier. Resolvers are configured to point at the appropriate network — by default the Convex mainnet. For testing, a resolver can be pointed at a testnet or local peer without changing the identifiers themselves.
 
 Key properties:
 
 - Cryptographic authentication via Ed25519 account keys
 - On-chain resolution through the CVM
 - Controller-based delegation and recovery
-- Integration with the Convex Name System (CNS)
+- Human-readable identifiers via the Convex Name System (CNS)
 
 ### `did:key`
 
