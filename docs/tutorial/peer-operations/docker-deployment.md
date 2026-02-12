@@ -256,7 +256,7 @@ docker-compose start
 
 - **[Hosting Options](hosting)** - Infrastructure requirements
 - **[Security Guide](security)** - Secure your deployment
-- **[Monitoring](troubleshooting#monitoring)** - Production monitoring
+- **[Monitoring](troubleshooting#monitoring-and-diagnosis)** - Production monitoring
 
 ## Resources
 

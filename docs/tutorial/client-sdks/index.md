@@ -17,7 +17,7 @@ Build web applications, Node.js services, and React dApps with full type safety.
 - **Frameworks**: React hooks and components available
 - **Repository**: [github.com/Convex-Dev/convex.ts](https://github.com/Convex-Dev/convex.ts)
 
-**[Get Started with TypeScript →](typescript/)**
+**[Get Started with TypeScript →](client-sdks/typescript/)**
 
 ---
 
@@ -29,7 +29,7 @@ Use Convex from plain JavaScript (no TypeScript required).
 - **Package**: `@convex-world/convex-ts` (works in JS too!)
 - **Guide**: Idiomatic JavaScript examples and patterns
 
-**[Get Started with JavaScript →](javascript/)**
+**[Get Started with JavaScript →](client-sdks/javascript/)**
 
 ---
 
@@ -43,7 +43,7 @@ Native JVM client for high-performance enterprise applications.
 - **Features**: Native performance, CompletableFuture async, zero overhead
 - **Repository**: [github.com/Convex-Dev/convex](https://github.com/Convex-Dev/convex) (convex-java module)
 
-**[Get Started with Java →](java/)**
+**[Get Started with Java →](client-sdks/java/)**
 
 ---
 
@@ -57,7 +57,7 @@ Pythonic client for scripting, automation, and data science.
 - **Features**: Synchronous I/O, Account objects, automatic sequence retry
 - **Repository**: [github.com/Convex-Dev/convex-api-py](https://github.com/Convex-Dev/convex-api-py)
 
-**[Get Started with Python →](python/)**
+**[Get Started with Python →](client-sdks/python/)**
 
 ---
 

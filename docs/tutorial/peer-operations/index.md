@@ -16,12 +16,12 @@ Peer Operations covers everything from connecting to existing peers to running y
 - **[Performance](#performance-optimization)** - Optimization and monitoring
 
 **For Operators** (running peers):
-- **[Staking & Registration](staking)** - Stake coins and register your peer
-- **[Manual Deployment](manual-deployment)** - Install and configure manually
-- **[Docker Deployment](docker-deployment)** - Deploy with Docker/Compose
-- **[Hosting Options](hosting)** - Infrastructure and requirements
-- **[Security](security)** - Secure your peer infrastructure
-- **[Troubleshooting](troubleshooting)** - Diagnose and fix issues
+- **[Staking & Registration](peer-operations/staking)** - Stake coins and register your peer
+- **[Manual Deployment](peer-operations/manual-deployment)** - Install and configure manually
+- **[Docker Deployment](peer-operations/docker-deployment)** - Deploy with Docker/Compose
+- **[Hosting Options](peer-operations/hosting)** - Infrastructure and requirements
+- **[Security](peer-operations/security)** - Secure your peer infrastructure
+- **[Troubleshooting](peer-operations/troubleshooting)** - Diagnose and fix issues
 
 ## Connection Types
 
@@ -325,18 +325,18 @@ server.launch();
 For production peer operation, see the following guides:
 
 ### Getting Started
-1. **[Peer Staking & Registration](staking)** - Stake coins and register your peer
-2. **[Choose Deployment Method](manual-deployment)** - Manual or Docker
-3. **[Select Hosting](hosting)** - Infrastructure requirements
-4. **[Secure Your Peer](security)** - Security best practices
+1. **[Peer Staking & Registration](peer-operations/staking)** - Stake coins and register your peer
+2. **[Choose Deployment Method](peer-operations/manual-deployment)** - Manual or Docker
+3. **[Select Hosting](peer-operations/hosting)** - Infrastructure requirements
+4. **[Secure Your Peer](peer-operations/security)** - Security best practices
 
 ### Deployment Options
-- **[Manual Deployment](manual-deployment)** - Traditional installation
-- **[Docker Deployment](docker-deployment)** - Containerized deployment
+- **[Manual Deployment](peer-operations/manual-deployment)** - Traditional installation
+- **[Docker Deployment](peer-operations/docker-deployment)** - Containerized deployment
 
 ### Operations
-- **[Troubleshooting](troubleshooting)** - Common issues and solutions
-- **[Security](security)** - Secure your infrastructure
+- **[Troubleshooting](peer-operations/troubleshooting)** - Common issues and solutions
+- **[Security](peer-operations/security)** - Secure your infrastructure
 
 ## Next Steps
 
@@ -346,9 +346,9 @@ For production peer operation, see the following guides:
 - **[Client Types](/docs/tutorial/client-sdks/java/clients)** - Detailed SDK guide
 
 **For Operators**:
-- **[Staking & Registration](staking)** - Start running a peer
-- **[Deployment Guides](manual-deployment)** - Installation instructions
-- **[Security Guide](security)** - Secure your peer
+- **[Staking & Registration](peer-operations/staking)** - Start running a peer
+- **[Deployment Guides](peer-operations/manual-deployment)** - Installation instructions
+- **[Security Guide](peer-operations/security)** - Secure your peer
 
 ## Resources
 

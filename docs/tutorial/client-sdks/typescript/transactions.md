@@ -337,4 +337,4 @@ const result = await convex.transact(`
 - **[Accounts](./accounts)** — Key pair and account management
 - **[Asset Handles](./assets)** — Fluent API for tokens and CNS
 - **[Signers](./signers)** — Hardware wallet integration
-- **[Convex Lisp](/docs/tutorial/convex-lisp/)** — Learn the language
+- **[Convex Lisp](/docs/tutorial/convex-lisp)** — Learn the language

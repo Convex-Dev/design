@@ -60,7 +60,7 @@ Result txResult = convex.transact(Reader.read("(def my-value 42)")).get();
 System.out.println("Transaction result: " + txResult.getValue());
 ```
 
-**Note**: This example uses a public testnet with faucet support. For production use `https://peer.convex.live` (no faucet). For development, consider [running a local peer](clients#local-peer-client) for best performance.
+**Note**: This example uses a public testnet with faucet support. For production use `https://peer.convex.live` (no faucet). For development, consider [running a local peer](java/clients#local-peer-client) for best performance.
 
 ## Key Features
 
@@ -196,7 +196,7 @@ for (int i = 0; i < 100; i++) {
 
 ## Next Steps
 
-- **[Quickstart Guide](quickstart)** - Build your first Java app on Convex
-- **[Query Guide](queries)** - Learn how to read network state
-- **[Transaction Guide](transactions)** - Submit state-changing operations
-- **[Account Management](accounts)** - Manage keys and accounts
+- **[Quickstart Guide](java/quickstart)** - Build your first Java app on Convex
+- **[Query Guide](java/queries)** - Learn how to read network state
+- **[Transaction Guide](java/transactions)** - Submit state-changing operations
+- **[Account Management](java/accounts)** - Manage keys and accounts

@@ -431,7 +431,7 @@ gcloud compute firewall-rules create convex-api \
 
 ## Next Steps
 
-- **[Monitoring](troubleshooting#monitoring)** - Set up monitoring
+- **[Monitoring](troubleshooting#monitoring-and-diagnosis)** - Set up monitoring
 - **[Troubleshooting](troubleshooting)** - Common security issues
 - **[Deployment Guides](manual-deployment)** - Secure deployment
 

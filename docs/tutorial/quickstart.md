@@ -277,7 +277,7 @@ Your transaction was:
 - **[Account Management](client-sdks/java/accounts)** - Keys and accounts
 
 **Write Smart Contracts**
-- **[Convex Lisp](convex-lisp)** - The on-chain language
+- **[Convex Lisp](/docs/tutorial/convex-lisp)** - The on-chain language
 - **[Actor Development](actors)** - Smart contracts
 - **[Recipes](recipes)** - Practical examples
 

@@ -164,7 +164,7 @@ print(f'Balance: {balance_coins} CVX')
 
 ## Next Steps
 
-- **[Quickstart Guide](quickstart)** - Build your first Python app on Convex
-- **[Query Guide](queries)** - Learn how to read network state
-- **[Transaction Guide](transactions)** - Submit state-changing operations
-- **[Account Management](accounts)** - Manage keys and accounts
+- **[Quickstart Guide](python/quickstart)** - Build your first Python app on Convex
+- **[Query Guide](python/queries)** - Learn how to read network state
+- **[Transaction Guide](python/transactions)** - Submit state-changing operations
+- **[Account Management](python/accounts)** - Manage keys and accounts

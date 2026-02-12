@@ -1,8 +1,5 @@
 ---
-slug: convex-lisp
 title: Convex Lisp
-authors: [mikera]
-tags: [convex, developer, lisp]
 sidebar_position: 2
 ---
 

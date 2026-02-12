@@ -409,7 +409,7 @@ spec:
 - **[Manual Deployment](manual-deployment)** - Install on your infrastructure
 - **[Docker Deployment](docker-deployment)** - Container-based deployment
 - **[Security Guide](security)** - Secure your infrastructure
-- **[Monitoring](troubleshooting#monitoring)** - Production monitoring
+- **[Monitoring](troubleshooting#monitoring-and-diagnosis)** - Production monitoring
 
 ## Resources
 

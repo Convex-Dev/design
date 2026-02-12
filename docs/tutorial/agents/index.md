@@ -20,13 +20,13 @@ Convex doesn't distinguish between human users and autonomous agents. Every acco
 
 Each guide builds on the previous one, but you can jump directly to what you need:
 
-- [MCP Integration](./mcp) — connect AI agents to Convex via the Model Context Protocol. Covers available tools, querying state, executing transactions, and signing approaches.
-- [Account Management](./account-management) — create, fund, and secure agent accounts. Covers key management, controllers, and the trade-offs between full autonomy and delegated signing.
-- [Agentic Economics](./agentic-economics) — design economic interactions between agents. Covers direct transactions, smart contract coordination, autonomous strategies, and multi-agent architectures.
+- [MCP Integration](agents/mcp) — connect AI agents to Convex via the Model Context Protocol. Covers available tools, querying state, executing transactions, and signing approaches.
+- [Account Management](agents/account-management) — create, fund, and secure agent accounts. Covers key management, controllers, and the trade-offs between full autonomy and delegated signing.
+- [Agentic Economics](agents/agentic-economics) — design economic interactions between agents. Covers direct transactions, smart contract coordination, autonomous strategies, and multi-agent architectures.
 
 ## Further reading
 
 - [Convex MCP Product Overview](/docs/products/convex-mcp) — full reference for the MCP server capabilities
 - [CAD035: Model Context Protocol](/docs/cad/mcp) — technical specification
-- [Actor Development](./actors/concepts) — build on-chain actors that agents can interact with
+- [Actor Development](/docs/tutorial/actors) — build on-chain actors that agents can interact with
 - [Account Control](/docs/tutorial/recipes/account-control) — recipe for managing accounts via controllers

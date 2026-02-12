@@ -571,4 +571,4 @@ jobs:
 
 - **[GitHub Repository](https://github.com/Convex-Dev/convex)** - Source code
 - **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - Get help
-- **[API Documentation](/docs/api)** - API reference
+- **[REST API Reference](https://peer.convex.live/swagger)** - API reference

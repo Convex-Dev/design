@@ -272,10 +272,10 @@ function ConvexBalance() {
 
 ## Further Reading
 
-For detailed documentation, see the [TypeScript guide](../typescript/). All concepts apply to JavaScript - just ignore the type annotations.
+For detailed documentation, see the [TypeScript guide](/docs/tutorial/client-sdks/typescript). All concepts apply to JavaScript - just ignore the type annotations.
 
 **Key topics:**
-- [Queries](../typescript/queries) - Reading network state
-- [Transactions](../typescript/transactions) - Modifying state
-- [Accounts](../typescript/accounts) - Key pair management
-- [Signers](../typescript/signers) - Hardware wallet integration
+- [Queries](/docs/tutorial/client-sdks/typescript/queries) - Reading network state
+- [Transactions](/docs/tutorial/client-sdks/typescript/transactions) - Modifying state
+- [Accounts](/docs/tutorial/client-sdks/typescript/accounts) - Key pair management
+- [Signers](/docs/tutorial/client-sdks/typescript/signers) - Hardware wallet integration
