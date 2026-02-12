@@ -45,7 +45,8 @@ The Ed25519 public key in a `did:key` identifier can be used directly as a Conve
 Clients in the Convex ecosystem SHOULD support the `did:web` method for resolving identities hosted at web domains. When a `did:web` identifier points to a Convex peer, it works equivalently to `did:convex` — the peer resolves the identity against on-chain state and returns a standard DID document.
 
 ```
-did:web:peer.convex.live:account:13
+did:web:peer.convex.live:13
+did:web:peer.convex.live:user.mike
 ```
 
 This enables:
