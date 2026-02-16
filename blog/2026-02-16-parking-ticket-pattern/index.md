@@ -74,18 +74,20 @@ flushed through immediately. If the wait times out, *then* we return an error �
 but only as a last resort after the client has already been waiting.
 
 ```
-I/O thread                           Virtual thread
-    │
-    ├── offer(m) → accepted? done.
-    │
-    ├── offer(m) → full?
-    │       │
-    │       ├── stop reading from this client
-    │       ├── hand off to virtual thread ────────► block-wait for queue slot
-    │       └── return (I/O thread is free)              │
-    │                                                     ├── slot opens → enqueue
-    │                                                     ├── resume reading
-    │                                                     └── flush buffered bytes
+I/O thread                                    Virtual thread
+    │                                               │
+    ├─ offer(m) → accepted? done.                   │
+    │                                               │
+    ├─ offer(m) → full?                             │
+    │     │                                         │
+    │     ├─ stop reading from this client           │
+    │     ├─ hand off ─────────────────────────────► │
+    │     └─ return (I/O thread is free)             │
+    │                                          wait for queue slot
+    │                                                │
+    │                                          slot opens → enqueue
+    │                                          resume reading
+    │                                          flush buffered bytes
 ```
 
 The key design choice is what the server returns when the queue is full. Not a
