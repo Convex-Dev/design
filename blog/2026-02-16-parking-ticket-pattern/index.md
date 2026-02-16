@@ -224,4 +224,5 @@ stop fighting it.
 
 The full implementation is open source in the
 [Convex repository](https://github.com/Convex-Dev/convex). The relevant code is
-in `NettyInboundHandler` (channel lifecycle) and `Server` (dispatch logic).
+in [`NettyInboundHandler`](https://github.com/Convex-Dev/convex/blob/develop/convex-peer/src/main/java/convex/net/impl/netty/NettyInboundHandler.java) (channel lifecycle)
+and [`Server`](https://github.com/Convex-Dev/convex/blob/develop/convex-peer/src/main/java/convex/peer/Server.java) (dispatch logic).
