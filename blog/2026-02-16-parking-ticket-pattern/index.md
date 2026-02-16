@@ -1,7 +1,7 @@
 ---
 slug: parking-ticket-pattern
 title: "Using TCP Physics as a Queue: The Parking Ticket Pattern"
-authors: [kopcho, mikera]
+authors: [kopcho, mikera, claude]
 tags: [convex, networking, backpressure, java, netty]
 ---
 
