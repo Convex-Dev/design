@@ -45,6 +45,17 @@ claude:
   socials:
     x: AnthropicAI
 
+kopcho:
+  name: Rich Kopcho
+  title: Entrepreneur, LODE Studio
+  url: https://kopcho.com
+  image_url: https://github.com/kopcho.png
+  page: true
+  socials:
+    x: kopcho
+    github: kopcho
+    linkedin: kopcho
+
 #helins:
 #  name: Adam Helinski
 #  title: Core Contributor

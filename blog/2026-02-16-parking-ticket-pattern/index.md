@@ -1,12 +1,17 @@
-# Using TCP Physics as a Queue: The Parking Ticket Pattern
-
-*By Mike Anderson and Rich Kopcho*
+---
+slug: parking-ticket-pattern
+title: "Using TCP Physics as a Queue: The Parking Ticket Pattern"
+authors: [kopcho, mikera]
+tags: [convex, networking, backpressure, java, netty]
+---
 
 When your internal queue is full, you have two bad options: drop the message
 (making it the client's problem) or block the thread (making it your problem).
 
 At [Convex](https://convex.world), we found a third way. We call it the
 **Parking Ticket Pattern**.
+
+<!-- truncate -->
 
 ## The Problem Everyone Knows
 
@@ -218,11 +223,3 @@ stop fighting it.
 The full implementation is open source in the
 [Convex repository](https://github.com/Convex-Dev/convex). The relevant code is
 in `NettyInboundHandler` (channel lifecycle) and `Server` (dispatch logic).
-
----
-
-*[Mike Anderson](https://github.com/mikera) is the founder of
-[Convex](https://convex.world), building decentralised economic infrastructure
-with lattice technology.
-[Rich Kopcho](https://github.com/rkopcho) is a technology communicator and
-collaborator on the Convex project.*

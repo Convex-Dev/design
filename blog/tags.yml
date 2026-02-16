@@ -132,3 +132,13 @@ java:
   label: Java
   permalink: /java
   description: Java client libraries and tools
+
+backpressure:
+  label: Backpressure
+  permalink: /backpressure
+  description: Flow control and backpressure patterns
+
+netty:
+  label: Netty
+  permalink: /netty
+  description: Netty networking framework
