@@ -50,7 +50,7 @@ Decentralisation means we can’t police every app built atop Convex, but we arc
 
 **Everyone deserves equal, fair and direct access to the mechanisms of value exchange, enabling universal participation in the digital economy**
 
-FBillions remain locked out: unbanked, overcharged, or barred from markets by geography, identity, or greed. Traditional finance hoards opportunity behind walls of paperwork, KYC, and monopolistic rents.
+Billions remain locked out: unbanked, overcharged, or barred from markets by geography, identity, or greed. Traditional finance hoards opportunity behind walls of paperwork, KYC, and monopolistic rents.
 
 Convex tears down those walls. Anyone with an internet connection joins on equal footing: self-sovereign, first-class, and permissionless. No middlemen. No censorship. The network stays open, resilient, and globally reachable, turning exclusion into universal inclusion overnight.
 
@@ -71,7 +71,7 @@ Atomicity is ironclad: every transaction executes fully or rolls back completely
 
 Global state is essential to the vision of building decentralised economic systems. Information such as asset balances, the status of smart contracts and publicly verifiable data must be available to network participants on a decentralised basis, without being subject to centralised control or arbitrary modification. Global state is also essential for public roots of trust such as  known name services and digital identity.
 
-The should be *one and only one* official global state. This is essential if it is to serve as an authoritative source of truth for systems that depend upon it. A key role of network governance is to enforce this, and a key role of Convex peers is to maintain secure consensus over the global state and validate correct updates.
+There should be *one and only one* official global state. This is essential if it is to serve as an authoritative source of truth for systems that depend upon it. A key role of network governance is to enforce this, and a key role of Convex peers is to maintain secure consensus over the global state and validate correct updates.
 
 The Convex global state is maintained by Peers, managed on a decentralised basis according to protocol rules and available to on-chain smart contracts. This is a true global state, that is not subdivided into shards, programs or other restricted sub-containers. This allows for full interoperability and atomic transactions between all users and automated actors.
 
@@ -220,7 +220,7 @@ Once issued, Convex Coins circulate freely on a self-sovereign basis, available 
 
 Networks thrive when governance serves the commons, not cabals. Convex commits to this from genesis: upgrades that endure, protections that scale, capabilities that serve.
 
-Initially, governance role will be stewarded via the Convex Foundation, a non-profit organisation registered in the United Kingdom. It will have responsibility for protocol-level upgrades to the network and initial issuance oc Convex coins.
+Initially, governance role will be stewarded via the Convex Foundation, a non-profit organisation registered in the United Kingdom. It will have responsibility for protocol-level upgrades to the network and initial issuance of Convex coins.
 
 Decentralised governance is the destination: on-chain, credentialed, and attack-resistant. We transition only when battle-tested—ensuring every voice counts, every upgrade benefits users, and the network remains censorship-proof forever.
 
