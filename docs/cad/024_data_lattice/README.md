@@ -49,46 +49,6 @@ The Data Lattice provides the following capabilities:
 - **Access Control**: data lattice hosts may optionally impose whatever access controls they require for governance, security or privacy purposes. Typically, these would involve authentications against a decentralised ID (DID) and a digital signature (Ed25519 as standard, though other systems can also be adopted)
 
 
-## Reference Implementation
-
-The data lattice provides the following key components:
-
-### Data Structures
-
-The data lattice supports the full set of decentralised data values used in the Convex CVM. This enables the construction of arbitrary data structures. In practice, Data Lattice Users are likely to rely primarily upon composing data structures from the following types:
-- Maps
-- Indexes
-- Vectors
-- Sets
-- Strings
-- Keywords
-- Integers
-- Booleans
-- Doubles
-- Signed Data
-
-Applications SHOULD consider whether there is an advantage to limiting usage to the subset of these that represents JSON (Numbers, Maps, Vectors, Strings, Booleans and `nil`). This enables easy one-to-one mapping to JSON representations.
-
-### Etch
-
-Etch is the storage subsystem utilised by Convex, which is specialised for efficient storage of content addressable Merkle Trees. 
-
-### Binary Protocol
-
-The Data Lattice operates using the same efficient binary protocol used by Convex peer-to-peer communication.
-
-Peers SHOULD support hosting Data Lattice access on a different port from CPoS / peer communication.
-
-### REST API
-
-The Data Lattice rest API provides key data lattice capabilities:
-
-- Insert data
-- Retrieve data
-- Pin / unpin data
-- Access controls
-- Replication
-
 ## Specification
 
 ### Fundamental Principles
@@ -99,29 +59,29 @@ The Data Lattice is built on a set of core principles that together enable self-
 
 Data in the Lattice is inherently self-sovereign. Each participant owns and controls their own data, signed with their Ed25519 key pair. There is no central authority that mediates access or dictates structure. Participants publish data into the Lattice and other participants may choose to replicate, merge and act upon it — but the original author retains cryptographic proof of authorship and control over their own slice of the data structure.
 
-This is made possible by the `OwnerLattice`, which partitions data by owner public key. Each owner's data is wrapped in a `SignedLattice` that enforces cryptographic signing at the boundary. Only the holder of the corresponding private key can create or update values within their partition. Readers can independently verify the authenticity and integrity of any data they receive.
+The Lattice MUST partition data by owner public key. Each owner's data MUST be wrapped in a cryptographic signing boundary that enforces signing at the point of mutation. Only the holder of the corresponding private key may create or update values within their partition. Any reader MUST be able to independently verify the authenticity and integrity of data they receive without trusting the peer that delivered it.
 
 #### Replicated, Self-Healing Structures
 
 The Lattice is designed for replication across an open network of peers. Any peer may hold a partial or complete copy of the Lattice state. Because merge operations are commutative, associative and idempotent (see CRDT Properties below), peers can synchronise in any order, at any time, and always converge to the same result.
 
-This makes the Lattice inherently self-healing. If a peer loses data due to disk corruption, network partitioning or any other failure, it will recover that data on the next successful merge with any peer that still holds it. No co-ordination protocol is required — the algebraic properties of the merge guarantee convergence. As long as at least one copy of any datum survives somewhere in the network, it can be recovered by all peers through normal replication.
+This makes the Lattice inherently self-healing. If a peer loses data due to disk corruption, network partitioning or any other failure, it MUST recover that data on the next successful merge with any peer that still holds it. No co-ordination protocol is required — the algebraic properties of the merge guarantee convergence. As long as at least one copy of any datum survives somewhere in the network, it can be recovered by all peers through normal replication.
 
 #### Atomic Updates
 
-All updates to the Lattice are atomic. The cursor-based interface (see Cursors below) provides atomic read-modify-write operations on immutable values. A `fork()` creates an isolated working copy; local changes accumulate without affecting the parent. When `sync()` is called, all changes are applied to the parent atomically via lattice merge.
+All updates to the Lattice MUST be atomic. Observers MUST never see partially applied changes.
 
-Because merge is always well-defined (see CRDT Properties below), atomic updates never fail or require retry — the merge function deterministically combines the local changes with whatever concurrent state the parent holds. Path-based updates (e.g. updating a value nested several levels deep) are also atomic. This guarantees that observers never see partially applied changes.
+A fork/sync model provides transactional semantics: `fork()` creates an isolated working copy where local changes accumulate without affecting the parent. When `sync()` is called, all changes are applied to the parent atomically via lattice merge. Because merge is always well-defined (see CRDT Properties below), merge-aware atomic updates never fail or require retry — the merge function deterministically combines the local changes with whatever concurrent state the parent holds.
 
 #### Time Travel and Snapshots
 
-Because all Lattice values are immutable persistent data structures (Merkle Trees), the Lattice naturally supports snapshot and time-travel capabilities analogous to Git. Every state is identified by its cryptographic hash. Forking a cursor creates a snapshot at that point in time. Previous states remain accessible as long as the underlying cells are retained in storage (i.e. not garbage collected).
+Because all Lattice values are immutable persistent data structures (Merkle Trees), the Lattice naturally supports snapshot and time-travel capabilities analogous to Git. Every state is identified by its cryptographic hash. Forking creates a snapshot at that point in time. Previous states remain accessible as long as the underlying cells are retained in storage (i.e. not garbage collected).
 
 This enables powerful patterns: historical queries, audit trails, rollback, branching workflows, and diff-based synchronisation between peers. The structural sharing property ensures that snapshots are storage-efficient — only the cells that differ between versions occupy additional space.
 
 #### Fully Mergeable CRDTs at Internet Scale
 
-The Data Lattice forms a Conflict-free Replicated Data Type (CRDT). Every lattice type defines a `merge` function with the following algebraic properties:
+The Data Lattice forms a Conflict-free Replicated Data Type (CRDT). Every lattice type MUST define a `merge` function with the following algebraic properties:
 
 - **Commutativity**: `merge(a, b) = merge(b, a)` — merge order does not matter
 - **Associativity**: `merge(merge(a, b), c) = merge(a, merge(b, c))` — grouping does not matter
@@ -137,12 +97,12 @@ Applications interact with the Lattice through cursors — lightweight handles t
 
 ### Lattice Types
 
-A Lattice Type defines the merge semantics for a particular kind of value. All lattice types extend the abstract base `ALattice<V>` and MUST implement:
+A Lattice Type defines the merge semantics for a particular kind of value. Every lattice type MUST define:
 
-- `merge(V ownValue, V otherValue)` — the core merge function satisfying CRDT properties
-- `zero()` — the identity element of the lattice (i.e. `merge(zero(), x) = x` for all `x`)
-- `checkForeign(V value)` — validation that a received value is well-formed for this lattice type
-- `path(ACell childKey)` — returns the child lattice type for a given key, or `nil` if the lattice has no defined child structure at that key
+- `merge(ownValue, otherValue)` — the core merge function, which MUST satisfy the CRDT properties (commutativity, associativity, idempotence)
+- `zero` — the identity element of the lattice (i.e. `merge(zero, x) = x` for all `x`)
+- `validate(value)` — validation that a received value is well-formed for this lattice type
+- `child(key)` — returns the child lattice type for a given key, or nil if the lattice has no defined child structure at that key
 
 Lattice types compose hierarchically. A parent lattice delegates merge of child values to the appropriate child lattice type. This enables construction of arbitrarily deep, well-typed lattice structures from simple building blocks.
 
@@ -150,117 +110,93 @@ Lattice types compose hierarchically. A parent lattice delegates merge of child 
 
 The following standard lattice types are defined:
 
-**SetLattice** — Merges by set union. The result of merging two sets is a set containing all elements from both. Zero is the empty set.
+**Set Lattice** — Merges by set union. The result of merging two sets is a set containing all elements from both. Zero is the empty set.
 
-**MaxLattice / MinLattice** — Merges by taking the maximum (or minimum) value. Useful for monotonically increasing counters, timestamps, or version numbers.
+**Max / Min Lattice** — Merges by taking the maximum (or minimum) value. Useful for monotonically increasing counters, timestamps, or version numbers.
 
-**LWWLattice** (Last-Write-Wins) — Merges by selecting the value with the most recent timestamp. In the case of equal timestamps, a deterministic tiebreaker (hash comparison) ensures commutativity. Suitable for mutable registers where the latest write should prevail.
+**LWW Lattice** (Last-Write-Wins) — Merges by selecting the value with the most recent timestamp. In the case of equal timestamps, a deterministic tiebreaker MUST be applied to ensure commutativity. Suitable for mutable registers where the latest write should prevail.
 
-**MapLattice** — Merges maps by applying a value lattice to each key independently. Keys present in only one map are included directly. Keys present in both maps have their values merged using the configured child lattice. Zero is the empty map.
+**Map Lattice** — Merges maps by applying a value lattice to each key independently. Keys present in only one map are included directly. Keys present in both maps have their values merged using the configured child lattice. Zero is the empty map.
 
-**IndexLattice** — Similar to `MapLattice` but operates on sorted indexes with blob keys. Suitable for ordered data such as time-series feeds.
+**Index Lattice** — Similar to Map Lattice but operates on sorted indexes with blob keys. Suitable for ordered data such as time-series feeds.
 
-**KeyedLattice** — A map-like lattice where each key has a distinct, statically configured child lattice type. Used for the root Lattice structure where different sections (e.g. `:data`, `:fs`, `:kv`, `:queue`) each require different merge semantics.
+**Keyed Lattice** — A map-like lattice where each key has a distinct, statically configured child lattice type. Used for the root Lattice structure where different sections (e.g. data, filesystem, key-value, queue) each require different merge semantics.
 
-**OwnerLattice** — Partitions data by owner public key. Each owner's slot contains a `SignedLattice` wrapping the owner's data. Merge operates independently per owner. This is the foundation for self-sovereign data — each owner controls their own partition via their signing key.
+**Owner Lattice** — Partitions data by owner public key. Each owner's slot is wrapped in a Signed Lattice. Merge operates independently per owner. This is the foundation for self-sovereign data — each owner controls their own partition via their signing key.
 
-**SignedLattice** — Wraps a child lattice in a cryptographic signing boundary. Values are stored as `SignedData` and verified on merge. When merge produces a new value, it is re-signed with the current context's key pair. This ensures data integrity and provenance throughout the lattice hierarchy.
+**Signed Lattice** — Wraps a child lattice in a cryptographic signing boundary. Values MUST be stored as signed data and verified on merge. When merge produces a new value, it MUST be re-signed with the current context's key pair. This ensures data integrity and provenance throughout the lattice hierarchy.
 
-**DataLattice** — A general-purpose content store indexed by hash. Merge is set union over the hash-indexed cells. Useful for bulk data storage where individual items are referenced by content hash.
+**Data Lattice** — A general-purpose content store indexed by hash. Merge is set union over the hash-indexed cells. Useful for bulk data storage where individual items are referenced by content hash.
 
-**LocalLattice** — Stores peer-local data that is not replicated. Useful for configuration, caches, or other node-specific state.
+**Local Lattice** — Stores peer-local data that is not replicated. Useful for configuration, caches, or other node-specific state.
 
 ### Root Lattice Structure
 
-The system-wide Lattice root is a `KeyedLattice` with the following standard sections:
+The system-wide Lattice root is a Keyed Lattice with the following standard sections:
 
-- `:data` — General-purpose content-addressable data store (`DataLattice`). Stores arbitrary cells indexed by hash.
+- **Data** — General-purpose content-addressable data store. Stores arbitrary cells indexed by hash.
 
-- `:fs` — Distributed Lattice File System. An `OwnerLattice` where each owner may maintain named drives, each containing a DLFS tree of directories and files.
+- **Filesystem** — Distributed Lattice File System. An Owner Lattice where each owner may maintain named drives, each containing a tree of directories and files.
 
-- `:kv` — Key-value databases. An `OwnerLattice` where each owner may maintain named key-value stores with per-entry merge semantics.
+- **Key-Value** — Key-value databases. An Owner Lattice where each owner may maintain named key-value stores with per-entry merge semantics.
 
-- `:queue` — Message queues. An `OwnerLattice` where each owner may maintain named topics with partitioned, append-only message streams.
+- **Queue** — Message queues. An Owner Lattice where each owner may maintain named topics with partitioned, append-only message streams.
 
-- `:local` — Peer-local storage that is not replicated across the network.
+- **Local** — Peer-local storage that is not replicated across the network.
 
-Applications MAY extend the root structure with additional sections by registering new keys and lattice types. For example, a social networking application can register a `:social` section with an `OwnerLattice` containing per-user social state (feeds, profiles, follow graphs), each with appropriate merge semantics.
+Applications MAY extend the root structure with additional sections by registering new keys and lattice types. For example, a social networking application could register a section with an Owner Lattice containing per-user social state (feeds, profiles, follow graphs), each with appropriate merge semantics.
 
 ### Cursors
 
-Cursors are the primary interface for interacting with Lattice data. A cursor is a lightweight handle to a position within the Lattice hierarchy, providing atomic operations on the value at that position.
+Cursors are the primary interface for interacting with Lattice data. A cursor is a lightweight handle to a position within the Lattice hierarchy, providing atomic operations for reading, writing, navigating and merging values. In particular, lattice-aware cursors extend the base cursor model with fork/sync semantics: forking creates an isolated working copy, and syncing pushes changes back to the parent via lattice merge — which always succeeds without retry.
 
-#### Cursor Types
+The full cursor specification is defined in [CAD035: Lattice Cursors](../035_cursors/README.md). When used with the Data Lattice, cursor path navigation MUST be lattice-aware: at each level, the cursor consults the lattice type to determine the child lattice for the next key, and when a Signed Lattice boundary is crossed, cryptographic signing MUST be enforced transparently.
 
-**RootLatticeCursor** — The top-level cursor holding the authoritative lattice value in an atomic reference. This is typically created by a peer or application as the entry point to the Lattice.
+### Merge Context
 
-**ForkedLatticeCursor** — An independent working copy created by `fork()`. Changes to a forked cursor do not affect its parent until `sync()` is called. The fork records the parent's value at fork time (the "fork point") to enable efficient delta detection during sync.
+Merge operations may require contextual information beyond the two values being merged. A merge context MUST provide:
 
-**DescendedCursor** — A cursor that has been navigated to a sub-path within the lattice hierarchy via `path()`. Read and write operations on a descended cursor atomically project through to the root.
+- **Timestamp** — Used by LWW Lattice for conflict resolution
+- **Signing key pair** — Used by Signed Lattice to sign merged results
+- **Owner verifier** — Used by Owner Lattice to verify that a signer is authorised to write to an owner's partition
 
-**SignedCursor** — A cursor inserted automatically at `SignedLattice` boundaries during path navigation. It transparently handles signature verification on reads and signing on writes, enforcing cryptographic integrity without burdening application code.
-
-#### Core Operations
-
-All cursors support the following atomic operations:
-
-- `get()` — Read the current value
-- `set(V)` — Replace the current value
-- `merge(V otherValue)` — Merge a value using the lattice merge function (preferred for concurrent updates)
-- `updateAndGet(UnaryOperator<V>)` — Atomic read-modify-write
-- `getAndUpdate(UnaryOperator<V>)` — Atomic read-modify-write (returns previous value)
-- `compareAndSet(V expected, V newValue)` — Conditional update (available but generally an anti-pattern for lattice data; prefer merge-aware operations which always succeed)
-
-#### Navigation
-
-`path(keys...)` navigates through the lattice hierarchy, returning a new cursor positioned at the specified sub-path. Path navigation is lattice-aware: at each level, the cursor consults the lattice type to determine the child lattice for the next key. When a `SignedLattice` boundary is encountered, a `SignedCursor` is inserted to enforce signing.
-
-Consecutive path keys that do not cross a signing boundary are collapsed into a single `DescendedCursor` for efficiency.
-
-#### Fork and Sync
-
-The fork/sync pattern enables transactional batch operations:
-
-1. `fork()` — Create an independent working copy. The forked cursor holds its own value and records the fork point.
-2. Perform any number of local operations on the fork (reads, writes, further forks).
-3. `sync()` — Push changes back to the parent using lattice merge.
-
-Because sync uses lattice merge, it always succeeds — there are no conflicts to resolve. If the parent has changed since the fork was created, the forked changes are merged with the parent's current state using the lattice's merge function. This is fundamentally different from optimistic concurrency (compare-and-set), which would fail and require retry. The lattice merge guarantees progress.
-
-Forks may be nested to arbitrary depth. An inner fork syncs to its parent fork, which in turn syncs to its parent, and so on up to the root.
-
-#### Merge
-
-`merge(V otherValue)` merges an externally received value into the cursor's current value using the lattice's merge function. This is the primary mechanism for P2P replication — when a peer receives data from another peer, it merges it into its local cursor.
-
-If the cursor has no lattice (i.e. it has navigated beyond the lattice hierarchy), the merge request bubbles up through the cursor chain until it reaches a cursor with a defined lattice type.
-
-### Lattice Context
-
-Merge operations may require contextual information beyond the two values being merged. The `LatticeContext` provides:
-
-- **Timestamp** — Used by `LWWLattice` for conflict resolution
-- **Signing key pair** — Used by `SignedLattice` to sign merged results
-- **Owner verifier** — Used by `OwnerLattice` to verify that a signer is authorised to write to an owner's partition
-
-The context is propagated through the cursor hierarchy and made available to lattice merge functions as needed.
+The context MUST be propagated through the lattice hierarchy and made available to merge functions as needed.
 
 ### P2P Replication
 
 Peers replicate Lattice data using a propagation model:
 
-1. **Announce** — When a peer produces new data (via local writes or received merges), it writes the new cells to its store and computes the delta (novel cells not previously present).
+1. **Announce** — When a peer produces new data (via local writes or received merges), it computes the delta (novel cells not previously present).
 
 2. **Persist** — The merged root value is persisted to durable storage, enabling recovery after restart.
 
-3. **Broadcast** — The delta is broadcast to connected peers via the binary protocol.
+3. **Broadcast** — The delta is broadcast to connected peers.
 
-4. **Receive and Merge** — When a peer receives a broadcast, it merges the received value into its local cursor. The CRDT properties guarantee convergence regardless of message ordering, duplication or partial delivery.
+4. **Receive and Merge** — When a peer receives a broadcast, it merges the received value into its local state. The CRDT properties guarantee convergence regardless of message ordering, duplication or partial delivery.
 
 This model requires no central co-ordinator. Peers form an open mesh and replicate data transitively. The commutativity and idempotence of merge mean that redundant messages are harmless and message ordering is irrelevant.
 
-### Thread Safety
+### Data Types
 
-The Lattice implementation is lock-free. All mutable state is held in atomic references containing immutable values. Cursor operations use merge-aware atomic updates — because the lattice merge is always well-defined, updates always make progress without retry. Multiple threads may concurrently read, write, fork and sync on the same cursor hierarchy without external synchronisation.
+The data lattice supports the full set of decentralised data values used in the Convex CVM. This enables the construction of arbitrary data structures. In practice, applications are likely to rely primarily upon composing data structures from the following types: Maps, Indexes, Vectors, Sets, Strings, Keywords, Integers, Booleans, Doubles and Signed Data.
 
-The immutability of all Lattice values ensures that references can be safely shared across threads and cursors without risk of data races.
+Applications SHOULD consider whether there is an advantage to limiting usage to the subset of these that represents JSON (Numbers, Maps, Vectors, Strings, Booleans and `nil`). This enables easy one-to-one mapping to JSON representations.
+
+## Reference Implementation
+
+The reference implementation is provided in the `convex-core` and `convex-peer` Java modules.
+
+Key implementation notes:
+
+- **Etch** is the storage subsystem, specialised for efficient storage of content addressable Merkle Trees.
+- The Data Lattice operates using the same efficient **binary protocol** used by Convex peer-to-peer communication. Peers SHOULD support hosting Data Lattice access on a different port from CPoS / peer communication.
+- A **REST API** provides access to key data lattice capabilities: insert data, retrieve data, pin/unpin data, access controls and replication.
+- The implementation is **lock-free**, using atomic references containing immutable values. Merge-aware atomic updates ensure progress without retry. Multiple threads may concurrently read, write, fork and sync without external synchronisation.
+- Cursor types in the implementation include root cursors, forked cursors, descended cursors (for sub-path navigation) and signed cursors (automatically inserted at Signed Lattice boundaries).
+
+## See Also
+
+- [CAD002: CVM Values](../002_values/README.md) — Immutable value types used in the Lattice
+- [CAD003: Encoding](../003_encoding/README.md) — Binary encoding and content addressing
+- [CAD035: Lattice Cursors](../035_cursors/README.md) — Full cursor specification
+- [CAD036: Lattice Node](../036_lattice_node/README.md) — Networked lattice replication
