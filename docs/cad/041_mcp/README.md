@@ -1,4 +1,4 @@
-# CAD035: Model Context Protocol (MCP)
+# CAD041: Model Context Protocol (MCP)
 
 ## Overview
 
@@ -82,8 +82,8 @@ SSE is also used for streaming responses on POST when the client includes `Accep
 
 - [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-06-18)
 - [MCP Streamable HTTP Transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
-- [CAD004: Accounts](/docs/cad/accounts)
-- [CAD026: Convex Lisp](/docs/cad/lisp)
-- [CAD019: Asset Model](/docs/cad/assets)
+- [CAD004: Accounts](../004_accounts/README.md)
+- [CAD026: Convex Lisp](../026_lisp/README.md)
+- [CAD019: Asset Model](../019_assets/README.md)
 - [Convex MCP Product Page](/docs/products/convex-mcp)
 

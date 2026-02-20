@@ -27,6 +27,6 @@ Each guide builds on the previous one, but you can jump directly to what you nee
 ## Further reading
 
 - [Convex MCP Product Overview](/docs/products/convex-mcp) — full reference for the MCP server capabilities
-- [CAD035: Model Context Protocol](/docs/cad/mcp) — technical specification
+- [CAD041: Model Context Protocol](/docs/cad/041_mcp) — technical specification
 - [Actor Development](/docs/tutorial/actors) — build on-chain actors that agents can interact with
 - [Account Control](/docs/tutorial/recipes/account-control) — recipe for managing accounts via controllers

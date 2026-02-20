@@ -396,6 +396,13 @@ SignedData records are used extensively for security, since the represent proof 
 
 
 
+## See Also
+
+- [CAD003: Encoding](../003_encoding/README.md) — Binary encoding format for CVM values
+- [CAD012: Numerics](../012_numerics/README.md) — Detailed specification of numeric operations and arithmetic
+- [CAD013: Metadata](../013_metadata/README.md) — Metadata attached to definitions and values
+- [CAD033: CVM Types](../033_cvmtypes/README.md) — Extended CVM type system
+
 ## Implementation notes
 
 ### Equivalent host values

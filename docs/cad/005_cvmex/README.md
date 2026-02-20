@@ -346,3 +346,15 @@ We note that GC is an important prerequisite for high performance in an executio
 
 - While the CVM specification does not require persistent storage, it is expected that Peers will rely upon persistent storage for CVM Objects. To the extend that CVM values are written to persistent storage in a database, Peers may need to perform a separate garbage collection phase on the database
 - The current CVM implementation makes use of JVM `SoftReference`s and lazy loading, which allows the host JVM to garbage collect values in many cases even if they are still potentially reachable. This is safe provided that the values can be recovered from storage on demand if required. The advantage of this approach is that it allows the processing of large CVM data structures (such as the State itself) even if these structures exceed the size of available Peer memory.
+
+## See Also
+
+- [CAD002: CVM Values](../002_values/README.md) — Value types operated on by the CVM
+- [CAD003: Encoding](../003_encoding/README.md) — Binary encoding of Ops and values
+- [CAD004: Accounts](../004_accounts/README.md) — Account model referenced by execution contexts
+- [CAD006: Memory Accounting](../006_memory/README.md) — Memory management cost model
+- [CAD007: Juice Accounting](../007_juice/README.md) — Execution cost accounting
+- [CAD008: Compiler](../008_compiler/README.md) — Compilation of source code to Ops
+- [CAD010: Transactions](../010_transactions/README.md) — Transaction structure and submission
+- [CAD011: Errors](../011_errors/README.md) — Error types and handling
+- [CAD027: Event Logging](../027_log/README.md) — CVM execution log

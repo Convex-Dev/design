@@ -52,6 +52,14 @@ Convex Architecture Documents (CADs) are defined for standards relating to the C
 | [CAD034](docs/cad/034_curated_registry) | Curated Registry               | Draft      | mikera
 | [CAD035](docs/cad/035_cursors)        | Lattice Cursors                  | Draft      | mikera
 | [CAD036](docs/cad/036_lattice_node)   | Lattice Node                     | Draft      | mikera
+| [CAD037](docs/cad/037_kv_database)    | KV Database                      | Draft      | mikera
+| [CAD038](docs/cad/038_lattice_auth)   | Lattice Authentication           | Draft      | mikera
+| [CAD039](docs/cad/039_convex_sql)     | Convex SQL                       | Draft      | mikera
+| [CAD040](docs/cad/040_lattice_queue)  | Lattice Queue                    | Draft      | mikera
+| [CAD041](docs/cad/041_mcp)            | Model Context Protocol           | Draft      | mikera
+| [CAD042](docs/cad/042_x402)           | x402 Payment Protocol            | Draft      | mikera
+| [CAD043](docs/cad/043_did)            | Decentralised Identifiers        | Draft      | mikera
+| [CAD044](docs/cad/044_json)           | JSON on the Lattice              | Draft      | mikera
 
 ## Convex Project Repositories
 
