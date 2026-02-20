@@ -459,9 +459,9 @@ node.close();
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) - Value types
-- [CAD003: Encoding](../003_encoding/README.md) - Binary encoding format
-- [CAD024: Data Lattice](../024_data_lattice/README.md) - Theoretical foundation
-- [CAD028: DLFS](../028_dlfs/README.md) - Distributed filesystem
-- [CAD035: Lattice Cursors](../035_cursors/README.md) - Cursor system
-- [CAD037: KV Database](../037_kv_database/README.md) - Replicated key-value store
+- [CAD002: CVM Values](../002_values/index.md) - Value types
+- [CAD003: Encoding](../003_encoding/index.md) - Binary encoding format
+- [CAD024: Data Lattice](../024_data_lattice/index.md) - Theoretical foundation
+- [CAD028: DLFS](../028_dlfs/index.md) - Distributed filesystem
+- [CAD035: Lattice Cursors](../035_cursors/index.md) - Cursor system
+- [CAD037: KV Database](../037_kv_database/index.md) - Replicated key-value store

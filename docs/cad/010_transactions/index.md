@@ -10,7 +10,7 @@ Transactions SHOULD be instructions that a user wishes to have executed and refl
 - Updating an on-chain database record
 - Deploying or upgrading CVM code
 - Voting in a decentralised governance process 
-- Registering a hash that can be used to identify and validate off-chain content (e.g. on the [Data Lattice](../024_data_lattice/README.md) )
+- Registering a hash that can be used to identify and validate off-chain content (e.g. on the [Data Lattice](../024_data_lattice/index.md) )
 
 The general lifecycle of a transaction is as follows:
 
@@ -127,9 +127,9 @@ Total fees for a successful transaction are calculated as:
 (juice used + transaction base cost) * juice price + memory costs
 ```
 
-See [CAD007](../007_juice/README.md) for more details on juice cost calculation.
+See [CAD007](../007_juice/index.md) for more details on juice cost calculation.
 
-See [CAD006](../006_memory/README.md) for more details on memory cost calculation.
+See [CAD006](../006_memory/index.md) for more details on memory cost calculation.
 
 Memory costs MUST be zero if no memory was used, or if the origin account had sufficient memory allowance to cover the increase in state size caused by the transaction.
 

@@ -264,8 +264,8 @@ The Java implementation uses `java.util.concurrent.atomic.AtomicReference` for t
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) - Immutable value types
-- [CAD003: Encoding](../003_encoding/README.md) - Binary encoding format
-- [CAD024: Data Lattice](../024_data_lattice/README.md) - Distributed storage
-- [CAD028: DLFS](../028_dlfs/README.md) - Distributed filesystem using lattice
-- [CAD036: Lattice Node](../036_lattice_node/README.md) - Networked lattice replication
+- [CAD002: CVM Values](../002_values/index.md) - Immutable value types
+- [CAD003: Encoding](../003_encoding/index.md) - Binary encoding format
+- [CAD024: Data Lattice](../024_data_lattice/index.md) - Distributed storage
+- [CAD028: DLFS](../028_dlfs/index.md) - Distributed filesystem using lattice
+- [CAD036: Lattice Node](../036_lattice_node/index.md) - Networked lattice replication

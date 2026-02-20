@@ -2,7 +2,7 @@
 
 ## Overview
 
-The KV Database is a replicated key-value store built on the [Lattice](../024_data_lattice/README.md). It provides Redis-like data structure operations with CRDT merge semantics, cryptographic signing of replicas, and automatic network replication via [Lattice Nodes](../036_lattice_node/README.md).
+The KV Database is a replicated key-value store built on the [Lattice](../024_data_lattice/index.md). It provides Redis-like data structure operations with CRDT merge semantics, cryptographic signing of replicas, and automatic network replication via [Lattice Nodes](../036_lattice_node/index.md).
 
 Each KV Database is a named, multi-writer store where independent nodes maintain signed replicas. Replicas converge through lattice merge without coordination, enabling offline-first distributed applications with rich data types.
 
@@ -23,7 +23,7 @@ Traditional distributed databases solve these problems with consensus protocols,
 - Support multiple data types with type-appropriate CRDT merge strategies
 - Enable per-database, per-node signed replicas for authentication
 - Integrate with the standard lattice ROOT structure for network replication
-- Maintain compatibility with the [Lattice Cursor](../035_cursors/README.md) system
+- Maintain compatibility with the [Lattice Cursor](../035_cursors/index.md) system
 
 ## Specification
 
@@ -54,7 +54,7 @@ This structure means each owner has their own namespace of databases within thei
 
 ### Owner Types
 
-The OwnerLattice supports multiple owner identity types, each with its own verification scheme. See [CAD038: Lattice Authentication](../038_lattice_auth/README.md) for the full specification.
+The OwnerLattice supports multiple owner identity types, each with its own verification scheme. See [CAD038: Lattice Authentication](../038_lattice_auth/index.md) for the full specification.
 
 | Owner Type | Key Format | Verification | Use Case |
 |-----------|------------|-------------|----------|
@@ -75,7 +75,7 @@ OwnerLattice           ← per-owner merge with auth (CAD038)
                           └── per-type merge (LWW, structural, or PN-counter)
 ```
 
-**OwnerLattice** at the top level merges per-owner, verifying that the signer is authorised for the owner identity and that Ed25519 signatures are valid before accepting values ([CAD038](../038_lattice_auth/README.md)).
+**OwnerLattice** at the top level merges per-owner, verifying that the signer is authorised for the owner identity and that Ed25519 signatures are valid before accepting values ([CAD038](../038_lattice_auth/index.md)).
 
 **MapLattice** inside the signed value merges per-database-name, allowing each owner to maintain multiple named databases.
 
@@ -167,7 +167,7 @@ Implementations SHOULD check expiry on read and return nil for expired entries. 
 
 ### Ownership and Authentication
 
-Each owner's data is signed with an Ed25519 key pair and verified during lattice merge by the OwnerLattice ([CAD038](../038_lattice_auth/README.md)). The signed state per owner is:
+Each owner's data is signed with an Ed25519 key pair and verified during lattice merge by the OwnerLattice ([CAD038](../038_lattice_auth/index.md)). The signed state per owner is:
 
 ```
 Signed({db-name → {key → KVEntry, ...}, ...})
@@ -222,7 +222,7 @@ Applications MAY filter which replicas to merge using a predicate on the owner i
 
 #### Authentication
 
-Lattice merge MUST validate both owner authorisation and cryptographic signatures before accepting incoming values ([CAD038](../038_lattice_auth/README.md)). Entries where the signer is not authorised for the claimed owner, or where the signature is invalid, MUST be rejected.
+Lattice merge MUST validate both owner authorisation and cryptographic signatures before accepting incoming values ([CAD038](../038_lattice_auth/index.md)). Entries where the signer is not authorised for the claimed owner, or where the signature is invalid, MUST be rejected.
 
 ## Operations
 
@@ -414,10 +414,10 @@ db1.mergeReplicas(ownerMap);
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) - Value types used in KV entries
-- [CAD003: Encoding](../003_encoding/README.md) - Binary encoding format
-- [CAD024: Lattice](../024_data_lattice/README.md) - Theoretical foundation
-- [CAD035: Lattice Cursors](../035_cursors/README.md) - Cursor system for atomic state access
-- [CAD036: Lattice Node](../036_lattice_node/README.md) - Network replication infrastructure
-- [CAD028: DLFS](../028_dlfs/README.md) - Distributed filesystem (similar lattice pattern)
-- [CAD038: Lattice Authentication](../038_lattice_auth/README.md) - Owner verification during merge
+- [CAD002: CVM Values](../002_values/index.md) - Value types used in KV entries
+- [CAD003: Encoding](../003_encoding/index.md) - Binary encoding format
+- [CAD024: Lattice](../024_data_lattice/index.md) - Theoretical foundation
+- [CAD035: Lattice Cursors](../035_cursors/index.md) - Cursor system for atomic state access
+- [CAD036: Lattice Node](../036_lattice_node/index.md) - Network replication infrastructure
+- [CAD028: DLFS](../028_dlfs/index.md) - Distributed filesystem (similar lattice pattern)
+- [CAD038: Lattice Authentication](../038_lattice_auth/index.md) - Owner verification during merge

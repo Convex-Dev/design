@@ -82,8 +82,8 @@ SSE is also used for streaming responses on POST when the client includes `Accep
 
 - [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-06-18)
 - [MCP Streamable HTTP Transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
-- [CAD004: Accounts](../004_accounts/README.md)
-- [CAD026: Convex Lisp](../026_lisp/README.md)
-- [CAD019: Asset Model](../019_assets/README.md)
+- [CAD004: Accounts](../004_accounts/index.md)
+- [CAD026: Convex Lisp](../026_lisp/index.md)
+- [CAD019: Asset Model](../019_assets/index.md)
 - [Convex MCP Product Page](/docs/products/convex-mcp)
 

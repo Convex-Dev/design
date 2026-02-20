@@ -246,4 +246,4 @@ For reactive agents, `watchState` enables event-driven workflows: the agent regi
 - [Account Management](./account-management) — set up accounts, keys, and security for your agents
 - [Agentic Economics](./agentic-economics) — design economic interactions between agents
 - [Convex MCP Reference](/docs/products/convex-mcp) — full product documentation
-- [CAD041: MCP Specification](/docs/cad/041_mcp) — technical specification
+- [CAD041: MCP Specification](/docs/cad/mcp) — technical specification

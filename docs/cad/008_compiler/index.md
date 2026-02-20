@@ -66,7 +66,7 @@ Special Ops are conventionally named with "earmuffs" like `*address*` are are in
 
 Developers SHOULD prefer Special Ops over alternate methods of accessing such information, as it is likely to be benefit from special optimisations in the CVM and correspondingly lower juice costs.
 
-The Special Ops available are defined in [CAD005](../005_cvmex/README.md)
+The Special Ops available are defined in [CAD005](../005_cvmex/index.md)
 
 ### Quoting
 

@@ -2,9 +2,9 @@
 
 ## Overview
 
-The Lattice Queue is a replicated append-only log built on the [Data Lattice](../024_data_lattice/README.md). It provides Kafka-style streaming semantics — ordered records, offset-based access, independent consumer positions, and log truncation — with CRDT merge for automatic replication via [Lattice Nodes](../036_lattice_node/README.md).
+The Lattice Queue is a replicated append-only log built on the [Data Lattice](../024_data_lattice/index.md). It provides Kafka-style streaming semantics — ordered records, offset-based access, independent consumer positions, and log truncation — with CRDT merge for automatic replication via [Lattice Nodes](../036_lattice_node/index.md).
 
-Where the [KV Database](../037_kv_database/README.md) models shared mutable state, the Lattice Queue models an ordered stream of events. Together they cover the two fundamental patterns of distributed data: state and logs.
+Where the [KV Database](../037_kv_database/index.md) models shared mutable state, the Lattice Queue models an ordered stream of events. Together they cover the two fundamental patterns of distributed data: state and logs.
 
 ## Motivation
 
@@ -23,7 +23,7 @@ Traditional message brokers (Kafka, RabbitMQ, NATS) solve these problems with ce
 - Support Kafka-compatible record structures (key, value, timestamp, headers)
 - Enable log truncation while preserving offset continuity
 - Maintain queue-level metadata for naming, configuration, and provenance
-- Integrate with the [Lattice Cursor](../035_cursors/README.md) system for atomic state access
+- Integrate with the [Lattice Cursor](../035_cursors/index.md) system for atomic state access
 - Support lattice fork/sync for conflict-free distributed replication
 
 ## Key Concepts
@@ -56,7 +56,7 @@ Unlike traditional queues where consuming a message removes it, Lattice Queue re
 
 This decouples production from consumption. A fast consumer reads records as they arrive; a slow consumer catches up at its own pace; a new consumer can start from any offset. Producers and consumers need not be online at the same time.
 
-Consumer offsets are external to the queue itself. They MAY be stored in a [KV Database](../037_kv_database/README.md), in application state, or in any other persistent store.
+Consumer offsets are external to the queue itself. They MAY be stored in a [KV Database](../037_kv_database/index.md), in application state, or in any other persistent store.
 
 ### Single-Leader Append
 
@@ -187,7 +187,7 @@ Truncation only advances forward. A `newStartOffset` less than or equal to the c
 | `fork()` | Create an independent copy for isolated work |
 | `sync()` | Merge a forked copy back to its parent |
 
-Fork and sync follow the standard [Lattice Cursor](../035_cursors/README.md) semantics.
+Fork and sync follow the standard [Lattice Cursor](../035_cursors/index.md) semantics.
 
 ## Reference Implementation
 
@@ -201,8 +201,8 @@ A reference implementation is provided in the Convex `convex-core` module (Java)
 
 ## See Also
 
-- [CAD024: Data Lattice](../024_data_lattice/README.md) — Theoretical foundation for lattice data structures
-- [CAD035: Lattice Cursors](../035_cursors/README.md) — Cursor system for atomic state access, fork, and sync
-- [CAD036: Lattice Node](../036_lattice_node/README.md) — Network replication infrastructure
-- [CAD037: KV Database](../037_kv_database/README.md) — Complementary state-oriented lattice data structure
-- [CAD038: Lattice Authentication](../038_lattice_auth/README.md) — Owner verification for signed lattice values
+- [CAD024: Data Lattice](../024_data_lattice/index.md) — Theoretical foundation for lattice data structures
+- [CAD035: Lattice Cursors](../035_cursors/index.md) — Cursor system for atomic state access, fork, and sync
+- [CAD036: Lattice Node](../036_lattice_node/index.md) — Network replication infrastructure
+- [CAD037: KV Database](../037_kv_database/index.md) — Complementary state-oriented lattice data structure
+- [CAD038: Lattice Authentication](../038_lattice_auth/index.md) — Owner verification for signed lattice values

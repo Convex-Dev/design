@@ -32,5 +32,5 @@ See the [Peer Operations guide](/docs/tutorial/peer-operations) for setup instru
 ## Learn more
 
 - **[AI Agents User Guide](/docs/tutorial/agents)** — step-by-step guides for MCP integration, agent account management, and agentic economics
-- **[CAD041: MCP Specification](/docs/cad/041_mcp)** — technical specification for the Convex MCP endpoint
+- **[CAD041: MCP Specification](/docs/cad/mcp)** — technical specification for the Convex MCP endpoint
 - **[Model Context Protocol](https://modelcontextprotocol.io/)** — the MCP standard

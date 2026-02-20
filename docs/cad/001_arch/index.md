@@ -7,7 +7,7 @@ The Convex platform comprises two complementary decentralised systems built on t
 - **Convex** — a decentralised global state machine providing publicly verifiable on-chain data, deterministic execution, and economic coordination via the Convex Virtual Machine (CVM)
 - **Lattice** — a broader decentralised CRDT network providing unlimited scalability for off-chain data, content distribution, AI models, and real-time collaboration
 
-Both systems use **CAD3 encoded data** ([CAD003](../003_encoding/README.md)) as their universal data representation, and both employ **CRDT merge semantics** to guarantee convergence without coordination. This shared foundation means data flows naturally between on-chain and off-chain contexts using the same types, encoding, and cryptographic primitives.
+Both systems use **CAD3 encoded data** ([CAD003](../003_encoding/index.md)) as their universal data representation, and both employ **CRDT merge semantics** to guarantee convergence without coordination. This shared foundation means data flows naturally between on-chain and off-chain contexts using the same types, encoding, and cryptographic primitives.
 
 ### Convex (On-Chain)
 
@@ -23,8 +23,8 @@ The Lattice is a global, massively scalable data distribution layer for data tha
 
 - **Unlimited scalability** — no consensus bottleneck; data propagates peer-to-peer
 - **Offline-first operation** — nodes merge when connectivity is restored
-- **Signed ownership** — data is cryptographically signed per-owner ([CAD038](../038_lattice_auth/README.md))
-- **Rich data types** — replicated filesystems ([CAD028](../028_dlfs/README.md)), key-value databases ([CAD037](../037_kv_database/README.md)), and custom lattice structures
+- **Signed ownership** — data is cryptographically signed per-owner ([CAD038](../038_lattice_auth/index.md))
+- **Rich data types** — replicated filesystems ([CAD028](../028_dlfs/index.md)), key-value databases ([CAD037](../037_kv_database/index.md)), and custom lattice structures
 
 ### Shared Infrastructure
 
@@ -32,11 +32,11 @@ The on-chain and off-chain layers share:
 
 | Layer | Shared Component | Specification |
 |-------|-----------------|---------------|
-| Data representation | Immutable CAD3 values (ACell hierarchy) | [CAD002](../002_values/README.md), [CAD003](../003_encoding/README.md) |
-| Cryptography | Ed25519 signatures, AccountKey identities | [CAD002](../002_values/README.md) |
-| Merge semantics | Lattice merge (commutative, associative, idempotent) | [CAD024](../024_data_lattice/README.md) |
-| Storage | Content-addressed Etch database | [CAD003](../003_encoding/README.md) |
-| Networking | Peer-to-peer binary protocol | [CAD015](../015_peercomms/README.md) |
+| Data representation | Immutable CAD3 values (ACell hierarchy) | [CAD002](../002_values/index.md), [CAD003](../003_encoding/index.md) |
+| Cryptography | Ed25519 signatures, AccountKey identities | [CAD002](../002_values/index.md) |
+| Merge semantics | Lattice merge (commutative, associative, idempotent) | [CAD024](../024_data_lattice/index.md) |
+| Storage | Content-addressed Etch database | [CAD003](../003_encoding/index.md) |
+| Networking | Peer-to-peer binary protocol | [CAD015](../015_peercomms/index.md) |
 
 This means the next generation of decentralised applications can achieve the right combination of massive scalability backed up by publicly verifiable on-chain roots of trust and economic value exchange.
 

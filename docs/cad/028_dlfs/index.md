@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Data Lattice File System (DLFS) is a decentralised virtual file system built on the [Data Lattice](../024_data_lattice/README.md). It provides automatic synchronisation, conflict-free replication, and cryptographic verification of file data across distributed networks.
+The Data Lattice File System (DLFS) is a decentralised virtual file system built on the [Data Lattice](../024_data_lattice/index.md). It provides automatic synchronisation, conflict-free replication, and cryptographic verification of file data across distributed networks.
 
 ## Motivation
 
@@ -415,8 +415,8 @@ byte[] content = Files.readAllBytes(file);
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) - Value types
-- [CAD003: Encoding](../003_encoding/README.md) - Binary encoding format
-- [CAD024: Data Lattice](../024_data_lattice/README.md) - Theoretical foundation
-- [CAD035: Lattice Cursors](../035_cursors/README.md) - Cursor system for state access
-- [CAD036: Lattice Node](../036_lattice_node/README.md) - Network replication
+- [CAD002: CVM Values](../002_values/index.md) - Value types
+- [CAD003: Encoding](../003_encoding/index.md) - Binary encoding format
+- [CAD024: Data Lattice](../024_data_lattice/index.md) - Theoretical foundation
+- [CAD035: Lattice Cursors](../035_cursors/index.md) - Cursor system for state access
+- [CAD036: Lattice Node](../036_lattice_node/index.md) - Network replication

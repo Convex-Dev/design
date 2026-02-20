@@ -150,7 +150,7 @@ Applications MAY extend the root structure with additional sections by registeri
 
 Cursors are the primary interface for interacting with Lattice data. A cursor is a lightweight handle to a position within the Lattice hierarchy, providing atomic operations for reading, writing, navigating and merging values. In particular, lattice-aware cursors extend the base cursor model with fork/sync semantics: forking creates an isolated working copy, and syncing pushes changes back to the parent via lattice merge — which always succeeds without retry.
 
-The full cursor specification is defined in [CAD035: Lattice Cursors](../035_cursors/README.md). When used with the Data Lattice, cursor path navigation MUST be lattice-aware: at each level, the cursor consults the lattice type to determine the child lattice for the next key, and when a Signed Lattice boundary is crossed, cryptographic signing MUST be enforced transparently.
+The full cursor specification is defined in [CAD035: Lattice Cursors](../035_cursors/index.md). When used with the Data Lattice, cursor path navigation MUST be lattice-aware: at each level, the cursor consults the lattice type to determine the child lattice for the next key, and when a Signed Lattice boundary is crossed, cryptographic signing MUST be enforced transparently.
 
 ### Merge Context
 
@@ -196,7 +196,7 @@ Key implementation notes:
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) — Immutable value types used in the Lattice
-- [CAD003: Encoding](../003_encoding/README.md) — Binary encoding and content addressing
-- [CAD035: Lattice Cursors](../035_cursors/README.md) — Full cursor specification
-- [CAD036: Lattice Node](../036_lattice_node/README.md) — Networked lattice replication
+- [CAD002: CVM Values](../002_values/index.md) — Immutable value types used in the Lattice
+- [CAD003: Encoding](../003_encoding/index.md) — Binary encoding and content addressing
+- [CAD035: Lattice Cursors](../035_cursors/index.md) — Full cursor specification
+- [CAD036: Lattice Node](../036_lattice_node/index.md) — Networked lattice replication

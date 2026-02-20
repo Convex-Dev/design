@@ -349,12 +349,12 @@ We note that GC is an important prerequisite for high performance in an executio
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) — Value types operated on by the CVM
-- [CAD003: Encoding](../003_encoding/README.md) — Binary encoding of Ops and values
-- [CAD004: Accounts](../004_accounts/README.md) — Account model referenced by execution contexts
-- [CAD006: Memory Accounting](../006_memory/README.md) — Memory management cost model
-- [CAD007: Juice Accounting](../007_juice/README.md) — Execution cost accounting
-- [CAD008: Compiler](../008_compiler/README.md) — Compilation of source code to Ops
-- [CAD010: Transactions](../010_transactions/README.md) — Transaction structure and submission
-- [CAD011: Errors](../011_errors/README.md) — Error types and handling
-- [CAD027: Event Logging](../027_log/README.md) — CVM execution log
+- [CAD002: CVM Values](../002_values/index.md) — Value types operated on by the CVM
+- [CAD003: Encoding](../003_encoding/index.md) — Binary encoding of Ops and values
+- [CAD004: Accounts](../004_accounts/index.md) — Account model referenced by execution contexts
+- [CAD006: Memory Accounting](../006_memory/index.md) — Memory management cost model
+- [CAD007: Juice Accounting](../007_juice/index.md) — Execution cost accounting
+- [CAD008: Compiler](../008_compiler/index.md) — Compilation of source code to Ops
+- [CAD010: Transactions](../010_transactions/index.md) — Transaction structure and submission
+- [CAD011: Errors](../011_errors/index.md) — Error types and handling
+- [CAD027: Event Logging](../027_log/index.md) — CVM execution log
