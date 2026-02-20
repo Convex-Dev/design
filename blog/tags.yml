@@ -142,3 +142,13 @@ netty:
   label: Netty
   permalink: /netty
   description: Netty networking framework
+
+dlfs:
+  label: DLFS
+  permalink: /dlfs
+  description: Decentralised Lattice File System
+
+data-structures:
+  label: Data Structures
+  permalink: /data-structures
+  description: Immutable data structures and encoding
