@@ -77,7 +77,7 @@ This also ensures that Peers can safely store multiple versions of large data st
 
 ### Canonical Encoding
 
-All CVM values MUST have a unique canonical **encoding** as a fixed length sequence of bytes. See [Encoding CAD](/cad/003_encoding/README.md) for full specification.
+All CVM values MUST have a unique canonical **encoding** as a fixed length sequence of bytes. See [Encoding CAD](/cad/003_encoding/index.md) for full specification.
 
 CVM values are **defined to be equal** if and only if their Encoding is identical.
 
@@ -395,6 +395,13 @@ SignedData records are used extensively for security, since the represent proof 
 - Clients sign Transaction records that they wish to execute
 
 
+
+## See Also
+
+- [CAD003: Encoding](../003_encoding/index.md) — Binary encoding format for CVM values
+- [CAD012: Numerics](../012_numerics/index.md) — Detailed specification of numeric operations and arithmetic
+- [CAD013: Metadata](../013_metadata/index.md) — Metadata attached to definitions and values
+- [CAD033: CVM Types](../033_cvmtypes/index.md) — Extended CVM type system
 
 ## Implementation notes
 

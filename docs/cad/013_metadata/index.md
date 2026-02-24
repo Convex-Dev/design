@@ -79,7 +79,7 @@ TODO. Also a vector of strings where each string is a paragraph for easier forma
 
 Assuming the symbol is callable, map of `error code` to `string` describing in human language how and why calling this function might fail.
 
-See also [CAD 011](../011_errors/README.md) about errors.
+See also [CAD 011](../011_errors/index.md) about errors.
 
 #### `:examples`
 
@@ -116,7 +116,7 @@ TODO. What about other values?
 
 ### Expanders
 
-As described in [CAD 009](../009_expanders/README.md), expanders MUST have at least `{:expander true}` in their metadata.
+As described in [CAD 009](../009_expanders/index.md), expanders MUST have at least `{:expander true}` in their metadata.
 
 TODO. Use `:expander?` for consistency.
 

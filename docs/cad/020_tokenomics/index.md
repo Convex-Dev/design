@@ -158,7 +158,7 @@ A certain amount of Convex Coins are placed in an AMM exchange for CVM memory al
 
 The memory allowances themselves are a secondary native token used purely for memory accounting purposes.
 
-See [CAD006 Memory Accounting](../006_memory/README.md) for more details.
+See [CAD006 Memory Accounting](../006_memory/index.md) for more details.
 
 ### Release Curve
 

@@ -2,13 +2,13 @@
 
 ## Overview
 
-Convex SQL is a SQL database layer built on the [Lattice](../024_data_lattice/README.md). It provides relational table storage with CRDT merge semantics, enabling SQL-like operations over distributed, replicated data structures. Tables support schema definitions, primary key indexing, and row-level merge replication via [Lattice Nodes](../036_lattice_node/README.md).
+Convex SQL is a SQL database layer built on the [Lattice](../024_data_lattice/index.md). It provides relational table storage with CRDT merge semantics, enabling SQL-like operations over distributed, replicated data structures. Tables support schema definitions, primary key indexing, and row-level merge replication via [Lattice Nodes](../036_lattice_node/index.md).
 
 Convex SQL enables standard SQL query capabilities over lattice data through Apache Calcite, bridging familiar database paradigms with the convergent properties of lattice technology.
 
 ## Motivation
 
-While the [KV Database](../037_kv_database/README.md) provides excellent support for key-value workloads, many applications require:
+While the [KV Database](../037_kv_database/index.md) provides excellent support for key-value workloads, many applications require:
 
 - **Relational data models** with defined schemas and typed columns
 - **SQL query language** for complex queries, joins, and aggregations
@@ -49,7 +49,7 @@ The full path to a specific table is:
 ```
 
 Where:
-- **owner-key** — the owner identity (see [CAD038](../038_lattice_auth/README.md))
+- **owner-key** — the owner identity (see [CAD038](../038_lattice_auth/index.md))
 - **Signed(...)** — the owner's signed map of database names to table stores
 - **db-name** — a string database name, scoped per owner
 - **table-name** — a string table name within the database
@@ -77,7 +77,7 @@ OwnerLattice                    ← per-owner merge with auth (CAD038)
 
 | Layer | Lattice | Merge Behaviour |
 |-------|---------|-----------------|
-| Owner | `OwnerLattice` | Per-owner with authentication ([CAD038](../038_lattice_auth/README.md)) |
+| Owner | `OwnerLattice` | Per-owner with authentication ([CAD038](../038_lattice_auth/index.md)) |
 | Signature | `SignedLattice` | Ed25519 signature verification |
 | Database | `MapLattice` | Per-database-name merge |
 | Table Store | `TableStoreLattice` | Per-table-name merge using `SQLTableLattice` |
@@ -187,7 +187,7 @@ These rules satisfy the lattice properties:
 
 ### Ownership and Authentication
 
-Like KV Database, Convex SQL uses OwnerLattice for per-owner authentication. Each owner's data is signed with an Ed25519 key pair and verified during merge ([CAD038](../038_lattice_auth/README.md)).
+Like KV Database, Convex SQL uses OwnerLattice for per-owner authentication. Each owner's data is signed with an Ed25519 key pair and verified during merge ([CAD038](../038_lattice_auth/index.md)).
 
 The signed state per owner is:
 
@@ -382,10 +382,10 @@ Both share the same OwnerLattice authentication model and lattice replication in
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) — Value types used in table entries
-- [CAD003: Encoding](../003_encoding/README.md) — Binary encoding format
-- [CAD024: Lattice](../024_data_lattice/README.md) — Theoretical foundation
-- [CAD035: Lattice Cursors](../035_cursors/README.md) — Cursor system for atomic state access
-- [CAD036: Lattice Node](../036_lattice_node/README.md) — Network replication infrastructure
-- [CAD037: KV Database](../037_kv_database/README.md) — Key-value store with similar lattice pattern
-- [CAD038: Lattice Authentication](../038_lattice_auth/README.md) — Owner verification during merge
+- [CAD002: CVM Values](../002_values/index.md) — Value types used in table entries
+- [CAD003: Encoding](../003_encoding/index.md) — Binary encoding format
+- [CAD024: Lattice](../024_data_lattice/index.md) — Theoretical foundation
+- [CAD035: Lattice Cursors](../035_cursors/index.md) — Cursor system for atomic state access
+- [CAD036: Lattice Node](../036_lattice_node/index.md) — Network replication infrastructure
+- [CAD037: KV Database](../037_kv_database/index.md) — Key-value store with similar lattice pattern
+- [CAD038: Lattice Authentication](../038_lattice_auth/index.md) — Owner verification during merge

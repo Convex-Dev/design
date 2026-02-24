@@ -2,7 +2,7 @@
 
 ## Overview
 
-Lattice Authentication defines how the [Lattice](../024_data_lattice/README.md) validates ownership and authenticity of incoming values during merge operations. Since lattice merges combine data from untrusted sources, every incoming signed value must be verified before it is accepted into the local state.
+Lattice Authentication defines how the [Lattice](../024_data_lattice/index.md) validates ownership and authenticity of incoming values during merge operations. Since lattice merges combine data from untrusted sources, every incoming signed value must be verified before it is accepted into the local state.
 
 The authentication model is built into the `OwnerLattice` merge path, operates at O(delta) cost (only verifying entries that differ), and is safe by default: if ownership cannot be verified, the merge is rejected.
 
@@ -198,8 +198,8 @@ AHashMap<ACell, SignedData<V>> result = ownerLattice.merge(ctx, ownMap, incoming
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) — Value types including AccountKey and Address
-- [CAD024: Lattice](../024_data_lattice/README.md) — Lattice merge foundations
-- [CAD035: Lattice Cursors](../035_cursors/README.md) — Cursor system and LatticeContext
-- [CAD036: Lattice Node](../036_lattice_node/README.md) — Network replication where authentication is applied
-- [CAD037: KV Database](../037_kv_database/README.md) — KV store using OwnerLattice authentication
+- [CAD002: CVM Values](../002_values/index.md) — Value types including AccountKey and Address
+- [CAD024: Lattice](../024_data_lattice/index.md) — Lattice merge foundations
+- [CAD035: Lattice Cursors](../035_cursors/index.md) — Cursor system and LatticeContext
+- [CAD036: Lattice Node](../036_lattice_node/index.md) — Network replication where authentication is applied
+- [CAD037: KV Database](../037_kv_database/index.md) — KV store using OwnerLattice authentication

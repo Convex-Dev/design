@@ -69,7 +69,7 @@ You can check the total issued supply of Convex Coins with the following query:
 
 Here the coin supply is the one million Convex Coins issued at genesis, plus some a small amount of transaction fees incurred by governance accounts. Normal transaction fees by non-governance do not effect the coin supply (since they are re-circulated).
 
-Additional coin supply will be issued in the future, e.g. as ecosystem demand causes new coins to be purchased from the release curve. See the [Tokenomics CAD](/docs/cad/020_tokenomics/README.md) for more details.
+Additional coin supply will be issued in the future, e.g. as ecosystem demand causes new coins to be purchased from the release curve. See the [Tokenomics CAD](/docs/cad/tokenomics) for more details.
 
 ## Burning coins
 

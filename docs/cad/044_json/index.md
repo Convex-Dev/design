@@ -1,4 +1,4 @@
-# CAD036: JSON on the Lattice
+# CAD044: JSON on the Lattice
 
 ## Overview
 
@@ -96,7 +96,7 @@ When designing CVM data structures intended for JSON conversion:
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/README.md) - Complete specification of CVM data types
-- [CAD026: Convex Lisp](../026_lisp/README.md) - Language features including JSON superset support
-- [CAD003: Encoding](../003_encoding/README.md) - CAD3 encoding format and JSON compatibility
+- [CAD002: CVM Values](../002_values/index.md) - Complete specification of CVM data types
+- [CAD026: Convex Lisp](../026_lisp/index.md) - Language features including JSON superset support
+- [CAD003: Encoding](../003_encoding/index.md) - CAD3 encoding format and JSON compatibility
 

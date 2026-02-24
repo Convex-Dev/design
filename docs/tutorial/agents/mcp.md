@@ -3,7 +3,7 @@ title: MCP Integration
 sidebar_position: 1
 ---
 
-The **Model Context Protocol (MCP)** is a standardised interface that allows AI agents to discover and invoke tools across different systems. Convex peers ship with a built-in MCP server, turning any peer into a gateway for agents to query state, execute transactions, and manage assets on the Convex network.
+The **Model Context Protocol (MCP)** is a standardised interface that allows AI agents to discover and invoke tools across different systems. Convex peers ship with a built-in MCP server, turning any peer into a gateway for agents to query state, execute transactions, manage assets, and receive real-time state change notifications on the Convex network.
 
 ## Connecting to a Convex peer
 
@@ -41,53 +41,26 @@ For a public peer:
 }
 ```
 
-Once connected, the agent can discover all available tools through MCP's standard `tools/list` method.
+Once connected, the agent can discover all available tools and prompts through MCP's standard `tools/list` and `prompts/list` methods.
 
 ## Available tools
 
-Convex peers expose 16 built-in tools via MCP:
+Convex peers expose over 30 tools via MCP, organised into categories:
 
-### Queries and state inspection
+- **Queries and state** — execute Convex Lisp queries (`query`), inspect accounts (`describeAccount`, `getBalance`), navigate the global state tree (`queryState`), resolve CNS names, and check peer status
+- **Transactions** — execute transactions directly with a seed (`transact`, `transfer`), or use the secure prepare/sign/submit flow for external signing approval
+- **Cryptography** — Ed25519 key generation (`keyGen`), signing, verification, and SHA-256/SHA3 hashing
+- **Encoding** — convert between CVM literals and CAD3 binary format
+- **State watching** — register watches on any path in the global state (`watchState`) and receive SSE notifications when values change; remove watches with `unwatchState`
+- **Signing service** — when configured, server-side key management tools (`signingTransact`, `signingCreateAccount`, etc.) where private keys are stored encrypted and never leave the server
 
-| Tool | Description |
-|------|-------------|
-| `query` | Execute a read-only Convex Lisp query (free, no signing required) |
-| `lookup` | Find a symbol in an account's environment with metadata |
-| `describeAccount` | Get account status: balance, sequence, key, controller, environment |
-| `resolveCNS` | Resolve a Convex Name System (CNS) name to an address |
-| `peerStatus` | Get peer status and network information |
+Use `tools/list` to discover the exact set of tools available on any given peer.
 
-### Transactions
+## Prompts
 
-| Tool | Description |
-|------|-------------|
-| `transact` | Execute a transaction directly (requires seed for signing) |
-| `signAndSubmit` | Prepare, sign, and submit in one call (requires seed) |
-| `prepare` | Prepare a transaction and return a hash for external signing |
-| `submit` | Submit a pre-signed transaction to the network |
+The MCP server also provides guided workflow prompts that teach LLMs about Convex and walk them through common tasks. Prompts are user-controlled — triggered by slash commands or explicit selection in the client.
 
-### Signing and cryptography
-
-| Tool | Description |
-|------|-------------|
-| `sign` | Sign raw hex data with an Ed25519 seed |
-| `validate` | Verify an Ed25519 signature |
-| `keyGen` | Generate or derive a key pair from a seed |
-| `hash` | Compute SHA-256 or SHA3 hash |
-
-### Account management
-
-| Tool | Description |
-|------|-------------|
-| `createAccount` | Create a new account with optional faucet payout |
-| `getTransaction` | Retrieve a transaction by hash with its result |
-
-### Encoding
-
-| Tool | Description |
-|------|-------------|
-| `encode` | Encode Convex Lisp to CAD3 binary format |
-| `decode` | Decode CAD3 binary to Convex Lisp |
+Available prompts cover account exploration, network status inspection, Convex Lisp guidance, account creation, contract deployment, and fund transfers. Use `prompts/list` to discover them.
 
 ## Querying state
 
@@ -217,6 +190,27 @@ A convenience method that combines preparation, signing, and submission:
 
 Like approach 1, the agent needs the seed. This is useful for fully autonomous agents in trusted environments.
 
+### Approach 4: Signing service (recommended for production)
+
+When the peer has a signing service configured, the agent can transact without ever handling private keys. Keys are generated and stored encrypted on the server:
+
+```json
+{
+  "name": "signingTransact",
+  "arguments": {
+    "source": "(transfer #99 1000000)",
+    "address": "#42",
+    "passphrase": "user-provided-passphrase"
+  }
+}
+```
+
+The signing service stores keys encrypted at rest with a user-chosen passphrase. Sensitive operations like key import, export, and deletion require an additional browser-based confirmation step.
+
+:::tip Recommended for production
+The signing service is the recommended approach for production agent deployments. Private keys never leave the server, and the passphrase-based encryption ensures that even server administrators cannot access them without the user's passphrase.
+:::
+
 ## Running your own peer
 
 For production agent deployments, running your own Convex peer is strongly recommended:
@@ -239,15 +233,17 @@ A typical agent interaction with Convex via MCP follows this pattern:
 1. **Query** — read current state (balances, prices, contract state)
 2. **Decide** — the agent's model determines the next action
 3. **Prepare** — create a transaction for the chosen action
-4. **Sign** — approve and sign (directly or via signing tool)
+4. **Sign** — approve and sign (directly, via signing service, or external signer)
 5. **Submit** — execute the signed transaction
 6. **Verify** — query the updated state to confirm the result
 
 This loop runs continuously for autonomous agents, or on-demand for agents responding to user requests.
+
+For reactive agents, `watchState` enables event-driven workflows: the agent registers watches on relevant state paths and receives SSE notifications when values change, eliminating the need for polling.
 
 ## Next steps
 
 - [Account Management](./account-management) — set up accounts, keys, and security for your agents
 - [Agentic Economics](./agentic-economics) — design economic interactions between agents
 - [Convex MCP Reference](/docs/products/convex-mcp) — full product documentation
-- [CAD035: MCP Specification](/docs/cad/mcp) — technical specification
+- [CAD041: MCP Specification](/docs/cad/mcp) — technical specification

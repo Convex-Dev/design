@@ -225,7 +225,95 @@ The Address of the currently executing Account. `*address*` MAY vary within a si
 
 Normally, `*address*` should be passed as an argument to function that check for access control rights
 
-#### TODO - complete Specials
+#### `0x03 - *memory*`
+
+Gets the current memory allowance (in bytes) for the currently executing Account.
+
+#### `0x04 - *balance*`
+
+Gets the current CVM coin balance (in copper) for the currently executing Account.
+
+#### `0x05 - *origin*`
+
+Gets the Address of the origin Account for the current transaction, i.e. the Account that signed and submitted the transaction.
+
+Unlike `*caller*`, `*origin*` remains constant throughout the entire transaction regardless of any `call` or `eval-as` invocations. `*origin*` SHOULD generally be avoided for access control (prefer `*caller*`), but is useful for determining the original transaction submitter.
+
+#### `0x06 - *result*`
+
+Gets the current value of the Result Register. This is the result of the most recently executed operation in the current Context. Useful in macro expansions and advanced metaprogramming.
+
+#### `0x07 - *timestamp*`
+
+Gets the current State Timestamp as a Long value (milliseconds since Unix epoch). The timestamp is set during Block Preparation and is guaranteed to be monotonically increasing.
+
+#### `0x08 - *depth*`
+
+Gets the current execution depth of the CVM stack. The depth is `0` at the top level of a transaction and increases with each nested `call` or function invocation. This can be used to guard against excessive recursion.
+
+#### `0x09 - *offer*`
+
+Gets the current coin offer amount (in copper) available in the Context. The offer is the amount of coins made available by the caller via the `call` form for potential acceptance by the called Actor.
+
+#### `0x0a - *state*`
+
+Gets the entire current CVM State as a value. This is a large data structure and SHOULD be used with care. Primarily useful for advanced introspection and debugging.
+
+#### `0x0b - *holdings*`
+
+Gets the holdings map for the currently executing Account. Holdings represent assets or token balances held by the Account in various Actors.
+
+#### `0x0c - *sequence*`
+
+Gets the current sequence number for the currently executing Account. The sequence number is incremented with each transaction and is used to prevent replay attacks.
+
+#### `0x0d - *key*`
+
+Gets the public key (Account Key) associated with the currently executing Account, or `nil` if no key is set (e.g. for Actor accounts).
+
+#### `0x0e - *juice-price*`
+
+Gets the current juice price from the State. The juice price determines the cost of CVM execution in terms of coins per unit of juice consumed.
+
+#### `0x0f - *scope*`
+
+Gets the current scope value in the Context. The scope is set by `set-scope` within an Actor and provides a mechanism for Actors to pass contextual information across internal function calls.
+
+#### `0x10 - *juice-limit*`
+
+Gets the juice limit for the current transaction. This is the maximum amount of juice that can be consumed before the transaction fails with a `:JUICE` error.
+
+#### `0x11 - *controller*`
+
+Gets the controller Address for the currently executing Account. The controller is an Account that has the authority to manage the Account (e.g. update its key or transfer ownership). May be `nil` for self-sovereign Accounts.
+
+#### `0x12 - *env*`
+
+Gets the current environment map for the executing Account. The environment is a map of Symbols to their defined values, representing the Account's namespace.
+
+#### `0x13 - *parent*`
+
+Gets the parent Address for the currently executing Account. The parent is the Account from which this Account was created, if applicable.
+
+#### `0x14 - *nop*`
+
+A no-operation Special that returns the Context unchanged, propagating the current value of the Result Register. This is functionally equivalent to `*result*` but exists as a distinct opcode.
+
+#### `0x15 - *memory-price*`
+
+Gets the current memory price from the State as a Double value. The memory price determines the cost per byte of on-chain memory allocation.
+
+#### `0x16 - *signer*`
+
+Gets the Address of the signer for the current transaction. In most cases this is the same as `*origin*`, but may differ in contexts where signing authority is delegated.
+
+#### `0x17 - *peer*`
+
+Gets the Address of the Peer that submitted the current Block containing this transaction. Returns `nil` if not available in the current execution context.
+
+#### `0x18 - *location*`
+
+Gets the current location value in the Context. The location provides information about the source position of the currently executing code, useful for debugging and error reporting.
 
 ## Op Execution
 
@@ -258,3 +346,15 @@ We note that GC is an important prerequisite for high performance in an executio
 
 - While the CVM specification does not require persistent storage, it is expected that Peers will rely upon persistent storage for CVM Objects. To the extend that CVM values are written to persistent storage in a database, Peers may need to perform a separate garbage collection phase on the database
 - The current CVM implementation makes use of JVM `SoftReference`s and lazy loading, which allows the host JVM to garbage collect values in many cases even if they are still potentially reachable. This is safe provided that the values can be recovered from storage on demand if required. The advantage of this approach is that it allows the processing of large CVM data structures (such as the State itself) even if these structures exceed the size of available Peer memory.
+
+## See Also
+
+- [CAD002: CVM Values](../002_values/index.md) — Value types operated on by the CVM
+- [CAD003: Encoding](../003_encoding/index.md) — Binary encoding of Ops and values
+- [CAD004: Accounts](../004_accounts/index.md) — Account model referenced by execution contexts
+- [CAD006: Memory Accounting](../006_memory/index.md) — Memory management cost model
+- [CAD007: Juice Accounting](../007_juice/index.md) — Execution cost accounting
+- [CAD008: Compiler](../008_compiler/index.md) — Compilation of source code to Ops
+- [CAD010: Transactions](../010_transactions/index.md) — Transaction structure and submission
+- [CAD011: Errors](../011_errors/index.md) — Error types and handling
+- [CAD027: Event Logging](../027_log/index.md) — CVM execution log

@@ -11,7 +11,7 @@ This document outlines the key elements of Convex Lisp. It is intended primarily
 - Pure **immutable data structures** with highly optimised implementations for usage in decentralised systems based on Convex
 - Emphasis on **functional programming** with support for the **lambda calculus**
 - Powerful **macro capabilities**, following the expansion-passing style developed by Dybvig, Friedman & Haynes
-- Automatic **memory management**, including [memory accounting](../006_memory/README.md)
+- Automatic **memory management**, including [memory accounting](../006_memory/index.md)
 - Elegant **Lisp syntax** largely inspired by Clojure
 - **On-chain compiler** (smart contracts writing smart contracts....)
 - **Strong dynamic typing** - for well defined, consistent behaviour at runtime
@@ -27,7 +27,7 @@ As a platform for decentralised, open economic systems Convex requires a powerfu
 While the CVM itself is language agnostic, we chose a Lisp dialect as the first language for Convex for a number of key reasons:
 - Productivity: general recognition of Lisp as a productive and flexible language
 - The advantages of a homoiconic language ("code is data") for generating code with powerful macros and DSL capabilities
-- The ability to create a small and efficient [compiler](../008_compiler/README.md) suitable for on-chain code generation and compilation 
+- The ability to create a small and efficient [compiler](../008_compiler/index.md) suitable for on-chain code generation and compilation 
 - Familiarity for developers of existing Lisp-based languages such as **Clojure**, **Scheme**, **Racket** or **Common Lisp**
 
 Designing a new language is no easy task, so we naturally considered adopting an existing language for Convex. Unfortunately, none of the available options proved attractive for a variety of reasons:
@@ -83,7 +83,7 @@ Convex Lisp provides a rich set of data types suitable for general purpose devel
 
 Convex Lisp directly uses the data types provided natively by the CVM, for maximum efficiency. 
 
-For more detailed specification of CVM data types see [CAD002](../002_values/README.md)
+For more detailed specification of CVM data types see [CAD002](../002_values/index.md)
 
 ### Basic Literal values
 
@@ -1125,7 +1125,7 @@ Instead: return a well defined integer value, keyword or other data structure th
 
 The CVM is not the place for storing static content such as images, text or other large binary files. 
 
-Instead: use the [Data Lattice](../024_data_lattice/README.md), IPFS or a traditional web server / CDN that clients can download content from.
+Instead: use the [Data Lattice](../024_data_lattice/index.md), IPFS or a traditional web server / CDN that clients can download content from.
 
 If you absolutely must validate content against an on-chain record, store a single 32-byte hash of the content. This can be the merkle root of a large tree of content if necessary. Clients can hash the content and check this for authenticity / integrity.  
 
@@ -1179,8 +1179,8 @@ We believe the following features of Convex Lisp, among others, offer substantiv
 - **Floating point support**: Full IEEE754 Double compatibility, which are more suitable than integer mathematics for many purposes
 - **Orthogonal Persistence**: storage is automatic, with no need to explicitly store data. Extremely large data structures are supported (including larger than machine memory) and are loaded when accessed on demand.
 - **Extra Types**: A full range of general purpose value types including: Sets, literal Keywords, sorted Indexes, UTF-8 Strings, Blobs etc.
-- **Memory accounting**: Economic system for memory management. See [CAD006](../006_memory/README.md)
-- **Powerful macro capability**: ability to fully customise the language with expanders. See also [CAD009](../009_expanders/README.md)
+- **Memory accounting**: Economic system for memory management. See [CAD006](../006_memory/index.md)
+- **Powerful macro capability**: ability to fully customise the language with expanders. See also [CAD009](../009_expanders/index.md)
 
 We hope that developers will find the tools provided in Convex Lisp a compelling solution as we continue to build open economic systems.
 
