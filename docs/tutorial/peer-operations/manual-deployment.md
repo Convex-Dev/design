@@ -61,7 +61,7 @@ cd /opt/convex
 wget https://github.com/Convex-Dev/convex/releases/download/v0.8.2/convex.jar
 
 # Verify download
-java -jar convex.jar version
+java -jar convex.jar --version
 ```
 
 **Option B: Build from Source**
