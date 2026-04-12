@@ -70,6 +70,34 @@ The MCP server supports real-time notifications via SSE for state watching. When
 
 SSE is also used for streaming responses on POST when the client includes `Accept: text/event-stream`.
 
+## Extensibility
+
+The `McpServer` base class is designed for extension. Subclasses can override protected methods to customise tool discovery, tool dispatch, and protocol negotiation:
+
+| Method | Purpose |
+|--------|---------|
+| `buildInitializeResult(params)` | Customise the `initialize` response (capabilities, server info) |
+| `listTools()` | Return a custom set of available tools |
+| `toolCall(params)` | Dispatch tool calls with custom logic |
+| `handlePost(ctx)` | Override full POST request handling |
+| `createResponse(id, result)` | Customise JSON-RPC response construction |
+
+This enables:
+- **Adapter-based tool discovery** — dynamically register tools from loaded adapters (used by Covia venues)
+- **Custom tool dispatch** — route tool calls to domain-specific handlers
+- **Protocol extensions** — add custom JSON-RPC methods beyond the MCP specification
+- **Batch request handling** — the base implementation supports up to 20 requests per batch
+
+### Tool Registration
+
+External modules register tools via the tool registry:
+
+```java
+mcpServer.registerTool("my-tool", schema, handler);
+```
+
+Registered tools appear in `tools/list` responses and are dispatched by `toolCall()`.
+
 ## Security Considerations
 
 - **Seed-based tools** (`transact`, `signAndSubmit`, `transfer`) transmit the Ed25519 seed over the network — peers MUST use HTTPS

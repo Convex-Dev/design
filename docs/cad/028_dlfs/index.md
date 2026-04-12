@@ -413,6 +413,39 @@ byte[] content = Files.readAllBytes(file);
 - `DLFileSystem` provides Java NIO FileSystem SPI integration
 - Replication uses `NodeServer` from convex-peer module
 
+## CLI Support
+
+DLFS drives can be started and managed from the command line via the `convex-cli` module:
+
+```bash
+convex dlfs start --port 8080 --auth ed25519
+```
+
+The CLI supports:
+- Starting a DLFS server with configurable authentication
+- Mounting drives for WebDAV access
+- Drive management operations
+
+## WebDAV Integration
+
+DLFS drives are accessible via standard WebDAV at `/dlfs/{drive}/{path}`. The WebDAV layer supports GET, PUT, DELETE, MKCOL, PROPFIND, MOVE, and COPY operations.
+
+### Sync After Mutations
+
+WebDAV mutation operations (PUT, DELETE, MKCOL, MOVE, COPY) explicitly call `sync()` on the underlying cursor after each operation. This ensures changes propagate through the cursor chain to the root for persistence and lattice replication.
+
+This is critical for durability: without the explicit sync, writes would remain in the cursor's local state and might be lost on restart.
+
+## DID URL Resource Addressing
+
+DLFS drives are addressable via DID URL paths for capability-based access control:
+
+```
+did:key:z6MkAlice.../dlfs/docs/specs
+```
+
+This enables fine-grained capability delegation using UCAN tokens ([CAD038](../038_lattice_auth/index.md)). A capability `{with: "did:key:z6Mk.../dlfs/docs/", can: "crud/read"}` grants read access to the `docs` directory and all its contents.
+
 ## See Also
 
 - [CAD002: CVM Values](../002_values/index.md) - Value types

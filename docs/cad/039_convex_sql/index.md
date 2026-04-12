@@ -271,23 +271,116 @@ Row merges are deterministic and converge across all replicas:
 
 ## SQL Integration
 
-Convex SQL integrates with Apache Calcite to provide SQL query capabilities:
+Convex SQL integrates with Apache Calcite to provide full SQL query capabilities over lattice data.
 
-### Planned Features
-
-- **SQL Parsing** — standard SQL syntax via Calcite parser
-- **Query Planning** — Calcite planner with lattice-optimised rules
-- **Schema Discovery** — automatic Calcite schema from table definitions
-- **Basic DML** — SELECT, INSERT, UPDATE, DELETE
-- **Joins** — cross-table queries with merge-compatible semantics
-
-### Query Execution Model
-
-Queries execute against the local merged state:
+### Query Execution Pipeline
 
 ```
-SQL Query → Calcite Parser → Calcite Planner → Lattice Table Scan → Results
+SQL Query → Calcite Parser → Calcite Planner → Convex Relational Operators → Results
 ```
+
+The Calcite integration provides:
+
+- **SQL parsing** — standard SQL syntax via Calcite's SQL parser
+- **Query planning** — Calcite planner with lattice-optimised rules
+- **Schema discovery** — automatic Calcite schema bridge from table definitions
+- **DDL** — CREATE TABLE and DROP TABLE via SQL
+- **DML** — SELECT, INSERT, UPDATE, DELETE
+- **Joins** — cross-table queries including merge joins
+- **Aggregations** — COUNT, SUM, AVG, etc. via Calcite aggregate operators
+- **Sorting and projection** — ORDER BY, column selection
+
+### Primary Key Filter Pushdown
+
+When a query includes a primary key equality predicate (`WHERE id = ?`), the planner pushes the filter into the table scan, converting a full table scan into an O(log n) index lookup via `selectByKey()`. This is a critical optimisation for point queries.
+
+### Relational Operators
+
+Custom Convex relational operators integrate with Calcite's planner:
+
+| Operator | Description |
+|----------|-------------|
+| `ConvexTableScan` | Full or filtered table scan |
+| `ConvexFilter` | Filter with PK pushdown support |
+| `ConvexProject` | Column projection |
+| `ConvexSort` | Ordering |
+| `ConvexAggregate` | Aggregation functions |
+| `ConvexJoin` | Cross-table joins |
+| `ConvexMergeJoin` | Merge join for sorted data |
+
+### Row Count Optimisation
+
+Row count queries avoid materialising rows — the count is derived directly from the lattice index structure.
+
+### PreparedStatement Caching
+
+Calcite query plans are cached for PreparedStatements, avoiding repeated parsing and planning for repeated queries with different parameters.
+
+## JDBC Driver
+
+Convex SQL provides a standard JDBC driver for direct integration with any JDBC-compatible tool or application.
+
+### Connection URLs
+
+```
+jdbc:convex:mem:mydb              In-memory database (non-persistent)
+jdbc:convex:file:/path/to/db.etch Persistent database backed by Etch store
+```
+
+The driver manages database instances automatically — no manual registration or server process required.
+
+### Transaction Support
+
+The JDBC driver supports transaction isolation via the lattice fork/sync model:
+
+| Operation | Lattice Effect |
+|-----------|----------------|
+| `setAutoCommit(false)` | Forks the cursor (snapshot isolation) |
+| `commit()` | Syncs the fork back to parent (lattice merge) |
+| `rollback()` | Discards the fork |
+| `setAutoCommit(true)` | Direct writes, no isolation |
+
+Because lattice merge is always well-defined, commits never fail due to conflicts — the merge function deterministically combines the transaction's writes with concurrent state.
+
+### Example: JDBC Usage
+
+```java
+Connection conn = DriverManager.getConnection("jdbc:convex:mem:mydb");
+
+// DDL
+Statement stmt = conn.createStatement();
+stmt.execute("CREATE TABLE users (id INTEGER, name VARCHAR, email VARCHAR)");
+
+// DML
+PreparedStatement ps = conn.prepareStatement("INSERT INTO users VALUES (?, ?, ?)");
+ps.setInt(1, 1);
+ps.setString(2, "Alice");
+ps.setString(3, "alice@example.com");
+ps.execute();
+
+// Query
+ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE id = 1");
+while (rs.next()) {
+    System.out.println(rs.getString("name"));
+}
+
+// Transactions
+conn.setAutoCommit(false);
+stmt.execute("INSERT INTO users VALUES (2, 'Bob', 'bob@example.com')");
+conn.commit();  // Lattice merge — always succeeds
+
+conn.close();
+```
+
+## PostgreSQL Wire Protocol
+
+Convex SQL includes a PostgreSQL wire protocol server (`PgServer`), enabling any PostgreSQL-compatible client to connect:
+
+```bash
+psql -h localhost -p 5432 -d mydb
+```
+
+The PG server reuses the Calcite pipeline and ConvexSchema, providing the same SQL capabilities as the JDBC driver. A `pg_catalog` virtual schema provides compatibility with PostgreSQL client tooling.
 
 Write operations (INSERT, UPDATE, DELETE) modify the local replica, which is then signed and propagated via the lattice.
 
@@ -299,16 +392,23 @@ A reference implementation is provided in the `convex-db` module (Java).
 
 | Specification Concept | Java Class | Package |
 |-----------------------|------------|---------|
-| SQL Database wrapper | `SQLDatabase` | `convex.db` |
-| Table operations facade | `LatticeTables` | `convex.db.table` |
-| Table store lattice | `TableStoreLattice` | `convex.db.table` |
-| Table entry merge | `SQLTableLattice` | `convex.db.table` |
-| Table utilities | `SQLTable` | `convex.db.table` |
-| Row index lattice | `TableLattice` | `convex.db.table` |
-| Row entry merge | `SQLRowLattice` | `convex.db.table` |
-| Row utilities | `SQLRow` | `convex.db.table` |
+| Root database manager | `ConvexDB` | `convex.db` |
+| SQL Database wrapper | `SQLDatabase` | `convex.db.lattice` |
+| Table operations facade | `SQLSchema` | `convex.db.lattice` |
+| Table store lattice | `TableStoreLattice` | `convex.db.lattice` |
+| Table entry merge | `SQLTableLattice` | `convex.db.lattice` |
+| Table utilities | `SQLTable` | `convex.db.lattice` |
+| Row index lattice | `TableLattice` | `convex.db.lattice` |
+| Row entry merge | `SQLRowLattice` | `convex.db.lattice` |
+| Row utilities | `SQLRow` | `convex.db.lattice` |
+| JDBC Driver | `ConvexDriver` | `convex.db.jdbc` |
+| Calcite schema bridge | `ConvexSchema` | `convex.db.calcite` |
+| Calcite table | `ConvexTable` | `convex.db.calcite` |
+| DDL executor | `ConvexDdlExecutor` | `convex.db.calcite` |
+| PK filter pushdown | `ConvexFilter` | `convex.db.calcite` |
+| PostgreSQL server | `PgServer` | `convex.db.psql` |
 
-The `SQLDatabaseTest` class provides test coverage for table operations, replication, and merge semantics.
+The `SQLDatabaseTest` and `ConvexDBTest` classes provide test coverage for table operations, JDBC, replication, and merge semantics.
 
 ### Example: Basic Table Operations
 

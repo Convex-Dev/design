@@ -162,6 +162,17 @@ Merge operations may require contextual information beyond the two values being 
 
 The context MUST be propagated through the lattice hierarchy and made available to merge functions as needed.
 
+### Cursor Sync Guarantees
+
+The fork/sync model has specific guarantees that applications MUST observe:
+
+1. **`sync()` fires the cursor's `onSync` callback** — this is the mechanism by which persistence layers are notified of changes
+2. **`ForkedLatticeCursor.sync()` merges into the parent but does NOT fire the parent's `onSync`** — the fork deliberately does not propagate the sync signal upward. Applications requiring full persistence MUST call `sync()` on both the fork and the root cursor.
+3. **Path-derived cursors are transparent views** — writes through a path cursor land directly at the parent's storage. They are not independent snapshots.
+4. **Broken cursor chains throw `IllegalStateException`** — cursor chain integrity is validated; invalid chains are rejected rather than silently producing incorrect results.
+
+This asymmetry is intentional. It allows applications to batch writes in a fork and control exactly when the persistence layer is notified. For example, a venue may accumulate many writes in a forked cursor and periodically sync both the fork (to merge into root) and the root (to trigger persistence).
+
 ### P2P Replication
 
 Peers replicate Lattice data using a propagation model:

@@ -144,6 +144,88 @@ The same pattern applies to any lattice path using OwnerLattice:
 :fs → OwnerLattice → SignedLattice → MapLattice → DLFSLattice
 ```
 
+## UCAN Capability Tokens
+
+Lattice Authentication provides the foundation for **UCAN (User Controlled Authorisation Network)** tokens — signed JWTs that encode delegated capabilities from an issuer to an audience.
+
+### Token Structure
+
+A UCAN token is a JWT with the following claims:
+
+| Claim | Description |
+|-------|-------------|
+| `iss` | Issuer DID (who is delegating) |
+| `aud` | Audience DID (who receives the delegation) |
+| `exp` | Expiry timestamp |
+| `att` | Attenuations — vector of capabilities |
+| `prf` | Proof chain — vector of parent UCAN tokens |
+
+### JWT Encoding
+
+UCAN tokens can be encoded as standard JWTs with EdDSA signatures:
+
+```
+Header:  {"alg": "EdDSA", "typ": "JWT"}
+Payload: {"iss": "did:key:z6Mk...", "aud": "did:key:z6Mk...", "exp": 1718000000, "att": [...], "prf": [...]}
+Signature: Ed25519 signature over header.payload
+```
+
+The `toJWT()` and `fromJWT()` methods convert between UCAN objects and JWT strings.
+
+### Capabilities
+
+Each attenuation in the `att` array is a capability with two fields:
+
+```json
+{ "with": "w/vendor-records/", "can": "crud/read" }
+```
+
+- **`with`** — a resource path prefix
+- **`can`** — an ability in a slash-delimited hierarchy
+
+A capability covers a request if the capability's `with` is a prefix of the request's resource AND the capability's `can` is a prefix of the request's ability.
+
+### Standard Abilities
+
+```
+crud                (any CRUD operation)
+├── crud/read
+├── crud/write
+└── crud/delete
+
+convex              (Convex-specific)
+├── convex/transfer
+├── convex/call
+└── convex/deploy
+
+*                   (wildcard — covers any ability)
+```
+
+### Attenuation Rule
+
+Delegated capabilities can only narrow the grantor's authority — the delegate's resource MUST be a sub-path of the grantor's, and the delegate's ability MUST be a sub-ability. This ensures capability chains are monotonically decreasing in scope.
+
+### Validation
+
+UCAN tokens are validated by checking:
+
+1. Ed25519 signature validity
+2. Expiry (`exp >= now`)
+3. Audience match (`aud == caller DID`)
+4. Each capability in `att` covered by the issuer's authority
+5. Proof chain recursively validated (if present)
+
+### DID Path Resources
+
+Resource URIs use DID paths for cross-user scoping:
+
+```
+did:key:z6MkAlice.../dlfs/docs/specs
+did:key:z6MkAlice.../w/vendor-records
+```
+
+This enables fine-grained capability delegation across user boundaries while maintaining the lattice's per-owner signing model.
+
 ## Security Considerations
 
 The two-layer verification model defends against several attack vectors:
