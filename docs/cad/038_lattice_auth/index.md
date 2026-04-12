@@ -177,10 +177,10 @@ The `toJWT()` and `fromJWT()` methods convert between UCAN objects and JWT strin
 Each attenuation in the `att` array is a capability with two fields:
 
 ```json
-{ "with": "w/vendor-records/", "can": "crud/read" }
+{ "with": "did:key:z6Mk.../kv/mydb/", "can": "crud/read" }
 ```
 
-- **`with`** — a resource path prefix
+- **`with`** — a DID-scoped resource path prefix
 - **`can`** — an ability in a slash-delimited hierarchy
 
 A capability covers a request if the capability's `with` is a prefix of the request's resource AND the capability's `can` is a prefix of the request's ability.
