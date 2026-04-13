@@ -20,7 +20,9 @@ A discovery document is published at `/.well-known/mcp` for auto-detection by MC
 
 ## Protocol Version
 
-The Convex MCP server implements MCP specification version **2025-06-18** with the Streamable HTTP transport.
+The Convex MCP server implements MCP specification version **2025-11-25** with the Streamable HTTP transport.
+
+On `initialize`, the server negotiates the protocol version with the client: if the client requests a version the server supports (currently `2025-11-25`, `2025-06-18`, or `2025-03-26`), the server echoes that version back. Otherwise the server responds with its latest supported version and the client decides whether to proceed. This keeps older MCP clients working whilst allowing newer clients to use the latest spec features.
 
 ## Sessions
 
@@ -49,10 +51,11 @@ The MCP server exposes tools organised into categories. Clients discover availab
 
 ### Signing service tools (conditional)
 
-When a peer is configured with a signing service, 12 additional tools are registered for server-side key management. Private keys are stored encrypted and never leave the server.
+When a peer is configured with a signing service, 13 additional tools are registered for server-side key management. Private keys are stored encrypted and never leave the server.
 
 - **Key management** — `signingCreateKey`, `signingListKeys`, `signingSign`, `signingGetJWT`
 - **Convenience** — `signingTransact` (execute using a stored key), `signingCreateAccount`, `signingListAccounts`
+- **Delegation** — `signingDelegate` (issue a UCAN delegation token signed by a stored key, without exposing the key)
 - **Elevated** — `signingImportKey`, `signingExportKey`, `signingDeleteKey`, `signingChangePassphrase` — these require a two-step browser confirmation flow to prevent programmatic abuse
 - **Discovery** — `signingServiceInfo` (check availability, no authentication required)
 
@@ -106,10 +109,15 @@ Registered tools appear in `tools/list` responses and are dispatched by `toolCal
 - **Queries** are read-only and require no authentication
 - **Sessions** are server-side and scoped to a single client connection
 
+## Reference Implementations
+
+- **Server** — [`convex-restapi`](https://github.com/Convex-Dev/convex/tree/develop/convex-restapi) ships the `/mcp` endpoint as part of every Convex peer, covering the full tool and prompt set described above.
+- **Claude Code plugin** — [`Convex-Dev/convex-plugin`](https://github.com/Convex-Dev/convex-plugin) is a one-line install that binds the peer's MCP endpoint, injects Convex terminology and tool-selection guidance, and ships convenience slash commands (`/convex:faucet`, `/convex:explore`) along with a Convex-Lisp-aware subagent.
+
 ## References
 
-- [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-06-18)
-- [MCP Streamable HTTP Transport](https://modelcontextprotocol.io/specification/2025-06-18/basic/transports)
+- [Model Context Protocol Specification](https://modelcontextprotocol.io/specification/2025-11-25)
+- [MCP Streamable HTTP Transport](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
 - [CAD004: Accounts](../004_accounts/index.md)
 - [CAD026: Convex Lisp](../026_lisp/index.md)
 - [CAD019: Asset Model](../019_assets/index.md)
