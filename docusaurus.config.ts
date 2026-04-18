@@ -202,7 +202,7 @@ onBrokenMarkdownLinks: 'warn'
         {
           title: 'Community',
           items: [
-  
+
             {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/convex',
@@ -214,6 +214,10 @@ onBrokenMarkdownLinks: 'warn'
             {
               label: 'Twitter',
               href: 'https://twitter.com/convex_world',
+            },
+            {
+              label: 'Awesome Lattice',
+              href: 'https://brittleboye.github.io/awesome-lattice/',
             },
           ],
         },
