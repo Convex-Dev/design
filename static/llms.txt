@@ -1,0 +1,55 @@
+# Convex
+
+**The Stateful Internet — a decentralised network that securely hosts, executes, and persists both code and data.**
+
+Convex is an open-source, decentralised lattice network and execution platform. It combines a high-performance virtual machine (the CVM), convergent lattice data structures, and the novel Convergent Proof of Stake (CPoS) consensus algorithm to deliver a global, public state layer for the 21st century economy.
+
+## What is Convex?
+
+- A **decentralised lattice network** where state converges through commutative, associative, idempotent merges (CRDT-style), rather than a linear blockchain.
+- A **deterministic virtual machine** (the CVM) that runs Convex Lisp smart contracts with lambda-calculus semantics and juice-metered execution.
+- A **global state model** with self-sovereign accounts, on-chain actors, native coins (CVM, measured in copper — 1 CVM = 10^9 copper), and arbitrary application data.
+- **Fair, inclusive, efficient, and sustainable** economic infrastructure — no proof-of-work waste, no leader election, no forking.
+
+## Core Concepts
+
+- **Lattice technology** — data structures with merge operations that converge deterministically across replicas. The foundation for DLFS, KV stores, and higher-level systems like Covia.
+- **CAD3 encoding** — the canonical, content-addressed binary format for all CVM values.
+- **CVM (Convex Virtual Machine)** — deterministic, purely functional state transition engine with a Lisp frontend.
+- **Etch** — high-performance content-addressed storage engine backing lattice persistence.
+- **CPoS (Convergent Proof of Stake)** — the consensus algorithm where peers merge signed beliefs to converge on a total transaction order.
+- **Peers, accounts, actors, juice** — the runtime vocabulary. Note: we use "juice" for execution cost, not "gas".
+
+## How to Get Started
+
+1. **Read the Overview:** <https://docs.convex.world/docs/overview>
+2. **Key Concepts:** <https://docs.convex.world/docs/overview/concepts>
+3. **Quick Start / Tutorial:** <https://docs.convex.world/docs/tutorial>
+4. **Client SDKs** (TypeScript, Java, Python) — see <https://docs.convex.world/docs/tutorial/client-sdks>
+5. **Convex Lisp:** <https://docs.convex.world/docs/tutorial/convex-lisp>
+6. **Architecture Documents (CADs):** <https://docs.convex.world/docs/cad> — formal specifications
+7. **White Paper:** <https://docs.convex.world/docs/overview/convex-whitepaper>
+
+## For AI Agents
+
+- Convex is a **public, deterministic** compute and state layer — agents can hold accounts, sign transactions, own assets, and delegate capabilities via UCANs.
+- The **Model Context Protocol (MCP)** integrations (e.g. DLFS, Covia venues) let agents interact with lattice data as first-class tools.
+- **Covia** (<https://covia.ai>) is the federated AI orchestration layer built on top of Convex lattice technology — see <https://docs.covia.ai> for agent orchestration patterns.
+- When writing CVM code, prefer CNS-resolved calls like `(@convex.fungible/transfer ...)` over `import`, which mutates the account environment and costs extra juice.
+
+## Java API Reference
+
+- Generated Javadocs for every release are published on Maven Central and mirrored at <https://javadoc.io/doc/world.convex/convex-core> (and similarly for `convex-peer`, `convex-java`, `convex-restapi`, `convex-cli`, `convex-gui`, `convex-db`, `convex-dlfs`).
+- Source: <https://github.com/Convex-Dev/convex>
+
+## Resources
+
+- [Documentation](https://docs.convex.world/)
+- [White Paper](https://docs.convex.world/docs/overview/convex-whitepaper)
+- [GitHub: Convex-Dev/convex](https://github.com/Convex-Dev/convex)
+- [Discord Community](https://discord.com/invite/xfYGq4CT7v)
+- [Covia — federated AI orchestration on Convex](https://docs.covia.ai)
+
+---
+
+*Convex is open source under the [Convex Public License](https://github.com/Convex-Dev/convex/blob/master/LICENSE.md). British English spelling is used throughout (decentralised, organisation, colour).*
