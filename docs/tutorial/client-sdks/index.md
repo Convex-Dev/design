@@ -7,29 +7,17 @@ Official client libraries for connecting to the Convex network from your applica
 
 ## Available SDKs
 
-### TypeScript
+### TypeScript / JavaScript
 
-Build web applications, Node.js services, and React dApps with full type safety.
+Build web applications, Node.js services, and React dApps with full type safety — or use the same package from plain JavaScript.
 
 - **Status**: ✅ Production ready
-- **Package**: `@convex-world/convex-ts`
+- **Package**: `@convex-world/convex-ts` (works in TypeScript and plain JavaScript)
 - **Environments**: Node.js, Browsers, Deno, Bun
 - **Frameworks**: React hooks and components available
 - **Repository**: [github.com/Convex-Dev/convex.ts](https://github.com/Convex-Dev/convex.ts)
 
-**[Get Started with TypeScript →](client-sdks/typescript/)**
-
----
-
-### JavaScript
-
-Use Convex from plain JavaScript (no TypeScript required).
-
-- **Status**: ✅ Production ready
-- **Package**: `@convex-world/convex-ts` (works in JS too!)
-- **Guide**: Idiomatic JavaScript examples and patterns
-
-**[Get Started with JavaScript →](client-sdks/javascript/)**
+**[Get Started with TypeScript →](client-sdks/typescript/)** • **[Using plain JavaScript →](client-sdks/javascript/)**
 
 ---
 

@@ -11,9 +11,9 @@ Convex actors are autonomous programs that hold state, expose callable functions
 
 Each subpage builds on the previous one, but you can jump directly to what you need:
 
-- [Key Concepts](./concepts) — core ideas, anatomy, and lifecycle of Convex actors.
-- [Deployment](./deployment) — how to deploy live actors to the CVM.
-- [Evolution](./evolution) — strategies for real-time upgrades of actors
-- [Best Practices](./best-practices) — practical advice and checklists.
+- [Key Concepts](./actors/concepts) — core ideas, anatomy, and lifecycle of Convex actors.
+- [Deployment](./actors/deployment) — how to deploy live actors to the CVM.
+- [Evolution](./actors/evolution) — strategies for real-time upgrades of actors
+- [Best Practices](./actors/best-practices) — practical advice and checklists.
 
 

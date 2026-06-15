@@ -13,9 +13,9 @@ You don't need to know Convex Lisp to use Convex, but it's a powerful tool for d
 
 New to Convex Lisp? Work through these in order:
 
-- [Gentle Lisp Introduction](./lisp-guide) — start here; assumes no prior Lisp experience.
-- [Lisp on the CVM](./lisp-cvm) — how Convex Lisp runs on-chain.
-- [Advanced Guide](./lisp-guide-advanced) — macros, expanders, and metaprogramming.
+- [Gentle Lisp Introduction](./lisp-guide.md) — start here; assumes no prior Lisp experience.
+- [Lisp on the CVM](./lisp-cvm.md) — how Convex Lisp runs on-chain.
+- [Advanced Guide](./lisp-guide-advanced.md) — macros, expanders, and metaprogramming.
 
 ## Why Lisp?
 

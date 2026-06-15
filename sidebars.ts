@@ -55,7 +55,7 @@ const sidebars: SidebarsConfig = {
       items: [
         {
           type: 'category',
-          label: 'TypeScript',
+          label: 'TypeScript / JavaScript',
           link: {
             type: 'doc',
             id: 'tutorial/client-sdks/typescript/index',  // Shows TS overview when clicked
@@ -68,16 +68,9 @@ const sidebars: SidebarsConfig = {
             'tutorial/client-sdks/typescript/accounts',
             'tutorial/client-sdks/typescript/assets',
             'tutorial/client-sdks/typescript/signers',
+            // Same package (@convex-world/convex-ts), used from plain JavaScript
+            'tutorial/client-sdks/javascript/index',
           ],
-        },
-        {
-          type: 'category',
-          label: 'JavaScript',
-          link: {
-            type: 'doc',
-            id: 'tutorial/client-sdks/javascript/index',  // Shows JS overview when clicked
-          },
-          items: [],  // Currently only has overview page
         },
         {
           type: 'category',

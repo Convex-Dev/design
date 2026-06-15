@@ -86,11 +86,8 @@ Learn about Convex networks and how to connect to them:
 
 Connect to Convex from your application using official client libraries:
 
-- **[TypeScript](/docs/tutorial/client-sdks/typescript)** - For web apps, Node.js, Deno, React applications with full type safety
+- **[TypeScript / JavaScript](/docs/tutorial/client-sdks/typescript)** - For web apps, Node.js, Deno, React — with full type safety, or [plain JavaScript](/docs/tutorial/client-sdks/javascript)
   *Production ready* • `npm install @convex-world/convex-ts`
-
-- **[JavaScript](/docs/tutorial/client-sdks/javascript)** - Plain JavaScript (no TypeScript required)
-  *Production ready* • Idiomatic JS examples
 
 - **[Java](/docs/tutorial/client-sdks/java)** - For JVM applications, Android, enterprise systems
   *Production ready* • `world.convex:convex-java:0.8.5`
