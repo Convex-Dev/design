@@ -24,14 +24,14 @@ The `convex-java` module provides a native JVM interface to the Convex network, 
 <dependency>
     <groupId>world.convex</groupId>
     <artifactId>convex-java</artifactId>
-    <version>0.8.2</version>
+    <version>0.8.5</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'world.convex:convex-java:0.8.2'
+implementation 'world.convex:convex-java:0.8.5'
 ```
 
 ## Quick Example

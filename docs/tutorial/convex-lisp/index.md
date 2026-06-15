@@ -9,6 +9,14 @@ It supports immutable lattice data structures and functional programming for rob
 
 You don't need to know Convex Lisp to use Convex, but it's a powerful tool for developers wishing to build dApps and digital assets. Most of the core Convex on-chain tools are written in and designed to be used from Convex Lisp.
 
+## Where to start
+
+New to Convex Lisp? Work through these in order:
+
+- [Gentle Lisp Introduction](./lisp-guide) — start here; assumes no prior Lisp experience.
+- [Lisp on the CVM](./lisp-cvm) — how Convex Lisp runs on-chain.
+- [Advanced Guide](./lisp-guide-advanced) — macros, expanders, and metaprogramming.
+
 ## Why Lisp?
 
 The CVM is designed to be able to support many different languages and paradigms. However, we wanted a powerful language that would empower developers on Convex from the beginning, and chose Lisp as the first language on the CVM for a number of reasons:

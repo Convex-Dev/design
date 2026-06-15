@@ -4,6 +4,16 @@ Read online at [Convex Docs](https://docs.convex.world)
 
 This repository is dedicated to Convex Design and Documentation.
 
+## Running the docs locally
+
+The site is built with [Docusaurus](https://docusaurus.io) (requires Node.js 18+ and pnpm):
+
+```bash
+pnpm install
+pnpm start      # dev server on http://localhost:3000
+pnpm build      # production build (also checks for broken links)
+```
+
 ## Key Documents
 
 - [Convex Manifesto](docs/overview/manifesto.md)

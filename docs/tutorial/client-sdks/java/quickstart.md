@@ -18,7 +18,7 @@ This quickstart uses a **public testnet** for simplicity. For serious developmen
 
 - **Public Testnet** - `https://mikera1337-convex-testnet.hf.space` (good for learning, has faucet)
 - **Local Peer** - Run your own peer (fastest, full control) - see [Client Types](clients#local-peer-client)
-- **Production** - `https://mikera1337-convex-testnet.hf.space` (no faucet, requires funded account)
+- **Production** - `https://peer.convex.live` (no faucet, requires funded account)
 
 ## Step 1: Create a Maven Project
 
@@ -46,7 +46,7 @@ Create a new Maven project with `pom.xml`:
         <dependency>
             <groupId>world.convex</groupId>
             <artifactId>convex-java</artifactId>
-            <version>0.8.2</version>
+            <version>0.8.5</version>
         </dependency>
     </dependencies>
 </project>
@@ -67,7 +67,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'world.convex:convex-java:0.8.2'
+    implementation 'world.convex:convex-java:0.8.5'
 }
 
 java {

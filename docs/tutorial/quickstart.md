@@ -33,7 +33,7 @@ Pick the fastest way to get started based on your setup:
 <dependency>
     <groupId>world.convex</groupId>
     <artifactId>convex-java</artifactId>
-    <version>0.8.2</version>
+    <version>0.8.5</version>
 </dependency>
 ```
 

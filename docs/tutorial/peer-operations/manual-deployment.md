@@ -58,7 +58,7 @@ mkdir -p /opt/convex
 cd /opt/convex
 
 # Download latest release
-wget https://github.com/Convex-Dev/convex/releases/download/v0.8.2/convex.jar
+wget https://github.com/Convex-Dev/convex/releases/download/0.8.5/convex.jar
 
 # Verify download
 java -jar convex.jar version
@@ -283,7 +283,7 @@ tar -czf backup-$(date +%Y%m%d).tar.gz /opt/convex/data
 
 # Download new version
 cd /opt/convex
-wget https://github.com/Convex-Dev/convex/releases/download/v0.8.3/convex.jar \
+wget https://github.com/Convex-Dev/convex/releases/download/0.8.5/convex.jar \
   -O convex.jar.new
 
 # Replace JAR
