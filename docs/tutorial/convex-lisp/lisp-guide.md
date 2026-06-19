@@ -14,11 +14,11 @@ The easiest way to experience Convex Lisp is the **[Sandbox](https://convex.worl
 
 You can also use **[Convex Desktop](https://docs.convex.world/docs/products/convex-desktop)** and enter code via the Client Terminal:
 
-![Convex Desktop Client Terminal](https://github.com/user-attachments/assets/0877790e-ecb8-407c-989d-bf52a7db00fe)
+![Convex Desktop Client Terminal](/img/convex-desktop-client-terminal.png)
 
 Cut and paste into the lower part of the screen, like this:
 
-![Entering code in the Client Terminal](https://github.com/user-attachments/assets/5a38c88f-94d5-44b4-bbc6-7e918eed8b77)
+![Entering code in the Client Terminal](/img/convex-desktop-client-terminal-input.png)
 
 ## Expressions
 
@@ -33,7 +33,7 @@ The classic Lisp expression is a list enclosed in parentheses `(...)` where the 
 
 Each element in the expression is itself an expression. It's expressions all the way down. So you can nest expressions arbitrarily to create more complex structures:
 
-```
+```clojure
 (- (* 10 10) (* 5 5))
 => 75
 ```
@@ -262,7 +262,7 @@ A `Vector` is an ordered sequence of values. You can create a vector by enclosin
 
 There are many functions in the core library that work with Vectors. Some simple examples:
 
-```
+```clojure
 ;; Get an element from a vector at the specified index
 (get [:foo :bar :baz] 1)
 => :bar
@@ -597,7 +597,7 @@ Loop works like `let` in that it establishes local loop variable bindings that y
 
 You can also use `recur` to repeat the evaluation of a function body:
 
-```
+```clojure
 ;; A factorial function using an accumulator
 (defn factorial [acc n]
   (if (<= n 1) 
@@ -675,7 +675,7 @@ You can use the `eval` function to execute code that is provided as data:
 
 The power of 'Code is Data' starts to become apparent when you realise that since you can use code to construct data, you can equivalently use code to construct code.
 
-```
+```clojure
 (defn make-code [operation arguments]
    (cons operation arguments))
    
@@ -719,7 +719,7 @@ Here's a simple example of functional programming, where we define a first-class
 
 We can get a bit more sophisticated, and use functions to create other functions:
 
-```
+```clojure
 ;; Function to build a function combining a map and a reduce
 (defn mapreducer [init reducer mapper]
   (fn [vals]
