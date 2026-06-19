@@ -8,26 +8,17 @@ tags: [convex, developer, lisp]
 
 This guide is for developers interested in learning the basics of Convex Lisp. We assume a general familiarity with programming concepts, but no prior experience in Lisp. We will take you through the basics of the language. Veteran Lisp hackers may wish to skip this section, though there are some unique features in Convex Lisp worth noting. 
 
-It is easy to get started with Convex desktop https://docs.convex.world/docs/products/convex-desktop and enter sample code via the Client Terminal.
-![image](https://github.com/user-attachments/assets/0877790e-ecb8-407c-989d-bf52a7db00fe)  
-
-Like this:
-
-![image](https://github.com/user-attachments/assets/5a38c88f-94d5-44b4-bbc6-7e918eed8b77)
-
-You can cut and paste into the lower part of the screen.
-
-
-
-<!--
 ## Setup
 
-Using the [Sandbox](/sandbox) is the easiest way to experience Convex Lisp. We recommend that you try it out as you go through this guide: It's more fun to get instant feedback and try out new ideas quickly! To do this:
+The easiest way to experience Convex Lisp is the **[Sandbox](https://convex.world/sandbox)** — a live REPL in your browser, with no installation. We recommend trying the examples as you go: instant feedback makes it much more fun to experiment. Create a free, anonymous account with a single click, then type the example code into the input window. Throughout this guide we use `=>` to indicate the expected output.
 
-- Open the Sandbox (you can create a free, anonymous temporary account with one just one click!)
-- Type example code from this guide into the Sandbox input window as you progress
-- You will see outputs from Convex in the output window. we use `=>` to indicate expected outputs in the examples below.
--->
+You can also use **[Convex Desktop](https://docs.convex.world/docs/products/convex-desktop)** and enter code via the Client Terminal:
+
+![Convex Desktop Client Terminal](https://github.com/user-attachments/assets/0877790e-ecb8-407c-989d-bf52a7db00fe)
+
+Cut and paste into the lower part of the screen, like this:
+
+![Entering code in the Client Terminal](https://github.com/user-attachments/assets/5a38c88f-94d5-44b4-bbc6-7e918eed8b77)
 
 ## Expressions
 
@@ -49,7 +40,7 @@ Each element in the expression is itself an expression. It's expressions all the
 
 There are many different types of expressions (many of which are introduced in this guide). But the syntax is of Lisp is ultimately just a tree of nested expressions. It is this simplicity and consistency which gives Lisp its power.
 
-**NOTE**: Lisp expressions use whitespace as separators. Whitespace includes spaces, tables, commas and carriage returns so you can format expressions as you like.
+**NOTE**: Lisp expressions use whitespace as separators. Whitespace includes spaces, tabs, commas and carriage returns so you can format expressions as you like.
 
 ## Literals
 
@@ -211,9 +202,9 @@ If you pass an illegal number of arguments, you will get an `:ARITY` error:
 The Convex core runtime library provides a wide variety of useful functions. Some simple examples to try out:
 
 ```clojure
-;; Addition: '+' is a variable arity function that cab take multiple arguments
+;; Addition: '+' is a variable arity function that can take multiple arguments
 (+ 1 2 3)
-=> 10
+=> 6
 
 ;; There are several predicate functions that test values and return a boolean
 ;; e.g. 'str?' tests if the argument is a String
@@ -337,7 +328,7 @@ There are a variety of useful functions in the core library that are designed to
 ```clojure
 ;; Update a map with a new key / value association using 'assoc'
 (assoc {:foo 1 :bar 2} :baz 3)
-=> {:foo 1, :baz 3, :bar 2}
+=> {:baz 3 :foo 1 :bar 2}
 
 ;; Remove a key/value pair from a map with 'dissoc'
 (dissoc {1 2 3 4} 1)
@@ -437,12 +428,12 @@ Some other ways of constructing a List:
 => ()
 
 ;; Create a List using 'cons' which adds a value to the front of any sequential collection
-(cons a '(b c))
-=>(a b c)
+(cons 'a '(b c))
+=> (a b c)
 
-;; Assumbkle a List by concatenating two list
+;; Assemble a List by concatenating two lists
 (concat '(this is) '(a test))
- => (this is a test)
+=> (this is a test)
 ```
 
 You should use vectors over lists for storing data in most cases. Lists are mainly be used for generating code - in macros, for example.
@@ -489,7 +480,7 @@ The `cond` special form works like `if`, but allows multiple tests, and can opti
   false 10
   false 20
   "Nothing matched")
-=> "Nothing Matched"
+=> "Nothing matched"
 ```
 
 Implementation note: `if` is actually a macro that expands to a `cond` special form. So technically, `cond` is the lower level special form. In practice, it may be more convenient and intuitive to use `if`. Your choice, as always!
@@ -565,7 +556,7 @@ We've already seen the `def` special form in a couple of examples, where it was 
 (def message "Hello!")
 
 message
-=> "Hello"
+=> "Hello!"
 ```
 
 The key difference with `def` compared to `let` is that it sets the value in the persistent environment, rather than just making a temporary local binding. The environment in Convex is special:
@@ -581,13 +572,13 @@ If you want to define functions specifically, you can use `defn`:
 ```clojure
 ;; Define a Euclidean distance function
 (defn dist [x y]
-  (sqrt (+ (* x x) (* y y)))
-  
+  (sqrt (+ (* x x) (* y y))))
+
 (dist 3.0 4.0)
 => 5.0
 ```
 
-`defn` is actually a simple macro that converts `(defn f [x] ...)` into `(def f (fn [x] ...)`. So you never really need `defn`: it's just a convenient shortcut for defining functions and can make your code more readable.
+`defn` is actually a simple macro that converts `(defn f [x] ...)` into `(def f (fn [x] ...))`. So you never really need `defn`: it's just a convenient shortcut for defining functions and can make your code more readable.
 
 ### Loop and recur
 
@@ -651,10 +642,11 @@ You can also quote lists and other data structures - which returns these data st
 => (+ 1 2 3)
 ```
 
-It is possible to 'unquote' within a quoted expression using the tilde (`~`), which has the effect of evaluating the unquoted part normally. 
+You can also 'unquote' within a *quasi-quoted* expression — written with a backtick instead of a single quote — using the tilde (`~`), which evaluates the unquoted part normally while leaving the rest quoted. (Plain `quote` does **not** process `~`; it leaves it as a literal `unquote` form, so use quasi-quote when you want to splice in computed values.)
 
 ```clojure
-(quote [(+ 1 2 3) ~(+ 1 2 3)])
+;; Quasi-quote with a backtick; ~ evaluates the unquoted part
+`[(+ 1 2 3) ~(+ 1 2 3)]
 => [(+ 1 2 3) 6]
 ```
 
@@ -688,7 +680,7 @@ The power of 'Code is Data' starts to become apparent when you realise that sinc
    (cons operation arguments))
    
 (make-code '+ [1 2 3 4])
-=> '(+ 1 2 3 4)
+=> (+ 1 2 3 4)
 
 (eval (make-code '* [1 2 3 4]))
 => 24
@@ -741,3 +733,12 @@ We can get a bit more sophisticated, and use functions to create other functions
 ```
 
 `map` and `reduce` are both very powerful tools for functional programming, and in many cases can replace the need to implement imperative loops. They also help to avoid the dreaded "off by one" errors!
+
+## Where to go from here
+
+You now know the basics of Convex Lisp. To put it to work on the network:
+
+- **[Quick Start](/docs/tutorial/quickstart)** — deploy and call a smart contract from the Sandbox
+- **[Actor Development](/docs/tutorial/actors)** — build smart contracts with `^:callable` functions
+- **[Recipes](/docs/tutorial/recipes)** — practical, task-oriented examples
+- **[Client SDKs](/docs/tutorial/client-sdks)** — run Convex Lisp from Java, Python, or TypeScript
