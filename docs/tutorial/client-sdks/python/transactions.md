@@ -19,7 +19,7 @@ Unlike queries, transactions:
 ## Basic Transaction Pattern
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://peer.convex.live')
 
@@ -251,7 +251,7 @@ result = convex.transact(
 Transactions can fail for various reasons:
 
 ```python
-from convex_api.exceptions import ConvexAPIError
+from convex_sdk.exceptions import ConvexAPIError
 
 try:
     result = convex.transact('(transfer #999999 1000000000000)', account)
@@ -359,7 +359,7 @@ else:
 Always handle potential errors:
 
 ```python
-from convex_api.exceptions import ConvexAPIError
+from convex_sdk.exceptions import ConvexAPIError
 
 def safe_transfer(convex, to_address, amount, from_account):
     try:

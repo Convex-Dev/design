@@ -40,7 +40,7 @@ Native JVM client for high-performance enterprise applications.
 Pythonic client for scripting, automation, and data science.
 
 - **Status**: ✅ Production ready
-- **Package**: `convex-api` (on PyPI)
+- **Package**: `convex-sdk` (on PyPI)
 - **Environments**: Python 3.8+
 - **Features**: Synchronous I/O, Account objects, automatic sequence retry
 - **Repository**: [github.com/Convex-Dev/convex-api-py](https://github.com/Convex-Dev/convex-api-py)

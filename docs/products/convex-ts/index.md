@@ -90,11 +90,11 @@ System.out.println("Balance: " + result.getValue());
 Pythonic API for scripting, automation, and data science applications.
 
 ```bash
-pip install convex-api
+pip install convex-sdk
 ```
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://peer.convex.live')
 key_pair = KeyPair()

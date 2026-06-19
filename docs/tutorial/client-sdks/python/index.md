@@ -8,7 +8,7 @@ The official Python client library for interacting with the Convex decentralised
 
 ## Overview
 
-The `convex-api` package provides a Pythonic interface to the Convex network, enabling you to:
+The `convex-sdk` package provides a Pythonic interface to the Convex network, enabling you to:
 
 - **Execute Queries** - Read network state without fees
 - **Submit Transactions** - Execute atomic state transitions with cryptographic signatures
@@ -21,19 +21,19 @@ The `convex-api` package provides a Pythonic interface to the Convex network, en
 Install via pip:
 
 ```bash
-pip install convex-api
+pip install convex-sdk
 ```
 
 Or with Poetry:
 
 ```bash
-poetry add convex-api
+poetry add convex-sdk
 ```
 
 ## Quick Example
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 # Connect to the network
 convex = Convex('https://peer.convex.live')
@@ -71,7 +71,7 @@ result = convex.transact('(map inc [1 2 3 4])', account)
 Encapsulate address, key pair, and optional name in a convenient `Account` object:
 
 ```python
-from convex_api import Account, KeyPair
+from convex_sdk import Account, KeyPair
 
 key_pair = KeyPair()
 account = Account(key_pair, address=1234, name='my_account')
@@ -158,7 +158,7 @@ print(f'Balance: {balance_coins} CVX')
 ## Resources
 
 - **[GitHub Repository](https://github.com/Convex-Dev/convex-api-py)** - Source code and examples
-- **[PyPI Package](https://pypi.org/project/convex-api/)** - Install from Python Package Index
+- **[PyPI Package](https://pypi.org/project/convex-sdk/)** - Install from Python Package Index
 - **[Convex Documentation](https://docs.convex.world)** - Network and platform docs
 - **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - Get help and share ideas
 

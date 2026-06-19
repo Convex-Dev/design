@@ -13,16 +13,16 @@ Build your first Python application on Convex in under 5 minutes.
 
 ## Step 1: Install the SDK
 
-Install the `convex-api` package:
+Install the `convex-sdk` package:
 
 ```bash
-pip install convex-api
+pip install convex-sdk
 ```
 
 Or with Poetry:
 
 ```bash
-poetry add convex-api
+poetry add convex-sdk
 ```
 
 ## Step 2: Connect to the Network
@@ -30,7 +30,7 @@ poetry add convex-api
 Create a new Python file `hello_convex.py`:
 
 ```python
-from convex_api import Convex
+from convex_sdk import Convex
 
 # Connect to the public Convex network
 convex = Convex('https://peer.convex.live')
@@ -45,7 +45,7 @@ The peer URL `https://peer.convex.live` connects you to the public Convex networ
 Generate a new key pair and create an account:
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://peer.convex.live')
 
@@ -138,7 +138,7 @@ print(f'Recipient balance: {recipient_balance / 1_000_000_000} CVX')
 Here's the complete quickstart script:
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 def main():
     # Connect to network
@@ -204,14 +204,14 @@ Juice consumed: 1480 copper
 
 ### Import Error
 
-If you get `ModuleNotFoundError: No module named 'convex_api'`:
+If you get `ModuleNotFoundError: No module named 'convex_sdk'`:
 
 ```bash
 # Check installation
-pip show convex-api
+pip show convex-sdk
 
 # Reinstall if needed
-pip install --upgrade convex-api
+pip install --upgrade convex-sdk
 ```
 
 ### Connection Error

@@ -93,7 +93,7 @@ Connect to Convex from your application using official client libraries:
   *Production ready* • `world.convex:convex-java:0.8.5`
 
 - **[Python](/docs/tutorial/client-sdks/python)** - For Python applications, scripting, data science
-  *Production ready* • `pip install convex-api`
+  *Production ready* • `pip install convex-sdk`
 
 - **Rust** *(Coming soon)* - For Rust applications
 
