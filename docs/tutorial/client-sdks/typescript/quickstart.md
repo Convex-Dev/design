@@ -1,6 +1,11 @@
+---
+sidebar_position: 1
+---
+
 # Quickstart Tutorial
 
-This tutorial will walk you through building your first Convex application using TypeScript.
+Build your first Convex application in TypeScript against the public testnet — free, with a
+faucet for test funds.
 
 ## Prerequisites
 
@@ -15,7 +20,7 @@ mkdir my-convex-app
 cd my-convex-app
 npm init -y
 npm install @convex-world/convex-ts
-npm install -D typescript @types/node
+npm install -D typescript tsx @types/node
 ```
 
 Create a `tsconfig.json`:
@@ -34,20 +39,18 @@ Create a `tsconfig.json`:
 
 ## Step 2: Query the Network
 
-Create `src/query.ts`:
+Queries are read-only and free — no account needed. Create `src/query.ts`:
 
 ```typescript
 import { Convex } from '@convex-world/convex-ts';
 
 async function main() {
-  // Connect to Convex network
-  const convex = new Convex('https://peer.convex.live');
+  // Connect to the public testnet
+  const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 
-  // Query the Convex Foundation address balance
-  const result = await convex.query('(balance #9)');
-
-  console.log('Convex Foundation balance:', result.value, 'copper');
-  console.log('In Convex Coins:', Number(result.value) / 1_000_000_000);
+  // Query an account balance
+  const result = await convex.query('(balance #13)');
+  console.log('Balance:', result.value, 'copper');
 }
 
 main().catch(console.error);
@@ -59,133 +62,123 @@ Run it:
 npx tsx src/query.ts
 ```
 
-You should see the balance of the Convex Foundation address!
+## Step 3: Create a Funded Account
 
-## Step 3: Use Your Account
-
-For this step, you'll need:
-1. A Convex account address (e.g., `#1678`)
-2. Your Ed25519 seed (32-byte hex string)
-
-:::tip Getting an Account
-If you don't have an account yet, you can:
-- Use `convex.createAccount(keyPair, faucetAmount)` to create one on a test network
-- Connect to a local peer for development
-
-**Note**: Faucets only work on test networks. On production networks, someone must create an account for you and transfer initial funds.
-:::
-
-Create `src/account.ts`:
+On a test network you can create an account and top it up from the faucet. Create
+`src/account.ts`:
 
 ```typescript
 import { Convex, KeyPair } from '@convex-world/convex-ts';
 
 async function main() {
-  // Connect to network
-  const convex = new Convex('https://peer.convex.live');
+  const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 
-  // Load your key pair from seed
-  // IMPORTANT: Never commit your seed to version control!
-  const seed = process.env.CONVEX_SEED;
-  if (!seed) {
-    throw new Error('Please set CONVEX_SEED environment variable');
-  }
+  // Generate a key pair and create a faucet-funded account
+  // (faucet amount is in coppers; 100_000_000 = 0.1 CVM)
+  const keyPair = KeyPair.generate();
+  const account = await convex.createAccount(keyPair, 100_000_000);
+  convex.setAccount(account.address, keyPair);
 
-  const keyPair = KeyPair.fromSeed(seed);
+  console.log('Address:', account.address);
 
-  // Set your account address
-  const myAddress = process.env.CONVEX_ADDRESS || '#1678';
-  convex.setAccount(myAddress, keyPair);
-
-  // Get your account information
   const info = await convex.getAccountInfo();
-
-  console.log('Address:', info.address);
   console.log('Balance:', info.balance / 1_000_000_000, 'Convex Coins');
-  console.log('Sequence:', info.sequence, '(transaction count)');
+
+  // Save the seed if you want to reuse this account later:
+  // console.log('Seed:', keyPair.toHex().privateKey);
 }
 
 main().catch(console.error);
 ```
 
-Run with your credentials:
+:::tip Production / existing accounts
+Faucets only work on test networks. On production (`https://peer.convex.live`) you load an
+existing funded account from its seed instead of creating one:
 
-```bash
-CONVEX_SEED=your-seed-hex CONVEX_ADDRESS=#1678 npx tsx src/account.ts
+```typescript
+const keyPair = KeyPair.fromSeed(process.env.CONVEX_SEED!);
+convex.setAccount(process.env.CONVEX_ADDRESS!, keyPair);
 ```
+:::
 
 ## Step 4: Submit a Transaction
 
-Create `src/transfer.ts`:
+With an account wired up, submit a transaction (any Convex Lisp). Create `src/transact.ts`:
 
 ```typescript
 import { Convex, KeyPair } from '@convex-world/convex-ts';
 
 async function main() {
-  const convex = new Convex('https://peer.convex.live');
+  const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 
-  // Load your account
-  const seed = process.env.CONVEX_SEED;
-  if (!seed) throw new Error('Set CONVEX_SEED');
+  // Create + use a funded account (see Step 3)
+  const keyPair = KeyPair.generate();
+  const account = await convex.createAccount(keyPair, 100_000_000);
+  convex.setAccount(account.address, keyPair);
 
-  const keyPair = KeyPair.fromSeed(seed);
-  const myAddress = process.env.CONVEX_ADDRESS || '#1678';
-  convex.setAccount(myAddress, keyPair);
+  // Store a value on-chain
+  const result = await convex.transact('(def greeting "Hello from TypeScript!")');
+  console.log('Stored:', result.value);
 
-  // Transfer 1 Convex Coin (1,000,000,000 copper)
-  const recipient = '#456';
-  const amount = 1_000_000_000;
-
-  console.log(`Transferring ${amount / 1_000_000_000} Convex Coins to ${recipient}...`);
-
-  const result = await convex.transfer(recipient, amount);
-  console.log('✅ Transfer complete! Returned:', result.value);
-}
-
-main().catch(console.error);
-```
-
-Run it:
-
-```bash
-CONVEX_SEED=your-seed CONVEX_ADDRESS=#1678 npx tsx src/transfer.ts
-```
-
-## Step 5: Execute Convex Lisp
-
-You can execute any Convex Lisp code as a transaction:
-
-```typescript
-import { Convex, KeyPair } from '@convex-world/convex-ts';
-
-async function main() {
-  const convex = new Convex('https://peer.convex.live');
-
-  // Set up account
-  const keyPair = KeyPair.fromSeed(process.env.CONVEX_SEED!);
-  convex.setAccount(process.env.CONVEX_ADDRESS!, keyPair);
-
-  // Deploy a simple function
-  const result = await convex.transact(`
-    (def greeting "Hello from TypeScript!")
-  `);
-
-  console.log('Deployed:', result);
-
-  // Query it back
+  // Read it back (free query)
   const query = await convex.query('greeting');
-  console.log('Result:', query.value);
+  console.log('Read back:', query.value);
 }
 
 main().catch(console.error);
 ```
+
+`transact()` throws a `ConvexError` on a CVM-level failure (e.g. insufficient funds) — wrap it
+in `try/catch` if you want to handle those explicitly.
+
+## Step 5: Transfer Coins
+
+Send Convex Coins to another account:
+
+```typescript
+// ... after creating + wiring an account ...
+const result = await convex.transfer('#11', 1_000_000);  // to #11, in coppers
+console.log('Transfer result:', result.value);
+```
+
+## Complete Example
+
+Here's everything together — query, create a funded account, transact, and read back:
+
+```typescript
+import { Convex, KeyPair } from '@convex-world/convex-ts';
+
+async function main() {
+  const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
+
+  // 1. Free query — no account needed
+  const foundation = await convex.query('(balance #13)');
+  console.log('Account #13 balance:', foundation.value, 'copper');
+
+  // 2. Create a faucet-funded account
+  const keyPair = KeyPair.generate();
+  const account = await convex.createAccount(keyPair, 100_000_000);
+  convex.setAccount(account.address, keyPair);
+  console.log('My account:', account.address);
+
+  // 3. Execute a transaction
+  const stored = await convex.transact('(def my-data {:message "Hello Convex"})');
+  console.log('Stored:', stored.result);
+
+  // 4. Query back the data
+  const data = await convex.query('my-data');
+  console.log('Read back:', data.value);
+}
+
+main().catch(console.error);
+```
+
+**🎉 Congratulations!** You've built your first Convex application with TypeScript.
 
 ## Next Steps
 
-Now that you've completed the quickstart, explore:
-
 - **[Queries](./queries)** — Learn advanced query patterns
-- **[Transactions](./transactions)** — Understand transaction lifecycle
+- **[Transactions](./transactions)** — Understand the transaction lifecycle
 - **[Accounts](./accounts)** — Key pair generation and management
 - **[Asset Handles](./assets)** — Token and CNS management
 - **[Signers](./signers)** — Hardware wallet integration
@@ -196,45 +189,13 @@ Now that you've completed the quickstart, explore:
 Make sure you're using Node.js 18+ and have `"type": "module"` in your `package.json`.
 
 ### "No account set"
-You must call `convex.setAccount()` before submitting transactions. Read-only queries don't need an account.
+You must call `convex.setAccount()` before submitting transactions. Read-only queries don't
+need an account.
+
+### `FUNDS` error
+The account needs Convex Coins. On the testnet, create it with a faucet amount (Step 3) or call
+`convex.faucet(address, amount)`; on production you must transfer in funds from an existing
+account.
 
 ### "Connection refused"
-Check that you're using the correct network URL. For local development, ensure your local peer is running.
-
-## Complete Example
-
-Here's a complete example combining everything:
-
-```typescript
-import { Convex, KeyPair } from '@convex-world/convex-ts';
-
-async function main() {
-  const convex = new Convex('https://peer.convex.live');
-
-  // 1. Read-only query (no account needed)
-  console.log('=== Read-Only Query ===');
-  const balance = await convex.query('(balance #9)');
-  console.log('Convex Foundation:', balance.value, 'copper\n');
-
-  // 2. Use your account
-  console.log('=== Using Account ===');
-  const keyPair = KeyPair.fromSeed(process.env.CONVEX_SEED!);
-  convex.setAccount(process.env.CONVEX_ADDRESS!, keyPair);
-
-  const info = await convex.getAccountInfo();
-  console.log('My balance:', info.balance / 1_000_000_000, 'coins\n');
-
-  // 3. Execute a transaction
-  console.log('=== Transaction ===');
-  const result = await convex.transact('(def my-data {:timestamp *timestamp* :message "Hello Convex"})');
-  console.log('Stored:', result.result);
-
-  // 4. Query back the data
-  const data = await convex.query('my-data');
-  console.log('Stored data:', data.value);
-}
-
-main().catch(console.error);
-```
-
-**🎉 Congratulations!** You've built your first Convex application with TypeScript.
+Check the network URL. For local development, ensure your local peer is running.
