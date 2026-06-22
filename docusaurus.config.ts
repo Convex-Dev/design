@@ -23,7 +23,8 @@ const config: Config = {
   // Recommended for GitHub pages
   trailingSlash: false,
 
-  onBrokenLinks: 'warn',
+  // Fail the build (and CI) on broken internal links, rather than only warning.
+  onBrokenLinks: 'throw',
 
   markdown: {
     hooks: {
