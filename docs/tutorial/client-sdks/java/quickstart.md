@@ -46,7 +46,7 @@ Create a new Maven project with `pom.xml`:
         <dependency>
             <groupId>world.convex</groupId>
             <artifactId>convex-java</artifactId>
-            <version>0.8.5</version>
+            <version>0.8.6</version>
         </dependency>
     </dependencies>
 </project>
@@ -67,7 +67,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'world.convex:convex-java:0.8.5'
+    implementation 'world.convex:convex-java:0.8.6'
 }
 
 java {
