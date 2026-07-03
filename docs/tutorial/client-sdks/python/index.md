@@ -140,7 +140,7 @@ convex.transfer('#456', 50_000_000, account)
 # Display balance in Convex Coins
 balance_copper = convex.get_balance(account)
 balance_coins = balance_copper / 1_000_000_000
-print(f'Balance: {balance_coins} CVX')
+print(f'Balance: {balance_coins} CVM')
 ```
 
 ## Python Version Support

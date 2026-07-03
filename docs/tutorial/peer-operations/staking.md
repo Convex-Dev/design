@@ -9,17 +9,17 @@ How to stake Convex Coins and register your peer on the network.
 ## Overview
 
 To participate in Convex consensus as a peer, you must:
-1. **Stake Convex Coins** - Lock coins as collateral
-2. **Register Your Peer** - Submit peer information to the network
-3. **Maintain Stake** - Keep sufficient stake to remain active
+
+1. **Stake Convex Coins** — lock coins as collateral with `create-peer`
+2. **Register peer data** — publish your peer's connection URL with `set-peer-data`
+3. **Maintain stake** — keep sufficient stake to remain an active part of consensus
+
+Staking uses a small set of CVM functions: `create-peer`, `set-peer-stake`, `set-stake`, `set-peer-data`, `get-peer-stake` and `evict-peer`. This guide shows each one. The economic model (rewards, slashing, delegated stake) is specified in [CAD016: Peer Staking](/docs/cad/peerstake).
 
 ## Prerequisites
 
-Before staking and registration:
-
-- ✅ Funded Convex account with sufficient CVX balance
-- ✅ Ed25519 key pair for peer identity
-- ✅ Ed25519 key pair for stake controller
+- ✅ Funded Convex account with sufficient CVM balance (stake + juice)
+- ✅ Ed25519 key pair for the peer identity (the *peer key*)
 - ✅ Peer infrastructure ready ([deployment guides](manual-deployment))
 - ✅ Network connectivity configured
 
@@ -27,65 +27,53 @@ Before staking and registration:
 
 ### Minimum Stake
 
-**Production (Protonet)**:
-- Minimum: To be determined by network governance
-- Recommended: Higher stake = higher consensus weight
-
-**Testnets**:
-- Typically lower requirements for testing
-- Check specific testnet documentation
+Running a peer on Protonet requires a minimum stake of **1000 CVM**. A higher stake gives your peer proportionally greater weight in consensus. On testnets you can practise with smaller amounts.
 
 ### Stake Economics
 
-**Stake Benefits**:
-- Participate in consensus
-- Earn transaction fees (juice)
-- Receive staking rewards
-- Voting rights in governance
+**Benefits**
 
-**Stake Risks**:
-- Stake locked during participation
-- Potential slashing for misbehavior
-- Network risk exposure
+- Participate in Convex Convergent Proof of Stake (CPoS) consensus
+- Earn rewards proportional to stake (rewards accrue to the peer's stake automatically — there is no separate claim step; see [CAD016](/docs/cad/peerstake) and [CAD020: Tokenomics](/docs/cad/tokenomics))
+
+**Risks**
+
+- Stake is locked while the peer participates
+- Provable misbehaviour may lead to **slashing** (loss of stake)
 
 ## Generating Peer Keys
 
-Each peer needs a unique Ed25519 key pair for identity.
+Each peer needs a unique Ed25519 key pair for its identity.
+
+### Using the CLI
+
+Keys are generated into your configured keystore (a PKCS#12 file), not a loose seed file:
+
+```bash
+# Generate a new random key pair in the keystore
+convex key generate --type random
+
+# List the public keys in your keystore
+convex key list
+```
 
 ### Using Java
 
 ```java
 import convex.core.crypto.AKeyPair;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-// Generate peer key pair
+// Generate a peer key pair
 AKeyPair peerKeys = AKeyPair.generate();
-
 System.out.println("Peer Public Key: " + peerKeys.getAccountKey());
-
-// Save seed securely
-byte[] seed = peerKeys.getSeed();
-Files.write(Path.of("peer-keypair.dat"), seed);
 ```
 
-### Using CLI
-
-```bash
-# Generate peer keys using Convex CLI
-convex key generate --output peer-keys.dat
-
-# View public key
-convex key show peer-keys.dat
-```
-
-**⚠️ Security**: Store peer key seeds securely. Loss of peer keys means loss of peer identity and stake access.
+**⚠️ Security:** store peer keys securely. Loss of the peer key means loss of the peer identity.
 
 ## Staking Process
 
-### Step 1: Prepare Stake Account
+### Step 1: Prepare the Controlling Account
 
-Ensure your stake controller account has sufficient funds:
+The account that submits `create-peer` controls the peer's stake. Ensure it has enough funds for the stake plus juice:
 
 ```java
 import convex.api.Convex;
@@ -94,207 +82,121 @@ import convex.core.crypto.AKeyPair;
 import convex.core.cvm.Address;
 import convex.core.lang.Reader;
 
-// Connect to network
+// Connect to your target network (Protonet shown; use the public testnet to practise)
 Convex convex = Convex.connect("https://peer.convex.live");
 
-// Load your stake controller key pair
-AKeyPair stakeKeys = AKeyPair.create(stakeKeySeed);
-convex.setKeyPair(stakeKeys);
-convex.setAddress(stakeAddress);
+AKeyPair controllerKeys = AKeyPair.create(controllerKeySeed);
+convex.setKeyPair(controllerKeys);
+convex.setAddress(controllerAddress);
 
-// Check balance
-Result balance = convex.query(
-    Reader.read("(balance " + stakeAddress + ")")
-).get();
-
+Result balance = convex.query(Reader.read("(balance " + controllerAddress + ")")).get();
 long balanceCopper = ((Number) balance.getValue()).longValue();
-System.out.println("Balance: " + (balanceCopper / 1_000_000_000.0) + " CVX");
+System.out.println("Balance: " + (balanceCopper / 1_000_000_000.0) + " CVM");
 ```
 
-### Step 2: Create Peer Stake
+### Step 2: Create the Peer
 
-Submit a stake transaction for your peer:
+`create-peer` registers the peer key and places its initial stake (in copper):
 
 ```java
 import convex.core.data.AccountKey;
 
-// Your peer's public key
 AccountKey peerKey = peerKeys.getAccountKey();
+long stakeAmount = 1_000L * 1_000_000_000L; // 1000 CVM in copper
 
-// Stake amount in copper (e.g., 100,000 CVX)
-long stakeAmount = 100_000L * 1_000_000_000L;
-
-// Create peer stake
-String stakeCommand = String.format(
-    "(create-peer %s %d)",
-    peerKey,
-    stakeAmount
-);
-
+String stakeCommand = String.format("(create-peer %s %d)", peerKey, stakeAmount);
 Result result = convex.transact(Reader.read(stakeCommand)).get();
 
 if (!result.isError()) {
-    System.out.println("✓ Peer stake created");
-    System.out.println("Result: " + result.getValue());
+    System.out.println("✓ Peer created with stake");
 } else {
-    System.err.println("✗ Stake failed: " + result.getErrorCode());
+    System.err.println("✗ create-peer failed: " + result.getErrorCode());
 }
 ```
 
-### Step 3: Register Peer Metadata
+### Step 3: Register Peer Data
 
-Register your peer's network information:
+Publish the peer's connection URL so others can reach it. The metadata map uses a single `:url` of the form `"host:port"`:
 
 ```java
-// Peer metadata
-String peerHost = "peer.example.com";
-int peerPort = 18888;
-
 String registerCommand = String.format(
-    "(set-peer-data %s {:host \"%s\" :port %d})",
-    peerKey,
-    peerHost,
-    peerPort
-);
+    "(set-peer-data %s {:url \"peer.example.com:18888\"})",
+    peerKey);
 
 Result result = convex.transact(Reader.read(registerCommand)).get();
-
-if (!result.isError()) {
-    System.out.println("✓ Peer registered");
-} else {
-    System.err.println("✗ Registration failed: " + result.getErrorCode());
-}
-```
-
-## Verifying Registration
-
-Check your peer's registration status:
-
-```java
-// Query peer information
-String queryCommand = String.format("(get-peer %s)", peerKey);
-Result result = convex.query(Reader.read(queryCommand)).get();
-
-if (!result.isError()) {
-    System.out.println("Peer Info: " + result.getValue());
-} else {
-    System.err.println("Peer not found");
-}
+System.out.println(result.isError() ? "✗ " + result.getErrorCode() : "✓ Peer data registered");
 ```
 
 ## Managing Stake
 
-### Checking Stake Status
+### Checking Stake
+
+`get-peer-stake` reads a peer's current stake:
 
 ```java
-// Query your peer's stake
-String stakeQuery = String.format("(peer-stake %s)", peerKey);
+String stakeQuery = String.format("(get-peer-stake %s)", peerKey);
 Result result = convex.query(Reader.read(stakeQuery)).get();
 
 if (!result.isError()) {
     long stake = ((Number) result.getValue()).longValue();
-    System.out.println("Current Stake: " + (stake / 1_000_000_000.0) + " CVX");
+    System.out.println("Current Stake: " + (stake / 1_000_000_000.0) + " CVM");
 }
 ```
 
-### Adding More Stake
+### Changing Your Peer's Stake
+
+`set-peer-stake` sets the peer's stake to an **absolute** value — there is no separate add/withdraw. To add stake, set a higher total; to reduce it, set a lower total; to fully unstake, set it to `0`:
 
 ```java
-// Add additional stake
-long additionalStake = 10_000L * 1_000_000_000L;
+// Increase total stake to 2000 CVM
+long newStake = 2_000L * 1_000_000_000L;
+convex.transact(Reader.read(String.format("(set-peer-stake %s %d)", peerKey, newStake))).get();
 
-String addStakeCommand = String.format(
-    "(add-peer-stake %s %d)",
-    peerKey,
-    additionalStake
-);
-
-Result result = convex.transact(Reader.read(addStakeCommand)).get();
+// Fully unstake (stop participating in consensus)
+convex.transact(Reader.read(String.format("(set-peer-stake %s 0)", peerKey))).get();
 ```
 
-### Withdrawing Stake
+**⚠️ Warning:** setting stake to `0` removes the peer from consensus. Shut the peer down cleanly first.
 
-To withdraw stake, you must first stop participating in consensus:
+### Delegated Stake
+
+Any coin holder can back a peer they trust with *delegated* stake using `set-stake` (also an absolute set). This adds to the peer's consensus weight and lets the delegator share in rewards, without running a peer:
 
 ```java
-// Step 1: Set peer as inactive
-String deactivateCommand = String.format("(set-peer-stake %s 0)", peerKey);
-Result result = convex.transact(Reader.read(deactivateCommand)).get();
-
-// Step 2: Wait for unstaking period (if applicable)
-// Network may have cooldown period before stake withdrawal
-
-// Step 3: Withdraw stake
-String withdrawCommand = String.format("(withdraw-stake %s)", peerKey);
-result = convex.transact(Reader.read(withdrawCommand)).get();
+// Delegate 500 CVM of stake to a trusted peer
+long delegated = 500L * 1_000_000_000L;
+convex.transact(Reader.read(String.format("(set-stake %s %d)", trustedPeerKey, delegated))).get();
 ```
 
-**⚠️ Warning**: Withdrawing stake stops consensus participation. Ensure peer is properly shut down first.
+### Evicting a Peer
 
-## Stake Controller Management
-
-The stake controller is the account that controls your peer's stake.
-
-### Changing Stake Controller
+`evict-peer` removes an inactive or misbehaving peer from the peer set (subject to network rules):
 
 ```java
-// Transfer stake control to new address
-Address newController = Address.create(5678);
-
-String transferCommand = String.format(
-    "(set-peer-controller %s %s)",
-    peerKey,
-    newController
-);
-
-Result result = convex.transact(Reader.read(transferCommand)).get();
+convex.transact(Reader.read(String.format("(evict-peer %s)", peerKey))).get();
 ```
-
-**⚠️ Important**: Losing access to the stake controller means losing control of your peer's stake.
 
 ## Stake Security
 
-### Best Practices
+✅ **Key management**
 
-✅ **Key Management**:
-- Store peer keys separately from stake controller keys
+- Keep the peer key and the controlling account key separate
 - Use hardware security modules (HSM) for high-value stakes
-- Implement key rotation procedures
 - Maintain secure offline backups
 
-✅ **Stake Protection**:
-- Monitor peer performance to avoid slashing
-- Keep peer infrastructure maintained
-- Maintain adequate stake for consensus weight
-- Set up alerting for stake changes
+✅ **Stake protection**
 
-✅ **Operational Security**:
-- Use separate accounts for stake controller and peer operations
-- Implement multi-signature for high-value stakes
-- Regular security audits
-- Document recovery procedures
+- Monitor peer performance to avoid slashing
+- Keep infrastructure maintained and reachable at the registered URL
+- Set up alerting for stake changes
 
 ### Recovery Scenarios
 
-**Lost Peer Keys**:
-- Peer cannot sign consensus messages
-- Stake controller can still withdraw stake
-- Generate new peer keys and re-register
+**Lost peer key** — the peer cannot sign consensus messages; the controlling account can still adjust or remove the stake with `set-peer-stake`. Generate a new peer key and re-run `create-peer`.
 
-**Lost Stake Controller Keys**:
-- Cannot modify or withdraw stake
-- Peer can continue operating
-- Stake permanently locked (unless recovery mechanism exists)
-
-**Compromised Peer Keys**:
-- Immediately stop peer
-- Use stake controller to withdraw stake
-- Investigate compromise
-- Generate new peer keys
+**Lost controlling account key** — you cannot modify the stake. Protect this key accordingly.
 
 ## Monitoring Stake
-
-### Stake Health Checks
 
 ```java
 public class StakeMonitor {
@@ -307,142 +209,51 @@ public class StakeMonitor {
     }
 
     public void checkStake() throws Exception {
-        // Query current stake
-        String query = String.format("(peer-stake %s)", peerKey);
+        String query = String.format("(get-peer-stake %s)", peerKey);
         Result result = convex.query(Reader.read(query)).get();
-
         if (result.isError()) {
             System.err.println("⚠ Cannot query stake");
             return;
         }
-
         long stake = ((Number) result.getValue()).longValue();
         double stakeCoins = stake / 1_000_000_000.0;
 
-        // Check if stake is adequate
-        long minStake = 50_000L * 1_000_000_000L; // Example: 50,000 CVX
-        if (stake < minStake) {
-            System.err.println("⚠ Stake below minimum: " + stakeCoins + " CVX");
+        long minStake = 1_000L; // 1000 CVM Protonet minimum
+        if (stakeCoins < minStake) {
+            System.err.println("⚠ Stake below minimum: " + stakeCoins + " CVM");
         } else {
-            System.out.println("✓ Stake adequate: " + stakeCoins + " CVX");
+            System.out.println("✓ Stake adequate: " + stakeCoins + " CVM");
         }
     }
 }
 ```
 
-### Automated Alerts
-
-Set up monitoring to alert on:
-- Stake below minimum threshold
-- Unexpected stake changes
-- Peer registration changes
-- Consensus participation status
-
-## Governance Participation
-
-Staked peers can participate in network governance:
-
-### Voting on Proposals
-
-```java
-// Vote on governance proposal
-long proposalId = 123;
-boolean voteYes = true;
-
-String voteCommand = String.format(
-    "(vote-proposal %d %b)",
-    proposalId,
-    voteYes
-);
-
-Result result = convex.transact(Reader.read(voteCommand)).get();
-```
-
-### Submitting Proposals
-
-```java
-// Submit governance proposal
-String proposal = "(update-network-parameter :min-stake 100000)";
-
-String submitCommand = String.format(
-    "(submit-proposal '%s)",
-    proposal
-);
-
-Result result = convex.transact(Reader.read(submitCommand)).get();
-```
-
-## Economics and Rewards
-
-### Earning Rewards
-
-Peers earn rewards from:
-- **Transaction Fees** - Share of juice paid by transactions
-- **Staking Rewards** - Proportional to stake weight
-- **Governance Participation** - Incentives for active governance
-
-### Reward Claims
-
-```java
-// Claim accumulated rewards
-String claimCommand = String.format("(claim-peer-rewards %s)", peerKey);
-Result result = convex.transact(Reader.read(claimCommand)).get();
-
-if (!result.isError()) {
-    long rewards = ((Number) result.getValue()).longValue();
-    System.out.println("Claimed: " + (rewards / 1_000_000_000.0) + " CVX");
-}
-```
+Set up alerting on: stake below the minimum threshold, unexpected stake changes, and loss of consensus participation.
 
 ## Troubleshooting
 
-### Stake Transaction Failed
+### `create-peer` / `set-peer-stake` failed
 
-**FUNDS Error**:
-- Insufficient balance for stake amount
-- Check account balance
-- Account for transaction juice costs
+- **`:FUNDS`** — the controlling account lacks the balance for the stake plus juice. Check `(balance ...)`.
+- **`:STATE`** — the peer already exists, or the stake is below the network minimum.
+- **`:TRUST`** — the submitting account is not authorised to control this peer.
 
-**TRUST Error**:
-- Incorrect stake controller permissions
-- Verify controller account controls peer
-- Check key pair matches controller
+### Peer not appearing in consensus
 
-### Peer Not Appearing in Consensus
-
-**Common Causes**:
-- Insufficient stake
-- Peer not properly configured
-- Network connectivity issues
-- Registration metadata incorrect
-
-**Solutions**:
-1. Verify stake amount meets minimum
-2. Check peer network configuration
-3. Verify registration metadata
-4. Review [deployment guides](manual-deployment)
-
-### Unable to Withdraw Stake
-
-**Locked Stake**:
-- Stake may have lock period
-- Check network unstaking rules
-- Wait for cooldown period
-
-**Active Peer**:
-- Peer still participating in consensus
-- Shut down peer first
-- Set stake to zero before withdrawal
+- Stake below the minimum, or set to `0`
+- Peer not reachable at its registered `:url`
+- Registration metadata incorrect — re-check `set-peer-data`
 
 ## Next Steps
 
-1. **[Choose Deployment Method](manual-deployment)** - Install your peer
-2. **[Select Hosting](hosting)** - Infrastructure requirements
-3. **[Security Guide](security)** - Secure your peer
-4. **[Troubleshooting](troubleshooting)** - Common issues
+1. **[Choose a deployment method](manual-deployment)** — install your peer
+2. **[Select hosting](hosting)** — infrastructure requirements
+3. **[Security guide](security)** — secure your peer
+4. **[Troubleshooting](troubleshooting)** — common issues
 
 ## Resources
 
-- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - `#peer-operations` channel
-- **[Convex Economics](/)** - Token economics and rewards
-- **[Governance](/)**  - Participation in network governance
+- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** — `#peer-operations` channel
+- **[CAD016: Peer Staking](/docs/cad/peerstake)** — the staking and rewards model
+- **[CAD017: Peer Operations](/docs/cad/peerops)** — running a peer
+- **[CAD020: Tokenomics](/docs/cad/tokenomics)** — network economics

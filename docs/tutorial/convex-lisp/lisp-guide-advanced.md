@@ -110,7 +110,7 @@ While often convenient, destructuring can make code harder to read, so use judic
 
 ## Macros
 
-We've actually used a couple of macros already in this guide: `if`, `undef` and `defn` are all examples of macros.
+We've actually used a couple of macros already in this guide: `if` and `defn` are both examples of macros.
 
 A macro is a procedure that generates new code at compile time (technically, in the *expansion* phase of the compiler). Macros are an incredibly powerful tool that allows you to enhance the Convex Lisp language with new capabilities and syntax.
 
@@ -161,7 +161,7 @@ Calling an actor creates a new execution context (effectively a fork of the CVM)
      )))
 
 ;; the call fails as expected
-(call bad-actor (will-fail)
+(call bad-actor (will-fail))
 => Exception: :ASSERT nil
 
 ;; this fails because the definition of `test` has been rolled back
@@ -195,7 +195,7 @@ Often you want to execute some code to determine the result, but do not want any
 => nil
 ```
 
-Note that code within queries may still fail, with the error propagated back to the calling code.#
+Note that code within queries may still fail, with the error propagated back to the calling code.
 
 `query` is particularly useful when executing code that *shouldn't* make state changes but you don't entirely trust it. A typical example would be calling a 3rd party actor to read some data - it protects you against unintended or malicious CVM state changes in what should be a read-only operation. 
 
@@ -220,7 +220,8 @@ Example:
 ```clojure
 (try 
   (+ :foo :bar)   ;; this will fail due to bad argument types
-  :ALTERNATIVE)=> :ALTERNATIVE
+  :ALTERNATIVE)
+=> :ALTERNATIVE
 ```
 
 ### Rollback behaviour

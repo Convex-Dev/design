@@ -115,7 +115,7 @@ public class QueryExample {
         Map<String, Object> result = convex.query("(balance #13)");
 
         long balance = ((Number) result.get("value")).longValue();
-        System.out.println("Balance: " + (balance / 1_000_000_000.0) + " CVX");
+        System.out.println("Balance: " + (balance / 1_000_000_000.0) + " CVM");
     }
 }
 ```

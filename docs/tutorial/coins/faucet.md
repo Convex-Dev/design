@@ -4,62 +4,35 @@ sidebar_position: 2
 
 # Faucet
 
-The **Convex Faucet** is a service that provides free test funds on test networks, enabling developers to experiment without purchasing Convex Coins.
-
-## What is a Faucet?
-
-A faucet is an automated service that dispenses small amounts of cryptocurrency for testing purposes. On Convex test networks, the faucet provides:
-
-- **Free Convex Coins** - Small amounts sufficient for testing (typically 0.01 - 0.1 CVX)
-- **No Authentication** - Anyone can request funds by providing an account address
-- **Rate Limiting** - Prevents abuse by limiting requests per account/IP
+A **faucet** dispenses small amounts of Convex Coins on test networks, so you can experiment without acquiring coins. On the public testnet you rarely call it directly — the SDKs use it to fund new accounts for you (see the [Quick Start](/docs/tutorial/quickstart)). This page covers requesting funds explicitly.
 
 ## Availability
 
-### Test Networks
+- **Public testnet** — a faucet is available. The current endpoint is `https://mikera1337-convex-testnet.hf.space`.
+- **Local peer** — when you run your own peer for development, you control funding directly (see [Local Testnets](/docs/tutorial/peer-operations/local-testnets)).
+- **Production (Protonet, `peer.convex.live`)** — **no faucet.** Coins must be acquired legitimately (transfer from another account, an exchange, or network rewards).
 
-✅ **Faucets are available on test networks:**
+A peer may also have its faucet disabled. A faucet request to such a peer is refused with `403 Forbidden` — treat that as "no faucet on this network".
 
-**Public Testnets** - For testing without local setup:
-- `https://mikera1337-convex-testnet.hf.space` - Public testnet with faucet
-- Check [Discord community](https://discord.com/invite/xfYGq4CT7v) for additional testnets
+> **Security note:** any service offering free *production* coins is a scam. Faucets exist only for testing.
 
-**Local Development Peers** - Best for development:
-- Run your own peer locally for fastest performance
-- Built-in account creation and funding
-- See [Client Types Guide](/docs/tutorial/client-sdks/java/clients#local-peer-client) for setup
+## Requesting funds
 
-On test networks, you can freely request funds for development and testing.
-
-### Production Networks
-
-❌ **Faucets are NOT available on production networks:**
-
-- `https://mikera1337-convex-testnet.hf.space` - Production peer (no faucet)
-- Production Convex mainnet does not have public faucets
-- You must acquire Convex Coins through legitimate means:
-  - Purchase from exchanges
-  - Receive transfers from other accounts
-  - Earn through network participation
-
-**Security Note**: Any "faucet" claiming to provide free production coins is likely a scam.
-
-## Using the Faucet
+Amounts are always in **copper** (1 CVM = 1,000,000,000 copper). 0.1 CVM — 100,000,000 copper — is plenty for most testing.
 
 ### TypeScript
 
 ```typescript
-import { Convex } from '@convex-world/convex-ts';
+import { Convex, KeyPair } from '@convex-world/convex-ts';
 
 const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 
-// Create account
+// Fund a new account on creation: pass a faucet amount to createAccount
 const keyPair = KeyPair.generate();
-convex.setAccount('#1234', keyPair);
+const account = await convex.createAccount(keyPair.accountKey, 100_000_000); // 0.1 CVM
 
-// Request test funds (test networks only)
-// Note: This will fail on production networks
-await convex.requestFunds(100_000_000); // 0.1 CVX
+// Top up an existing account
+await convex.faucet(account.address, 100_000_000);
 ```
 
 ### Python
@@ -69,86 +42,24 @@ from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
-# Create account
+# Faucet-sponsored account creation (the peer's faucet pays the juice)
 key_pair = KeyPair()
 account = convex.create_account(key_pair)
 
-# Request test funds (test networks only)
-# Note: This will fail on production networks
-convex.request_funds(100_000_000, account)  # 0.1 CVX
+# Request funds for an account
+convex.request_funds(100_000_000, account)  # 0.1 CVM
+
+# Or top up only when needed: requests funds until the balance reaches min_balance
+convex.topup_account(account, min_balance=10_000_000)
 ```
 
-## Faucet Limits
+## Account creation is faucet-sponsored
 
-Test network faucets typically impose limits to prevent abuse:
+Creating an account costs juice, which must be paid by an already-funded account. On the public testnet the peer's faucet account sponsors creation, so `createAccount` / `create_account` work from a fresh key with no funds. On production there is no faucet, so a new account must be created and funded by an existing account.
 
-### Amount Limits
+## Handling an unavailable faucet
 
-- **Minimum Request**: 1,000 copper (0.000001 CVX)
-- **Maximum Request**: 1,000,000,000 copper (1 CVX)
-- **Default Amount**: 100,000,000 copper (0.1 CVX)
-
-### Rate Limits
-
-- **Per Account**: Limited requests per account per time period
-- **Per IP Address**: Limited requests per IP address per time period
-- **Cooldown Period**: Typically 1-24 hours between requests
-
-## Account Creation and Faucets
-
-### On Test Networks
-
-Creating an account requires an existing funded account to pay the juice cost. On test networks, you have two options:
-
-#### Option 1: Use Peer's Faucet Account
-
-Most test peers provide a faucet account that sponsors new account creation:
-
-```python
-# Python
-account = convex.create_account(key_pair)
-# Faucet account pays for creation automatically
-```
-
-```typescript
-// TypeScript
-const keyPair = KeyPair.generate();
-convex.setAccount(address, keyPair);
-// Faucet sponsors creation if supported
-```
-
-#### Option 2: Fund First, Then Create
-
-Some configurations require manual funding before creating accounts. If account creation fails:
-
-1. Get funds from faucet to genesis account
-2. Use funded account to create new accounts
-
-### On Production Networks
-
-**You cannot create accounts without existing funds on production networks.**
-
-Options for production:
-
-1. **Have someone create an account for you** - An existing funded account creates your account and transfers initial funds
-2. **Purchase an existing account** - Acquire keys for an account that already has funds
-3. **Receive a transfer first** - Someone transfers coins to your address before you activate it
-
-## Faucet Best Practices
-
-### For Developers
-
-#### Check Network Type
-
-Verify you're on a test network before requesting faucet funds:
-
-```python
-# Query network status to verify test network
-result = convex.query('*state*', 1)
-# Examine result to determine network type
-```
-
-#### Handle Faucet Failures
+If the faucet is disabled or the peer refuses the request, the call fails (HTTP `403 Forbidden`). Handle it as "no faucet here" rather than a transient error:
 
 ```python
 from convex_sdk.exceptions import ConvexAPIError
@@ -156,168 +67,19 @@ from convex_sdk.exceptions import ConvexAPIError
 try:
     convex.request_funds(100_000_000, account)
 except ConvexAPIError as e:
-    if e.code == 'FAUCET_DISABLED':
-        print('Faucet not available - likely production network')
-    elif e.code == 'RATE_LIMIT':
-        print('Faucet rate limit exceeded - try again later')
-    else:
-        print(f'Faucet error: {e.code} - {e.message}')
+    print(f'Faucet unavailable: {e}')  # likely a production peer or a disabled faucet
 ```
 
-```typescript
-try {
-  await convex.requestFunds(100_000_000);
-} catch (error) {
-  if (error.code === 'FAUCET_DISABLED') {
-    console.log('Faucet not available - likely production network');
-  } else if (error.code === 'RATE_LIMIT') {
-    console.log('Faucet rate limit exceeded - try again later');
-  } else {
-    console.log('Faucet error:', error.message);
-  }
-}
-```
+## Best practices
 
-#### Request Appropriate Amounts
-
-```python
-# ❌ DON'T - Request more than needed
-convex.request_funds(1_000_000_000, account)  # 1 CVX excessive for testing
-
-# ✅ DO - Request only what you need
-convex.request_funds(100_000_000, account)  # 0.1 CVX sufficient for most tests
-```
-
-#### Use Top-Up Helper
-
-The Python SDK provides a `topup_account()` helper that only requests funds when needed:
-
-```python
-# Only requests funds if balance < 10M copper
-convex.topup_account(account, min_balance=10_000_000)
-
-# Custom minimum balance
-convex.topup_account(account, min_balance=50_000_000)
-```
-
-### For Network Operators
-
-If you're running a test peer, configure the faucet:
-
-```bash
-# Enable faucet for test networks
-convex.peer faucet --enable \
-  --amount 100000000 \
-  --cooldown 3600 \
-  --max-per-ip 10
-```
-
-**Never enable faucets on production networks!**
-
-## Common Faucet Errors
-
-### FAUCET_DISABLED
-
-```
-Error: FAUCET_DISABLED - Faucet is not available on this network
-```
-
-**Cause**: You're trying to use the faucet on a production network or a peer with the faucet disabled.
-
-**Solution**:
-- Verify you're connected to a test network
-- For production, acquire funds through legitimate means
-- For test networks, check peer configuration
-
-### RATE_LIMIT
-
-```
-Error: RATE_LIMIT - Faucet rate limit exceeded
-```
-
-**Cause**: Too many recent faucet requests from your account or IP address.
-
-**Solution**:
-- Wait for the cooldown period (typically 1-24 hours)
-- Use a different account if testing multiple scenarios
-- For development, save and reuse accounts with funds
-
-### INSUFFICIENT_FUNDS
-
-```
-Error: INSUFFICIENT_FUNDS - Faucet account has insufficient funds
-```
-
-**Cause**: The faucet's own account has run out of funds (rare on public test networks).
-
-**Solution**:
-- Report to network operator
-- Try again later after refill
-- Use a different test peer
-
-### AMOUNT_TOO_LARGE
-
-```
-Error: AMOUNT_TOO_LARGE - Requested amount exceeds faucet limit
-```
-
-**Cause**: Requested amount exceeds the faucet's maximum dispensation.
-
-**Solution**:
-- Request smaller amount (typically max 1 CVX)
-- Make multiple requests with cooldown between
-
-## Faucet Alternatives
-
-### For Testing
-
-If the faucet is unavailable or rate-limited:
-
-1. **Reuse Test Accounts** - Save and reuse funded accounts across test sessions
-2. **Fund One Account Well** - Request maximum from faucet once, then use that account to fund others
-3. **Local Test Peer** - Run your own peer with unlimited faucet access
-
-### For Production
-
-Acquire Convex Coins through:
-
-1. **Exchanges** - Purchase from cryptocurrency exchanges
-2. **Peer-to-Peer** - Receive transfers from other users
-3. **Network Rewards** - Earn through peer operation or staking
-4. **Development Grants** - Apply for foundation grants for qualified projects
-
-## Security Considerations
-
-### Faucet Abuse Prevention
-
-Test network operators implement protections:
-
-- **Rate Limiting** - Prevents spam and DoS attacks
-- **IP Tracking** - Identifies and blocks abusive IPs
-- **Account Limits** - Caps total funds per account
-- **CAPTCHA** - Some faucets use CAPTCHA for web interfaces
-
-### Test Fund Management
-
-Best practices for developers:
-
-1. **Don't Rely on Faucet Availability** - Cache funded test accounts
-2. **Request Conservatively** - Only request what you need
-3. **Clean Up Test Accounts** - Return funds when done (optional, good citizenship)
-
-## Faucet Architecture
-
-For those interested in how faucets work:
-
-1. **Faucet Account** - Peer maintains a funded account as the faucet
-2. **API Endpoint** - `/api/v1/faucet` endpoint accepts requests
-3. **Validation** - Checks rate limits, amount, and account validity
-4. **Transaction** - Submits `(transfer #recipient amount)` transaction
-5. **Response** - Returns amount transferred or error
+- **Request only what you need** — 0.1 CVM covers most testing; you rarely need whole coins.
+- **Reuse funded accounts** — cache a funded test account across sessions rather than re-funding each run; `topup_account` (Python) makes this easy.
+- **Don't depend on faucet availability in scripts** — treat a `403` as expected on production or restricted peers.
 
 ## See Also
 
-- [Convex Coins Overview](index.md) - Learn about Convex Coin basics
-- [TypeScript SDK - Quickstart](/docs/tutorial/client-sdks/typescript/quickstart) - Using faucet in TypeScript
-- [Python SDK - Quickstart](/docs/tutorial/client-sdks/python/quickstart) - Using faucet in Python
-- [Running a Peer](/docs/products/convex-peer) - Configure faucet on your own peer
+- [Convex Coins Overview](index.md) — Convex Coin basics
+- [Quick Start](/docs/tutorial/quickstart) — the fastest path to a funded account
+- [TypeScript SDK — Quickstart](/docs/tutorial/client-sdks/typescript/quickstart)
+- [Python SDK — Quickstart](/docs/tutorial/client-sdks/python/quickstart)
+- [Local Testnets](/docs/tutorial/peer-operations/local-testnets) — run your own peer

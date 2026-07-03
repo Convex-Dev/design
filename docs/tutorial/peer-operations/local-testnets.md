@@ -214,10 +214,8 @@ java -Xmx4g -jar convex.jar desktop
 ;; 2. Deploy actor
 (deploy
   '(do
-     (defn greet [name]
-       (str "Hello, " name "!"))
-
-     (export greet)))
+     (defn ^:callable greet [name]
+       (str "Hello, " name "!"))))
 
 ;; 3. Call actor function
 (call actor-address (greet "World"))
@@ -251,8 +249,8 @@ Run a local peer from the command line - ideal for scripts and automation.
 ### Quick Start
 
 ```bash
-# Start peer in background
-java -jar convex.jar peer start --config local-config.edn &
+# Start a temporary local test network (1 peer + REST API on 8080)
+java -jar convex.jar local start --api-port 8080 &
 
 # Wait for startup
 sleep 5
@@ -262,21 +260,21 @@ curl http://localhost:8080/api/v1/query \
   -H "Content-Type: application/json" \
   -d '{"source":"(+ 1 2 3)"}'
 
-# Stop peer
-pkill -f convex.jar
+# Stop peer (Ctrl-C in the foreground, or kill the background job)
+kill %1
 ```
 
-### Configuration File
+### Options
 
-Create `local-config.edn`:
+`convex local start` runs a temporary network — no config file needed. Useful flags:
 
-```clojure
-{:port 18888
- :rest-port 8080
- :store-path "data/local-peer"
- :log-level :info
- :local-mode true}  ; Run as local testnet
-```
+| Flag | Purpose |
+|------|---------|
+| `--count` | Number of local peers to start (default 1) |
+| `--api-port` | REST API port on the first peer (default 8080) |
+| `--ports` | Explicit peer ports (otherwise free ports are chosen) |
+
+The command prints the actual peer ports in use on startup.
 
 ### Automation Script
 
@@ -285,16 +283,15 @@ Create `local-config.edn`:
 # start-local-testnet.sh
 
 CONVEX_JAR="convex.jar"
-CONFIG="local-config.edn"
 PID_FILE="peer.pid"
 
-# Start peer
-java -jar $CONVEX_JAR peer start --config $CONFIG &
+# Start a temporary local network
+java -jar $CONVEX_JAR local start --api-port 8080 &
 echo $! > $PID_FILE
 
 # Wait for ready
 echo "Waiting for peer to start..."
-while ! curl -s http://localhost:8080/api/v1/health > /dev/null; do
+while ! curl -s http://localhost:8080/api/v1/status > /dev/null; do
   sleep 1
 done
 
@@ -349,7 +346,7 @@ jobs:
       - name: Start Local Peer
         run: |
           wget https://github.com/Convex-Dev/convex/releases/download/0.8.6/convex.jar
-          java -jar convex.jar peer start --config local-config.edn &
+          java -jar convex.jar local start --api-port 8080 &
           sleep 10
 
       - name: Run Tests
@@ -400,7 +397,7 @@ docker run -d \
 docker logs convex-local
 
 # Use peer
-curl http://localhost:8080/api/v1/health
+curl http://localhost:8080/api/v1/status
 
 # Stop and remove
 docker stop convex-local
@@ -505,7 +502,7 @@ jobs:
 
       - name: Wait for Peer
         run: |
-          timeout 60 bash -c 'until curl -s http://localhost:8080/api/v1/health; do sleep 1; done'
+          timeout 60 bash -c 'until curl -s http://localhost:8080/api/v1/status; do sleep 1; done'
 
       - name: Run Tests
         run: mvn test -Dconvex.peer.url=http://localhost:8080

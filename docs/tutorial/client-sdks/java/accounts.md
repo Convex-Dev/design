@@ -229,7 +229,7 @@ if (!result.isError()) {
     long balanceCopper = ((Number) result.getValue()).longValue();
     double balanceCoins = balanceCopper / 1_000_000_000.0;
 
-    System.out.println("Balance: " + balanceCoins + " CVX");
+    System.out.println("Balance: " + balanceCoins + " CVM");
 }
 ```
 

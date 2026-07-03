@@ -31,7 +31,7 @@ convex.request_funds(100_000_000, account)
 # Execute a transaction
 result = convex.transact('(def my-value 42)', account)
 
-print(result.value)  # 42
+print(result['value'])  # 42
 ```
 
 ## Transaction Methods
@@ -67,7 +67,7 @@ result = convex.transact('(def x 10)', account)
 Transfer Convex Coins to another account:
 
 ```python
-# Transfer 0.01 CVX (10 million copper)
+# Transfer 0.01 CVM (10 million copper)
 result = convex.transfer('#456', 10_000_000, account)
 
 print(f'Transferred: {result} copper')
@@ -128,7 +128,7 @@ convex.transact('(def my-map {:name "Alice" :age 30})', account)
 
 # Read back with a query
 result = convex.query('my-number', account)
-print(result.value)  # 42
+print(result['value'])  # 42
 ```
 
 ### Transferring Funds
@@ -138,12 +138,12 @@ print(result.value)  # 42
 recipient_keys = KeyPair()
 recipient = convex.create_account(recipient_keys)
 
-# Transfer 0.05 CVX
+# Transfer 0.05 CVM
 convex.transfer(recipient.address, 50_000_000, account)
 
 # Verify transfer
 balance = convex.get_balance(recipient)
-print(f'Recipient balance: {balance / 1_000_000_000} CVX')
+print(f'Recipient balance: {balance / 1_000_000_000} CVM')
 ```
 
 ### Deploying Smart Contracts
@@ -166,7 +166,7 @@ contract_source = """
 """
 
 result = convex.transact(contract_source, account)
-contract_address = result.value
+contract_address = result['value']
 
 print(f'Contract deployed at: #{contract_address}')
 ```
@@ -182,7 +182,7 @@ result = convex.transact(
     account
 )
 
-print(f'New count: {result.value}')
+print(f'New count: {result['value']}')
 
 # Query actor state (free)
 result = convex.query(
@@ -190,7 +190,7 @@ result = convex.query(
     account
 )
 
-print(f'Current count: {result.value}')
+print(f'Current count: {result['value']}')
 ```
 
 ### Multi-Step Transactions
@@ -208,7 +208,7 @@ transaction = """
 """
 
 result = convex.transact(transaction, account)
-print(f'Transferred {result.value} copper')
+print(f'Transferred {result['value']} copper')
 ```
 
 If any step fails, the entire transaction is rolled back.
@@ -319,7 +319,7 @@ Some contracts allow creating controlled sub-accounts:
 transaction = f'(call #{contract_address} (create-account))'
 result = convex.transact(transaction, account)
 
-sub_account_address = result.value
+sub_account_address = result['value']
 print(f'Created sub-account: #{sub_account_address}')
 ```
 

@@ -156,7 +156,7 @@ System.out.println("Value: " + result.getValue());  // 42
 ### Transferring Funds
 
 ```java
-// Transfer 0.05 CVX (50 million copper)
+// Transfer 0.05 CVM (50 million copper)
 Address recipientAddress = Address.create(456);
 long amount = 50_000_000L;
 
@@ -165,7 +165,7 @@ Result result = convex.transact(
 ).get();
 
 if (!result.isError()) {
-    System.out.println("Transferred " + (amount / 1_000_000_000.0) + " CVX");
+    System.out.println("Transferred " + (amount / 1_000_000_000.0) + " CVM");
 } else {
     System.err.println("Transfer failed: " + result.getErrorCode());
 }

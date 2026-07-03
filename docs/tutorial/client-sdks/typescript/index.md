@@ -66,8 +66,8 @@ const convex = new Convex('https://peer.convex.live');
 const keyPair = KeyPair.fromSeed('your-32-byte-seed-hex');
 convex.setAccount('#1678', keyPair);
 
-// Query your balance
-const balance = await convex.balance();
+// Query your balance (balance() returns a Result; read .value for the number)
+const balance = (await convex.balance()).value;
 console.log('Balance:', balance / 1_000_000_000, 'Convex Coins');
 
 // Transfer coins

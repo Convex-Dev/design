@@ -93,7 +93,7 @@ balance = convex.get_balance(account)
 # Convert to Convex Coins
 coins = balance / 1_000_000_000
 
-print(f'Balance: {coins} CVX ({balance} copper)')
+print(f'Balance: {coins} CVM ({balance} copper)')
 ```
 
 Queries are **read-only** and **free** - they don't consume any funds.
@@ -106,7 +106,7 @@ Submit a transaction to execute Convex Lisp code:
 # Execute a simple Lisp expression
 result = convex.transact('(map inc [1 2 3 4])', account)
 
-print(f'Result: {result.value}')  # [2, 3, 4, 5]
+print(f'Result: {result['value']}')  # [2, 3, 4, 5]
 ```
 
 Transactions **modify state** and **consume juice**. They require:
@@ -123,14 +123,14 @@ Send Convex Coins to another account:
 recipient_key_pair = KeyPair()
 recipient = convex.create_account(recipient_key_pair)
 
-# Transfer 10 million copper (0.01 CVX)
+# Transfer 10 million copper (0.01 CVM)
 convex.transfer(recipient.address, 10_000_000, account)
 
-print(f'Transferred 0.01 CVX to account {recipient.address}')
+print(f'Transferred 0.01 CVM to account {recipient.address}')
 
 # Check recipient balance
 recipient_balance = convex.get_balance(recipient)
-print(f'Recipient balance: {recipient_balance / 1_000_000_000} CVX')
+print(f'Recipient balance: {recipient_balance / 1_000_000_000} CVM')
 ```
 
 ## Complete Example
@@ -160,11 +160,11 @@ def main():
 
     # Check balance
     balance = convex.get_balance(account)
-    print(f'Balance: {balance / 1_000_000_000} CVX')
+    print(f'Balance: {balance / 1_000_000_000} CVM')
 
     # Execute transaction
     result = convex.transact('(+ 1 2 3)', account)
-    print(f'Transaction result: {result.value}')
+    print(f'Transaction result: {result['value']}')
 
     # Query balance after transaction
     new_balance = convex.get_balance(account)
@@ -188,7 +188,7 @@ Connected to Convex
 Created account: #1234
 Keys saved to my_account.pem
 Received test funds
-Balance: 0.1 CVX
+Balance: 0.1 CVM
 Transaction result: 6
 Juice consumed: 1480 copper
 ```
@@ -242,6 +242,6 @@ If transactions fail with `FUNDS` error:
 ```python
 # Check balance before transacting
 balance = convex.get_balance(account)
-if balance < 10_000_000:  # 0.01 CVX minimum
+if balance < 10_000_000:  # 0.01 CVM minimum
     convex.request_funds(100_000_000, account)
 ```

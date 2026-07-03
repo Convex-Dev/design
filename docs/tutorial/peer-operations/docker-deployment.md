@@ -55,9 +55,8 @@ services:
       - "18888:18888"  # Peer port
       - "8080:8080"    # REST API
     volumes:
-      - convex-data:/app/data
-      - ./peer-config.edn:/app/config/peer-config.edn:ro
-      - ./peer-keys.dat:/app/keys/peer-keys.dat:ro
+      - convex-data:/app/data                      # Etch store
+      - ./keystore.pfx:/app/keys/keystore.pfx:ro   # keystore holding the peer key
     environment:
       - JAVA_OPTS=-Xmx4g
       - NETWORK=protonet
@@ -92,24 +91,21 @@ environment:
   - LOG_LEVEL=info
 ```
 
-### Configuration File
+### Peer Configuration
 
-Mount custom configuration:
+The peer is configured by `convex peer start` flags (see [Manual Deployment](manual-deployment)), not a config file. Pass them as the container command, for example:
 
 ```yaml
-volumes:
-  - ./peer-config.edn:/app/config/peer-config.edn:ro
+command: >
+  peer start
+  --peer-key 0x<peer-public-key>
+  --etch /app/data/peer-store
+  --peer-port 18888
+  --api-port 8080
+  --url your-peer.example.com:18888
 ```
 
-`peer-config.edn`:
-
-```clojure
-{:port 18888
- :rest-port 8080
- :store-path "/app/data/peer-store"
- :log-level :info
- :network :protonet}
-```
+> **Note:** confirm the image name/tag and entrypoint for your Convex release before relying on this compose file.
 
 ### Peer Keys
 
@@ -154,7 +150,7 @@ docker-compose logs --tail=100 peer
 docker-compose ps
 
 # Health check
-curl http://localhost:8080/api/v1/health
+curl http://localhost:8080/api/v1/status
 ```
 
 ## Monitoring
@@ -177,7 +173,7 @@ Add to `docker-compose.yml`:
 services:
   peer:
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/status"]
       interval: 30s
       timeout: 10s
       retries: 3

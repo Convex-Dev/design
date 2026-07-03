@@ -354,7 +354,7 @@ cold_key_pair.export_to_file('/offline/storage/cold.pem', password)
 # Hot wallet - online, small balance
 hot_key_pair = KeyPair()
 hot_account = convex.create_account(hot_key_pair)
-convex.request_funds(100_000_000, hot_account)  # Only 0.1 CVX
+convex.request_funds(100_000_000, hot_account)  # Only 0.1 CVM
 
 # Transfer bulk funds to cold storage when not needed
 ```
@@ -412,7 +412,7 @@ Quick account for testing:
 def create_dev_account(convex):
     key_pair = KeyPair()
     account = convex.create_account(key_pair)
-    convex.request_funds(1_000_000_000, account)  # 1 CVX
+    convex.request_funds(1_000_000_000, account)  # 1 CVM
     return account
 
 # Use in development
@@ -461,7 +461,7 @@ multisig_source = """
 """
 
 result = convex.transact(multisig_source, account)
-multisig_address = result.value
+multisig_address = result['value']
 ```
 
 ## Next Steps

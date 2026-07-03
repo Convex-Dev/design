@@ -84,27 +84,22 @@ cp convex-integration/target/convex.jar /opt/convex/
 cd /opt/convex
 
 # Generate peer key pair
-java -jar convex.jar key generate --output peer-keys.dat
+java -jar convex.jar key generate --type random
 
 # View public key (needed for staking)
-java -jar convex.jar key show peer-keys.dat
+java -jar convex.jar key list
 ```
 
 **⚠️ Security**: Store `peer-keys.dat` securely with restricted permissions (600).
 
-### Step 4: Create Configuration
+### Step 4: Prepare Keys and Store
 
-Create `peer-config.edn`:
+Convex peers are configured by command-line flags and a keystore — there is no config file. Make sure:
 
-```clojure
-{:port 18888
- :rest-port 8080
- :keypair-file "peer-keys.dat"
- :store-path "data/peer-store"
- :log-level :info
- :network :protonet
- :genesis "0xb0e44f2a645abfa539f5b96b7a0eabb0f902866feaff0f7c12d1213e02333f13"}
-```
+- Your **peer key** is in the keystore (Step 3).
+- The peer has been **created and staked** on the network — see the [Staking guide](staking) (`create-peer`).
+
+Note the peer's public key from `convex key list`; you pass it to `peer start` with `--peer-key`.
 
 ### Step 5: Create Data Directory
 
@@ -121,20 +116,22 @@ chmod 755 /opt/convex/data
 ```bash
 cd /opt/convex
 
-# Start peer
+# Start the peer (Etch store under data/peer-store, REST API on 8080)
 java -Xmx4g -jar convex.jar peer start \
-  --config peer-config.edn
+  --peer-key 0x<peer-public-key> \
+  --etch data/peer-store \
+  --peer-port 18888 \
+  --api-port 8080 \
+  --url your-peer.example.com:18888
 
-# Peer will start and begin syncing
+# Peer will start and begin syncing. Run `convex peer start --help` for all options.
 ```
 
 ### Check Status
 
 ```bash
-# Query peer status
-curl http://localhost:8080/api/v1/query \
-  -H "Content-Type: application/json" \
-  -d '{"source":"(get-peer-info)"}'
+# Check peer status / heartbeat
+curl http://localhost:8080/api/v1/status
 ```
 
 ## Systemd Service
@@ -155,7 +152,7 @@ Type=simple
 User=convex
 Group=convex
 WorkingDirectory=/opt/convex
-ExecStart=/usr/bin/java -Xmx4g -jar /opt/convex/convex.jar peer start --config peer-config.edn
+ExecStart=/usr/bin/java -Xmx4g -jar /opt/convex/convex.jar peer start --peer-key 0x<peer-public-key> --etch data/peer-store --peer-port 18888 --api-port 8080 --url your-peer.example.com:18888
 Restart=on-failure
 RestartSec=10s
 
@@ -210,16 +207,19 @@ sudo journalctl -u convex-peer -n 100
 
 ## Configuration Options
 
-### Network Configuration
+### Key `peer start` Flags
 
-```clojure
-{:network :protonet  ; or :testnet for test networks
- :genesis "0x..."    ; Network genesis hash
- :bootstrap-peers [  ; Initial peers to connect to
-   "peer1.convex.live:18888"
-   "peer2.convex.live:18888"
- ]}
-```
+| Flag | Purpose |
+|------|---------|
+| `--peer-key` | Public key of the peer (must be in the keystore) |
+| `--etch` | Path to the peer's Etch store |
+| `--peer-port` | Peer protocol port (default 18888) |
+| `--api-port` | REST API port (default 8080) |
+| `--url` | Public URL other peers use to reach this peer |
+| `--genesis` | Genesis seed — **test networks only** |
+| `--reset` | Delete and recreate the Etch store |
+
+Run `convex peer start --help` for the complete list.
 
 ### Performance Tuning
 
@@ -244,7 +244,7 @@ sudo journalctl -u convex-peer -n 100
 
 ```bash
 # Check if peer is responding
-curl http://localhost:8080/api/v1/health
+curl http://localhost:8080/api/v1/status
 
 # Query consensus state
 curl http://localhost:8080/api/v1/query \
@@ -308,9 +308,9 @@ sudo systemctl stop convex-peer
 # Backup data directory
 tar -czf backup-$(date +%Y%m%d).tar.gz /opt/convex/data
 
-# Backup configuration
-cp peer-config.edn peer-config.edn.backup
-cp peer-keys.dat peer-keys.dat.backup
+# Back up the Etch store (peer state) and your keystore (peer keys)
+cp -r data/peer-store data/peer-store.backup
+# also back up your keystore file (the path passed to --keystore, e.g. ~/.convex/keystore.pfx)
 
 # Restart peer
 sudo systemctl start convex-peer

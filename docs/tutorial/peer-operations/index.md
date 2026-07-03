@@ -139,8 +139,7 @@ if (!result.isError()) {
 ### Query Network Metadata
 
 ```java
-// Peer information
-Result peerInfo = convex.query(Reader.read("(get-peer-info)")).get();
+// Peer / network status is available from the REST API: GET /api/v1/status
 
 // Current consensus point
 Result consensus = convex.query(Reader.read("*state*")).get();
@@ -204,10 +203,10 @@ PROTONET_GENESIS = "0xb0e44f2a645abfa539f5b96b7a0eabb0f902866feaff0f7c12d1213e02
 convex = Convex('https://peer.convex.live')
 result = convex.query('*genesis*')
 
-if str(result.value) == PROTONET_GENESIS:
+if str(result['value']) == PROTONET_GENESIS:
     print("✓ Connected to Protonet")
 else:
-    print(f"⚠ Unknown network: {result.value}")
+    print(f"⚠ Unknown network: {result['value']}")
 ```
 
 ### Important Notes

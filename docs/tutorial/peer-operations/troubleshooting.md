@@ -18,7 +18,7 @@ Common issues and solutions for Convex peer operations.
 telnet peer.example.com 18888
 
 # Test REST API
-curl http://peer.example.com:8080/api/v1/health
+curl http://peer.example.com:8080/api/v1/status
 ```
 
 **Common Causes**:
@@ -294,7 +294,7 @@ sudo iptables -L -n
 
 # Check if peer is responding
 response=$(curl -s -o /dev/null -w "%{http_code}" \
-  http://localhost:8080/api/v1/health)
+  http://localhost:8080/api/v1/status)
 
 if [ "$response" != "200" ]; then
   echo "ERROR: Peer not responding"

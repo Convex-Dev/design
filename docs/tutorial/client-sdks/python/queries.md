@@ -22,7 +22,7 @@ account = convex.create_account(key_pair)
 # Execute a query
 result = convex.query('(+ 1 2 3)', account)
 
-print(result.value)  # 6
+print(result['value'])  # 6
 ```
 
 ## Queries are Free
@@ -105,7 +105,7 @@ print(f"Type: {info.type}")  # 'user', 'actor', or 'library'
 # Check if account has sufficient funds
 balance = convex.get_balance(account)
 
-if balance < 10_000_000:  # Less than 0.01 CVX
+if balance < 10_000_000:  # Less than 0.01 CVM
     print('Insufficient funds')
     convex.request_funds(100_000_000, account)
 ```
@@ -117,7 +117,7 @@ if balance < 10_000_000:  # Less than 0.01 CVX
 contract_address = '#789'
 result = convex.query(f'(call {contract_address} (get-count))', account)
 
-print(f'Contract count: {result.value}')
+print(f'Contract count: {result['value']}')
 ```
 
 ### Evaluating Expressions
@@ -125,11 +125,11 @@ print(f'Contract count: {result.value}')
 ```python
 # Test Convex Lisp expressions before transacting
 result = convex.query('(map inc [1 2 3 4 5])', account)
-print(result.value)  # [2, 3, 4, 5, 6]
+print(result['value'])  # [2, 3, 4, 5, 6]
 
 # Check syntax without executing
 result = convex.query('(let [x 10] (* x x))', account)
-print(result.value)  # 100
+print(result['value'])  # 100
 ```
 
 ### Resolving Addresses
@@ -149,13 +149,13 @@ print(f'Account "alice" is at address #{address}')
 ```python
 # Access special variables
 balance_result = convex.query('*balance*', account)
-print(f'My balance: {balance_result.value}')
+print(f'My balance: {balance_result['value']}')
 
 address_result = convex.query('*address*', account)
-print(f'My address: {address_result.value}')
+print(f'My address: {address_result['value']}')
 
 timestamp_result = convex.query('*timestamp*', account)
-print(f'Current timestamp: {timestamp_result.value}')
+print(f'Current timestamp: {timestamp_result['value']}')
 ```
 
 ## Advanced Queries
@@ -173,7 +173,7 @@ query = """
 """
 
 result = convex.query(query, account)
-print(result.value)  # 30
+print(result['value'])  # 30
 ```
 
 ### Conditional Queries
@@ -188,7 +188,7 @@ query = """
 """
 
 result = convex.query(query, account)
-print(result.value)
+print(result['value'])
 ```
 
 ### Query with Context
@@ -304,7 +304,7 @@ query = """
 """
 
 result = convex.query(query, account)
-print(result.value)  # {'balance': 100000000, 'timestamp': 1234567890}
+print(result['value'])  # {'balance': 100000000, 'timestamp': 1234567890}
 ```
 
 ## Next Steps
