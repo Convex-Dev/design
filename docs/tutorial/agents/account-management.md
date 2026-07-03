@@ -159,6 +159,14 @@ Only set a controller you trust completely — a controller has full authority o
 
 See the [Account Control recipe](/docs/tutorial/recipes/account-control) for more detail on working with controllers.
 
+## Delegated authority
+
+Sometimes you want an agent to act on your behalf without handing over your key or making it a full [controller](#account-controllers). **UCAN capability tokens** let one identity delegate specific, attenuated permissions to another: a signed token granting exactly which resources and abilities the agent may use, and nothing more. Delegations can be chained and narrowed at each hop, and each is bound to the issuer's key.
+
+The MCP `signingDelegate` tool issues such a token from a stored key. See [CAD038: Lattice Authentication](/docs/cad/lattice_auth) for the capability model.
+
+Agents are identified by a **DID** (Decentralised Identifier). Convex's native `did:convex` method anchors an identity to a Convex account — an address or CNS name — so a delegation can name exactly which agent identity it grants authority to. See [CAD043](/docs/cad/did).
+
 ## Funding agent accounts
 
 Agents need a Convex Coin balance to pay for transaction execution (juice costs).

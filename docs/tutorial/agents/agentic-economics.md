@@ -234,6 +234,14 @@ Agents discover each other via MCP (or other off-chain protocols) but settle tra
 
 This pattern combines the flexibility of off-chain communication with the finality of on-chain execution.
 
+## Paying for services with x402
+
+Agents frequently need to pay for external resources — an API call, a dataset, a model inference. Convex implements the [x402 protocol](/docs/cad/x402), which activates the dormant HTTP `402 Payment Required` status code so a service can demand payment inline, with no accounts, API keys or OAuth.
+
+The flow is simple: an agent requests a resource, the server responds `402` with payment details, the agent pays (in CVM or any [CAD029 token](/docs/cad/fungible)) and retries with proof of payment. Because it works through ordinary HTTP headers and status codes, any agent with an HTTP client and a Convex account can transact — making micropayment-gated APIs practical for autonomous agents.
+
+x402 support is under active development; see [CAD042](/docs/cad/x402) for the current specification.
+
 ## Economic constraints
 
 Convex applies the same economic constraints to agents as it does to humans. These constraints are features, not bugs — they prevent runaway agents from disrupting the network.

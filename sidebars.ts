@@ -180,6 +180,7 @@ const sidebars: SidebarsConfig = {
         'tutorial/recipes/managing-coins/index',
         'tutorial/recipes/coin-distributor/index',
         'tutorial/recipes/account-control/index',
+        'tutorial/recipes/issue-token/index',
       ],
     },
 

@@ -16,5 +16,6 @@ Many recipes demonstrate our principle of **"One Line DeFi"** — the idea that 
 | [Managing Coins](managing-coins/index.md) | Check balances and transfer Convex Coins between accounts |
 | [Coin Distributor](coin-distributor/index.md) | Deploy a simple actor that distributes coins to many recipients |
 | [Account Control](account-control/index.md) | Secure accounts with keys, controllers and multi-signature patterns |
+| [Issue a Fungible Token](issue-token/index.md) | Create and transfer your own CAD029 token in one line |
 
 Get cooking with Convex!
