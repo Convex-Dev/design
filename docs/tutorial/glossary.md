@@ -72,9 +72,17 @@ A system that maintains an append-only sequence of blocks where each block conta
 
 Technically, Convex is *not* a blockchain because blocks are not required to contain a hash of any previous block. This gives Convex a technical advantage because blocks can therefore be handled in parallel and re-ordered by the consensus algorithm after creation.
 
+## CAD
+
+A Convex Architecture Document — an open, RFC-style specification defining part of Convex's functionality and interoperability. CADs are numbered (e.g. CAD003 Encoding, CAD024 Data Lattice) and serve as the authoritative technical reference for the ecosystem.
+
 ## Cell
 
 A cell is a self-contained unit of a larger CVM value. Cells are linked immutably as a Merkle tree and handled transparently by the system, allowing developers to work with massive datasets without worrying about fragmentation. Scale your ideas infinitely on Convex. For more details see [CAD3 Encoding](../cad/encoding)
+
+## CNS (Convex Name System)
+
+The on-chain naming system that maps human-readable, hierarchical names to Convex resources such as accounts, actors and values. Names are resolved with the `@` syntax, for example `@convex.fungible`. See [CAD014](../cad/cns).
 
 ## Coin (Convex Coin)
 
@@ -92,6 +100,10 @@ The Consensus Point cannot be rolled back according to the rules of the Protocol
 
 Users transacting on the Convex network should use the Consensus Point of a trusted Peer to confirm that their transactions have been successfully executed on the Convex Network.
 
+## Controller
+
+An account (or key) authorised to control another account — for example to manage an actor or to recover access. An account's controller can act on its behalf according to the rules of the CVM, so controller keys must be protected as carefully as the account's own key.
+
 ## Convex Network
 
 A network of Peers, maintaining a consistent global state and executing state transitions according to the Consensus Algorithm and rules of the CVM.
@@ -106,6 +118,10 @@ Convex Lisp prioritises features that are well suited to the development of dece
 * Use of immutable, persistent data structures
 * Actor-based model enabling trusted autonomous execution of code for Smart Contracts
 
+## Copper
+
+The smallest unit of the Convex Coin. 1 CVM = 1,000,000,000 copper (10^9). Coin amounts in transactions, balances and faucet requests are expressed in copper.
+
 ## CPoS (Convergent Proof of Stake)
 
 CPoS is Convex's breakthrough consensus mechanism that guarantees convergence on a single, fork-free global state using belief merge functions and stake-weighted peer coordination. Unlike traditional PoS, CPoS enables parallel block processing and sub-second finality—perfect for high-throughput dApps that demand speed and reliability.
@@ -115,6 +131,10 @@ CPoS is Convex's breakthrough consensus mechanism that guarantees convergence on
 Acronym for Conflict-free Replicated Data Type, a data structure that can be replicated across many computers in a network and is guaranteed (mathematically) to reach eventual consistency.
 
 The Consensus Algorithm makes use of what is effectively a CRDT (of Beliefs) to guarantee convergence on a single consensus.
+
+## Cursor
+
+A mutable handle to a position within immutable [Lattice](#lattice) data, providing atomic read, write, navigation and merge operations. Lattice-aware cursors support fork/sync for transactional updates that converge by lattice merge. See [CAD035](../cad/cursors).
 
 ## CVM
 
@@ -137,11 +157,19 @@ We can distinguish between two forms of Dapp:
 - **Pure dApp** - the Dapp consists only of client code and on-chain implementation (i.e. the Dapp depends on the Convex network and nothing else). Such Dapps are simple to build and maintain, and minimise the risk of relying on centralised systems
 - **Hybrid dApp** - the Dapp uses client code, on-chain-implementation and one or more off-chain servers. This is more complex to build and maintain, but is necessary if additional servers are required (e.g. to store private information, or to integrate with external systems)
 
+## DID (Decentralised Identifier)
+
+A W3C-standard identifier for a self-sovereign identity. Convex supports `did:key`, where the identifier embeds an Ed25519 public key directly, used to authenticate users and to sign capability tokens. See [CAD043](../cad/did).
+
 ## Digital Signature
 
 A cryptographic technique where a piece of data
 
 Digital signatures in Convex use the Ed25519 algorithm. The data that is signed is the Value ID of a CVM Data Object (which in turn is the SHA3-256 hash of the Encoding)
+
+## DLFS (Data Lattice File System)
+
+A decentralised, content-addressed file system built on the Data Lattice. It provides CRDT-based file storage that replicates and merges across peers without a central server, supporting offline-first workflows. See [CAD028](../cad/dlfs).
 
 ## Encoding
 
@@ -169,6 +197,10 @@ Etch is the underlying Convex storage subsystem - "A database for information th
 
 Etch implements Converge Immutable Storage for Data Objects.
 
+## Faucet
+
+A service on test networks that dispenses small amounts of Convex Coins for development and testing. Faucets are never available on production networks. See the [Faucet guide](coins/faucet).
+
 ## Fee
 
 The cost paid in Convex Coins to execute a transaction on the network. Fees compensate peers for computation and ensure spam resistance. Convex's efficient design keeps fees ultra-low, making micro-transactions viable and attracting mass adoption.
@@ -189,9 +221,25 @@ Functions may be passed as arguments to other functions, and invoked with arbitr
 
 Functions can support multiple arities on the CVM (e.g. `+`, although many functions only support a specific arity.)
 
+## Genesis
+
+The predefined initial State of a Convex network (`S[0]`), from which all subsequent states are derived. The **genesis hash** is the Value ID of this initial state and uniquely identifies a network — it is, for example, how a client distinguishes Protonet from a test network.
+
 ## Identicon
 
 An Icon generated in a pre-defined way that can be used to visually confirm if a value is identical to another value. Identicons are used in Convex to provide additional security for similar Addresses that might be hard to distinguish by the hexadecimal strings alone.
+
+## Juice
+
+The measure of computational cost on the CVM. Every operation consumes juice, and a transaction must pay (in Convex Coins) for the juice it uses. Juice bounds computation so that shared resources cannot be abused. Juice is Convex's equivalent of "gas" in other systems — but is always called **juice**. See [CAD007](../cad/juice).
+
+## Lattice
+
+The Data Lattice is Convex's decentralised, content-addressed data substrate. Lattice values merge as CRDTs, so peers converge on shared state without coordination. It underpins DLFS, the KV database and other off-chain replication. See [CAD024](../cad/data_lattice).
+
+## MCP (Model Context Protocol)
+
+A standard protocol that lets AI models and agents interact with external tools and data. Convex peers expose an MCP server so agents can query state, submit transactions, and manage keys through a well-defined tool interface. See [CAD041](../cad/mcp).
 
 ## Memory
 
@@ -234,6 +282,10 @@ A cryptographic key that can be used to digitally sign transactions.
 
 Private Keys must be kept secure in order to prevent unauthorised access to Accounts and Digital Assets controlled by that Account.
 
+## Protonet
+
+The Convex production network, reachable at `peer.convex.live`. Contrast with test networks, which provide faucets and may be reset. Coins on Protonet have real economic value.
+
 ## Public Key
 
 A cryptographic key that can be used to validate transactions.
@@ -249,6 +301,10 @@ A read-only operation submitted to the CVM that executes code against the curren
 The schedule is a feature in the CVM enabling CVM code to be scheduled for future execution. Once included in the schedule, such code is *unstoppable* - it's execution is guaranteed by the protocol.
 
 Scheduled code may be used to implement actors that take periodic actions, smart contracts that have defined behaviour after a certain period of time etc.
+
+## Sequence Number
+
+A per-account counter that orders and de-duplicates a user's transactions. Each transaction specifies the next sequence number for its account; the CVM rejects out-of-order or replayed sequence numbers, which prevents transaction replay.
 
 ## Smart Contract
 
@@ -280,7 +336,7 @@ The protocol does not allow Peers to reverse a confirmed consensus, or prevent (
 
 A State is a special (typically large) Value that refers to the complete information managed by execution on the CVM. It is in effect the "Universe" that can be manipulated by Transactions and CVM code.
 
-The latest version of the State is the Consensus Algorithm, and the latest State obtained in Consensus is called the "Consensus State". The Consensus State is particularly important, since it contains the confirmed balances of Convex Coins and other digital assets, as well as the current state of all existing Smart Contracts and other data on the CVM.
+The latest version of the State is maintained by the Consensus Algorithm, and the latest State obtained in Consensus is called the "Consensus State". The Consensus State is particularly important, since it contains the confirmed balances of Convex Coins and other digital assets, as well as the current state of all existing Smart Contracts and other data on the CVM.
 
 ## State Transition Function
 
@@ -302,6 +358,10 @@ A transaction is an operation that can be submitted by clients for execution on 
 
 Transactions must be digitally signed by the owner of the account in order to be valid.
 
+## UCAN
+
+User Controlled Authorisation Network — a signed, delegable capability token. A UCAN grants specific abilities on specific resources and can be *attenuated* (narrowed) as it is delegated, enabling fine-grained, decentralised authorisation without a central authority. See [CAD038](../cad/lattice_auth).
+
 ## Value
 
 A value is a first-class, immutable piece of information managed by Convex. A value can be simple (e.g. the number `1`) or composite (e.g., a vector containing other values like `[1 2 [3 4] :foo]`)
@@ -322,3 +382,7 @@ A Wallet is an application or device that stores keys (especially private keys) 
 Wallet functionality may be provided by a dApp, or embedded in any system that communicates with the Convex Network. It may also be a specialised hardware device (hardware wallet).
 
 Wallet security is paramount: if access to the private keys in a wallet is compromised, any on-chain digital assets (coins, tokens, smart contract rights etc.) may be at risk.
+
+## x402
+
+A protocol for native web payments using the HTTP `402 Payment Required` status code, enabling agents and services to pay for resources over HTTP using Convex Coins. See [CAD042](../cad/x402).
