@@ -101,8 +101,8 @@ By adding checks to the upgrade code that fail if an assumption is not met, you 
 
 If you are sure your actor logic will never change, you can make it immutable. This is done by:
 
-- Setting `*key*` to `nil` so that no external transactions will be accepted
-- Setting `*controller*` to `nil` so that no external transactions will be accepted
+- Setting `*key*` to `nil` so that no external transactions can be signed for the actor
+- Setting `*controller*` to `nil` so that no controller can modify or upgrade it
 - Ensuring there are no callable functions that can make changes to any code (e.g. using `eval` or `defn`) 
 
 The above are true by default when you call `deploy`, so the following will make an immutable actor:

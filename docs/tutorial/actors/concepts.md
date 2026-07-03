@@ -13,7 +13,7 @@ Every Convex account can hold data and code in their own environment.
 Actors extend this model by bundling code with state:
 
 - **User Account**: controlled by an externally held key pair, executes transactions it receives as long as they are correctly signed
-- **Actor**: autonomous account, exposes callable functions that other accounts or actors can call - it's `*key*` is typically set to `nil`
+- **Actor**: autonomous account, exposes callable functions that other accounts or actors can call — its `:key` is typically `nil` (so no external transactions can be signed for it)
 
 Use regular accounts when external users (humans, client software, AI agents etc.) need to submit transactions for the account. Use actors when you need trusted programmable or shared behaviour.
 
@@ -31,11 +31,30 @@ This can be called from another account as follows:
 
 ```clojure
 ;; In account #11
-(call #101 (hello))
+(call #1337 (hello))
 => "Hello #11 from #1337"
 ```
 
 Note that while the callable actor function is running `*caller*` is the account that called the function, and `*address*` is the actor (`*address*` always references the CVM account in which code is currently running)
+
+## Authorisation
+
+Because anyone can call a callable function, **every function that changes state or moves value must check who is calling**. Authorise against `*caller*` (the immediate caller) — never `*origin*` (the original transaction signer), which can be misused when calls are chained through other actors.
+
+The simplest pattern stores a trusted owner and checks it:
+
+```clojure
+(def owner *caller*)   ;; whoever deployed the actor
+
+(defn ^:callable set-value [v]
+  (when-not (= *caller* owner)
+    (fail :TRUST "Not authorised"))
+  (def value v))
+```
+
+For anything beyond a single owner, use a **trust monitor** — an actor implementing the `convex.trust` interface — via `(@convex.trust/trusted? owner *caller*)`. Trust monitors express roles, allow-lists and delegated permissions uniformly. See [CAD022: Trust Monitors](/docs/cad/trustmon).
+
+Failing is safe: `fail` (and any error) rolls back **all** state changes made during the call, so a rejected call leaves the actor untouched.
 
 ## Lifecycle
 

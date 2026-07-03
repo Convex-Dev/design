@@ -6,35 +6,50 @@ sidebar_position: 1
 
 ## Actor deployment
 
-Actors are typically deployed with the `deploy` function, which does the following:
+Actors are created with the `deploy` function, which:
 
 - Creates a new, empty account in the CVM state
-- Executes some code in that account
-- Returns the address of the new account
+- Runs the given code inside that account, so its `def`s become the actor's state and functions
+- Returns the address of the new actor
 
-You can use `deploy` to create a new actor. 
-
-## Testing
-
-It is **extremely important** to ensure that the deployed code is correct - you may lose control of the account and/or have a non-working actor. A good idea is to test the deployment within a query:
+The code you pass is **quoted** — `deploy` runs it in the new account rather than in the caller's:
 
 ```clojure
-;; Run in a query to check everything works
-(let [code <ACTOR-CODE>
-      test-output (query 
-                    (def ACTOR (deploy code))
-                    (run-some-tests ACTOR))]
-    
-    ;; Do the actual deploy only if test results were satisfactory
-    (if (tests-successful? test-output)
-       (deploy code)
-       (fail :FATAL "Something went wrong in deployment tests")))
+(def greeter
+  (deploy
+    '(defn ^:callable greet [name]
+       (str "Hello, " name "!"))))
+=> #1234
+
+(call greeter (greet "World"))
+=> "Hello, World!"
 ```
 
-Since code executed in `query` is rolled back, it is safe to test the deployment in this way. 
+### Multiple forms
 
-Since the whole transaction is atomic, if the deployment worked in the test phase then it should work identically for the actual deployment (in some very unusual circumstances it might behave differently, e.g. if your deployed code depends on something in the CVM execution context that is not rolled back like `*juice*`)
+`deploy` accepts several forms, run in order — useful for setting up state and functions together. You will also see a single `(do ...)` form used to group them:
 
+```clojure
+(deploy
+  '(def owner *caller*)     ;; the deployer
+  '(def total 0)
+  '(defn ^:callable add [n] (def total (+ total n))))
+```
 
+## Test before you deploy
 
+A bad deploy can leave you with a broken or uncontrollable actor, so test the code first. Because code run inside a `query` is always rolled back, you can deploy-and-test safely without committing anything:
 
+```clojure
+(query
+  (let [a (deploy '(do (def n 0)
+                       (defn ^:callable inc-get [] (def n (inc n)) n)))]
+    (assert (= 1 (call a (inc-get))))
+    (assert (= 2 (call a (inc-get))))
+    :ok))
+=> :ok
+```
+
+If the query returns `:ok`, the same code behaves identically when you deploy it for real — the whole transaction is atomic, so a test that passes in the query phase deploys reliably.
+
+Test adversarially too: pass bad inputs and confirm the actor rejects them (e.g. with a `:CAST` or `:TRUST` error) rather than misbehaving.

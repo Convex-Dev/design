@@ -11,9 +11,17 @@ Convex actors are autonomous programs that hold state, expose callable functions
 
 Each subpage builds on the previous one, but you can jump directly to what you need:
 
-- [Key Concepts](./actors/concepts) — core ideas, anatomy, and lifecycle of Convex actors.
-- [Deployment](./actors/deployment) — how to deploy live actors to the CVM.
-- [Evolution](./actors/evolution) — strategies for real-time upgrades of actors
+- [Key Concepts](./actors/concepts) — core ideas, anatomy, and authorisation of Convex actors.
+- [Building an Actor](./actors/building-an-actor) — a runnable end-to-end example; start here to get hands-on.
+- [Deployment](./actors/deployment) — deploying and testing actors on the CVM.
+- [Evolution](./actors/evolution) — strategies for real-time upgrades of actors.
 - [Best Practices](./actors/best-practices) — practical advice and checklists.
+
+## Worked examples
+
+Complete, copy-pasteable actors in the Recipes section:
+
+- [Coin Distributor](../recipes/coin-distributor/index.md) — distribute coins to many recipients
+- [Account Control](../recipes/account-control/index.md) — controllers and multi-signature patterns
 
 

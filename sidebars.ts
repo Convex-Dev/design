@@ -145,6 +145,7 @@ const sidebars: SidebarsConfig = {
       },
       items: [
         'tutorial/actors/concepts',
+        'tutorial/actors/building-an-actor',
         'tutorial/actors/deployment',
         'tutorial/actors/evolution',
         'tutorial/actors/best-practices',
