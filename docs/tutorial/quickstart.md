@@ -4,357 +4,193 @@ sidebar_position: 1
 
 # Quick Start
 
-Get your first transaction on Convex in 5 minutes.
+Deploy and call your first smart contract on a live Convex network — in under a minute, with no installation.
 
-## Choose Your Path
+## Try it now: the Web Sandbox
 
-Pick the fastest way to get started based on your setup:
+The fastest way in is the **[Web Sandbox](https://convex.world/sandbox)** — a live REPL connected to the public testnet. No install, no signup.
 
-| Path | Time | Best For |
-|------|------|----------|
-| **[Local Peer](#option-1-local-peer)** | 2 min | Developers with Java installed |
-| **[Testnet](#option-2-hugging-face-testnet)** | 1 min | Quick testing, no installation |
-| **[SDK Quickstart](#option-3-language-specific)** | 5 min | Your preferred language |
+**1. Evaluate an expression.** Queries are free and need no account:
+
+```clojure
+(+ 1 2 3)
+;; => 6
+```
+
+**2. Get a funded account.** Create an account in the Sandbox and fund it from the testnet faucet — you now hold Convex Coins to pay for transactions. (See the [Faucet Guide](coins/faucet).)
+
+**3. Deploy and call a smart contract** — a one-line *actor*:
+
+```clojure
+;; Deploy an actor exposing one callable function
+(deploy '(defn ^:callable greet [name] (str "Hello, " name "!")))
+;; => #1234   ;; your new actor's address
+
+;; Call it
+(call #1234 (greet "world"))
+;; => "Hello, world!"
+```
+
+🎉 **You just deployed and called a smart contract** on a live decentralised network.
+
+:::note Network
+The Sandbox runs against the public **testnet** — free, for development. Production runs on **Protonet** (`peer.convex.live`). See the [Networks Guide](networks).
+:::
 
 ---
 
-## Option 1: Local Peer
+## Go further
 
-**Fastest for development** - Run a peer in your JVM.
+Pick the path that fits what you're building.
 
-### Prerequisites
-- Java 21+ installed
-- Maven or Gradle (for Java examples)
+### Try an SDK
 
-### Quick Start
+Build an app against the testnet in your language:
 
-**1. Add Dependency** (Maven):
-```xml
-<dependency>
-    <groupId>world.convex</groupId>
-    <artifactId>convex-java</artifactId>
-    <version>0.8.2</version>
-</dependency>
-```
+**[ Java ](client-sdks/java/quickstart)** · **[ Python ](client-sdks/python/quickstart)** · **[ JavaScript / TypeScript ](client-sdks/typescript/quickstart)**
 
-**2. Run Your First Transaction**:
-```java
-import convex.peer.Server;
-import convex.api.Convex;
-import convex.core.Result;
-import convex.core.crypto.AKeyPair;
-import convex.core.cvm.Address;
-import convex.core.lang.Reader;
+Each quickstart is copy-paste runnable. A minimal example — create a funded account, transact, then query:
 
-public class QuickStart {
-    public static void main(String[] args) throws Exception {
-        // Start local peer
-        Server server = Server.create();
-        server.launch();
-
-        try {
-            // Connect
-            Convex convex = Convex.connect(server);
-
-            // Create account
-            AKeyPair keyPair = AKeyPair.generate();
-            Address address = convex.createAccountSync(keyPair.getAccountKey());
-            convex.setKeyPair(keyPair);
-            convex.setAddress(address);
-
-            // Your first transaction!
-            Result result = convex.transact(
-                Reader.read("(def greeting \"Hello Convex!\")")
-            ).get();
-
-            System.out.println("✓ Transaction succeeded!");
-            System.out.println("Result: " + result.getValue());
-
-            // Query the value
-            Result query = convex.query(Reader.read("greeting")).get();
-            System.out.println("Greeting: " + query.getValue());
-
-        } finally {
-            server.shutdown();
-        }
-    }
-}
-```
-
-**3. Run It**:
-```bash
-mvn compile exec:java -Dexec.mainClass=QuickStart
-```
-
-**Expected Output**:
-```
-✓ Transaction succeeded!
-Result: "Hello Convex!"
-Greeting: "Hello Convex!"
-```
-
-**🎉 Success!** You've:
-- ✅ Started a local peer
-- ✅ Created an account
-- ✅ Submitted a transaction
-- ✅ Queried network state
-
-**Next:** Explore [Local Testnets](peer-operations/local-testnets) for more options.
-
----
-
-## Option 2: Hugging Face Testnet
-
-**No installation needed** - Connect to public testnet.
-
-### Any Language
-
-**1. Install SDK**:
-
-```bash
-# TypeScript/JavaScript
-npm install @convex-world/convex-ts
-
-# Python
-pip install convex-api
-```
-
-**2. Connect and Transact**:
-
-**TypeScript**:
+**TypeScript / JavaScript** — `npm install @convex-world/convex-ts`:
 ```typescript
 import { Convex, KeyPair } from '@convex-world/convex-ts';
 
-// Connect to testnet
 const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 
-// Create account
+// Create a faucet-funded account and use it for signing (amount in coppers)
 const keyPair = KeyPair.generate();
-// Note: You'll need to request an account from the faucet
-// See Faucet Guide for details
+const account = await convex.createAccount(keyPair, 100_000_000);
+convex.setAccount(account.address, keyPair);
 
-// Your first transaction
 const result = await convex.transact('(def greeting "Hello Convex!")');
-console.log('✓ Transaction succeeded!');
-console.log('Result:', result.value);
-
-// Query
-const query = await convex.query('greeting');
-console.log('Greeting:', query.value);
+console.log(result.value);                            // "Hello Convex!"
+console.log((await convex.query('greeting')).value);  // "Hello Convex!"
 ```
 
-**Python**:
+**Python** — `pip install convex-sdk`:
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
-# Connect to testnet
 convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
-# Create account
+# Create a faucet-funded account (amount in coppers)
 key_pair = KeyPair()
-# Note: Request account from faucet - see Faucet Guide
+account = convex.create_account(key_pair)
+convex.request_funds(100_000_000, account)
 
-# Your first transaction
-result = convex.transact('(def greeting "Hello Convex!")')
-print('✓ Transaction succeeded!')
-print('Result:', result.value)
-
-# Query
-query = convex.query('greeting')
-print('Greeting:', query.value)
+result = convex.transact('(def greeting "Hello Convex!")', account)
+print(result.value)                              # Hello Convex!
+print(convex.query('greeting', account).value)   # Hello Convex!
 ```
 
-**Java**:
+**Java** — `world.convex:convex-java`:
 ```java
-import convex.api.Convex;
-import convex.core.Result;
-import convex.core.lang.Reader;
+import java.util.Map;
+import convex.java.ConvexJSON;
+import convex.core.cvm.Address;
 
-// Connect to testnet
-Convex convex = Convex.connect("https://mikera1337-convex-testnet.hf.space");
+ConvexJSON convex = ConvexJSON.connect("https://mikera1337-convex-testnet.hf.space");
 
-// Create account and request funds from faucet
-// See Faucet Guide for details
+// Create a faucet-funded account (up to 10,000,000 copper) and use it
+Address address = convex.useNewAccount(10_000_000);
 
-// Your first transaction
-Result result = convex.transact(
-    Reader.read("(def greeting \"Hello Convex!\")")
-).get();
-
-System.out.println("✓ Transaction succeeded!");
-System.out.println("Result: " + result.getValue());
-
-// Query
-Result query = convex.query(Reader.read("greeting")).get();
-System.out.println("Greeting: " + query.getValue());
+Map<String, Object> result = convex.transact("(def greeting \"Hello Convex!\")");
+System.out.println(result.get("value"));                    // Hello Convex!
+System.out.println(convex.query("greeting").get("value"));  // Hello Convex!
 ```
 
-**Note:** Public testnets require account creation via faucet. See **[Faucet Guide](coins/faucet)** for details.
+### Run your own peer
 
-**🎉 Success!** You've connected to a public network!
+Full control, offline development, or running on the network: download `convex.jar` (or **Convex Desktop**) and run your own peer. See **[Local Testnets](peer-operations/local-testnets)**. For an embedded peer in Java, see the **[Java Quickstart](client-sdks/java/quickstart)**.
 
-**Next:** Read the **[Networks Guide](networks)** to understand network types.
+### Write Convex Lisp
+
+Convex Lisp is the on-chain language for queries, transactions, and actors (smart contracts). Start with the **[Convex Lisp guide](/docs/tutorial/convex-lisp)** and **[Actor Development](actors)**.
+
+### Operate a peer
+
+Run a node that participates in consensus on the network. See **[Peer Operations](peer-operations/local-testnets)**.
 
 ---
 
-## Option 3: Language-Specific
+## Understanding what you did
 
-**Deep dive** - Complete quickstart for your language.
+### Key concepts
 
-### Choose Your Language
+**Account** — your identity on Convex. Holds Convex Coins (CVM) and is identified by an address (e.g. `#1234`).
 
-**Java** (Recommended for local development)
-- ✅ Fastest performance
-- ✅ Full local peer control
-- ✅ Best for backend/Android
-- **→ [Java Quickstart](client-sdks/java/quickstart)**
+**Key pair** — Ed25519 public/private keys. The private key signs transactions; the public key backs the account.
 
-**TypeScript** (Recommended for web apps)
-- ✅ Type safety
-- ✅ React integration
-- ✅ Best for web/Node.js
-- **→ [TypeScript Quickstart](client-sdks/typescript/quickstart)**
+**Query** — reads network state. Free, needs no account, and changes nothing.
 
-**Python** (Recommended for scripts)
-- ✅ Simple syntax
-- ✅ Great for automation
-- ✅ Best for scripting/data science
-- **→ [Python Quickstart](client-sdks/python/quickstart)**
+**Transaction** — changes network state (e.g. `deploy`, `def`, `call`). Requires a funded account and costs *juice* (an execution fee).
 
----
+**Actor** — an autonomous account that holds code. Functions tagged `^:callable` can be invoked by anyone with `call`. This is a smart contract.
 
-## Understanding What You Did
-
-### Key Concepts
-
-**Account**
-- Your identity on Convex
-- Holds Convex Coins (CVM)
-- Identified by address (e.g., `#1234`)
-
-**Key Pair**
-- Ed25519 public/private keys
-- Private key signs transactions
-- Public key creates account
-
-**Transaction**
-- Modifies network state
-- Requires funded account
-- Costs juice (execution fee)
-
-**Query**
-- Reads network state
-- Free (no account needed)
-- Doesn't modify anything
-
-### What Just Happened?
+### What just happened?
 
 ```clojure
-(def greeting "Hello Convex!")
+(deploy '(defn ^:callable greet [name] (str "Hello, " name "!")))
 ```
 
-This Convex Lisp code:
-1. **Defined** a variable `greeting`
-2. **Stored** it in global state
-3. **Persisted** across the network
+This Convex Lisp transaction:
+1. **Created** a new actor account
+2. **Installed** a `greet` function, exposed via `^:callable`
+3. **Persisted** it across the network — permanently, cryptographically signed, and validated by consensus
 
-Your transaction was:
-- ✅ Cryptographically signed
-- ✅ Validated by consensus
-- ✅ Permanently recorded
+`(call #1234 (greet "world"))` then ran that function on-chain and returned its result.
 
-## Next Steps
+## Next steps
 
-### Learn More
+**Understand the network**
+- **[Networks Guide](networks)** — production, testnet, local
+- **[Faucet Guide](coins/faucet)** — getting test funds
 
-**Understand the Network**
-- **[Networks Guide](networks)** - Production, testnet, local
-- **[Faucet Guide](coins/faucet)** - Getting test funds
+**Master your SDK**
+- **[Queries](client-sdks/java/queries)** — reading state
+- **[Transactions](client-sdks/java/transactions)** — changing state
+- **[Account Management](client-sdks/java/accounts)** — keys and accounts
 
-**Master Your SDK**
-- **[Queries](client-sdks/java/queries)** - Reading state
-- **[Transactions](client-sdks/java/transactions)** - Modifying state
-- **[Account Management](client-sdks/java/accounts)** - Keys and accounts
+**Write smart contracts**
+- **[Convex Lisp](/docs/tutorial/convex-lisp)** — the on-chain language
+- **[Actor Development](actors)** — smart contracts
+- **[Recipes](recipes)** — practical examples
 
-**Write Smart Contracts**
-- **[Convex Lisp](/docs/tutorial/convex-lisp)** - The on-chain language
-- **[Actor Development](actors)** - Smart contracts
-- **[Recipes](recipes)** - Practical examples
+### Try these in the Sandbox
 
-### Try These Next
-
-**1. Check an Account Balance**
 ```clojure
+;; Check an account balance
 (balance #13)
-```
 
-**2. Do Some Math**
-```clojure
+;; Do some math
 (+ 1 2 3 4 5)
-```
 
-**3. Create a Function**
-```clojure
-(defn square [x]
-  (* x x))
-
+;; Define and call a function
+(defn square [x] (* x x))
 (square 7)
-```
 
-**4. Deploy a Smart Contract**
-```clojure
-(deploy
-  '(do
-     (defn greet [name]
-       (str "Hello, " name "!"))
-     (export greet)))
+;; Deploy a smart contract
+(deploy '(defn ^:callable add [a b] (+ a b)))
 ```
 
 ## Troubleshooting
 
-### Connection Failed
+**`FUNDS` error** — your account needs Convex Coins. In the Sandbox, top up from the faucet; via an SDK, request from the [faucet](coins/faucet).
 
-**Local Peer:**
-- Check Java 21+ installed: `java -version`
-- Increase memory: `-Xmx4g`
-- Check port 18888 not in use
+**`SEQUENCE` error** — don't submit concurrent transactions from one account; wait for the previous one to confirm.
 
-**Testnet:**
-- Verify network URL correct
-- Check internet connection
-- Try alternative testnet
+**Can't connect** — check your network URL and internet connection. The testnet endpoint is `mikera1337-convex-testnet.hf.space`.
 
-### Transaction Failed
+**Query returns nothing** — check your syntax and that the variable or actor exists.
 
-**FUNDS Error:**
-- Account needs Convex Coins
-- Local peer: accounts created with funds
-- Testnet: request from [faucet](coins/faucet)
+## Get help
 
-**SEQUENCE Error:**
-- Don't submit concurrent transactions
-- Wait for previous transaction to complete
+- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** — live help
+- **[GitHub Issues](https://github.com/Convex-Dev/convex/issues)** — bug reports
+- **[Documentation](/)** — complete guides
 
-### Can't Query
-
-**Check:**
-- Network connection established
-- Query syntax correct
-- Variable/function exists
-
-## Get Help
-
-**Resources:**
-- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - Live help
-- **[GitHub Issues](https://github.com/Convex-Dev/convex/issues)** - Bug reports
-- **[Documentation](/)** - Complete guides
-
-**Common Questions:**
-- What's a CVM? → The Convex Virtual Machine
-- What's juice? → Transaction execution cost
-- What's copper? → Smallest unit of CVM (1 CVM = 1B copper)
-- What's a peer? → A network node
+**Common terms:** *CVM* = Convex Virtual Machine · *juice* = transaction execution cost · *copper* = smallest unit (1 CVM = 1,000,000,000 copper) · *peer* = a network node · *actor* = a smart contract.
 
 ---
 
-**🎉 Congratulations!** You're now part of the Convex network. Build something amazing!
+🎉 **Welcome to Convex.** Build something amazing!

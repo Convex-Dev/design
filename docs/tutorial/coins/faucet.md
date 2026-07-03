@@ -65,7 +65,7 @@ await convex.requestFunds(100_000_000); // 0.1 CVX
 ### Python
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
@@ -151,7 +151,7 @@ result = convex.query('*state*', 1)
 #### Handle Faucet Failures
 
 ```python
-from convex_api.exceptions import ConvexAPIError
+from convex_sdk.exceptions import ConvexAPIError
 
 try:
     convex.request_funds(100_000_000, account)

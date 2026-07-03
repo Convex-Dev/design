@@ -11,7 +11,7 @@ Queries are read-only operations that execute Convex Lisp code without modifying
 The simplest query executes Convex Lisp code from an account context:
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://peer.convex.live')
 
@@ -211,7 +211,7 @@ result = convex.query('*balance*', '#123')
 Queries can fail due to syntax errors or runtime errors:
 
 ```python
-from convex_api.exceptions import ConvexAPIError
+from convex_sdk.exceptions import ConvexAPIError
 
 try:
     result = convex.query('(invalid-function)', account)

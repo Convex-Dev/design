@@ -36,7 +36,7 @@ Convex coins are a cryptoasset that can be obtained in multiple ways.
 - Contributors to Convex or the broader Convex ecosystem can earn awards of Convex coins
 - Approved purchasers can buy newly issued coins from the Release Curve.
 
-Anyone interested in Convex coins should familiarise themselves with the relevant [tokenomics](../cad/020_tokenomics/README.md)
+Anyone interested in Convex coins should familiarise themselves with the relevant [tokenomics](/docs/cad/tokenomics)
 
 We have established the Convex Foundation a non-profit organisation that facilitates the initial sale of Convex coins, and distributes coin awards to contributors. Funds raised will be reinvested in building Convex and the ecosystem.
 
@@ -128,7 +128,7 @@ If a user executes a transaction that releases memory, the amount of released me
 
 We need Memory Accounting because on-chain memory is a **scarce resource**, and should be used wisely. An effective way of doing this is to make memory allowances themselves into a digital asset, that can be transferred and traded. This creates a market incentive to utilise memory as efficiently as possible.
 
-Memory account is described in much more detail in [CAD006](../cad/006_memory/README.md)
+Memory account is described in much more detail in [CAD006](/docs/cad/memory)
 
 
 ## What is the difference between actors and smart contracts?

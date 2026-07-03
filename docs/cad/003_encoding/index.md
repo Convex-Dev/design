@@ -321,12 +321,14 @@ With the exception of the tag byte, The encoding of a BigInt is exactly the same
 A Double is an IEEE754 double precision floating point value.
 
 ```
-0x1D <8 bytes IEEE 764>
+0x1D <8 bytes IEEE 754>
 ```
 
-A Double value is encoded as the Tag byte followed by 8 bytes standard representation of an IEEE 754 double-precision floating point value.
+A Double value is encoded as the Tag byte followed by the 8-byte big-endian standard representation of an IEEE 754 double-precision floating point value.
 
-All IEEE754 values are supported except that the `NaN` value MUST be represented with the specific encoding `0x1d7ff8000000000000` when used within the CVM. This is to ensure a unique encoding of `NaN` values which are otherwise logically equivalent.
+**Every 64-bit pattern is a valid encoding.** All IEEE 754 values are supported, and each distinct 8-byte pattern — including each distinct `NaN` bit pattern, both signed zeroes, the infinities, and subnormals — is a *distinct value* with its own unique canonical encoding and value ID. A decoder MUST accept any 8 bytes in this position and MUST NOT reject a "non-canonical" `NaN`. This is consistent with the unique-encoding requirement: unlike Integers (where excess leading bytes are *redundant* and therefore an invalid encoding), distinct `NaN` bit patterns carry distinct payloads, so each is a genuinely distinct value with exactly one encoding.
+
+Canonicalisation of `NaN` is a **CVM value-level concern, not an encoding-level one**. The CVM defines a single canonical `NaN`, written `##NaN`, with the encoding `0x1d7ff8000000000000` (the quiet-`NaN` bit set, all other payload bits zero). The CVM never *produces* any other `NaN`: every Double produced by a CVM operation — arithmetic, the `double` coercion, the `##NaN` reader literal, etc. — normalises a `NaN` result to this canonical form. A `NaN` with any other bit pattern (e.g. constructed via the `#[1d…]` raw-encoding reader form, or decoded from storage or the network) is still a valid Double cell, but is a *distinct* value from `##NaN`: it is not `=` to `##NaN`, has a different value ID, and prints in raw form as `#[1d…]`. CVM numeric operations coerce such a value to `##NaN` when it is used. Implementations MUST enforce canonical `NaN` by coercion at the CVM value layer, and MUST NOT enforce it by rejecting encodings.
 
 ### `0x20` Ref
 

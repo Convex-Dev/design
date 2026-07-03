@@ -34,7 +34,7 @@ A **KeyPair** contains Ed25519 cryptographic keys:
 Create a new random key pair:
 
 ```python
-from convex_api import KeyPair
+from convex_sdk import KeyPair
 
 # Generate fresh Ed25519 keys
 key_pair = KeyPair()
@@ -133,7 +133,7 @@ print(f'Recovery phrase: {mnemonic}')
 Register a new account address on the network:
 
 ```python
-from convex_api import Convex, KeyPair
+from convex_sdk import Convex, KeyPair
 
 convex = Convex('https://peer.convex.live')
 
@@ -150,7 +150,7 @@ print(f'Public key: {account.key_pair.public_key}')
 Reconstruct an account from saved keys and known address:
 
 ```python
-from convex_api import Account, KeyPair
+from convex_sdk import Account, KeyPair
 
 # Import keys
 key_pair = KeyPair.import_from_file('my_keys.pem', 'password')
@@ -375,7 +375,7 @@ print(f'Send funds to: #{account.address}')
 ## Account Lifecycle
 
 ```python
-from convex_api import Convex, KeyPair, Account
+from convex_sdk import Convex, KeyPair, Account
 
 convex = Convex('https://peer.convex.live')
 

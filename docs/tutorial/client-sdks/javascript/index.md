@@ -1,10 +1,11 @@
 ---
 sidebar_position: 2
+sidebar_label: JavaScript
 ---
 
-# JavaScript
+# Using Convex from JavaScript
 
-Use Convex from plain JavaScript (no TypeScript required).
+The Convex client ships as a single package — `@convex-world/convex-ts` — that works equally in TypeScript and plain JavaScript. This page shows idiomatic JavaScript usage; the full reference lives in the [TypeScript / JavaScript SDK](/docs/tutorial/client-sdks/typescript) docs.
 
 ## Installation
 

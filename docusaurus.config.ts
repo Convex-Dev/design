@@ -23,7 +23,8 @@ const config: Config = {
   // Recommended for GitHub pages
   trailingSlash: false,
 
-  onBrokenLinks: 'warn',
+  // Fail the build (and CI) on broken internal links, rather than only warning.
+  onBrokenLinks: 'throw',
 
   markdown: {
     hooks: {
@@ -202,7 +203,7 @@ onBrokenMarkdownLinks: 'warn'
         {
           title: 'Community',
           items: [
-  
+
             {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/convex',
@@ -214,6 +215,10 @@ onBrokenMarkdownLinks: 'warn'
             {
               label: 'Twitter',
               href: 'https://twitter.com/convex_world',
+            },
+            {
+              label: 'Awesome Lattice',
+              href: 'https://brittleboye.github.io/awesome-lattice/',
             },
           ],
         },

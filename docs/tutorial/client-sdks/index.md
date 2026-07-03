@@ -7,29 +7,17 @@ Official client libraries for connecting to the Convex network from your applica
 
 ## Available SDKs
 
-### TypeScript
+### TypeScript / JavaScript
 
-Build web applications, Node.js services, and React dApps with full type safety.
+Build web applications, Node.js services, and React dApps with full type safety — or use the same package from plain JavaScript.
 
 - **Status**: ✅ Production ready
-- **Package**: `@convex-world/convex-ts`
+- **Package**: `@convex-world/convex-ts` (works in TypeScript and plain JavaScript)
 - **Environments**: Node.js, Browsers, Deno, Bun
 - **Frameworks**: React hooks and components available
 - **Repository**: [github.com/Convex-Dev/convex.ts](https://github.com/Convex-Dev/convex.ts)
 
-**[Get Started with TypeScript →](client-sdks/typescript/)**
-
----
-
-### JavaScript
-
-Use Convex from plain JavaScript (no TypeScript required).
-
-- **Status**: ✅ Production ready
-- **Package**: `@convex-world/convex-ts` (works in JS too!)
-- **Guide**: Idiomatic JavaScript examples and patterns
-
-**[Get Started with JavaScript →](client-sdks/javascript/)**
+**[Get Started with TypeScript →](client-sdks/typescript/)** • **[Using plain JavaScript →](client-sdks/javascript/)**
 
 ---
 
@@ -52,7 +40,7 @@ Native JVM client for high-performance enterprise applications.
 Pythonic client for scripting, automation, and data science.
 
 - **Status**: ✅ Production ready
-- **Package**: `convex-api` (on PyPI)
+- **Package**: `convex-sdk` (on PyPI)
 - **Environments**: Python 3.8+
 - **Features**: Synchronous I/O, Account objects, automatic sequence retry
 - **Repository**: [github.com/Convex-Dev/convex-api-py](https://github.com/Convex-Dev/convex-api-py)
