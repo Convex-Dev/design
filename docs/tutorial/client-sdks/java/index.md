@@ -16,6 +16,10 @@ The `convex-java` module provides a native JVM interface to the Convex network, 
 - **Deploy Actors** - Deploy and interact with smart contracts (actors) written in Convex Lisp
 - **Async Operations** - Non-blocking I/O with CompletableFuture
 
+:::note Which client?
+This guide uses the **CVM-typed client**, `convex.api.Convex` — you work with native CVM values (`ACell`, `Address`, `Result`), preserving full type fidelity. A lighter `convex.java.ConvexJSON` client (used in the [Quick Start](quickstart.md)) returns plain JSON maps and is convenient for quick scripts or REST-style access. For production JVM code, prefer the typed client. See [Clients](clients.md).
+:::
+
 ## Installation
 
 ### Maven

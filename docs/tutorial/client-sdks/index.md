@@ -59,6 +59,19 @@ Zero-cost abstractions for systems programming.
 
 ---
 
+## Feature comparison
+
+| Feature | TypeScript / JS | Java | Python |
+|---------|:---:|:---:|:---:|
+| Queries | ✅ | ✅ | ✅ |
+| Transactions | ✅ | ✅ | ✅ |
+| Accounts & funding | ✅ | ✅ | ✅ |
+| Fungible tokens | ✅ first-class handles | ✅ via CVM calls (+ `TokenBuilder`) | ✅ via CVM calls |
+| CNS name resolution | ✅ handles | ✅ via CVM calls | ✅ helper methods |
+| Custom / hardware signers | ✅ `Signer` API | direct `AKeyPair` | direct `KeyPair` |
+
+All three SDKs can perform **any** on-chain operation by submitting CVM code — the differences above are about first-class convenience wrappers, not capability.
+
 ## Command Line Interface
 
 For terminal-based interaction with Convex, see the [Convex CLI](/docs/products/convex-cli).

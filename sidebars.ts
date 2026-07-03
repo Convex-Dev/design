@@ -84,6 +84,7 @@ const sidebars: SidebarsConfig = {
             'tutorial/client-sdks/python/queries',
             'tutorial/client-sdks/python/transactions',
             'tutorial/client-sdks/python/accounts',
+            'tutorial/client-sdks/python/assets',
           ],
         },
         {
@@ -99,6 +100,7 @@ const sidebars: SidebarsConfig = {
             'tutorial/client-sdks/java/queries',
             'tutorial/client-sdks/java/transactions',
             'tutorial/client-sdks/java/accounts',
+            'tutorial/client-sdks/java/assets',
           ],
         },
         // Future: Rust SDK will go here with same structure
