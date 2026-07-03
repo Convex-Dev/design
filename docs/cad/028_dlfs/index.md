@@ -175,17 +175,18 @@ Each object in a DLFS drive is represented as a Node.
 A Node is a Vector with the following structure:
 
 ```
-[directory-contents file-contents metadata update-time]
+[directory-contents file-contents metadata update-time tombstones?]
 ```
 
 | Index | Field | Type | Description |
 |-------|-------|------|-------------|
-| 0 | directory-contents | Index or nil | Map of names to child nodes |
+| 0 | directory-contents | Index or nil | Map of names to live child nodes |
 | 1 | file-contents | Blob or nil | File data |
 | 2 | metadata | Any or nil | Arbitrary metadata |
 | 3 | update-time | Long | Timestamp of last modification |
+| 4 | tombstones | Index or absent | Per-directory index of deleted child name → deletion timestamp; on directory nodes only, present only when non-empty |
 
-Nodes MUST contain at least these four fields.
+Nodes MUST contain the first four fields. Directory nodes MAY carry an optional fifth element — the tombstone index — subject to the canonical invariant that it is present **if and only if** it is non-empty: a directory with no deletions has length 4, and one with pending deletions has length 5.
 
 Future extensions MAY include additional fields. Implementations MUST preserve unrecognised fields.
 
@@ -203,11 +204,13 @@ A file node has:
 
 #### Tombstones
 
-A tombstone is a node that is neither directory nor file (both contents fields are nil).
+A tombstone records that a child name has been deleted, so that the deletion propagates during replication rather than being reintroduced by a merge with a peer that still holds the old entry.
 
-Implementations SHOULD create tombstones on file deletion to ensure deletes propagate correctly during replication.
+Tombstones are **not nodes** and never appear among the live directory entries. Instead, each directory node records its deletions in a separate tombstone index — the optional fifth node element (`tombstones`) — mapping each deleted child name to its deletion timestamp. Deleting a child removes it from the live `directory-contents` and records `name → deletion-time` in this index; creating or updating a name again clears any tombstone for it.
 
-Implementations SHOULD support tombstone cleanup after replication completes (e.g., after a configurable retention period).
+Because tombstones live outside the live entries, ordinary directory operations — listing, emptiness checks, and navigation — read only the live entries and never scan tombstones. The tombstone index participates only in merge (see Merge Semantics).
+
+Implementations MAY support tombstone cleanup after replication completes (e.g., after a configurable retention period).
 
 #### Metadata
 
@@ -246,10 +249,15 @@ DLFS uses rsync-like merge semantics via DLFSLattice:
 
 #### Directory Merge
 
-When merging two directories:
+When merging two directories, the live entries and the tombstone indexes are reconciled together:
+
 1. Entries present in both are merged recursively
-2. Entries present only in one are included in result
-3. The merged directory timestamp is max(timestamp_a, timestamp_b)
+2. Entries present only in one are included in the result
+3. The two tombstone indexes are merged by taking the later (max) deletion timestamp per name
+4. A name that is live on one side and tombstoned on the other is reconciled by timestamp: the later operation wins, so a newer deletion removes a stale live entry, and a newer write resurrects a name over an older tombstone
+5. The merged directory timestamp is `max(timestamp_a, timestamp_b)`
+
+Reconciliation is driven only from the set of names whose tombstones actually differ between the two sides; when neither side has tombstones the merge skips reconciliation entirely.
 
 #### File/Node Merge
 
@@ -261,10 +269,14 @@ When merging non-directory nodes:
 
 All conflicts resolve deterministically:
 - **Timestamp-based**: Newer modifications win
-- **Symmetric**: merge(a, b) = merge(b, a)
+- **Deterministic tie-break**: on equal timestamps the first operand is favoured (by design), so the outcome is stable for any given pair
 - **Idempotent**: merge(a, a) = a
 
-This ensures all replicas converge to identical state regardless of merge order.
+Replicas exchange state bidirectionally, so all replicas converge to identical state regardless of the order in which updates arrive.
+
+#### Robust Merge
+
+Because merge combines data from untrusted peers, it fails closed on malformed input. Incoming foreign nodes are validated before they are accepted — a node must be a vector with at least the four required elements, a Long update time, and (where a fifth element is present) a non-empty tombstone index. If a foreign node is malformed, or a merge step would otherwise throw, the merge falls back to the local ("own") value rather than propagating the error. A malicious or corrupt value can therefore neither crash the merge (a denial of service) nor corrupt merged state — it is simply ignored.
 
 ### Replication
 
@@ -340,10 +352,12 @@ A reference implementation is provided in the Convex `convex-core` module (Java)
 ### Node Structure Constants
 
 ```java
-public static final int POS_DIR = 0;      // Directory entries index
+public static final long NODE_LENGTH = 4; // Minimum node length (directory nodes may add POS_TOMBS)
+public static final int POS_DIR = 0;      // Directory entries index (live children)
 public static final int POS_DATA = 1;     // File data blob
 public static final int POS_METADATA = 2; // Arbitrary metadata
 public static final int POS_UTIME = 3;    // Update timestamp
+public static final int POS_TOMBS = 4;    // Optional per-directory tombstone index (present only when non-empty)
 ```
 
 ### Example: Local Drive with Cursor

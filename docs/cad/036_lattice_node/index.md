@@ -82,6 +82,12 @@ The store MUST:
 - Handle persistence of Merkle tree structures
 - Use the encoding format specified in CAD003
 
+#### Commit Durability
+
+A node's primary propagator commits **synchronously**. When an application calls `sync()`, the primary propagator runs announce, root persistence and broadcast on the caller's own thread, and the call returns only once the new root is durably persisted in the primary store. Persistence errors propagate to the caller rather than being swallowed, so a successful return is a durability guarantee. Any secondary propagators remain asynchronous.
+
+To keep this guarantee consistent under concurrency, the propagator is the **sole writer** of the store's root pointer: snapshot and persist pipelines are serialised, so an older snapshot can never demote the root pointer after a newer snapshot's sync has already returned.
+
 ### Network Protocol
 
 Lattice Nodes communicate using a binary protocol. Messages use the encoding format specified in CAD003.
@@ -309,7 +315,7 @@ Given a path, nodes resolve the applicable sub-lattice:
 
 #### JSON Key Compatibility
 
-Lattice paths internally use CVM-native key types (Keywords, AccountKeys, etc.), but JSON-based APIs address paths using JSON-native types (strings, integers). Each lattice level provides a `resolveKey` function that translates an external key to the canonical CVM key for that level:
+Lattice paths internally use CVM-native key types (Keywords, AccountKeys, etc.), but JSON-based APIs address paths using JSON-native types (strings, integers). Each lattice level provides a `resolveKey` function that translates an external key to the canonical CVM key for that level. On a cursor this is exposed as `resolve(keys...)` — the user-facing counterpart to `path(keys...)`, which navigates with already-canonical keys (see [CAD035](../035_cursors/index.md)):
 
 | Lattice Level | JSON Key | Canonical CVM Key |
 |---------------|----------|-------------------|
@@ -322,6 +328,8 @@ Lattice paths internally use CVM-native key types (Keywords, AccountKeys, etc.),
 The reverse mapping (`toJSONKey`) converts canonical keys back to JSON representations: Keywords become their name strings, blobs become hex strings, and other types pass through unchanged.
 
 JSON-based callers MUST resolve each path element through `resolveKey` before using standard lattice operations. CVM-native code that already uses canonical key types does not need resolution.
+
+The `SignedLattice` `:value` step is a virtual key consumed at the signing boundary (`consumesPathKey`) — it selects the `SignedCursor` enforcement point rather than indexing an ordinary map entry.
 
 ### Thread Safety
 
@@ -340,18 +348,26 @@ Nodes MAY implement these standard lattice types:
 |------|-----------------|------------|
 | SetLattice | Set union | Empty set |
 | MaxLattice | Maximum value | 0 (or min value) |
-| MapLattice | Recursive merge of entries | Empty map |
+| MapLattice | Recursive merge of entries by key | Empty map |
+| IndexLattice | Union of keys, per-entry child merge | Empty index |
+| KeyedLattice | Per-key statically-typed child lattices | Per-key zeros |
+| LWWLattice | Whole value with the newer timestamp wins (durable deletes) | nil |
+| JSONLattice | Structural navigation only (defines no merge) | Empty container by key shape |
+| StampingLattice | Stamp-on-write layer; delegates merge and navigation | Delegated |
 | DataLattice | Union of hash-indexed values | Empty index |
-| SignedLattice | Validates signatures, merges child | nil |
+| SignedLattice | Validates signatures on merge; signs on write at the boundary | nil |
 | OwnerLattice | Per-owner signed data maps | Empty map |
 
 The standard ROOT lattice structure uses a `KeyedLattice` backed by an `Index<Keyword, ACell>`, which provides lexicographic key ordering and compatibility with both CVM keyword paths and JSON string paths (keywords and strings share the same blob representation in the Index):
 
 ```
 KeyedLattice (Index<Keyword, ACell>) {
-    :data → DataLattice
-    :fs   → OwnerLattice(MapLattice(DLFSLattice))
-    :kv   → MapLattice(OwnerLattice(KVStoreLattice))
+    :data  → DataLattice
+    :fs    → OwnerLattice(MapLattice(DLFSLattice))
+    :kv    → OwnerLattice(MapLattice(KVStoreLattice))
+    :queue → OwnerLattice(MapLattice(TopicLattice))
+    :p2p   → P2PLattice
+    :local → LocalLattice
 }
 ```
 

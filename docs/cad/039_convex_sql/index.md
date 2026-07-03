@@ -283,6 +283,7 @@ The Calcite integration provides:
 
 - **SQL parsing** — standard SQL syntax via Calcite's SQL parser
 - **Query planning** — Calcite planner with lattice-optimised rules
+- **Cost-based planning** — table statistics (such as row counts) feed Calcite's cost model to inform join ordering and plan selection
 - **Schema discovery** — automatic Calcite schema bridge from table definitions
 - **DDL** — CREATE TABLE and DROP TABLE via SQL
 - **DML** — SELECT, INSERT, UPDATE, DELETE

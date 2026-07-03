@@ -114,7 +114,11 @@ The following standard lattice types are defined:
 
 **Max / Min Lattice** — Merges by taking the maximum (or minimum) value. Useful for monotonically increasing counters, timestamps, or version numbers.
 
-**LWW Lattice** (Last-Write-Wins) — Merges by selecting the value with the most recent timestamp. In the case of equal timestamps, a deterministic tiebreaker MUST be applied to ensure commutativity. Suitable for mutable registers where the latest write should prevail.
+**LWW Lattice** (Last-Write-Wins) — Merges by selecting the **whole value** with the most recent timestamp; it never recurses into the inner structure. In the case of equal timestamps, a deterministic tiebreaker MUST be applied to ensure a stable result. Because the newer value replaces the old wholesale, whole-value LWW makes **deletions durable**: a smaller value carrying a newer timestamp replaces the larger old one, and removed entries do not reappear on merge. This is what lets applications delete directly rather than accumulate tombstones.
+
+**JSON Lattice** — A structural navigation layer for JSON-shaped data (maps, vectors, strings, numbers, booleans and nil). It defines how to navigate and how to build intermediate containers from the shape of a key, but deliberately defines **no merge of its own** — it is composed under a merge layer.
+
+**Stamping Lattice** — A stamp-on-write layer that stamps values with the write timestamp from the merge context as they are written, without altering merge or navigation. Composed as `StampingLattice(LWWLattice(JSONLattice))`, these three single-concern layers together give a navigable, whole-value-LWW region with durable deletes — the standard shape for mutable application state.
 
 **Map Lattice** — Merges maps by applying a value lattice to each key independently. Keys present in only one map are included directly. Keys present in both maps have their values merged using the configured child lattice. Zero is the empty map.
 
@@ -124,7 +128,7 @@ The following standard lattice types are defined:
 
 **Owner Lattice** — Partitions data by owner public key. Each owner's slot is wrapped in a Signed Lattice. Merge operates independently per owner. This is the foundation for self-sovereign data — each owner controls their own partition via their signing key.
 
-**Signed Lattice** — Wraps a child lattice in a cryptographic signing boundary. Values MUST be stored as signed data and verified on merge. When merge produces a new value, it MUST be re-signed with the current context's key pair. This ensures data integrity and provenance throughout the lattice hierarchy.
+**Signed Lattice** — Wraps a child lattice in a cryptographic signing boundary. Values MUST be stored as signed data and verified on merge. Signing on write is enforced at the boundary by a `SignedCursor` (see [CAD035](../035_cursors/index.md)), which signs values with the merge context's key as they are written — rather than by re-signing during merge. This ensures data integrity and provenance throughout the lattice hierarchy.
 
 **Data Lattice** — A general-purpose content store indexed by hash. Merge is set union over the hash-indexed cells. Useful for bulk data storage where individual items are referenced by content hash.
 
@@ -142,6 +146,8 @@ The system-wide Lattice root is a Keyed Lattice with the following standard sect
 
 - **Queue** — Message queues. An Owner Lattice where each owner may maintain named topics with partitioned, append-only message streams.
 
+- **P2P** — Peer-to-peer network state, shared between peers to co-ordinate replication.
+
 - **Local** — Peer-local storage that is not replicated across the network.
 
 Applications MAY extend the root structure with additional sections by registering new keys and lattice types. For example, a social networking application could register a section with an Owner Lattice containing per-user social state (feeds, profiles, follow graphs), each with appropriate merge semantics.
@@ -154,13 +160,13 @@ The full cursor specification is defined in [CAD035: Lattice Cursors](../035_cur
 
 ### Merge Context
 
-Merge operations may require contextual information beyond the two values being merged. A merge context MUST provide:
+Merge and write operations may require contextual information beyond the two values being merged. The merge context (`LatticeContext`) MUST provide:
 
-- **Timestamp** — Used by LWW Lattice for conflict resolution
-- **Signing key pair** — Used by Signed Lattice to sign merged results
-- **Owner verifier** — Used by Owner Lattice to verify that a signer is authorised to write to an owner's partition
+- **Timestamp** — the single write clock. Used by LWW Lattice for conflict resolution and by stamp-on-write regions to stamp values as they are written (the same clock DLFS uses for node update times)
+- **Signing key** — used by a Signed Lattice boundary to sign values on write
+- **Owner verifier** — used by Owner Lattice to verify that a signer is authorised to write to an owner's partition
 
-The context MUST be propagated through the lattice hierarchy and made available to merge functions as needed.
+The context MUST be propagated through the lattice hierarchy and made available to merge and write functions as needed.
 
 ### Cursor Sync Guarantees
 
@@ -203,7 +209,7 @@ Key implementation notes:
 - The Data Lattice operates using the same efficient **binary protocol** used by Convex peer-to-peer communication. Peers SHOULD support hosting Data Lattice access on a different port from CPoS / peer communication.
 - A **REST API** provides access to key data lattice capabilities: insert data, retrieve data, pin/unpin data, access controls and replication.
 - The implementation is **lock-free**, using atomic references containing immutable values. Merge-aware atomic updates ensure progress without retry. Multiple threads may concurrently read, write, fork and sync without external synchronisation.
-- Cursor types in the implementation include root cursors, forked cursors, descended cursors (for sub-path navigation) and signed cursors (automatically inserted at Signed Lattice boundaries).
+- Cursor types in the implementation include root cursors, forked cursors, descended cursors (for sub-path navigation), and update-on-write cursors — the shared `AUpdateCursor` funnel with its two instances: signed cursors (inserted at Signed Lattice boundaries) and stamped cursors (inserted at stamp-on-write regions).
 
 ## See Also
 

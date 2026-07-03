@@ -156,9 +156,11 @@ A UCAN token is a JWT with the following claims:
 |-------|-------------|
 | `iss` | Issuer DID (who is delegating) |
 | `aud` | Audience DID (who receives the delegation) |
-| `exp` | Expiry timestamp |
+| `exp` | Expiry timestamp (token invalid once `exp <= now`) |
+| `nbf` | Not-before timestamp (token inactive until `nbf <= now`); optional |
 | `att` | Attenuations — vector of capabilities |
 | `prf` | Proof chain — vector of parent UCAN tokens |
+| `nnc` | Nonce for uniqueness; optional |
 
 ### JWT Encoding
 
@@ -172,6 +174,8 @@ Signature: Ed25519 signature over header.payload
 
 The `toJWT()` and `fromJWT()` methods convert between UCAN objects and JWT strings.
 
+The signature is **always verified against the Ed25519 public key bound in the `iss` DID** — the `did:key` in the payload encodes the issuer's key directly, so the key that must validate a token is fixed by the token's own issuer claim. The sender-controlled JWT `kid` header MUST NOT be used to select the verification key: trusting `kid` would let an attacker sign with their own key, name any issuer in `kid`, and thereby forge that issuer's identity.
+
 ### Capabilities
 
 Each attenuation in the `att` array is a capability with two fields:
@@ -180,10 +184,20 @@ Each attenuation in the `att` array is a capability with two fields:
 { "with": "did:key:z6Mk.../kv/mydb/", "can": "crud/read" }
 ```
 
-- **`with`** — a DID-scoped resource path prefix
+- **`with`** — a DID-scoped resource path
 - **`can`** — an ability in a slash-delimited hierarchy
 
-A capability covers a request if the capability's `with` is a prefix of the request's resource AND the capability's `can` is a prefix of the request's ability.
+A capability covers a request only if **both** its `with` covers the request's resource **and** its `can` covers the request's ability.
+
+**Resource matching (`with`)** is path-prefix matching at path-segment boundaries — never a raw string prefix:
+
+- **Exact match** — `w/decisions` covers `w/decisions`
+- **Prefix at a segment boundary** — `w/decisions` covers `w/decisions/INV-123`, because the match ends on a `/` boundary. It does **not** cover the sibling `w/decisions-secret`, even though that shares the textual prefix
+- **Trailing slash** — `w/decisions/` covers both its children and the bare parent `w/decisions`
+
+**Fail-closed:** a null or empty `with` (or an empty request resource) covers **nothing**. Absence is never a resource wildcard — a resource wildcard must be stated explicitly, never inferred from a missing or truncated capability.
+
+**Ability matching (`can`)** follows the same segment-boundary rule: the wildcard ability `*` covers any ability; otherwise the grant matches on an exact ability, or a prefix that ends on a `/` boundary (`crud` covers `crud/read`, but not a hypothetical `crudX`).
 
 ### Standard Abilities
 
@@ -203,17 +217,18 @@ convex              (Convex-specific)
 
 ### Attenuation Rule
 
-Delegated capabilities can only narrow the grantor's authority — the delegate's resource MUST be a sub-path of the grantor's, and the delegate's ability MUST be a sub-ability. This ensures capability chains are monotonically decreasing in scope.
+Delegated capabilities can only narrow the grantor's authority — the delegate's resource MUST be covered by the grantor's under the segment-boundary rule above (a genuine sub-path, not merely a textual prefix), and the delegate's ability MUST be a sub-ability. This ensures capability chains are monotonically decreasing in scope.
 
 ### Validation
 
 UCAN tokens are validated by checking:
 
-1. Ed25519 signature validity
-2. Expiry (`exp >= now`)
-3. Audience match (`aud == caller DID`)
-4. Each capability in `att` covered by the issuer's authority
-5. Proof chain recursively validated (if present)
+1. **Signature** — the EdDSA signature is valid against the public key bound in the token's `iss` DID (never the `kid` header). Signatures are verified once, at the transport boundary.
+2. **Temporal bounds** — the token is within its validity window: `exp > now` (not expired) and, if present, `nbf <= now` (already active). Temporal bounds are re-checked at the point of use, after the boundary signature check, so a token that expires in flight is rejected on use.
+3. **Capabilities** — each capability in `att` is covered by the issuer's own authority, under the resource and ability matching rules above.
+4. **Proof chain** — every parent token in `prf` is validated recursively, and each link is well-formed: `proof.aud == token.iss` (the parent delegated to this issuer) and `token.exp <= proof.exp` (a child may not outlive its parent).
+
+Audience and issuer matching (e.g. `aud == caller DID`) is an **application policy** decision layered on top of these mandatory cryptographic, temporal, and chain-linkage checks — the core validator enforces proof-chain linkage but leaves audience acceptance to the caller.
 
 ### DID Path Resources
 
@@ -236,6 +251,9 @@ The two-layer verification model defends against several attack vectors:
 | **Replay** — attacker replays victim's signed data under attacker's owner key | Owner verification rejects: victim's key not authorised for attacker's owner |
 | **Signature forgery** — attacker creates data with invalid signature | SignedLattice rejects: Ed25519 signature check fails |
 | **Key confusion** — valid signature but embedded key differs from owner | Owner verification rejects: embedded signer key != owner key (for public key owners) |
+| **Issuer spoofing** — attacker signs a UCAN with their own key and names a victim in the `kid` header | Verification key is bound to the `iss` DID's embedded public key; the `kid` header is ignored, so a token only validates for the key that actually signed it |
+| **Capability prefix escape** — a grant on `w/notes` is abused to reach the sibling `w/notesSECRET` | Resource matching is path-segment-boundary aware; a shared textual prefix does not cover a sibling resource |
+| **Fail-open delegation** — a truncated or empty `with` is treated as an implicit wildcard | Empty or absent resources fail closed and cover nothing; wildcards must be explicit |
 
 Production deployments SHOULD always configure an owner verifier for Address and DID owners. Without a verifier, these owner types fall back to lenient mode (accept all), which is suitable only for development and testing.
 
@@ -252,6 +270,9 @@ The reference implementation is in the Convex `convex-core` module (Java).
 | Owner-based signed map | `OwnerLattice` | `convex.lattice.generic` |
 | Signed value merge | `SignedLattice` | `convex.lattice.generic` |
 | O(delta) map merge | `AHashMap.mergeDifferences` | `convex.core.data` |
+| UCAN capability & resource/ability matching | `Capability` | `convex.auth.ucan` |
+| UCAN token (JWT encode/decode, `iss`-bound signature) | `UCAN` | `convex.auth.ucan` |
+| UCAN validation (temporal bounds, proof chain) | `UCANValidator` | `convex.auth.ucan` |
 
 The `OwnerLatticeTest` class provides comprehensive test coverage including adversarial scenarios (impersonation, replay attacks, signature forgery).
 

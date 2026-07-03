@@ -85,6 +85,16 @@ Maps to:
 }
 ```
 
+## Serialisation: Strict JSON and JSON5
+
+Convex serialises CVM values to text in two output modes:
+
+**Strict JSON** (`JSON.appendJSON` / `JSON.printJSON`) — RFC 8259-compliant output. Since JSON has no representation for non-finite floating-point values, a non-finite `Double` (`NaN`, `Infinity`, `-Infinity`) is emitted as `null`, matching the behaviour of JavaScript's `JSON.stringify`.
+
+**JSON5** (`JSON.appendJSON5` / `JSON.printJSON5`) — a superset of strict JSON. It differs only in its treatment of non-finite doubles, which render as the unquoted literals `NaN`, `Infinity` and `-Infinity` rather than `null`, so numeric values round-trip without loss. JSON5 is the format used for human- and agent-readable rendering of lattice data (see [CAD046: Cell Explorer](../046_cell_explorer/index.md)).
+
+Both modes follow the type mappings above; they differ only in how non-finite numbers are handled.
+
 ## Usage Notes
 
 When designing CVM data structures intended for JSON conversion:

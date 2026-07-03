@@ -152,3 +152,18 @@ data-structures:
   label: Data Structures
   permalink: /data-structures
   description: Immutable data structures and encoding
+
+security:
+  label: Security
+  permalink: /security
+  description: Security, cryptography and threat modelling
+
+ucan:
+  label: UCAN
+  permalink: /ucan
+  description: User Controlled Authorisation Networks and capability tokens
+
+did:
+  label: DID
+  permalink: /did
+  description: Decentralised identifiers and authentication
