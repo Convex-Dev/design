@@ -103,7 +103,8 @@ Registered tools appear in `tools/list` responses and are dispatched by `toolCal
 
 ## Security Considerations
 
-- **Seed-based tools** (`transact`, `signAndSubmit`, `transfer`) transmit the Ed25519 seed over the network — peers MUST use HTTPS
+- **Seed-based tools** (`transact`, `signAndSubmit`, `transfer`) transmit the Ed25519 seed over the network — peers MUST use HTTPS. Servers refuse seed-carrying requests over cleartext HTTP from non-loopback clients (HTTPS or `X-Forwarded-Proto: https` accepted; an explicit configuration option opts out for trusted private networks)
+- **Origin allow-list** — servers MAY be configured with a set of allowed `Origin` values; requests carrying a different Origin are rejected with 403. This provides the DNS-rebinding protection the MCP spec requires for localhost and private deployments. Public peers default to allowing all origins, and requests without an Origin header (non-browser clients) always pass
 - **Signing service tools** keep private keys server-side, encrypted at rest with a user-chosen passphrase
 - **Elevated operations** (import, export, delete) require interactive browser confirmation to prevent programmatic abuse
 - **Queries** are read-only and require no authentication

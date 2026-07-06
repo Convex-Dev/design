@@ -196,7 +196,7 @@ dmesg | grep -i "out of memory"
 
 ## Security Issues
 
-### Unauthorized Access Attempts
+### Unauthorised Access Attempts
 
 **Check Logs**:
 ```bash

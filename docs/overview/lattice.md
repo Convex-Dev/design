@@ -102,7 +102,7 @@ Importantly, such job executions are highly extensible. They can utilise any for
 
 ### P2P Lattice
 
-The *P2P Lattice* powers peer-to-peer communication by solving the challenge of locating and connecting participants in a decentralized network.
+The *P2P Lattice* powers peer-to-peer communication by solving the challenge of locating and connecting participants in a decentralised network.
 
 Lattice values are a map of public keys to signed and timestamped metadata describing a peer. The merge function is simply to combine these maps, and to take the most recent correctly signed metadata if keys collide.
 

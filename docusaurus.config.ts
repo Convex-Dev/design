@@ -213,8 +213,8 @@ onBrokenMarkdownLinks: 'warn'
               href: 'https://discord.com/invite/xfYGq4CT7v',
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/convex_world',
+              label: 'X (Twitter)',
+              href: 'https://x.com/convex_world',
             },
             {
               label: 'Awesome Lattice',

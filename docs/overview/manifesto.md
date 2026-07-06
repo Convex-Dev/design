@@ -39,7 +39,7 @@ Self-sovereignty coexists with responsibility. Users remain bound by law, taxes,
 
 **Convex delivers efficient, sustainable, zero-waste infrastructure**
 
-Economic systems must fuel human progress without plundering the Earth. Today’s centralized giants devour 5–10% of global GDP in fees and friction, while offloading pollution, e-waste, and climate costs onto the innocent and unborn. This is theft from future generations.
+Economic systems must fuel human progress without plundering the Earth. Today’s centralised giants devour 5–10% of global GDP in fees and friction, while offloading pollution, e-waste, and climate costs onto the innocent and unborn. This is theft from future generations.
 
 Convex rejects extravagance. We ban energy-hungry Proof of Work and embrace *Convergent Proof of Stake (CPoS)* - a consensus engine that outperforms PoW in speed and security using a fraction of the power. Every transaction is lean, auditable, and ecologically defensible.
 

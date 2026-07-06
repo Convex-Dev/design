@@ -180,7 +180,7 @@ Convex convex = Convex.connect(server);
 
 - **Protocol**: Direct in-memory method calls
 - **Performance**: Fastest (sub-millisecond latency)
-- **Overhead**: No network or serialization overhead
+- **Overhead**: No network or serialisation overhead
 - **Resource**: Requires running full peer (memory intensive)
 - **Expertise**: Requires understanding of peer lifecycle management
 - **Use Case**: Primarily testing, development, and specialized deployments

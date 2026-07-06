@@ -55,7 +55,7 @@ TODO: describe mechanism to set connection count controls
 
 ## Syncing
 
-Your peer will need to synchronize with teh network by connecting to at least one existing peer.
+Your peer will need to synchronise with the network by connecting to at least one existing peer.
 
 The following peers are available at time of writing for synchronisation:
 ```

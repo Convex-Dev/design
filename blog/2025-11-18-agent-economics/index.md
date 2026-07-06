@@ -24,7 +24,7 @@ Convex peers now ship with **full Model Control Protocol (MCP)** built-in (enabl
 
 MCP is rapidly becoming the open standard for how agents securely perceive and act on-chain. On Convex it becomes lethal:
 
-- Direct, authenticated, real-time streams (no indexers, no centralized RPCs)
+- Direct, authenticated, real-time streams (no indexers, no centralised RPCs)
 - Prepare / submit phases → simulate, coordinate, or wait forever with zero cost and zero front-running risk
 - Pluggable signing: multi-agent review chains, hardware wallets, air-gapped humans-in-the-loop, or fully autonomous Ed25519
 - Sub-millisecond access to the entire global state at massive scale
