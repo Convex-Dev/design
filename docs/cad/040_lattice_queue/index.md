@@ -4,6 +4,8 @@
 
 The Lattice Queue is a replicated append-only log built on the [Data Lattice](../024_data_lattice/index.md). It provides Kafka-style streaming semantics — ordered records, offset-based access, independent consumer positions, and log truncation — with CRDT merge for automatic replication via [Lattice Nodes](../036_lattice_node/index.md).
 
+Queues are organised into **topics**: each topic contains a set of numbered **partitions** (each an independent queue) plus topic-level metadata. The standard `:queue` region of the global lattice holds a map of topics per owner.
+
 Where the [KV Database](../037_kv_database/index.md) models shared mutable state, the Lattice Queue models an ordered stream of events. Together they cover the two fundamental patterns of distributed data: state and logs.
 
 ## Motivation
@@ -66,6 +68,18 @@ This design ensures that offset assignment is deterministic and conflict-free. M
 
 Applications requiring multiple independent writers SHOULD use separate queues per writer, or coordinate writes through a single leader node.
 
+### Topics and Partitions
+
+Following the Kafka model, queues are grouped into **topics**. A topic is a named collection of partitions, where each partition is an independent Lattice Queue with its own offsets and single-leader append semantics. Partitioning enables:
+
+- **Parallelism** — producers and consumers work on different partitions concurrently
+- **Scaling writes** — each partition has its own leader, so a topic as a whole can accept writes from multiple nodes
+- **Key-based routing** — records with the same key are routed to the same partition, preserving per-key ordering
+
+When a record is offered to a topic with a key, the partition is selected deterministically from the key hash: `partition = floorMod(hash(key), numPartitions)`. (`floorMod` rather than `abs(...) % n`, so the result is always in range even for extreme hash values.)
+
+Topic metadata (such as `:num-partitions`) is carried in a separate metadata map alongside the partitions.
+
 ### Truncation
 
 Truncation advances the start offset and discards records before it. This reclaims storage for records that all consumers have processed.
@@ -73,6 +87,40 @@ Truncation advances the start offset and discards records before it. This reclai
 Truncation is monotonic: the start offset can only increase. In a lattice merge, the higher start offset wins, ensuring truncation decisions propagate consistently across replicas.
 
 ## Specification
+
+### Global Lattice Region
+
+:::note Provisional structure
+The naming and structure of the global `:queue` region is still being refined and may change in future revisions. This section documents the current implementation.
+:::
+
+The standard lattice ROOT registers the `:queue` region as:
+
+```
+:queue → OwnerLattice → MapLattice → TopicLattice
+```
+
+That is: each owner has a signed map of topic names to topics. The full path to a specific partition's queue state is:
+
+```
+:queue / <owner-key> → Signed({<topic-name> → TopicState, ...})
+```
+
+### Topic State
+
+The topic state is an Index with two keys:
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `:partitions` | Map | Partition map: `{partition-id → queue state, ...}` |
+| `:meta` | Map | Topic metadata (e.g. `:num-partitions`) |
+
+Topic merge semantics:
+
+1. **Partitions** — per-partition merge, delegating each partition to the queue merge below
+2. **Metadata** — map union (own entry wins on key conflict)
+
+Foreign topic values are never accepted wholesale: each partition is validated and merged through the queue lattice individually, so a malformed partition map cannot wedge subsequent merges.
 
 ### Queue State
 
@@ -198,6 +246,10 @@ A reference implementation is provided in the Convex `convex-core` module (Java)
 | Queue state lattice | `QueueLattice` |
 | Record structure utilities | `QueueEntry` |
 | Queue API | `LatticeQueue` |
+| Topic state lattice | `TopicLattice` |
+| Topic API (partitions, metadata, keyed routing) | `LatticeTopic` |
+| Concurrent topic wrapper (per-partition locking) | `ConcurrentTopic` |
+| Message queue system (topics map) | `LatticeMQ` |
 
 ## See Also
 

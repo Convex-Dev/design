@@ -29,28 +29,31 @@ Traditional distributed databases solve these problems with consensus protocols 
 
 ## Specification
 
-### Lattice Path
+### Lattice Structure
 
-Convex SQL occupies the `:sql` path in the standard lattice ROOT:
+:::note Provisional structure
+Convex SQL does not yet occupy a region in the standard lattice ROOT (which currently registers `:data`, `:fs`, `:kv`, `:queue`, `:p2p` and `:local`). A dedicated region (e.g. `:sql`) is anticipated, but its name and structure are still open design questions and may change. This section documents the current implementation.
+:::
 
-```
-ROOT {
-    :data → DataLattice
-    :fs   → OwnerLattice → MapLattice → DLFSLattice
-    :kv   → OwnerLattice → MapLattice → KVStoreLattice
-    :sql  → OwnerLattice → MapLattice → TableStoreLattice
-}
-```
-
-The full path to a specific table is:
+Convex SQL currently operates as a **standalone lattice**, managed by `ConvexDB`:
 
 ```
-:sql / <owner-key> → Signed({<db-name> → {<table-name> → TableEntry, ...}, ...})
+ConvexDB (MapLattice: db-name → database state)
+  └── SQLDatabase (KeyedLattice: :tables → table store)
+        └── TableStoreLattice (table-name → TableEntry)
+```
+
+Each database is a keyword-keyed structure: the `:tables` key holds the table store, leaving room for further per-database sections in future.
+
+For replication between nodes, the database map is wrapped in a signed owner envelope:
+
+```
+{<owner-key> → Signed({<db-name> → {:tables → {<table-name> → TableEntry, ...}}, ...})}
 ```
 
 Where:
 - **owner-key** — the owner identity (see [CAD038](../038_lattice_auth/index.md))
-- **Signed(...)** — the owner's signed map of database names to table stores
+- **Signed(...)** — the owner's signed map of database names to database state
 - **db-name** — a string database name, scoped per owner
 - **table-name** — a string table name within the database
 
@@ -58,20 +61,23 @@ This structure mirrors the KV Database pattern: each owner has their own namespa
 
 ### Lattice Composition
 
-The full lattice hierarchy for Convex SQL:
+The full lattice hierarchy for a replicated Convex SQL owner map:
 
 ```
 OwnerLattice                    ← per-owner merge with auth (CAD038)
   └── SignedLattice             ← Ed25519 signature verification
         └── MapLattice          ← per-database-name merge
-              └── TableStoreLattice
-                    └── per-table-name merge
-                          └── SQLTableLattice
-                                └── schema + rows merge
-                                      └── TableLattice
-                                            └── per-row merge (by primary key)
-                                                  └── SQLRowLattice (LWW)
+              └── KeyedLattice  ← per-database sections (:tables)
+                    └── TableStoreLattice
+                          └── per-table-name merge
+                                └── SQLTableLattice
+                                      └── schema + rows merge
+                                            └── TableLattice
+                                                  └── per-row merge (by primary key)
+                                                        └── SQLRowLattice (LWW)
 ```
+
+A standalone (non-replicated) ConvexDB uses the same hierarchy from `MapLattice` down, without the owner/signature envelope.
 
 #### Layer Descriptions
 
@@ -79,7 +85,8 @@ OwnerLattice                    ← per-owner merge with auth (CAD038)
 |-------|---------|-----------------|
 | Owner | `OwnerLattice` | Per-owner with authentication ([CAD038](../038_lattice_auth/index.md)) |
 | Signature | `SignedLattice` | Ed25519 signature verification |
-| Database | `MapLattice` | Per-database-name merge |
+| Database Map | `MapLattice` | Per-database-name merge |
+| Database | `KeyedLattice` | Per-section merge (`:tables`) |
 | Table Store | `TableStoreLattice` | Per-table-name merge using `SQLTableLattice` |
 | Table | `SQLTableLattice` | Schema LWW + row-level merge via `TableLattice` |
 | Rows | `TableLattice` | Per-primary-key merge using `SQLRowLattice` |
@@ -192,7 +199,7 @@ Like KV Database, Convex SQL uses OwnerLattice for per-owner authentication. Eac
 The signed state per owner is:
 
 ```
-Signed({db-name → {table-name → TableEntry, ...}, ...})
+Signed({db-name → {:tables → {table-name → TableEntry, ...}}, ...})
 ```
 
 Authentication provides:
@@ -205,9 +212,9 @@ Authentication provides:
 Convex SQL uses the same **merge-on-write** replication model as KV Database:
 
 1. Each node maintains its own signed replica (databases containing tables)
-2. The node publishes its replica to the lattice at `:sql`
-3. Lattice Nodes propagate signed replicas to peers
-4. On receive, OwnerLattice merge combines entries from all owners
+2. The node exports its replica as a signed owner map (`exportReplica()`)
+3. Replicas are exchanged between nodes (a standard global lattice region for automatic propagation is anticipated but not yet defined — see the provisional note above)
+4. On receive, OwnerLattice merge verifies signatures and combines entries from all owners
 5. Applications read the merged owner map and absorb remote data
 
 ```
@@ -219,7 +226,7 @@ Convex SQL uses the same **merge-on-write** replication model as KV Database:
 │          │         │          │         │          │
 │ export() │         │ export() │         │ export() │
 │    ↓     │         │    ↓     │         │    ↓     │
-│ :sql/A   │◄───────►│ :sql/B   │◄───────►│ :sql/C   │
+│ replica A│◄───────►│ replica B│◄───────►│ replica C│
 │          │  Lattice │          │  Lattice │          │
 │          │   Merge  │          │   Merge  │          │
 └──────────┘         └──────────┘         └──────────┘
@@ -406,7 +413,8 @@ A reference implementation is provided in the `convex-db` module (Java).
 | Calcite schema bridge | `ConvexSchema` | `convex.db.calcite` |
 | Calcite table | `ConvexTable` | `convex.db.calcite` |
 | DDL executor | `ConvexDdlExecutor` | `convex.db.calcite` |
-| PK filter pushdown | `ConvexFilter` | `convex.db.calcite` |
+| Relational operators (scan, filter, join, ...) | `ConvexTableScan` etc. | `convex.db.calcite.rel` |
+| Planner rules | `ConvexRules` | `convex.db.calcite.rules` |
 | PostgreSQL server | `PgServer` | `convex.db.psql` |
 
 The `SQLDatabaseTest` and `ConvexDBTest` classes provide test coverage for table operations, JDBC, replication, and merge semantics.
