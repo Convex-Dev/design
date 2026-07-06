@@ -100,14 +100,16 @@ Messages are framed as:
 
 #### Message Types
 
-| Type ID | Name | Description |
-|---------|------|-------------|
-| 5 | DATA_REQUEST | Request missing data cells |
-| 12 | PING | Connectivity test |
-| 14 | LATTICE_VALUE | Announce lattice value update |
-| 15 | LATTICE_QUERY | Request lattice value at path |
+Message types are identified by a Keyword tag at the start of the message payload (see CAD015). There are no numeric message type IDs.
 
-#### PING (Type 12)
+| Tag | Name | Description |
+|-----|------|-------------|
+| `:DR` | DATA_REQUEST | Request missing data cells |
+| `:PING` | PING | Connectivity test |
+| `:LV` | LATTICE_VALUE | Announce lattice value update |
+| `:LQ` | LATTICE_QUERY | Request lattice value at path |
+
+#### PING (`:PING`)
 
 Connectivity test message.
 
@@ -121,7 +123,7 @@ Connectivity test message.
 
 Nodes MUST respond to PING messages with a Result containing the same ID.
 
-#### LATTICE_QUERY (Type 15)
+#### LATTICE_QUERY (`:LQ`)
 
 Request lattice value at a path.
 
@@ -137,7 +139,7 @@ Request lattice value at a path.
 
 Nodes MUST respond with the current value at the specified path, or an error Result if the path is invalid.
 
-#### LATTICE_VALUE (Type 14)
+#### LATTICE_VALUE (`:LV`)
 
 Announce a lattice value update.
 
@@ -158,7 +160,7 @@ Upon receiving a LATTICE_VALUE message, nodes MUST:
 5. Handle missing data by acquiring from peers (see Missing Data Recovery)
 6. Trigger propagation of merged changes
 
-#### DATA_REQUEST (Type 5)
+#### DATA_REQUEST (`:DR`)
 
 Request missing data cells by hash.
 
