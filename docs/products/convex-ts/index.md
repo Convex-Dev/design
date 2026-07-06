@@ -96,13 +96,13 @@ pip install convex-sdk
 ```python
 from convex_sdk import Convex, KeyPair
 
-convex = Convex('https://peer.convex.live')
+convex = Convex('https://mikera1337-convex-testnet.hf.space')
 key_pair = KeyPair()
 account = convex.create_account(key_pair)
 convex.request_funds(100_000_000, account)
 
 balance = convex.get_balance(account)
-print(f'Balance: {balance / 1_000_000_000} CVX')
+print(f'Balance: {balance / 1_000_000_000} CVM')
 ```
 
 **Key Features:**

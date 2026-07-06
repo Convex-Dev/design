@@ -5,7 +5,7 @@ title: Overview
 
 # Convex Overview
 
-Convex is a decentralized lattice technology platform for building fair, efficient, and sustainable economic systems.
+Convex is a decentralised lattice technology platform for building fair, efficient, and sustainable economic systems.
 
 ## Understanding Convex
 

@@ -78,7 +78,7 @@ iftop
 - Increase JVM heap: `-Xmx8g`
 - Upgrade to SSD storage
 - Increase CPU/RAM
-- Optimize network
+- Optimise network
 
 ### High Memory Usage
 
@@ -264,7 +264,7 @@ vnstat
 **Solutions**:
 - Limit peer connections
 - Check for DDoS attack
-- Optimize sync settings
+- Optimise sync settings
 - Review traffic patterns
 
 ### Firewall Blocking

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is the **Convex Documentation** site (`docs.convex.world`), built with Docusaurus 3.9. It contains comprehensive documentation for the Convex decentralised lattice platform.
+This is the **Convex Documentation** site (`docs.convex.world`), built with Docusaurus 3.10. It contains comprehensive documentation for the Convex decentralised lattice platform.
 
 ## Key Principles
 

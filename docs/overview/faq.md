@@ -19,11 +19,11 @@ When transacting on the network, small fees are charged using Convex Coins, whic
 
 Our goal is to keep transaction fees small, so that it is never a significant issue for legitimate network users.
 
-## When will Convex go live?
+## Is Convex live?
 
-We are on track to release the first live version of Convex (Convex Protonet) in H2 2024.
+Yes. Protonet, the first live Convex network with real assets, is up and running — you can connect at `https://peer.convex.live`.
 
-An important caveat: getting it right is more important than rushing a release. We won't launch until we are 100% sure it is ready for production use and fully secure with real-world value at stake.
+Getting it right was always more important than rushing a release: Protonet launched only after extensive testing to ensure it was ready for production use with real-world value at stake.
 
 People will depend on Convex to be a secure, reliable platform for decentralised applications and digital assets. It is not acceptable to expose them to security risks from flaws in the platform, nor is it acceptable to make breaking changes to the CVM that could cause significant problems with smart contracts.
 

@@ -1,9 +1,0 @@
-title: Convex Design and Documentation
-description: Documentation and specifications for the Convex ecosystem
-
-theme: jekyll-theme-leap-day
-
-toc:
-    enabled: true
-    h_min: 1
-    h_max: 3

@@ -14,8 +14,8 @@ The Foundation drives key initiatives on behalf of the ecosystem:
 
 - **Ensures robust governance** of the Convex Network, safeguarding its integrity and long-term sustainability.
 - **Operates key community resources** including the flagship [convex.world](https://convex.world) website and developer resources such as [GitHub repositories](https://github.com/Convex-Dev) and [Convex Docs](https://docs.convex.world)
-- **Manages the initial issuance of Convex Coins (CVM)** to individuals, organizations, and ecosystem participants, overseeing a transparent release curve designed to promote fair distribution and network stability.
-- **Rewards ecosystem contributors** through grants and awards, recognizing open-source developers, builders, and innovators who advance the platform.
+- **Manages the initial issuance of Convex Coins (CVM)** to individuals, organisations, and ecosystem participants, overseeing a transparent release curve designed to promote fair distribution and network stability.
+- **Rewards ecosystem contributors** through grants and awards, recognising open-source developers, builders, and innovators who advance the platform.
 - **Accelerates ecosystem development** via strategic partnerships, targeted marketing, educational programs, and community initiatives that inspire collaboration and real-world impact.
 
 ## Getting Involved

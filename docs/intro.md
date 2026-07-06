@@ -10,7 +10,7 @@ Designed to transcend the limitations of traditional blockchains, Convex deliver
 
 ## Why Convex Stands Out
 
-Convex redefines what's possible in decentralized systems, offering developers the tools to create fast, secure, and user-friendly dApps. Here are the key advantages that set Convex apart:
+Convex redefines what's possible in decentralised systems, offering developers the tools to create fast, secure, and user-friendly dApps. Here are the key advantages that set Convex apart:
 
 - **Lightning-Fast Consensus**: Our pioneering **Convergent Proof of Stake (CPoS)** algorithm is decentralised, leaderless, and Byzantine fault-tolerant, achieving consensus in milliseconds. With built-in front-running resistance, it delivers a seamless, real-time user experience unmatched by any other platform.
 - **True Global State**: Say goodbye to the complexity of sharding, cross-chain transactions, or roll-ups. Convex provides blazing-fast performance while maintaining a consistent, unified global state for effortless scalability.
@@ -42,7 +42,7 @@ Thanks to all these great contributions, Convex has been fully functional and su
 
 We validated performance and scalability running early versions of Convex peers distributed all around the world in 2023 as part of the EU [Next Generation Internet](https://ngi.eu/) initiative, which proved global scale and stunning energy efficiency while still offering near-instant transaction finality.
 
-We're now launching Protonet, the first live Convex network with real assets. 
+Protonet, the first live Convex network with real assets, is now live. 
 
 ## Why are we doing this?
 

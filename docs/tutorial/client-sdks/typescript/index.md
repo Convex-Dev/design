@@ -83,8 +83,8 @@ if (result.errorCode) {
 
 Connect to different Convex networks:
 
-- **Test Network**: `https://peer.convex.live` - Test network with faucet for testing
-- **Production**: *Coming soon* - Live network with real assets (no public faucet)
+- **Protonet (Production)**: `https://peer.convex.live` - Live network with real assets (no public faucet)
+- **Testnet**: `https://mikera1337-convex-testnet.hf.space` - Test network with faucet for testing
 - **Local**: `http://localhost:8080` - Local development peer
 
 **Important**: Faucets providing free funds are only available on test networks. Production networks require acquiring Convex Coins through legitimate means. See the [Faucet Guide](/docs/tutorial/coins/faucet) for details.

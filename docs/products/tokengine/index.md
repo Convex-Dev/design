@@ -1,6 +1,6 @@
 # TokEngine
 
-TokEngine is a cutting-edge, open-source cross-chain token interoperability bridge that leverages the efficiency and scalability of Convex's lattice technology to enable seamless, high-speed digital asset transfers across diverse blockchain networks. Designed for flexibility, TokEngine empowers anyone to operate a server and facilitate cross-chain token exchanges for their chosen digital assets, fostering a decentralised and inclusive financial ecosystem. Released under the Apache 2.0 License, TokEngine is freely accessible for developers and organizations worldwide.
+TokEngine is a cutting-edge, open-source cross-chain token interoperability bridge that leverages the efficiency and scalability of Convex's lattice technology to enable seamless, high-speed digital asset transfers across diverse blockchain networks. Designed for flexibility, TokEngine empowers anyone to operate a server and facilitate cross-chain token exchanges for their chosen digital assets, fostering a decentralised and inclusive financial ecosystem. Released under the Apache 2.0 License, TokEngine is freely accessible for developers and organisations worldwide.
 
 ![TokEngine Logo](image.png)
 
@@ -37,7 +37,7 @@ TokEngine integrates with EVM-compatible chains using the [Web3j](https://www.we
 On any EVM-compatible chain, TokEngine supports
 - ETH (native token)
 - ERC20 token
-- ERC777 tokens (coming coon)
+- ERC777 tokens (coming soon)
 
 ### Tezos (Coming Soon)
 

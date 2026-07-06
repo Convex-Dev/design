@@ -6,17 +6,17 @@ authors: [mikera, helins]
 tags: [convex, developer, lisp]
 ---
 
-In the Gentle Lisp Introduction we covered the basic of the Convex Lisp language. This guide build on these basic to introduce the key ideas of programming on the Convex CVM.
+In the Gentle Lisp Introduction we covered the basics of the Convex Lisp language. This guide builds on these basics to introduce the key ideas of programming on the Convex CVM.
 
 ## The Convex Virtual Machine
 
 The CVM is a decentralised, deterministic VM. Because it is deterministic, any replicas of the CVM that execute the same transactions from the same initial state will produce identical results. This is a key part how the Convex network is able to provide a consistent, programmable global state. It also enforces cryptographic security, so that only authorised users can make use of protected services.
 
-In practice, this means that developers can execute code on the CVM safe (including smart contracts and transactions involving valuable digital assets) in the knowledge that the the results are guaranteed by a robust, fault-tolerant global network with no centralised point of failure and strong security.
+In practice, this means that developers can execute code on the CVM safely (including smart contracts and transactions involving valuable digital assets) in the knowledge that the results are guaranteed by a robust, fault-tolerant global network with no centralised point of failure and strong security.
 
 ## Accounts
 
-All code on the CVM is executed in the context of an account. Accounts are part of the the global state of Convex. Accounts are numbered sequentially and referred to by an address which is denoted like `#123`. CVM code can find out what address is being used at any time:
+All code on the CVM is executed in the context of an account. Accounts are part of the global state of Convex. Accounts are numbered sequentially and referred to by an address which is denoted like `#123`. CVM code can find out what address is being used at any time:
 
 ```
 ;; This is a special symbol that returns the current account address

@@ -13,7 +13,7 @@ For too long, centralised gatekeepers have dominated our economies - extracting 
 
 Artificial intelligence is now reshaping every aspect of the digital world at unprecedented speed. In this defining era, we must reclaim sovereignty over data, compute, and value itself.
 
-Convex is the public, decentralized foundation for real-time, peer-to-peer exchange of data and value. Engineered for the AI age, it delivers the fair, inclusive, efficient, and sustainable economic infrastructure the world demands.
+Convex is the public, decentralised foundation for real-time, peer-to-peer exchange of data and value. Engineered for the AI age, it delivers the fair, inclusive, efficient, and sustainable economic infrastructure the world demands.
 
 This manifesto articulates the principles powering Convex and the open economy it enables. Join us in building it.
 

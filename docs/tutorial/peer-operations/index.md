@@ -13,7 +13,7 @@ Peer Operations covers everything from connecting to existing peers to running y
 **For Developers** (connecting to peers):
 - **[Connection Types](#connection-types)** - HTTP vs binary protocol
 - **[Network Verification](#verifying-network-identity)** - Genesis hash and health checks
-- **[Performance](#performance-optimization)** - Optimization and monitoring
+- **[Performance](#performance-optimisation)** - Optimisation and monitoring
 
 **For Operators** (running peers):
 - **[Staking & Registration](peer-operations/staking)** - Stake coins and register your peer
@@ -216,7 +216,7 @@ else:
 - ✅ **Protonet** genesis is stable - always verify for production
 - 🔒 Prevents accidental connection to wrong network
 
-## Performance Optimization
+## Performance Optimisation
 
 ### Connection Performance
 

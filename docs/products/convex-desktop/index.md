@@ -22,7 +22,7 @@ Java is available from multiple providers, we recommend:
 - [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
 - [Eclipse Temurin JDK](https://adoptium.net/temurin/releases/) 
 
-Snapshots of the `convex.jar` file are currently available here: [Convex Snapshots](https://drive.google.com/drive/folders/1AZdyuZOmC70i_TtuEW3uEKvjYLOqIMiv?usp=sharing)
+Releases of the `convex.jar` file are available from [GitHub Releases](https://github.com/Convex-Dev/convex/releases) — download `convex.jar` from the latest release.
 
 ## Running Convex Desktop
 

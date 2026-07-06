@@ -116,7 +116,7 @@ With this defined, you can now distribute new accounts with 5 CVM as follows:
 
 ## Removing the controller
 
-Once a user has received their account and is successfully using it, they may wish to remove the controller (or set to to something else) so that the original account creator no longer has control. This can be done with the following command:
+Once a user has received their account and is successfully using it, they may wish to remove the controller (or set it to something else) so that the original account creator no longer has control. This can be done with the following command:
 
 ```clojure
 (set-controller nil)

@@ -55,7 +55,7 @@ After network latency, the largest source of delay is the performance of the Bel
 
 ### Zero Belief propagation delay
 
-Because CPoS operates as a CRDT, Peers can immediately propagate a Belief as soon as they have performed a Belief merge. Propagating a new Belief as soon as one has been updated is the default behaviour for Peers, and is optimized for low latency performance. Because belief merges are idempotent, there is no harm in broadcasting a Belief multiple times.
+Because CPoS operates as a CRDT, Peers can immediately propagate a Belief as soon as they have performed a Belief merge. Propagating a new Belief as soon as one has been updated is the default behaviour for Peers, and is optimised for low latency performance. Because belief merges are idempotent, there is no harm in broadcasting a Belief multiple times.
 
 ### Delta Transmission
 

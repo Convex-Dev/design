@@ -261,7 +261,7 @@ Cost: ~$70/month
 - Running multiple peers
 - High stake value
 - Maximum performance needed
-- Cost optimization important
+- Cost optimisation important
 
 ### Providers
 
@@ -290,7 +290,7 @@ Cost: ~$70/month
 **Suitable for**:
 - Multiple peers
 - Maximum control
-- Cost optimization at scale
+- Cost optimisation at scale
 - Custom hardware requirements
 
 **Requirements**:
@@ -382,14 +382,14 @@ spec:
           storage: 500Gi
 ```
 
-## Cost Optimization
+## Cost Optimisation
 
 ### Tips for Reducing Costs
 
 1. **Right-size resources**: Start smaller, scale as needed
 2. **Use spot/preemptible instances**: For testnets only
 3. **Reserved instances**: Commit for 1-3 years (30-70% savings)
-4. **Monitor usage**: Identify waste, optimize
+4. **Monitor usage**: Identify waste, optimise
 5. **Compare providers**: Benchmark cost vs performance
 
 ### Cost Estimation
