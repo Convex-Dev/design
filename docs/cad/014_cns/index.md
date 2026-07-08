@@ -189,6 +189,10 @@ The following root namespaces are planned but not yet provisioned:
 
 New root namespaces require Foundation governance approval.
 
+Purely numeric top-level names (e.g. `42`) MUST NOT be created. This is a permanent governance
+invariant: it guarantees that `did:convex` identifiers are unambiguous, since numeric identifiers
+always denote account addresses (see CAD043).
+
 ### The `convex.cns` alias
 
 The genesis state defines the record `convex.cns` with value `#9` (the standard registry) and child node `[#9 []]` — the CNS root itself. This makes `convex.cns` a named alias for the registry and the root namespace: `@convex.cns` resolves to the registry account, and `convex.cns.X` resolves identically to `X` for any name `X`. This provides a stable, named entry point for tooling that prefers not to hardcode `#9`.
