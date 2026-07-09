@@ -15,13 +15,13 @@ Examples of possible Trust Monitor implementations:
 - A time delay before an action may be performed
 - Authorisation based on possession of a specific type of NFT
 
-Trust Monitors are based on the reference monitor model, which was developed as part of United States military. It continues to be the case that systems evaluated at level B3 and above under the Trusted Computer System Evaluation Criteria (TCSEC) are required to use the reference monitor model to enforce access controls.
+Trust Monitors are based on the reference monitor model, which was developed for the United States military. It continues to be the case that systems evaluated at level B3 and above under the Trusted Computer System Evaluation Criteria (TCSEC) are required to use the reference monitor model to enforce access controls.
 
 ## Design Objectives
 
 ### Pluggable Architecture
 
-Trust monitors are designed to be pluggable so that they can be re-used in different contexts. It is common that different systems may way to grant the same access rights, and hence the monitors themselves should be easily re-usable
+Trust monitors are designed to be pluggable so that they can be re-used in different contexts. It is common that different systems may want to grant the same access rights, and hence the monitors themselves should be easily re-usable.
 
 ### User controlled
 
@@ -31,8 +31,8 @@ For example, if a user is running an auction, they might wish to provide a trust
 
 ### Sandboxing
 
-It is frequently desirable that access to trust monitors are fully sandboxed, in particular they should not be able to perform any on-chain action that might harm the caller (e.g. a re-entrancy attack). This danger is particularly acute given that:
-- Trust monitors representation delegation to potentially untrusted code
+It is frequently desirable that access to trust monitors is fully sandboxed, in particular they should not be able to perform any on-chain action that might harm the caller (e.g. a re-entrancy attack). This danger is particularly acute given that:
+- Trust monitors represent delegation to potentially untrusted code
 - We want to be able to allow people to provide their own trust monitors
 
 As such, we want to be able to use trust monitors in `query` mode.
@@ -76,7 +76,7 @@ The `check-trusted?` function must accept three arguments corresponding to `subj
       (= action :examine-self))))
 ```
 
-The Trust Monitor SHOULD return `true` or `false` for all possible argument values. While CAD22 functionality will work with any results (via the truthiness or falsiness of all values), callers may expect the specific values `true` or `false`, so returning anything else may break compatibility with some potential applications.
+The Trust Monitor MUST return `true` or `false` for all possible argument values. Callers may expect these specific values, so returning anything else risks breaking compatibility with some applications. Checkers however MUST NOT rely on this contract being honoured — see the defensive checking requirements under "Trust checks" below.
 
 The Trust Monitor MAY implement arbitrary access control logic on the basis of the arguments provided and the current CVM state. This might include looking up values in an on-chain database or calling other actors for confirmatory information.
 
@@ -86,13 +86,17 @@ The Trust Monitor MUST NOT rely on side effects, and MUST operate correctly when
 
 ### Trust checks
 
-A trust monitor check MUST return a truthy or falsey result for any `[subject action object]` combination. It should never fail (except for hitting resource constraints like `:JUICE`)
+A trust monitor MUST return `true` or `false` for any `[subject action object]` combination, and SHOULD never fail (except for hitting resource constraints like `:JUICE`).
+
+Checkers however MUST NOT rely on external monitor implementations honouring this contract: a defective or malicious monitor may throw an error or return a non-boolean value. A checker MUST be **defensive and fail closed** — a monitor error or non-`true` result MUST be treated as a denial, and MUST NOT be allowed to propagate as either a grant or an error that disrupts the caller. (An error-propagating checker also creates a denial-of-service shape: an actor holding an attacker-supplied monitor reference would throw on every check.)
 
 When checking a `[subject action object]` combination against a trust monitor the following procedure SHOULD be performed:
 
-1. If the trust monitor is an account implementing a callable function `check-trusted?` then return the result of calling that function while protected with a query: `(query (call trust-monitor (check-trusted? subject action object)))`
+1. If the trust monitor is an account implementing a callable function `check-trusted?` then call that function protected by a query (against re-entrancy), catching any error as denial and coercing the result to a strict boolean: `(boolean (try (query (call trust-monitor (check-trusted? subject action object))) false))`
 2. If the trust monitor is an unscoped Address, and is precisely equal to the `subject`, then return `true`
 3. Return `false`
+
+This is the behaviour of the reference `trust/trusted?` from protocol version 1: monitor errors are caught and yield `false`, and the result is always a strict `true` or `false` regardless of what the monitor returned. A monitor MAY still fail internally on malformed input (e.g. a bad scope) — the standard genesis monitors do — since the checker contains such failures as denials.
 
 If the trust monitor is known and trusted, then the caller MAY simplify the above procedure and call the SPI directly:
 
@@ -110,13 +114,13 @@ In most cases, the subject will be the `*caller*` of some actor code which needs
 
 Actions SHOULD be short human readable keywords, e.g. `:update`
 
-Actions MAY be any CVM value, which could include a data structure descibing the action in more detail. We urge caution on making actions too complex: it would be easy to introduce tricky security bugs.
+Actions MAY be any CVM value, which could include a data structure describing the action in more detail. We urge caution on making actions too complex: it would be easy to introduce tricky security bugs.
 
 Actions SHOULD NOT depend on information provided by or subject to influence by untrusted users. In most cases, the action should be hard-coded to a specific value relevant to the context of the authorisation check being performed.
 
 ### Objects
 
-Objects SHOULD be the caninical identifier of the object being acted upon. Thypically this is some information or resource which is protected by the authorisation check.
+Objects SHOULD be the canonical identifier of the object being acted upon. Typically this is some information or resource which is protected by the authorisation check.
 
 Most common object types are likely to be:
 - A Convex address (possibly scoped)
@@ -136,7 +140,9 @@ The `convex.trust` library provides a canonical CAD22 compatible interface to tr
 (trust/trusted? monitor subject action object)
 ```
 
-Action and object are optional: if omitted, they are passed to the Trust Monitor as the value `nil`
+Action and object are optional: if omitted, they are passed to the Trust Monitor as the value `nil`.
+
+From protocol version 1, `trusted?` is defensive as specified under "Trust checks": it always returns a strict `true` or `false`, treating any monitor error or non-`true` result as a denial.
 
 ### `convex.trust.monitors` library
 
@@ -162,6 +168,6 @@ These are designed to be *composed*, i.e. they are building blocks which can be 
 
 ;; Permit based on calling a function on (subject, action, object)
 ;; This can be a good way to allow subjects to control resources that they logically "own" 
-(trust/trusted? (mon/rule (fn [s a o] (= s o))) #16 :foo #16
+(trust/trusted? (mon/rule (fn [s a o] (= s o))) #16 :foo #16)
 => true
 ```
