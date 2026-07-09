@@ -194,6 +194,14 @@ Blobs can be easily constructed as literals by prefixing `0x` to a hexadecimal r
 ;; Can use functions like `count` to get the length of a Blob
 (count 0x12e5)
 => 2
+
+;; `cat` concatenates the raw bytes of Blobs (and other Blob-like values)
+(cat 0x1234 0xee99)
+=> 0x1234ee99
+
+;; `slice` is the inverse, extracting a range of bytes
+(slice 0x1234ee99 2)
+=> 0xee99
 ```
 
 #### Addresses
