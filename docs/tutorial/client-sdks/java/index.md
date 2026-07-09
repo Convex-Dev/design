@@ -28,14 +28,14 @@ This guide uses the **CVM-typed client**, `convex.api.Convex` — you work with 
 <dependency>
     <groupId>world.convex</groupId>
     <artifactId>convex-java</artifactId>
-    <version>0.8.7</version>
+    <version>0.8.8</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```groovy
-implementation 'world.convex:convex-java:0.8.7'
+implementation 'world.convex:convex-java:0.8.8'
 ```
 
 ## Quick Example
