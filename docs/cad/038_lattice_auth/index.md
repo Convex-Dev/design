@@ -184,8 +184,10 @@ Each attenuation in the `att` array is a capability with two fields:
 { "with": "did:key:z6Mk.../kv/mydb/", "can": "crud/read" }
 ```
 
-- **`with`** — a DID-scoped resource path
+- **`with`** — a DID-scoped resource path (see below)
 - **`can`** — an ability in a slash-delimited hierarchy
+
+Per [UCAN], `with` is a resource pointer in URI form and the scheme set is **open** — a validator MUST NOT reject a token merely because it cannot interpret a resource. Convex **profiles** this rather than restricting it: resources that Convex itself anchors and delegates are named as **DID-scoped paths** (§[Resource Ownership](#resource-ownership-and-root-authority)). Utility code tolerates any UCAN-legal `with`; the profile governs which resources Convex can anchor to a trusted root, not which tokens are well-formed. A resource whose scheme yields no derivable owner is not rejected — it simply grants nothing, fail-closed at the capability rather than the token.
 
 A capability covers a request only if **both** its `with` covers the request's resource **and** its `can` covers the request's ability.
 
@@ -230,16 +232,27 @@ UCAN tokens are validated by checking:
 
 Audience and issuer matching (e.g. `aud == caller DID`) is an **application policy** decision layered on top of these mandatory cryptographic, temporal, and chain-linkage checks — the core validator enforces proof-chain linkage but leaves audience acceptance to the caller.
 
-### DID Path Resources
+### Resource Ownership and Root Authority
 
-Resource URIs use DID paths for cross-user scoping:
+Resource URIs use DID paths for cross-user scoping. The **DID prefix names the resource owner**; the path scopes within it:
 
 ```
-did:key:z6MkAlice.../dlfs/docs/specs
+did:key:z6MkAlice.../dlfs/docs/specs     ← owned by did:key:z6MkAlice...
 did:key:z6MkAlice.../w/vendor-records
 ```
 
-This enables fine-grained capability delegation across user boundaries while maintaining the lattice's per-owner signing model.
+This enables fine-grained delegation across user boundaries while maintaining the lattice's per-owner signing model.
+
+**Why a DID-scoped profile.** A delegation chain is only trustworthy if its *root* is signed by an authority entitled to grant the resource. Establishing that authority requires knowing who owns the resource — which an opaque URI (`https:`, `mailto:`, application-custom) does not reveal. Naming the owner *inside* the resource lets any verifier check the root without a shared registry: offline for self-sovereign owners, and via a pluggable trust policy for custodial ones. Schemes that do not name an owner remain UCAN-legal and are not rejected, but Convex cannot anchor them to a root on its own.
+
+**How ownership is anchored.** For a DID-scoped `with`, the owner is the DID part of the resource (path and fragment stripped; DIDs compared canonically, not by raw string). The **root** of any chain granting that resource (the token with an empty `prf`) MUST be signed by the owner's controlling authority:
+
+- **self-sovereign owner** (`did:key`, self-certifying; `did:web`, domain-resolved) — the owner signs their own root, so the root issuer's DID equals the owner's DID. Verifiable offline; no policy required.
+- **custodial owner** (an identity a hosting node or venue controls) — the controlling authority signs an attestation on the owner's behalf, accepted only if the verifier's trust policy accepts that authority for that owner.
+
+The verifier resolves the root issuer's key through a DID resolver (`did:key` computed inline; other methods pluggable and expected to return only cryptographically-authenticated keys) and checks the root signature against it. The **mechanism** — chain walk, signature verification, key resolution, and the self-sovereign base case (root issuer == owner) — is fixed and shared. The **policy** — owner-derivation for non-`did:` schemes, and which custodial authorities are trusted — is supplied by the caller. No application re-implements chain-walking, signature verification, or resolution.
+
+**Fail-closed granularity.** A capability whose resource cannot be anchored to an accepted root grants nothing. This is per-capability: the token stays valid and its other, anchorable capabilities remain usable — satisfying the UCAN requirement not to reject uninterpretable resources while never conferring unanchored authority.
 
 ## Security Considerations
 
@@ -254,6 +267,7 @@ The two-layer verification model defends against several attack vectors:
 | **Issuer spoofing** — attacker signs a UCAN with their own key and names a victim in the `kid` header | Verification key is bound to the `iss` DID's embedded public key; the `kid` header is ignored, so a token only validates for the key that actually signed it |
 | **Capability prefix escape** — a grant on `w/notes` is abused to reach the sibling `w/notesSECRET` | Resource matching is path-segment-boundary aware; a shared textual prefix does not cover a sibling resource |
 | **Fail-open delegation** — a truncated or empty `with` is treated as an implicit wildcard | Empty or absent resources fail closed and cover nothing; wildcards must be explicit |
+| **Rogue root** — attacker roots a delegation chain over a victim's resource, signed with their own key | Root authority: the root issuer MUST be the resource owner (self-sovereign) or an authority the trust policy accepts for that owner (custodial); a resource that cannot be anchored to an accepted root grants nothing |
 
 Production deployments SHOULD always configure an owner verifier for Address and DID owners. Without a verifier, these owner types fall back to lenient mode (accept all), which is suitable only for development and testing.
 
