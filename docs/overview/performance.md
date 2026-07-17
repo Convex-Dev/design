@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 title: Performance
 ---
 
@@ -7,17 +7,27 @@ title: Performance
 
 Convex offers outstanding performance for decentralised applications. Our objective is to offer the best combination of decentralised security and interactive performance for applications in categories such as DeFi, gaming and the metaverse with large numbers of concurrent users.
 
+## The headline numbers
+
+- **Sub-second end-to-end finality** — consensus confirmation typically contributes ~200ms of a complete signed round trip (breakdown below)
+- **Zero block delay** — a peer publishes a block the instant it has a transaction; no leader slot, no waiting
+- **Up to 1 million transactions per second** raw CVM execution, measured by `CVMBenchmark`; the network targets 100,000+ TPS end-to-end
+- **~5 million reads / 800,000 writes per second** in Etch storage, on an ordinary laptop (`EtchBenchmark`)
+
+These figures were independently validated in the EU's Next Generation Internet (NGI) OntoChain project, which compared Convex against other decentralised platforms:
+
+![CompareETH2](https://github.com/user-attachments/assets/0ed23d0b-85dc-4aa6-91f7-8fc6903bcf40)
+
+Since that study, further improvements have raised transaction throughput and lowered latency. The rest of this page explains where these numbers come from and how to reproduce them.
+
+## How to think about performance
+
 We care primarily about two different measurements of performance:
 
 - **Latency** (how quickly results can be achieved) - important for interactive applications
 - **Throughput** (how many requests per second can we handle) - important for achieving internet scale
 
 Convex performance is based around a key idea: We implement consensus using a **CRDT** (Conflict-free Replicated Data Type) where the Peers achieve consensus by simply sharing a Belief data structure which is repeatedly merged with other Beliefs to form consensus. CRDTs are guaranteed to eventually converge to a consistent value under reasonable assumptions, which gives the desired properties of safety and liveness to the network. Peers, therefore, have a simple primary task: merge and propagate new beliefs to the network as quickly as possible.
-
-Here are some early performance figured validated in the EU's Next Generation Internet (NGI) OntoChain Project. 
-![CompareETH2](https://github.com/user-attachments/assets/0ed23d0b-85dc-4aa6-91f7-8fc6903bcf40)
-
-Since then, we have had a host of improvements allowing for much higher transaction throughput and lower transaction latency.
 
 ## Latency
 

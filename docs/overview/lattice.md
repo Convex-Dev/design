@@ -86,6 +86,16 @@ Lattice values are file system trees ("drives") with files and directory similar
 
 Because lattice values are an immutable persistent data structure, it is also possible to "snapshot" an entire DLFS drive with a single cryptographic hash. This snapshot could, for example, be pinned in the Data Lattice for audit / backup / analysis purposes. This operation is extremely efficient because of structural sharing: most of the actual storage will be shared with the current DLFS drive and/or other snapshots so this operation is extremely efficient (you are only really storing the deltas from other versions).
 
+### Structured data: KV, SQL and Queues
+
+Because any lattice value with a sound merge function forms a region, familiar data infrastructure can be rebuilt lattice-native:
+
+- The **[KV Database](/docs/cad/kv_database)** provides shared mutable key-value maps with last-writer-wins merge — the "state" half of distributed data.
+- **[Convex SQL](/docs/cad/convex_sql)** provides relational tables with schema, primary keys and full SQL queries (via Apache Calcite), replicated by lattice merge. It even speaks the [PostgreSQL wire protocol](/blog/sql-on-lattice), so ordinary database clients connect directly.
+- The **[Lattice Queue](/docs/cad/lattice_queue)** provides Kafka-style streaming — topics, partitions, offsets, independent consumers — with [no broker anywhere](/blog/lattice-queue): replication is just merge.
+
+Together these cover the two fundamental shapes of distributed data — state and logs — without any centralised infrastructure.
+
 ### Execution Lattice
 
 The Execution Lattice specifies compute tasks to be performed on a decentralised basis.
@@ -107,6 +117,10 @@ The *P2P Lattice* powers peer-to-peer communication by solving the challenge of 
 Lattice values are a map of public keys to signed and timestamped metadata describing a peer. The merge function is simply to combine these maps, and to take the most recent correctly signed metadata if keys collide.
 
 The P2P Lattice operates in a manner similar to [Kademlia](https://en.wikipedia.org/wiki/Kademlia), allowing the location of arbitrary peers on the Internet without depending on any decentralised location service. In the Kademlia model, peers only need to store metadata for other peers that they are relatively "near" to in cryptographic space, making this a highly efficient and fault-tolerant decentralised service.
+
+### An ecosystem, not a fixed list
+
+Regions compose, and new ones keep arriving. Delegated, capability-based access via [UCAN authorisation](/docs/cad/lattice_auth) and [decentralised identity](/docs/cad/did) secures cross-party sharing; every Convex peer exposes the lattice to AI agents via [MCP](/docs/products/convex-mcp); and [Covia](https://covia.ai) builds federated AI orchestration — models, agents and data collaborating across organisational boundaries — entirely on lattice technology. If you can define a value type and a sound merge function, you can add a region.
 
 ## Efficiency and scalability
 

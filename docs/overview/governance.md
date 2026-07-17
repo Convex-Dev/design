@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 6
 title: Governance
 ---
 
@@ -8,7 +8,7 @@ title: Governance
 The Convex Network is governed by the **Convex Foundation**, a dedicated non-profit entity committed to fostering 
 a secure, decentralised, and thriving ecosystem for global peer-to-peer value exchange. 
 By prioritising community-driven principles, the Foundation ensures Convex remains innovative, accessible, 
-and aligned with the vision of empowering developers and users worldwide.
+and open to developers and users worldwide.
 
 The Foundation drives key initiatives on behalf of the ecosystem:
 
@@ -20,11 +20,11 @@ The Foundation drives key initiatives on behalf of the ecosystem:
 
 ## Getting Involved
 
-Join a governance model built for the future - where transparency meets innovation, and every stakeholder has a voice in shaping a fair decentralised world.
+The Foundation is built to be open: every stakeholder has a voice.
 
 - **Join the Community** - Connect with us on [Discord](https://discord.com/invite/xfYGq4CT7v) or social media
 - **Contribute** - Make open source or community contributions. Contributors frequently earn CVM awards in recognition of their efforts
-- **Purchase CVM** - by buying CVM, not only are you obtaining the utility token for the world's most powerful decentralised economic network, you are also supporting our mission. 100% of revenue from initial CVM sales is re-invested in the ecosystem via the Foundation.
+- **Purchase CVM** - buying CVM gets you the utility token that powers the Convex network, and supports our mission: 100% of revenue from initial CVM sales is re-invested in the ecosystem via the Foundation.
 
 ## Foundation Information
 
