@@ -117,6 +117,11 @@ onBrokenMarkdownLinks: 'warn'
         },
         blog: {
           showReadingTime: true,
+          // List every post in the blog sidebar (grouped by year), not just
+          // the 5 most recent
+          blogSidebarCount: 'ALL',
+          blogSidebarTitle: 'All posts',
+          postsPerPage: 20,
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
@@ -254,6 +259,10 @@ onBrokenMarkdownLinks: 'warn'
             {
               label: 'Blog',
               to: '/blog',
+            },
+            {
+              label: 'Blog Archive',
+              to: '/blog/archive',
             },
             {
               label: 'GitHub',
