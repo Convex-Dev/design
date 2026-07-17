@@ -1,3 +1,8 @@
+---
+title: Convex CLI
+sidebar_position: 6
+---
+
 # Convex CLI
 
 The Convex CLI (Command Line Interface) is a powerful tool for interacting with Convex from the command line on Windows, Linux and MacOS. It's a handy tool for system administrators and peer operators who need to script interactions with the Convex Network.

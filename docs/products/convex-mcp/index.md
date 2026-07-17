@@ -1,3 +1,8 @@
+---
+title: Convex MCP
+sidebar_position: 2
+---
+
 # Convex MCP
 
 Convex peers ship with built-in **Model Context Protocol (MCP)** servers, enabling AI agents and MCP-compatible tools to interact directly with the Convex network. Any peer with MCP enabled becomes a gateway for querying state, executing transactions, managing digital assets, and receiving real-time state change notifications — no custom integrations or centralised intermediaries required.

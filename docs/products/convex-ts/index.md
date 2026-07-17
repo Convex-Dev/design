@@ -1,3 +1,8 @@
+---
+title: Convex SDK
+sidebar_position: 1
+---
+
 # Convex SDK
 
 Official client libraries for the Convex decentralised lattice network.

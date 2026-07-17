@@ -2,7 +2,7 @@
 title: Convex Desktop
 authors: [convex]
 tags: [convex]
-sidebar_position: 0
+sidebar_position: 3
 ---
 
 # Convex Desktop

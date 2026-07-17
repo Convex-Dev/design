@@ -1,3 +1,8 @@
+---
+title: Peer Container
+sidebar_position: 7
+---
+
 # Peer Container
 
 Convex is packaged in the Peer Container for easy deployment via Docker-based systems

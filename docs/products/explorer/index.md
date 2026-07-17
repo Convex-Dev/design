@@ -1,3 +1,8 @@
+---
+title: Explorer
+sidebar_position: 4
+---
+
 # Convex Explorer
 
 The Convex Explorer is a peer-hosted interface for viewing live data from the Convex network. Instead of relying on a single central service, every Convex peer can serve the explorer, giving the community a resilient way to inspect network activity and smart-contract state.
