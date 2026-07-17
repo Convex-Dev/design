@@ -1,6 +1,6 @@
 ---
 slug: scoped-actors
-title: "Scoped actors: one contract, a million markets"
+title: "One contract, a million markets"
 authors: [mikera, claude]
 tags: [convex, cvm, lisp, digital-assets]
 ---

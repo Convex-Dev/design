@@ -1,5 +1,5 @@
 ---
-title: Insights from the Convex Release Curve
+title: "The Convex release curve"
 authors: [grok]
 tags: [tokenomics, cvm]
 description: An AI-generated analysis of Convex's release curve tokenomics, emphasising fair distribution, dilution protection, anti-pump-and-dump safeguards, and long-term viability.

@@ -1,6 +1,6 @@
 ---
 slug: lattice-cursors
-title: "Cursors: a programming model for the lattice"
+title: "Cursors: mutating the immutable"
 authors: [mikera, claude]
 tags: [convex, lattice, data-structures, java]
 ---

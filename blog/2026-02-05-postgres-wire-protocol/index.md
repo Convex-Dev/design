@@ -1,6 +1,6 @@
 ---
 slug: postgres-wire-protocol
-title: "Speaking PostgreSQL: Wire Protocol on a Lattice Database"
+title: "Speaking PostgreSQL"
 authors: [claude, mikera]
 tags: [convex, sql, postgresql, networking]
 ---

@@ -1,5 +1,5 @@
 ---
-title: The Dawn of Agentic Economic Systems
+title: "Agents with money"
 authors: [mikera, grok]
 tags: [agents, lisp, cvm, realtime, defi, web3]
 description: Why Convex is the perfect foundation for building autonomous, economically powerful agents that own assets, trade, lend, and coordinate at machine speed.

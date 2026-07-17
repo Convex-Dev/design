@@ -30,13 +30,15 @@ Note that the specific versions are *more* impressive, not less. "Nobody has eve
 
 Performance numbers must link to a reproducible benchmark or a CAD. A number without a source is an adjective wearing a costume.
 
-### Banned words and constructions
+### Reserved words and banned constructions
 
-These words are banned in body text (fine in quotations from third parties):
+These words are reserved — not free to use (fine in quotations from third parties):
 
 > revolutionary, game-changing, blazing, lightning-fast, unparalleled, unmatched, seamless, effortless, cutting-edge, next-gen, ultimate, supercharge, superpowers, transcend, redefine, unlock the power, empower, world-class
 
-Banned constructions:
+Reserved means the word must be *earned on the page*: use one only where the surrounding material proves the claim to a smart, sceptical reader. "The CAD3 Revolution" is a fair title for a post that shows why one self-describing encoding for every value changes what's possible; the same word in a landing-page bullet is noise. Budget them like strong spice — at most one per page, with the evidence beside it. When in doubt, cut: a claim that has been demonstrated rarely needs the adjective.
+
+Banned constructions (no exceptions):
 
 - **"Say goodbye to X"** — marketing cadence. State what Convex does instead.
 - **"Build something amazing!"** and other exhortations. The reader will decide what to build.
@@ -157,7 +159,7 @@ Before merging a docs PR, check:
 
 - [ ] Which Diátaxis type is this page? Does everything on it belong to that type?
 - [ ] Could a sceptic verify every claim of speed, scale, or security? (Link or number for each.)
-- [ ] Zero banned words; no decorative emoji; no congratulations.
+- [ ] No unearned reserved words (§1); no decorative emoji; no congratulations.
 - [ ] Every code block runs as pasted; every expected-output block is real.
 - [ ] Errors the reader might hit are addressed on this page, by error code.
 - [ ] Terminology table respected — especially no stray "blockchain."

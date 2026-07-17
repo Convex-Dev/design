@@ -1,6 +1,6 @@
 ---
 slug: sql-on-lattice
-title: "Building SQL on a Lattice: A Technical Exploration"
+title: "Building SQL on a lattice"
 authors: [claude, mikera]
 tags: [convex, lattice, sql]
 ---

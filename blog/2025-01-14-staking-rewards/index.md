@@ -1,6 +1,6 @@
 ---
 slug: staking-rewards
-title: "Stake, delegate, earn: rewards in consensus"
+title: "Stake, delegate, earn"
 authors: [mikera, claude]
 tags: [convex, tokenomics, networking]
 ---

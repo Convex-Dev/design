@@ -1,6 +1,6 @@
 ---
 slug: cat-splice
-title: "cat and splice: byte surgery on the CVM"
+title: "Byte surgery on the CVM"
 authors: [mikera, claude]
 tags: [convex, cvm, lisp, data-structures]
 ---

@@ -1,6 +1,6 @@
 ---
 slug: exabyte-sparse-files
-title: "Supporting Exabyte Sparse Files in DLFS"
+title: "Exabyte sparse files"
 authors: [mikera, claude]
 tags: [convex, dlfs, data-structures, lattice, java]
 ---

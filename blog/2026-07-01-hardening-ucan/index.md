@@ -1,6 +1,6 @@
 ---
 slug: hardening-ucan
-title: "Hardening UCAN: closing an issuer spoof and a capability escape"
+title: "Hardening UCAN"
 authors: [mikera, claude]
 tags: [convex, security, ucan, did, lattice]
 ---

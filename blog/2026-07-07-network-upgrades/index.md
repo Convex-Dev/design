@@ -1,6 +1,6 @@
 ---
 slug: network-upgrades
-title: "Networks that evolve: scheduled upgrades in consensus"
+title: "Networks that evolve"
 authors: [mikera, claude]
 tags: [convex, cvm, lattice, networking]
 ---
