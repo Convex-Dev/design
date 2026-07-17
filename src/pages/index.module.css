@@ -5,19 +5,97 @@
 
 .heroBanner {
   padding: 4rem 0;
-  text-align: center;
   position: relative;
   overflow: hidden;
+  /* Brand navy in both light and dark themes, matching the social card */
+  background: linear-gradient(180deg, #071347 0%, #0f206c 100%);
+  color: #ffffff;
+}
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.heroText {
+  flex: 1;
+  text-align: left;
+}
+
+.heroCode {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.heroCode :global(.theme-code-block) {
+  margin-bottom: 0;
+  box-shadow: 0 8px 24px rgba(1, 6, 27, 0.35);
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
   }
+
+  .heroInner {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .heroText {
+    text-align: center;
+  }
+
+  .heroCode {
+    width: 100%;
+  }
+
+  .buttons {
+    justify-content: center;
+  }
 }
 
-.buttons {
+.pathways {
+  padding: 3rem 0 1rem;
+}
+
+.pathwaysTitle {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pathwayCard {
+  height: 100%;
+}
+
+.pathwayLinks {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.pathwayLinks li {
+  margin: 0.25rem 0;
+}
+
+.community {
+  padding: 3rem 0 4rem;
+}
+
+.communityButtons {
   display: flex;
-  align-items: center;
   justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
 }

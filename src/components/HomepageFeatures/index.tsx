@@ -1,12 +1,12 @@
+import type {ReactNode} from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
-import DocusaurusSvg from './docusaurus.svg';
 
 type FeatureItem = {
   title: string;
   Svg: React.ComponentType<React.ComponentProps<'svg'>>;
-  description: JSX.Element;
+  description: ReactNode;
 };
 
 const FeatureList: FeatureItem[] = [
@@ -15,7 +15,9 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/Torus-82.svg').default,
     description: (
       <>
-        The Lattice is the innovation at the heart of Convex - decentralised, infinitely scalable, cryptographically secure. 
+        The Lattice is the innovation at the heart of Convex — decentralised,
+        infinitely scalable, cryptographically secure data structures that
+        power everything from consensus to file systems.
       </>
     ),
   },
@@ -24,16 +26,20 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/Torus-11.svg').default,
     description: (
       <>
-        Convex gives developers superpowers: fully interactive REPL development and the power of "One Line DeFi"
+        Fully interactive REPL development, idiomatic SDKs for TypeScript,
+        Java and Python, and the power of &quot;One Line DeFi&quot; with
+        on-chain libraries.
       </>
     ),
   },
   {
-    title: 'Blazing Performance',
+    title: 'Real-Time Performance',
     Svg: require('@site/static/img/Torus-81.svg').default,
     description: (
       <>
-        With zero block delay and near-instant transaction confirmation, you can build the perfect experience for your users. 
+        Zero block delay and near-instant transaction confirmation — build
+        real-time experiences that feel like the web, with the guarantees of
+        decentralisation.
       </>
     ),
   },
@@ -53,7 +59,7 @@ function Feature({title, Svg, description}: FeatureItem) {
   );
 }
 
-export default function HomepageFeatures(): JSX.Element {
+export default function HomepageFeatures(): ReactNode {
   return (
     <section className={styles.features}>
       <div className="container">

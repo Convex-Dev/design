@@ -88,6 +88,20 @@ onBrokenMarkdownLinks: 'warn'
     ],
   ],
 
+  themes: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        // Offline search index built at build time — no external service needed.
+        hashed: true,
+        indexBlog: true,
+        docsRouteBasePath: '/docs',
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+      },
+    ],
+  ],
+
   presets: [
     [
       'classic',
@@ -126,8 +140,8 @@ onBrokenMarkdownLinks: 'warn'
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/Convex.png',
+    // Social card shown in link previews (X, Discord, Slack etc.)
+    image: 'img/convex-social-card.png',
     tableOfContents: {
       minHeadingLevel: 2,
       maxHeadingLevel: 3,
@@ -178,8 +192,16 @@ onBrokenMarkdownLinks: 'warn'
           title: 'Docs',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Introduction',
               to: '/docs/intro',
+            },
+            {
+              label: 'User Guide',
+              to: '/docs/tutorial',
+            },
+            {
+              label: 'Products',
+              to: '/docs/products',
             },
             {
               label: 'CADs',
@@ -240,7 +262,7 @@ onBrokenMarkdownLinks: 'warn'
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Convex Foundation. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Convex Foundation.`,
     },
     prism: {
       theme: prismThemes.vsLight,
