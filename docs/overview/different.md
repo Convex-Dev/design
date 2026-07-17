@@ -31,7 +31,7 @@ Background and rationale: [Memory is money](/blog/memory-is-money).
 
 ## The compiler lives on-chain
 
-You don't submit bytecode compiled by an external toolchain — you submit **source**, and the CVM expands and compiles it in consensus, juice-metered like any computation. That's why development on Convex is REPL-first (type an expression, it runs on the network), why `deploy` is a one-liner, and why there is no "verified source" problem: the chain compiled it, so the chain knows.
+No external toolchain is required: submit **source**, and the CVM expands and compiles it in consensus, juice-metered like any computation. That's why development on Convex is REPL-first (type an expression, it runs on the network), why `deploy` is a one-liner, and why there is no "verified source" problem for code submitted this way: the chain compiled it, so the chain knows. Clients that can precompile are free to submit compiled CVM ops directly instead — that saves the compilation juice — but the compiler is always there in the protocol.
 
 Details: [CAD008 (Compiler)](/docs/cad/compiler) and [The compiler lives on-chain](/blog/on-chain-compiler).
 

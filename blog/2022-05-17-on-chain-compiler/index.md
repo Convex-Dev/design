@@ -8,8 +8,9 @@ tags: [convex, cvm, lisp]
 On most smart contract platforms, the compiler is somebody else's problem.
 You write Solidity, run a toolchain on your laptop, and submit the
 resulting bytecode to the chain. The chain never sees your source code.
-Convex works differently: **you submit source, and the CVM compiles it —
-on-chain, in consensus, metered by juice like any other computation.**
+Convex works differently: **the compiler is part of the CVM.** Submit
+source, and it is expanded and compiled on-chain, in consensus, metered
+by juice like any other computation.
 
 <!-- truncate -->
 
@@ -50,8 +51,11 @@ effect — not an opaque blob of bytecode.
 ## What it costs
 
 Compilation costs juice, so there is a real (small) cost each time source
-is compiled, and the CVM has to carry a compiler in its trusted core —
-which is exactly why we keep Convex Lisp small and the compilation
+is compiled. Submitting source is a capability, not an obligation: a
+client that can precompile is free to submit compiled CVM ops directly
+and skip that cost — useful for high-volume applications running the
+same code repeatedly. And the CVM has to carry a compiler in its trusted
+core — which is exactly why we keep Convex Lisp small and the compilation
 pipeline simple. We consider that trade well worth it. The expander and
 compiler are among the most carefully tested parts of the CVM, because
 they have to be: they run on every transaction containing source code.
