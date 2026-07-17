@@ -61,7 +61,7 @@ Native JVM integration for high-performance backend services and enterprise appl
 <dependency>
     <groupId>world.convex</groupId>
     <artifactId>convex-java</artifactId>
-    <version>0.8.8</version>
+    <version>0.8.9</version>
 </dependency>
 ```
 

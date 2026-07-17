@@ -168,7 +168,7 @@ Run a local peer with a full GUI for interactive development.
 **Download**:
 ```bash
 # Linux/Mac
-wget https://github.com/Convex-Dev/convex/releases/download/0.8.8/convex.jar
+wget https://github.com/Convex-Dev/convex/releases/download/0.8.9/convex.jar
 
 # Or build from source
 git clone https://github.com/Convex-Dev/convex.git
@@ -345,7 +345,7 @@ jobs:
 
       - name: Start Local Peer
         run: |
-          wget https://github.com/Convex-Dev/convex/releases/download/0.8.8/convex.jar
+          wget https://github.com/Convex-Dev/convex/releases/download/0.8.9/convex.jar
           java -jar convex.jar local start --api-port 8080 &
           sleep 10
 

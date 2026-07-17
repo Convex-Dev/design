@@ -109,7 +109,7 @@ Connect to Convex from your application using official client libraries:
   *Production ready* • `npm install @convex-world/convex-ts`
 
 - **[Java](/docs/tutorial/client-sdks/java)** - For JVM applications, Android, enterprise systems
-  *Production ready* • `world.convex:convex-java:0.8.8`
+  *Production ready* • `world.convex:convex-java:0.8.9`
 
 - **[Python](/docs/tutorial/client-sdks/python)** - For Python applications, scripting, data science
   *Production ready* • `pip install convex-sdk`
