@@ -11,7 +11,7 @@ Official client libraries for connecting to the Convex network from your applica
 
 Build web applications, Node.js services, and React dApps with full type safety — or use the same package from plain JavaScript.
 
-- **Status**: ✅ Production ready
+- **Status**: Production ready
 - **Package**: `@convex-world/convex-ts` (works in TypeScript and plain JavaScript)
 - **Environments**: Node.js, Browsers, Deno, Bun
 - **Frameworks**: React hooks and components available
@@ -25,7 +25,7 @@ Build web applications, Node.js services, and React dApps with full type safety 
 
 Native JVM client for high-performance enterprise applications.
 
-- **Status**: ✅ Production ready
+- **Status**: Production ready
 - **Package**: `world.convex:convex-java` (on Maven Central)
 - **Environments**: JVM (Java 21+)
 - **Features**: Native performance, CompletableFuture async, zero overhead
@@ -39,7 +39,7 @@ Native JVM client for high-performance enterprise applications.
 
 Pythonic client for scripting, automation, and data science.
 
-- **Status**: ✅ Production ready
+- **Status**: Production ready
 - **Package**: `convex-sdk` (on PyPI)
 - **Environments**: Python 3.8+
 - **Features**: Synchronous I/O, Account objects, automatic sequence retry

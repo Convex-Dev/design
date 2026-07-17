@@ -9,10 +9,10 @@ Deploy a Convex peer using Docker for simplified container-based deployment.
 ## Overview
 
 Docker deployment provides:
-- ✅ Simplified installation
-- ✅ Consistent environment
-- ✅ Easy upgrades
-- ✅ Portable configuration
+- Simplified installation
+- Consistent environment
+- Easy upgrades
+- Portable configuration
 
 **→ For traditional installation, see [Manual Deployment](manual-deployment)**
 

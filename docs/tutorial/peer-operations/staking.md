@@ -18,10 +18,10 @@ Staking uses a small set of CVM functions: `create-peer`, `set-peer-stake`, `set
 
 ## Prerequisites
 
-- ✅ Funded Convex account with sufficient CVM balance (stake + juice)
-- ✅ Ed25519 key pair for the peer identity (the *peer key*)
-- ✅ Peer infrastructure ready ([deployment guides](manual-deployment))
-- ✅ Network connectivity configured
+- Funded Convex account with sufficient CVM balance (stake + juice)
+- Ed25519 key pair for the peer identity (the *peer key*)
+- Peer infrastructure ready ([deployment guides](manual-deployment))
+- Network connectivity configured
 
 ## Staking Requirements
 

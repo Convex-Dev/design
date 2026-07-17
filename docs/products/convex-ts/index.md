@@ -4,13 +4,13 @@ Official client libraries for the Convex decentralised lattice network.
 
 ## Overview
 
-The Convex SDK enables developers to harness the full power of the Convex decentralised lattice from any programming language or platform. Whether you're building web applications, backend services, mobile apps, or embedded systems, Convex SDKs provide idiomatic, type-safe APIs that feel natural in your language ecosystem.
+The Convex SDK lets developers use the full capabilities of the Convex decentralised lattice from any programming language or platform. Whether you're building web applications, backend services, mobile apps, or embedded systems, Convex SDKs provide idiomatic, type-safe APIs that feel natural in your language ecosystem.
 
-By bridging multiple language ecosystems with the Convex Virtual Machine (CVM), these SDKs unlock the platform's revolutionary capabilities:
+By bridging multiple language ecosystems with the Convex Virtual Machine (CVM), these SDKs expose the platform's core capabilities:
 
 - **Decentralised State Management** - Access and modify global state with atomic transactions
-- **Lattice Technology** - Leverage CRDT-based data structures for conflict-free collaboration
-- **Convergent Proof of Stake** - Interact with the world's fastest decentralised consensus
+- **Lattice Technology** - Use CRDT-based data structures for conflict-free collaboration
+- **Convergent Proof of Stake** - Sub-second transaction finality via leaderless consensus
 - **Convex Lisp Execution** - Execute smart contracts and queries from any environment
 - **Cross-Platform Interoperability** - Applications in different languages share the same network state
 
@@ -18,7 +18,7 @@ By bridging multiple language ecosystems with the Convex Virtual Machine (CVM), 
 
 ### TypeScript / JavaScript
 
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 Build web applications, Node.js services, and React dApps with full type safety and modern JavaScript tooling.
 
@@ -35,12 +35,12 @@ console.log('Balance:', result.value);
 ```
 
 **Key Features:**
-- 🔍 Read-only queries without authentication
-- 🔐 Full account management with Ed25519 keys
-- 💸 Type-safe transaction submission
-- 🔌 Pluggable signers (hardware wallets, browser extensions)
-- 🌐 Environment agnostic (Node.js, browsers, Deno, Bun)
-- ⚛️ React integration available
+- Read-only queries without authentication
+- Full account management with Ed25519 keys
+- Type-safe transaction submission
+- Pluggable signers (hardware wallets, browser extensions)
+- Environment agnostic (Node.js, browsers, Deno, Bun)
+- React integration available
 
 **→ [TypeScript SDK Documentation](/docs/tutorial/client-sdks/typescript)**
 
@@ -48,7 +48,7 @@ console.log('Balance:', result.value);
 
 ### Java
 
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 Native JVM integration for high-performance backend services and enterprise applications.
 
@@ -56,7 +56,7 @@ Native JVM integration for high-performance backend services and enterprise appl
 <dependency>
     <groupId>world.convex</groupId>
     <artifactId>convex-java</artifactId>
-    <version>0.8.7</version>
+    <version>0.8.8</version>
 </dependency>
 ```
 
@@ -72,12 +72,12 @@ System.out.println("Balance: " + result.getValue());
 ```
 
 **Key Features:**
-- ☕ Native JVM performance with zero overhead
-- ⚡ Async operations with CompletableFuture
-- 🔐 Ed25519 key management (AKeyPair)
-- 🌐 Multiple client types (HTTP, direct peer)
-- 🔄 Automatic transaction signing
-- 📦 Self-contained, minimal dependencies
+- Native JVM performance with zero overhead
+- Async operations with CompletableFuture
+- Ed25519 key management (AKeyPair)
+- Multiple client types (HTTP, direct peer)
+- Automatic transaction signing
+- Self-contained, minimal dependencies
 
 **→ [Java SDK Documentation](/docs/tutorial/client-sdks/java)**
 
@@ -85,7 +85,7 @@ System.out.println("Balance: " + result.getValue());
 
 ### Python
 
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 Pythonic API for scripting, automation, and data science applications.
 
@@ -106,28 +106,16 @@ print(f'Balance: {balance / 1_000_000_000} CVM')
 ```
 
 **Key Features:**
-- 🔍 Synchronous I/O for simple scripting
-- 🔐 Account object pattern with Ed25519 keys
-- 💸 Built-in transfer and balance methods
-- 🔄 Automatic sequence retry for concurrency
-- 📝 CNS (Convex Name Service) integration
-- 🐍 Pythonic `snake_case` naming
+- Synchronous I/O for simple scripting
+- Account object pattern with Ed25519 keys
+- Built-in transfer and balance methods
+- Automatic sequence retry for concurrency
+- CNS (Convex Name Service) integration
+- Pythonic `snake_case` naming
 
 **→ [Python SDK Documentation](/docs/tutorial/client-sdks/python)**
 
 ---
-
-### Rust
-
-**Status**: 🚧 Coming Soon
-
-Zero-cost abstractions for systems programming and performance-critical applications.
-
-**Planned Features:**
-- Memory-safe client implementation
-- Async runtime support (Tokio)
-- WebAssembly compilation target
-- Embedded systems support
 
 ## Why Multiple SDKs?
 
@@ -136,10 +124,9 @@ Different applications demand different languages and ecosystems:
 - **Web Applications** need TypeScript/JavaScript for browser compatibility
 - **Enterprise Systems** require Java for Spring/Jakarta EE integration
 - **Data Science** relies on Python's rich ecosystem (NumPy, TensorFlow, scikit-learn)
-- **Systems Programming** demands Rust's performance and memory safety
 - **Mobile Applications** use platform-specific languages (Swift, Kotlin)
 
-Convex SDKs ensure developers can leverage the full power of decentralised lattice technology in their **native language ecosystem**, with idiomatic APIs that feel familiar rather than foreign.
+Convex SDKs let developers use decentralised lattice technology in their **native language ecosystem**, with idiomatic APIs that feel familiar rather than foreign.
 
 ## Universal Capabilities
 
@@ -154,10 +141,10 @@ All Convex SDKs provide:
 
 ## Resources
 
-- **📚 [SDK Documentation](/docs/tutorial/client-sdks/)** - Guides for all languages
-- **💬 [Discord Community](https://discord.com/invite/xfYGq4CT7v)** - Get help and share ideas
-- **🐙 [GitHub](https://github.com/Convex-Dev)** - Source code and examples
-- **📦 [npm Package](https://www.npmjs.com/package/@convex-world/convex-ts)** - TypeScript SDK
+- **[SDK Documentation](/docs/tutorial/client-sdks/)** - Guides for all languages
+- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - Get help and share ideas
+- **[GitHub](https://github.com/Convex-Dev)** - Source code and examples
+- **[npm Package](https://www.npmjs.com/package/@convex-world/convex-ts)** - TypeScript SDK
 
 ---
 

@@ -29,10 +29,10 @@ print(result['value'])  # 6
 
 Unlike transactions, queries:
 
-- ✅ **Don't consume juice** - completely free to execute
-- ✅ **Don't require balance** - work even with zero funds
-- ✅ **Don't need signatures** - read-only access
-- ✅ **Execute instantly** - no consensus delay
+- **Don't consume juice** - completely free to execute
+- **Don't require balance** - work even with zero funds
+- **Don't need signatures** - read-only access
+- **Execute instantly** - no consensus delay
 
 ## Query Methods
 

@@ -8,7 +8,7 @@ The official TypeScript/JavaScript client library for the Convex decentralised l
 
 ## Overview
 
-The `@convex-world/convex-ts` package provides a modern, type-safe way to interact with the Convex network from TypeScript applications. It works seamlessly across multiple environments including Node.js, browsers, Deno, and Bun.
+The `@convex-world/convex-ts` package provides a modern, type-safe way to interact with the Convex network from TypeScript applications. It works across multiple environments including Node.js, browsers, Deno, and Bun.
 
 ## Key Features
 

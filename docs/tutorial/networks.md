@@ -59,10 +59,10 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 **Purpose**: Real-world applications with actual value
 
 **Characteristics**:
-- ❌ No public faucets (Convex Coins have real value)
-- ✅ High reliability and uptime
-- ✅ Persistent state (never resets)
-- ✅ Professionally operated infrastructure
+- No public faucets (Convex Coins have real value)
+- High reliability and uptime
+- Persistent state (never resets)
+- Professionally operated infrastructure
 - ⚠️ Requires funded account to transact
 
 **When to Use**:
@@ -75,11 +75,11 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 **Purpose**: Testing and learning without risk
 
 **Characteristics**:
-- ✅ Public faucets available (free test funds)
-- ✅ Safe for experimentation
+- Public faucets available (free test funds)
+- Safe for experimentation
 - ⚠️ May reset periodically
 - ⚠️ No real value (test Convex Coins only)
-- ✅ Publicly accessible
+- Publicly accessible
 
 **When to Use**:
 - Learning Convex development
@@ -92,11 +92,11 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 **Purpose**: Private development environment
 
 **Characteristics**:
-- ✅ Full control over configuration
-- ✅ Fastest performance (no network latency)
-- ✅ Built-in account creation and funding
-- ✅ Perfect for unit/integration testing
-- ✅ Works offline
+- Full control over configuration
+- Fastest performance (no network latency)
+- Built-in account creation and funding
+- Perfect for unit/integration testing
+- Works offline
 - ⚠️ Requires running peer infrastructure
 
 **When to Use**:
@@ -231,9 +231,9 @@ Convex convex = Convex.connect("https://peer.convex.live");
 
 ### Production (Protonet)
 
-- ✅ **Always verify genesis hash** - See [verification guide](peer-operations#verifying-network-identity)
-- ✅ Use HTTPS for encrypted connections
-- ✅ Never share private keys or seed phrases
+- **Always verify genesis hash** - See [verification guide](peer-operations#verifying-network-identity)
+- Use HTTPS for encrypted connections
+- Never share private keys or seed phrases
 - ⚠️ Transactions are irreversible
 - ⚠️ Test thoroughly on testnets first
 
@@ -242,12 +242,12 @@ Convex convex = Convex.connect("https://peer.convex.live");
 - ⚠️ Never use production keys on testnets
 - ⚠️ Testnets may reset without notice
 - ⚠️ Test funds have no real value
-- ✅ Safe to experiment and make mistakes
+- Safe to experiment and make mistakes
 
 ### Local Peers
 
-- ✅ Completely private (no network exposure)
-- ✅ Safe for testing with production-like keys
+- Completely private (no network exposure)
+- Safe for testing with production-like keys
 - ⚠️ State is ephemeral unless persisted
 
 ## Next Steps

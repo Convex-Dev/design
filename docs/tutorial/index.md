@@ -20,6 +20,12 @@ Build on-chain logic with Convex:
 - **[Actors](tutorial/actors)** - Smart contracts and autonomous actors
 - **[Recipes](tutorial/recipes)** - Practical how-to guides
 
+### AI Agents
+
+Connect autonomous agents to the Convex economy:
+- **[AI Agents](tutorial/agents)** - Agents as first-class economic participants
+- **[MCP Integration](tutorial/agents/mcp)** - Connect any MCP-compatible agent to a peer
+
 ### Network Operations
 
 Run and operate peer infrastructure:
@@ -32,7 +38,7 @@ Run and operate peer infrastructure:
 
 Choose your path based on what you want to build:
 
-### 🚀 Application Developer
+### Application Developer
 
 **Build apps that use Convex for state and transactions**
 
@@ -45,7 +51,7 @@ Choose your path based on what you want to build:
 
 ---
 
-### 📜 Smart Contract Developer
+### Smart Contract Developer
 
 **Build autonomous actors and on-chain logic**
 
@@ -58,7 +64,20 @@ Choose your path based on what you want to build:
 
 ---
 
-### 🖥️ Peer Operator
+### Agent Developer
+
+**Connect AI agents to real economic state**
+
+1. Read [AI Agents](tutorial/agents) - Why Convex suits agentic systems
+2. Set up [MCP Integration](tutorial/agents/mcp) - Connect your agent to a peer
+3. Manage [Agent Accounts](tutorial/agents/account-management) - Keys, funding and delegation
+4. Design [Agentic Economics](tutorial/agents/agentic-economics) - Agent-to-agent commerce
+
+**Best for:** AI agents, autonomous services, machine-to-machine payments
+
+---
+
+### Peer Operator
 
 **Run peer infrastructure and participate in consensus**
 
@@ -95,7 +114,6 @@ Connect to Convex from your application using official client libraries:
 - **[Python](/docs/tutorial/client-sdks/python)** - For Python applications, scripting, data science
   *Production ready* • `pip install convex-sdk`
 
-- **Rust** *(Coming soon)* - For Rust applications
 
 For command-line interaction, see the [Convex CLI](/docs/products/convex-cli).
 
@@ -105,9 +123,10 @@ For command-line interaction, see the [Convex CLI](/docs/products/convex-cli).
 
 **I want to...**
 
-- 🚀 **Build my first app** → [Quick Start](tutorial/quickstart) → [Choose SDK](tutorial/client-sdks)
-- 🌐 **Connect to a network** → [Networks Guide](tutorial/networks)
-- 💰 **Get test funds** → [Faucet Guide](tutorial/coins/faucet)
-- 📜 **Write smart contracts** → [Convex Lisp](tutorial/convex-lisp)
-- 🖥️ **Run a peer** → [Peer Operations](tutorial/peer-operations)
-- 🔍 **Look up terms** → [Glossary](tutorial/glossary)
+- **Build my first app** → [Quick Start](tutorial/quickstart) → [Choose SDK](tutorial/client-sdks)
+- **Connect to a network** → [Networks Guide](tutorial/networks)
+- **Get test funds** → [Faucet Guide](tutorial/coins/faucet)
+- **Write smart contracts** → [Convex Lisp](tutorial/convex-lisp)
+- **Connect an AI agent** → [AI Agents](tutorial/agents)
+- **Run a peer** → [Peer Operations](tutorial/peer-operations)
+- **Look up terms** → [Glossary](tutorial/glossary)

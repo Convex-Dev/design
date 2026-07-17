@@ -213,7 +213,7 @@ else:
 
 - ⚠️ **Testnets** change genesis hash when they reset
 - ⚠️ **Local peers** generate new genesis hash on startup
-- ✅ **Protonet** genesis is stable - always verify for production
+- **Protonet** genesis is stable - always verify for production
 - 🔒 Prevents accidental connection to wrong network
 
 ## Performance Optimisation

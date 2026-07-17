@@ -19,7 +19,7 @@ New to Convex Lisp? Work through these in order:
 
 ## Why Lisp?
 
-The CVM is designed to be able to support many different languages and paradigms. However, we wanted a powerful language that would empower developers on Convex from the beginning, and chose Lisp as the first language on the CVM for a number of reasons:
+The CVM is designed to be able to support many different languages and paradigms. However, we wanted a powerful language available to developers on Convex from the beginning, and chose Lisp as the first language on the CVM for a number of reasons:
 
 - **Immutability**: Lisp's functional programming paradigm promotes immutability, which is essential for ensuring the integrity and consistency of decentralised systems where data must be replicated and distributed across multiple nodes.
 - **Dynamic typing**: Lisp's dynamic typing allows for flexible data structures and easy modifications, crucial for adapting to the constantly evolving nature of decentralised systems. At the same time, Convex Lisp is **strongly typed**, avoiding the issues associated with weak typing.

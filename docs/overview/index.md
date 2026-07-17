@@ -13,7 +13,7 @@ Convex is a decentralised lattice technology platform for building fair, efficie
 
 - **[Key Concepts](/docs/overview/concepts)** - Core building blocks: accounts, transactions, actors, consensus
 - **[Lattice Technology](/docs/overview/lattice)** - What makes Convex unique
-- **[Use Cases](/docs/overview/use-cases)** - What you can build with Convex
+- **[Use Cases](/docs/overview/use-cases)** - What you can build with Convex, from DeFi to AI agent economies
 
 ## Going Deeper
 
@@ -32,4 +32,4 @@ Convex is a decentralised lattice technology platform for building fair, efficie
 
 ## Quick Start
 
-Ready to build? Head to the **[User Guide](/docs/tutorial)** to get started.
+Ready to build? Head to the **[User Guide](/docs/tutorial)** to get started, or explore the **[Products](/docs/products)** — SDKs, CLI, Desktop, MCP and more.

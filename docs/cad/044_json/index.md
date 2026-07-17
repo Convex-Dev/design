@@ -2,7 +2,7 @@
 
 ## Overview
 
-JSON (JavaScript Object Notation) is a widely-used data interchange format for web applications and APIs. Convex provides native support for JSON-compatible data structures, enabling seamless interoperability between the CVM, the Lattice and external systems.
+JSON (JavaScript Object Notation) is a widely-used data interchange format for web applications and APIs. Convex provides native support for JSON-compatible data structures, enabling direct interoperability between the CVM, the Lattice and external systems.
 
 **Key Highlight**: JSON is a *strict subset* of CVM data types, meaning any valid JSON structure can be represented directly in Convex without difficulty.
 

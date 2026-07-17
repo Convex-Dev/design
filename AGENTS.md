@@ -71,6 +71,8 @@ The site has four main documentation sections:
 
 ### 4. Content Guidelines
 
+**Authoritative style guide**: [HOUSE_STYLE.md](HOUSE_STYLE.md) — voice, banned words, honesty practices, Diátaxis page types, terminology. Read it before writing any prose. The notes below are a quick summary only.
+
 **Writing Style**:
 - Clear, concise, and accessible
 - Avoid jargon where possible; explain technical terms when necessary
@@ -95,7 +97,7 @@ The site has four main documentation sections:
 
 **Network Names**:
 - **Protonet** - Production network (peer.convex.live)
-- **HuggingFace Testnet** - Public test network
+- **Testnet** - Public test network (currently hosted on Hugging Face Spaces at `mikera1337-convex-testnet.hf.space`; migrating to `testnet.convex.live` — do not flip doc URLs until HTTPS is live there)
 - **Local Peer** - Development environment
 
 ### 5. Homepage and Navigation

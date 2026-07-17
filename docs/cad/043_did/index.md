@@ -53,7 +53,7 @@ Support for the `did:key` method, enabling self-certifying identifiers derived f
 did:key:z6Mkf5rGMoatrSj1f4CyvuHBeXJELe9RPdzo2PKGNCKVtZxP
 ```
 
-The Ed25519 public key in a `did:key` identifier can be used directly as a Convex account key, enabling seamless bridging between off-chain `did:key` identities and on-chain accounts. Useful for:
+The Ed25519 public key in a `did:key` identifier can be used directly as a Convex account key, enabling direct bridging between off-chain `did:key` identities and on-chain accounts. Useful for:
 
 - Ephemeral agent identities
 - Off-chain verification prior to on-chain account creation

@@ -9,11 +9,11 @@ Run a local Convex testnet for development and testing.
 ## Overview
 
 Local testnets provide:
-- ✅ **Fastest development** - No network latency
-- ✅ **Full control** - Configure as needed
-- ✅ **Free funds** - Create accounts at will
-- ✅ **Privacy** - No external exposure
-- ✅ **Offline work** - No internet required
+- **Fastest development** - No network latency
+- **Full control** - Configure as needed
+- **Free funds** - Create accounts at will
+- **Privacy** - No external exposure
+- **Offline work** - No internet required
 
 ## Options
 
@@ -32,10 +32,10 @@ Launch a peer directly in your JVM process - fastest option for testing.
 
 ### Use Cases
 
-- ✅ Unit tests
-- ✅ Integration tests
-- ✅ Library development
-- ✅ Quick experiments
+- Unit tests
+- Integration tests
+- Library development
+- Quick experiments
 
 ### Quick Start
 
@@ -157,11 +157,11 @@ Run a local peer with a full GUI for interactive development.
 
 ### Use Cases
 
-- ✅ Interactive REPL
-- ✅ Visual account management
-- ✅ Transaction debugging
-- ✅ Learning Convex Lisp
-- ✅ Smart contract development
+- Interactive REPL
+- Visual account management
+- Transaction debugging
+- Learning Convex Lisp
+- Smart contract development
 
 ### Installation
 
@@ -240,11 +240,11 @@ Run a local peer from the command line - ideal for scripts and automation.
 
 ### Use Cases
 
-- ✅ Shell scripts
-- ✅ Automation
-- ✅ CI/CD pipelines
-- ✅ Headless servers
-- ✅ Background services
+- Shell scripts
+- Automation
+- CI/CD pipelines
+- Headless servers
+- Background services
 
 ### Quick Start
 
@@ -375,11 +375,11 @@ Run a local peer in a Docker container for consistent, isolated environment.
 
 ### Use Cases
 
-- ✅ Consistent development environment
-- ✅ Multi-developer teams
-- ✅ CI/CD pipelines
-- ✅ Isolated testing
-- ✅ Easy cleanup
+- Consistent development environment
+- Multi-developer teams
+- CI/CD pipelines
+- Isolated testing
+- Easy cleanup
 
 ### Quick Start
 

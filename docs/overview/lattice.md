@@ -7,9 +7,9 @@ tags: [convex, lattice]
 
 # Lattice Technology
 
-Lattice Technology is a revolutionary leap forward for the decentralised digital landscape—a robust, self-sustaining, and democratic infrastructure that redefines how data and computation are shared globally.
+Lattice Technology is the foundation of Convex — a robust, self-sustaining, and democratic infrastructure for sharing data and computation globally.
 
-Imagine a boundless, self-healing cloud of decentralised data and computing power. Accessible to all, it’s fortified by cutting-edge cryptography and seamless consensus mechanisms. Unlike traditional systems, no single entity controls it. This is The Lattice: a global network where trust, scalability, and resilience are built into its very foundation.
+Imagine a boundless, self-healing cloud of decentralised data and computing power: accessible to all, secured by strong cryptography, converging on consensus without central coordination. Unlike traditional systems, no single entity controls it. This is the Lattice: a global network where trust, scalability, and resilience are built into the foundation.
 
 ## How the Lattice works
 
@@ -17,7 +17,7 @@ Imagine a boundless, self-healing cloud of decentralised data and computing powe
 
 At its core, the Lattice draws inspiration from the mathematical concept of a [lattice](https://en.wikipedia.org/wiki/Lattice_(order)) - a partially ordered set equipped with a *merge* function. This function combines any two lattice values (elements of the set) into a single, consistent result. Through repeated merges, the system naturally converges to a unified value, known as the *supremum*, without relying on complex locking mechanisms or heavy consensus protocols.
 
-This design makes the Lattice a [Conflict-free Replicated Data Type (CRDT)](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type). It guarantees *eventual consistency* across the network, requiring only that nodes intermittently share lattice values. No continuous connectivity or specialized protocols are needed—simple, occasional "gossip" between nodes suffices to keep the system in sync.
+This design makes the Lattice a [Conflict-free Replicated Data Type (CRDT)](https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type). It guarantees *eventual consistency* across the network, requiring only that nodes intermittently share lattice values. No continuous connectivity or specialised protocols are needed—simple, occasional "gossip" between nodes suffices to keep the system in sync.
 
 ### Lattice innovations
 
@@ -44,7 +44,7 @@ This approach ensures merges are intelligent and secure. For instance, a merge m
 
 ## Regions of the Lattice
 
-The Lattice isn’t a monolith—it’s a flexible framework divided into regions, each defined by the specific lattice values it uses and the rules governing how those values merge. Think of each region as a specialized sub-lattice, tailored to a unique purpose, yet seamlessly integrated into the broader Lattice ecosystem.
+The Lattice isn’t a monolith—it’s a flexible framework divided into regions, each defined by the specific lattice values it uses and the rules governing how those values merge. Think of each region as a specialised sub-lattice, tailored to a unique purpose, yet fully integrated into the broader Lattice ecosystem.
 
 Regions operate as lattices themselves, leveraging a key property: a map of keys to lattice values forms a lattice. The merge function is straightforward—combine entries from two maps and resolve key collisions by merging the associated lattice values. Participants enforce region-specific rules on a decentralised basis. If someone violates these rules by sharing invalid values, their efforts are futile—others simply ignore the rogue values, preserving the Lattice’s integrity.
 

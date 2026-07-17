@@ -28,7 +28,7 @@ DLFS eliminates these problems through decentralised architecture:
 
 **Efficient Synchronisation**: DLFS uses delta encoding and content-addressable storage. Sync only what changed, not the entire file. Identical content is automatically deduplicated across your entire filesystem.
 
-**Offline-First Design**: Work offline indefinitely. DLFS is designed for intermittent connectivity. Changes merge seamlessly when connections are restored.
+**Offline-First Design**: Work offline indefinitely. DLFS is designed for intermittent connectivity. Changes merge automatically when connections are restored.
 
 **Zero Infrastructure**: No servers to maintain, no databases to manage. DLFS drives replicate peer-to-peer using Lattice Nodes (CAD036).
 

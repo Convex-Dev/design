@@ -20,11 +20,11 @@ The HTTP client connects to a Convex peer's REST API endpoint. This is the **rec
 
 ### When to Use
 
-- ✅ Web applications and services
-- ✅ Getting started with Convex
-- ✅ Applications behind firewalls/proxies
-- ✅ Cloud deployments
-- ✅ When simplicity matters more than raw speed
+- Web applications and services
+- Getting started with Convex
+- Applications behind firewalls/proxies
+- Cloud deployments
+- When simplicity matters more than raw speed
 
 ### Connection
 
@@ -77,11 +77,11 @@ The binary client establishes a direct TCP connection to a peer using Convex's e
 
 ### When to Use
 
-- ✅ High-throughput transaction systems
-- ✅ Real-time applications
-- ✅ When you need minimal latency
-- ✅ Direct peer-to-peer communication
-- ✅ Applications with sustained connection requirements
+- High-throughput transaction systems
+- Real-time applications
+- When you need minimal latency
+- Direct peer-to-peer communication
+- Applications with sustained connection requirements
 
 ### Connection
 
@@ -156,11 +156,11 @@ The local peer client gives you **direct access to a peer running in the same JV
 
 ### When to Use
 
-- ✅ Testing and development
-- ✅ Embedded applications
-- ✅ When you need absolute maximum performance
-- ✅ Running your own peer node
-- ✅ Advanced debugging and monitoring
+- Testing and development
+- Embedded applications
+- When you need absolute maximum performance
+- Running your own peer node
+- Advanced debugging and monitoring
 
 ### Connection
 

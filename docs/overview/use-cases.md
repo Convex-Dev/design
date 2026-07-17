@@ -7,6 +7,20 @@ tags: [convex, ecosystem, applications]
 
 Convex is a general purpose, programmable decentralised network with global state. As such, there is no inherent limit on the nature of applications that can be built. Here are some of the things that Convex can be used for, and are being actively developed within the Convex community:
 
+## AI Agent Economies
+
+AI agents are first-class economic participants on Convex: they can hold accounts, own assets, execute transactions and contract with humans and other agents under exactly the same rules. Every peer ships with a built-in [MCP server](/docs/products/convex-mcp), so any MCP-compatible agent can query state and transact directly — no custom integration required. The [x402 protocol](/docs/cad/x402) adds HTTP-native micropayments, making pay-per-use APIs practical for autonomous agents.
+
+This makes Convex the natural settlement and coordination layer for agentic systems:
+- Machine-to-machine payments and micropayment-gated services
+- Agents holding and trading digital assets with sub-second finality
+- Deterministic smart contract escrow and coordination between agents
+- Decentralised identity for agents via [DIDs](/docs/cad/did)
+
+For federated AI orchestration across organisational boundaries — models, agents and data collaborating with built-in governance — see [Covia](https://covia.ai), which is built on Convex lattice technology.
+
+Start with the [AI Agents guide](/docs/tutorial/agents).
+
 ## Tokenisation
 
 Convex offers a uniquely powerful system for the development of tokenised assets and applications. Tokens in Convex usually support the [CAD029](/docs/cad/fungible) token standard, which offers multiple advantages over the common ERC20 standard.
@@ -36,7 +50,7 @@ As part of the full-stack solution we offer:
 
 ## Gaming
 
-Games need fast interactive performance and shared global state for immersive multiplayer worlds. With blazing fast performance (just milliseconds for transaction confirmations) and minimal transaction costs, Convex is the perfect platform for decentralised gaming, virtual items and in-game currencies.
+Games need fast interactive performance and shared global state for immersive multiplayer worlds. With transaction confirmations in milliseconds and minimal transaction costs, Convex is well suited to decentralised gaming, virtual items and in-game currencies.
 
 Our first game is a 3D block game inspired by Minecraft, Boulderdash and the Roguelike genre. The entire game world is implemented as a set of Convex Actors. Transactions are automatically executed when the player takes actions that change the world state, and the player can otherwise view and explore the world at zero cost.
 

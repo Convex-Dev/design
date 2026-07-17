@@ -31,7 +31,7 @@ The fastest way in is the **[Web Sandbox](https://convex.world/sandbox)** — a 
 ;; => "Hello, world!"
 ```
 
-🎉 **You just deployed and called a smart contract** on a live decentralised network.
+You have deployed and called a smart contract on a live decentralised network.
 
 :::note Network
 The Sandbox runs against the public **testnet** — free, for development. Production runs on **Protonet** (`peer.convex.live`). See the [Networks Guide](networks).
@@ -109,7 +109,7 @@ Convex Lisp is the on-chain language for queries, transactions, and actors (smar
 
 ### Operate a peer
 
-Run a node that participates in consensus on the network. See **[Peer Operations](peer-operations/local-testnets)**.
+Run a node that participates in consensus on the network. See **[Peer Operations](peer-operations)**.
 
 ---
 
@@ -190,7 +190,3 @@ This Convex Lisp transaction:
 - **[Documentation](/)** — complete guides
 
 **Common terms:** *CVM* = Convex Virtual Machine · *juice* = transaction execution cost · *copper* = smallest unit (1 CVM = 1,000,000,000 copper) · *peer* = a network node · *actor* = a smart contract.
-
----
-
-🎉 **Welcome to Convex.** Build something amazing!

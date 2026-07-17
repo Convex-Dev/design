@@ -56,7 +56,7 @@ If you ever use `eval` or `eval-as` then be extremely careful of code injection 
 
 ### Beware untrusted function arguments
 
-Functional programming superpowers come with the danger that arbitrary code can be passed as first class values. Consider the following:
+First-class functions come with the danger that arbitrary code can be passed as values. Consider the following:
 
 ```clojure 
 (def vals [1 2 3 4])

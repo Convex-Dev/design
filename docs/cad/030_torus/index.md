@@ -53,10 +53,10 @@ Any user may trade on a Torus market.
 ;; Sell 100 tokens
 (torus/sell-tokens TOKEN 100)
 
-;; Buy 1000 CVX using the token
+;; Buy 1000 CVM using the token
 (torus/buy-cvx TOKEN 1000)
 
-;; Sell 1000 CVX, receiving the token
+;; Sell 1000 CVM, receiving the token
 (torus/sell-cvx TOKEN 1000)
 ```
 
@@ -76,7 +76,7 @@ It is also possible to do swaps between any two tokens. These are atomic swaps t
 Trades will fail if any of the following are true:
 - An attempt is made to buy or sell a negative quantity
 - The liquidity pool has insufficient liquidity to complete the trade
-- The user has insufficient funds (CVX or token) to complete the trade
+- The user has insufficient funds (CVM or token) to complete the trade
 
 ### Liquidity Pool
 

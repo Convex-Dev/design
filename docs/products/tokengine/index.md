@@ -1,6 +1,6 @@
 # TokEngine
 
-TokEngine is a cutting-edge, open-source cross-chain token interoperability bridge that leverages the efficiency and scalability of Convex's lattice technology to enable seamless, high-speed digital asset transfers across diverse blockchain networks. Designed for flexibility, TokEngine empowers anyone to operate a server and facilitate cross-chain token exchanges for their chosen digital assets, fostering a decentralised and inclusive financial ecosystem. Released under the Apache 2.0 License, TokEngine is freely accessible for developers and organisations worldwide.
+TokEngine is an open-source cross-chain token interoperability bridge that uses the efficiency and scalability of Convex's lattice technology to enable high-speed digital asset transfers across diverse blockchain networks. Designed for flexibility, TokEngine lets anyone operate a server and facilitate cross-chain token exchanges for their chosen digital assets, fostering a decentralised and inclusive financial ecosystem. Released under the Apache 2.0 License, TokEngine is freely accessible for developers and organisations worldwide.
 
 ![TokEngine Logo](image.png)
 
@@ -13,14 +13,14 @@ TokEngine is an open source product supported by the Convex Foundation
 
 - **Deposit and Virtual Balances**: Accept deposits and convert them into "Virtual Balances" for cross-chain use.
 - **Cross-Chain Payouts**: Redeem "Virtual Balances" as equivalent tokens on any supported distributed ledger technology (DLT).
-- **End-to-End Swaps**: Execute seamless cross-chain token swaps.
+- **End-to-End Swaps**: Execute complete cross-chain token swaps.
 - **Wrapped Tokens**: Support for wrapped token functionality.
 - **Audit Logging**: Optional logging to a Kafka queue for transparency and tracking.
 - **CAIP Compatibility**: Aligns with [Chain Agnostic Improvement Protocols (CAIPs)](https://chainagnostic.org/) for standardised interoperability.
 
 ## Supported DLTs
 
-TokEngine's plugin adapter system enables integration with various DLT networks, offering operators unparalleled flexibility.
+TokEngine's plugin adapter system enables integration with various DLT networks, so operators choose which networks and assets to support.
 
 ### Convex 
 
