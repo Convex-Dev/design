@@ -36,6 +36,22 @@ Convex is an open-source, decentralised lattice network and execution platform. 
 - The **Model Context Protocol (MCP)** integrations (e.g. DLFS, Covia venues) let agents interact with lattice data as first-class tools.
 - **Covia** (<https://covia.ai>) is the federated AI orchestration layer built on top of Convex lattice technology — see <https://docs.covia.ai> for agent orchestration patterns.
 - When writing CVM code, prefer CNS-resolved calls like `(@convex.fungible/transfer ...)` over `import`, which mutates the account environment and costs extra juice.
+- Submitting Convex Lisp **source** is optional: clients that can precompile may submit compiled CVM ops directly, saving compilation juice.
+
+## Machine-Readable Resources
+
+- **Full docs corpus (single file):** <https://docs.convex.world/llms-full.txt> — every documentation page as plain markdown, with source paths and canonical URLs.
+- **Sitemap:** <https://docs.convex.world/sitemap.xml>
+- **Raw markdown source:** <https://github.com/Convex-Dev/design/tree/develop/docs> (this documentation site, editable via PR)
+- **Search index:** the site ships a client-side search index; agents should prefer llms-full.txt or the sitemap.
+
+## Live Endpoints
+
+- **Testnet REST API:** `https://mikera1337-convex-testnet.hf.space/api/v1` — free faucet available; see <https://docs.convex.world/docs/tutorial/coins/faucet>. Use the testnet for experiments.
+- **Testnet MCP server:** `https://mikera1337-convex-testnet.hf.space/mcp` — 30+ tools and guided prompts; connect any MCP client (Streamable HTTP transport). See <https://docs.convex.world/docs/products/convex-mcp>.
+- **OpenAPI 3.1 specification:** `https://mikera1337-convex-testnet.hf.space/openapi`
+- **Production (Protonet) REST API:** `https://peer.convex.live/api/v1` — real assets; transactions cost real Convex Coins.
+- **Network explorer:** <https://peer.convex.live/explorer>
 
 ## Java API Reference
 

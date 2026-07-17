@@ -49,6 +49,31 @@ onBrokenMarkdownLinks: 'warn'
     },
   ],
 
+  // Structured data for search engines and AI agents
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {type: 'application/ld+json'},
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Convex Docs',
+        url: 'https://docs.convex.world',
+        description:
+          'Documentation for Convex — the decentralised lattice platform powering the Stateful Internet.',
+        publisher: {
+          '@type': 'Organization',
+          name: 'Convex Foundation',
+          url: 'https://convex.world',
+          sameAs: [
+            'https://github.com/Convex-Dev',
+            'https://x.com/convex_world',
+          ],
+        },
+      }),
+    },
+  ],
+
   // Redirects for old URLs that may be linked from external sites.
   // Internal links should use the correct path directly — this plugin
   // is only for preserving inbound links that would otherwise 404

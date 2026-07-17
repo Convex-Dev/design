@@ -2,3 +2,6 @@ User-agent: *
 Disallow:
 
 Sitemap: https://docs.convex.world/sitemap.xml
+
+# AI agents: see https://docs.convex.world/llms.txt (index)
+# and https://docs.convex.world/llms-full.txt (full docs corpus)

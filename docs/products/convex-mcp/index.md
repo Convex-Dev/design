@@ -9,13 +9,17 @@ Convex peers ship with built-in **Model Context Protocol (MCP)** servers, enabli
 
 ## Quick start
 
-Connect any MCP client to a Convex peer:
+Connect any MCP client to the public testnet peer:
 
 ```
-https://peer.convex.live/mcp
+https://mikera1337-convex-testnet.hf.space/mcp
 ```
 
-That's it. The peer exposes over 30 built-in tools and guided prompts that your AI agent or development tool can discover automatically through MCP's standard `tools/list` and `prompts/list` methods.
+That's it. The peer exposes over 30 built-in tools and guided prompts that your AI agent or development tool can discover automatically through MCP's standard `tools/list` and `prompts/list` methods. The testnet includes a free faucet, so agents can create and fund accounts to experiment with.
+
+:::note Protonet
+The flagship Protonet peer (`peer.convex.live`) does not currently expose a public MCP endpoint — use the testnet above for MCP access, or run your own peer (MCP is enabled by default in current releases).
+:::
 
 ## Key capabilities
 
