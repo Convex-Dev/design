@@ -7,7 +7,7 @@ tags: [convex, cad3, lattice]
 
 The day is finally coming. 
 
-The groundbreaking Convex Protonet is going Live in December 2024. Here's what you need to know about the launch of the world's most powerful platform for decentralised economic systems.
+Convex Protonet is going live in December 2024. Here's what you need to know about the launch of the first live Convex network — the foundation for everything we're building towards: fair, efficient decentralised economic systems at global scale.
 
 <!-- truncate -->
 
@@ -18,7 +18,7 @@ Protonet is perhaps the most important milestone in the journey to deliver true 
 - **Establish the Global State** - The state machine at the heart of Convex needs to start somewhere. By establishing the genesis state, we achieve this. 
 - **Launch the Convex Coin economy** - Protonet will host the first real live Convex Coins. These are the utility token that drives Convex, that can be held by individuals and organisations in a truly self-sovereign manner. Any coin balances on Protonet will continue to Mainnet and beyond.  
 - **A platform to build** - Protonet is a live network suitable for developers to build dApps and create real digital assets. No need to ask permission: it's a open public network. Just do it.
-- **Establish the ecosystem** - People can be inspired and collaborate around something real and tangible. Real digital assets, real smart contracts, real decentralised data. Protonet is key to unlocking the growth of our open ecosystem. 
+- **Establish the ecosystem** - People can be inspired and collaborate around something real and tangible. Real digital assets, real smart contracts, real decentralised data. Protonet is the foundation on which our open ecosystem can grow. 
 
 ## Launch timeline
 

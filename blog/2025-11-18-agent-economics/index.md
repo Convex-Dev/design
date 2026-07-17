@@ -18,11 +18,11 @@ Convex flips that model on its head.
 
 On Convex, your agent is a **first-class economic citizen** from the moment it’s born.
 
-## The Missing Superpower Just Landed: Native MCP
+## The Missing Piece Just Landed: Native MCP
 
 Convex peers now ship with **full Model Control Protocol (MCP)** built-in (enabled by default, but peer operators can opt out).
 
-MCP is rapidly becoming the open standard for how agents securely perceive and act on-chain. On Convex it becomes lethal:
+MCP is rapidly becoming the open standard for how agents securely perceive and act on-chain. On Convex, it lands on a uniquely strong substrate:
 
 - Direct, authenticated, real-time streams (no indexers, no centralised RPCs)
 - Prepare / submit phases → simulate, coordinate, or wait forever with zero cost and zero front-running risk
@@ -44,21 +44,21 @@ Your trading agent can:
 - Compute the optimal action
 - Execute complex economic actions atomically in a single transaction
 
-All in **under a second**. DeFi into a real-time strategy game where software agents have superhuman reaction times.
+All in **under a second**. This turns DeFi into a real-time strategy game where software agents have superhuman reaction times.
 
 ### 2. Full access to global state
 
-Convex has a true global state, fully accessible to on-code. No shards, roll-ups or co-ordination required - it's one big immutable data structure (under the hood, a CAD3 format Merkle Tree) designed for optimal performance.
+Convex has a true global state, fully accessible to code. No shards, roll-ups or co-ordination required - it's one big immutable data structure (under the hood, a CAD3 format Merkle Tree) designed for performance.
 
-Convex queries are lightning fast (sub-millisecond, horizontally scalable millions of QPS *per peer*) giving agents superpowers when it comes to examining the current state of economic systems. This includes:
-- Live price fees
+Convex queries are sub-millisecond and horizontally scalable (millions of QPS *per peer*), so agents can examine the live state of economic systems as fast as they can think. This includes:
+- Live price feeds
 - Bids / offers
 - Available opportunities
 - Asset holdings
 
-### 3. The Convex Virtual Machine (CVM) — Lisp on the Chain
+### 3. The Convex Virtual Machine (CVM) — Lisp on the Lattice
 
-Convex is the only blockchain that runs a full **Lisp** dialect (Convex Lisp) natively on-chain.  
+Convex is the only decentralised network that runs a full **Lisp** dialect (Convex Lisp) natively on-chain.  
 That means:
 
 - **Code is data** - agents can read and write homoiconic code in the native data structures of the CVM
@@ -66,7 +66,7 @@ That means:
 - **Metaprogramming** - generate new strategies, fork, evolve agents that write agents
 - **No external tooling needed** - Execute economic actions directly (usually a one-liner)
 
-This isn’t just elegant — it’s an unfair advantage for autonomous intelligence.
+It adds up to an unfair advantage for autonomous intelligence.
 
 ### 4. Accounts That Are Programs
 
