@@ -137,6 +137,14 @@ On-chain DID state uses two complementary mechanisms:
 1. **Accounts** — every account is implicitly a DID subject (`did:convex:<address>`), with its DID document derived from account state (public key, controller). No registration is required.
 2. **The DID registry actor** (`convex.did` in CNS) — an on-chain registry storing DID records for named identities that need more than account-derived documents: stored DID document content, authorised account sets, controller-based management and deactivation.
 
+:::note Possible future enhancement: account document overlays
+Account DIDs currently have no separately stored DID document. A resolver derives `did:convex:<address>` directly from account state.
+
+A future revision may allow an account to attach optional document content, such as service endpoints or additional verification methods, through an account-keyed record in the same DID registry. The overlay would supplement the account-derived document rather than replace it: authorisation would follow the account's current control state, absence or removal of the overlay would fall back to the derived document, and the overlay could not replace the canonical identifier, account-derived keys or controller, or deactivate the account DID.
+
+This enhancement is not part of the current resolution rules and is not yet implemented.
+:::
+
 A registry record logically contains:
 
 - **document** — stored DID document content (or `nil` when deactivated)
