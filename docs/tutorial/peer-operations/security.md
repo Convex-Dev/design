@@ -4,7 +4,7 @@ sidebar_position: 8
 
 # Security Considerations
 
-Security best practices for operating Convex peer nodes.
+Security best practices for operating Convex peers.
 
 ## Overview
 

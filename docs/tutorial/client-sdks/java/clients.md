@@ -159,7 +159,7 @@ The local peer client gives you **direct access to a peer running in the same JV
 - Testing and development
 - Embedded applications
 - When you need absolute maximum performance
-- Running your own peer node
+- Running your own peer
 - Advanced debugging and monitoring
 
 ### Connection
@@ -231,7 +231,7 @@ public class LocalPeerExample {
 
 ### Important Considerations
 
-**Memory Requirements**: A local peer requires significant memory (typically 2-4GB minimum) for the full node database and consensus state.
+**Memory Requirements**: A local peer requires significant memory (typically 2-4GB minimum) for the full peer database and consensus state.
 
 **Lifecycle Management**: You are responsible for properly starting and stopping the peer. Always use try-finally or try-with-resources to ensure cleanup.
 

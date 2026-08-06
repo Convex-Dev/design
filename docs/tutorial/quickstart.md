@@ -109,7 +109,7 @@ Convex Lisp is the on-chain language for queries, transactions, and actors (smar
 
 ### Operate a peer
 
-Run a node that participates in consensus on the network. See **[Peer Operations](peer-operations)**.
+Run a peer that participates in consensus on the network. See **[Peer Operations](peer-operations)**.
 
 ---
 

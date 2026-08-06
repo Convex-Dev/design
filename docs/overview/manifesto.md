@@ -58,7 +58,7 @@ Convex tears down those walls. Anyone with an internet connection joins on equal
 
 **Users must be provided with real-time, interactive, atomic transactions**
 
-Users demand seamless experiences: instant mobile payments, fluid gaming economies, immersive metaverses. Clunky blockchains with seconds/minutes delay kill adoption and usability.
+Users expect instant mobile payments, fluid gaming economies, immersive metaverses. Clunky blockchains with seconds/minutes delay kill adoption and usability.
 
 Physics sets limits, but Convex is limited only by the speed of light. **CPoS** is leaderless, slashing latency to milliseconds. Zero block delay. No mempool. No front-running.
 
@@ -116,7 +116,7 @@ Transparent operation is essential for open economic systems to thrive. Data in 
 
 There is a trade-off between economic transparency and individual privacy. The ability to operate pseudonymously is critical to allow individual privacy to be protected, while still providing transparency at the system level. While the Convex network is public, we expect individuals and organisations to take appropriate measures to ensure the protection of private data.
 
-For data that should remain private, the data lattice provides the capability to protect and control access on whatever terms the user chooses. Such data is compatible with but separate from the public global state. In this way, Convex users are empowered to choose the appropriate level of privacy for each type of data.
+For data that should remain private, the data lattice provides the capability to protect and control access on whatever terms the user chooses. Such data is compatible with but separate from the public global state. In this way, Convex users can choose the appropriate level of privacy for each type of data.
 
 ## Cost Effectiveness
 
@@ -136,7 +136,7 @@ The data lattice is also 100% free to users, although service providers may offe
 
 ## Digital Asset Innovation
 
-**Participants must be empowered to create and utilise digital assets**
+**Participants must be free to create and utilise digital assets**
 
 We want to enable true P2P value exchange, which will typically relate to one or more forms of digital asset. These assets may be entirely virtual, or represent ownership of some asset in the real world. We believe everyone should have the freedom to create and use digital assets of any type. 
 

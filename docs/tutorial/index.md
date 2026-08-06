@@ -86,7 +86,7 @@ Choose your path based on what you want to build:
 3. Choose [Deployment Method](tutorial/peer-operations/manual-deployment) - Set up infrastructure
 4. Follow [Security Guide](tutorial/peer-operations/security) - Secure operations
 
-**Best for:** Infrastructure providers, validators, high-availability operations
+**Best for:** Infrastructure providers, peer operators, high-availability operations
 
 ---
 

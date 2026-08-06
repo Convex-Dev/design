@@ -21,7 +21,7 @@ New to Convex Lisp? Work through these in order:
 
 The CVM is designed to be able to support many different languages and paradigms. However, we wanted a powerful language available to developers on Convex from the beginning, and chose Lisp as the first language on the CVM for a number of reasons:
 
-- **Immutability**: Lisp's functional programming paradigm promotes immutability, which is essential for ensuring the integrity and consistency of decentralised systems where data must be replicated and distributed across multiple nodes.
+- **Immutability**: Lisp's functional programming paradigm promotes immutability, which is essential for ensuring the integrity and consistency of decentralised systems where data must be replicated and distributed across multiple peers.
 - **Dynamic typing**: Lisp's dynamic typing allows for flexible data structures and easy modifications, crucial for adapting to the constantly evolving nature of decentralised systems. At the same time, Convex Lisp is **strongly typed**, avoiding the issues associated with weak typing.
 - **Code is data**: representing code using its own data structures (also known as "homoiconicity") gives Lisp advanced **metaprogramming** capabilities the creation of domain-specific languages (DSLs) tailored to specific concepts, making it easier to reason about and implement complex economic mechanisms.
 - **Interactive coding**: Lisp pioneered the use of the REPL for highly interactive programming. With Convex, we've taken this a step further with a complete on-chain compiler so that everything on the CVM can be done with simple interactive Lisp commands.

@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Peer Operations Overview
 
-Guide for connecting to, monitoring, and operating Convex peer nodes.
+Guide for connecting to, monitoring, and operating Convex peers.
 
 ## What is Peer Operations?
 

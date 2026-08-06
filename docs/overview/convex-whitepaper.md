@@ -9,15 +9,15 @@ permalink: white-paper
 
 ## Introduction
 
-Imagine a world where value flows seamlessly between individuals, organisations, and systems—free from intermediaries, high costs, or centralised control. This is the promise of decentralised economic systems, powered by peer-to-peer digital asset exchanges and smart contracts. These systems herald an Internet of Value, where economic activity thrives on open, efficient, and secure networks, fundamentally reshaping how we transact and interact globally.
+Imagine a world where value flows freely between individuals, organisations, and systems—free from intermediaries, high costs, or centralised control. This is the promise of decentralised economic systems, powered by peer-to-peer digital asset exchanges and smart contracts. These systems herald an Internet of Value, where economic activity thrives on open, efficient, and secure networks, fundamentally reshaping how we transact and interact globally.
 
 At the core of this vision lies the ability to exchange value securely through cryptographic keys, managed autonomously by individuals. This self-sovereign approach eliminates reliance on centralised authorities, enabling trustless, direct transactions between participants anywhere in the world. Yet, despite their transformative potential, existing decentralised networks—primarily built on blockchain technology—face critical limitations: sluggish performance, exorbitant energy consumption, prolonged transaction confirmation times, security vulnerabilities, and prohibitive costs. These shortcomings have hindered widespread adoption, confining blockchain to niche applications rather than revolutionising the global economy.
 
 Enter Convex (CONVergent EXecution), a groundbreaking engine designed to overcome these barriers and unlock the full potential of decentralised systems. Convex introduces a novel consensus mechanism, Convergent Proof of Stake (CPoS), which leverages a conflict-free replicated data type (CRDT) to achieve rapid, stable, and secure consensus. Unlike traditional blockchains, CPoS is leaderless, allowing multiple peers to submit transaction blocks simultaneously, slashing latency to sub-second confirmation times. This makes Convex not only faster but also viable for soft real-time and consumer applications—something no other decentralised system has achieved at scale.
 
-Complementing CPoS is the Convex Virtual Machine (CVM), a robust execution and storage system rooted in lambda calculus. The CVM delivers immutable, persistent data structures and content-addressable storage, enabling a fully decentralised global computer capable of executing complex smart contracts with unparalleled security and efficiency.
+Complementing CPoS is the Convex Virtual Machine (CVM), a robust execution and storage system rooted in lambda calculus. The CVM delivers immutable, persistent data structures and content-addressable storage, enabling a fully decentralised global computer capable of executing complex smart contracts securely and efficiently.
 
-By addressing the fundamental flaws of existing decentralised networks, Convex paves the way for a new era of economic systems—ones that are fast, scalable, energy-efficient, and secure. This white paper explores how Convex redefines decentralised economies, offering a scalable foundation for the Internet of Value and empowering a future where trust, efficiency, and innovation converge.
+By addressing the fundamental flaws of existing decentralised networks, Convex paves the way for a new era of economic systems—ones that are fast, scalable, energy-efficient, and secure. This white paper explains how Convex achieves this, providing a scalable foundation for the Internet of Value.
 
 ## Context
 

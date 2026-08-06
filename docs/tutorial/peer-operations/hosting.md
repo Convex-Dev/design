@@ -30,7 +30,7 @@ Infrastructure requirements and hosting options for Convex peers.
 
 ### Enterprise Specifications
 
-**Suitable for**: Major validators, high availability
+**Suitable for**: High-stake peer operators, high availability
 
 - **CPU**: 16+ cores (3.5+ GHz)
 - **RAM**: 32+ GB

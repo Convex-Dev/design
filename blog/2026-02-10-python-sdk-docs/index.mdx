@@ -108,7 +108,7 @@ convex.transfer('#456', 50_000_000, account)
 # Display balance in Convex Coins
 balance_copper = convex.get_balance(account)
 balance_coins = balance_copper / 1_000_000_000
-print(f'Balance: {balance_coins} CVX')
+print(f'Balance: {balance_coins} CVM')
 ```
 
 ## Complete Example
@@ -132,7 +132,7 @@ def main():
 
     # Check balance
     balance = convex.get_balance(account)
-    print(f'Balance: {balance / 1_000_000_000} CVX')
+    print(f'Balance: {balance / 1_000_000_000} CVM')
 
     # Execute transaction
     result = convex.transact('(map inc [1 2 3 4])', account)
@@ -143,7 +143,7 @@ def main():
     recipient = convex.create_account(recipient_keys)
     convex.transfer(recipient.address, 10_000_000, account)
 
-    print(f'Transferred 0.01 CVX to #{recipient.address}')
+    print(f'Transferred 0.01 CVM to #{recipient.address}')
 
 if __name__ == '__main__':
     main()

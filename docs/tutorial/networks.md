@@ -28,12 +28,12 @@ Quick reference for available Convex networks:
 
 ## What is a Convex Network?
 
-A **Convex network** is a decentralised lattice-based system where multiple peer nodes work together to maintain a shared global state. Unlike traditional blockchains, Convex uses lattice technology and Convergent Proof of Stake (CPoS) consensus to achieve high performance and instant finality.
+A **Convex network** is a decentralised lattice-based system where multiple peers work together to maintain a shared global state. Unlike traditional blockchains, Convex uses lattice technology and Convergent Proof of Stake (CPoS) consensus to achieve high performance and instant finality.
 
 ### Key Characteristics
 
 **Decentralised Architecture**
-- Network of peer nodes maintaining consensus
+- Network of peers maintaining consensus
 - No central authority or single point of failure
 - Cryptographically secure state transitions
 
@@ -68,7 +68,7 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 **When to Use**:
 - Deploying production applications
 - Managing real assets
-- Interacting with mainnet smart contracts
+- Interacting with production actors and services
 
 ### Test Networks (Testnets)
 
@@ -84,7 +84,7 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 **When to Use**:
 - Learning Convex development
 - Testing applications before deployment
-- Experimenting with smart contracts
+- Experimenting with actors (smart contracts)
 - Demonstrating features to others
 
 ### Local Development Peers
