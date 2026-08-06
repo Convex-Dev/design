@@ -12,7 +12,7 @@ CAD34 defines a generic, extensible interface for such registries, in order to s
 Design goals:
 
 - Support for any kind of unique ID / entity
-- Integration with teh CAD22 trust monitor model
+- Integration with the CAD22 trust monitor model
 - Support for flexible administrative control at a per-registry level
 - Support for a single Actor hosting many registries
 

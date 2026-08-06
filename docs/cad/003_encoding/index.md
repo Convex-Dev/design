@@ -9,7 +9,7 @@ Convex uses the standard **CAD3 Encoding** format that represents data values as
 - It defines a cryptographic **value ID** to identify any value. This is a decentralised pointer, which also serves as the root of a Merkle DAG that represents the complete encoding of a value.
 - CAD3 values are fundamental for enabling **lattice technology** for internet-scale decentralised data structures 
 
-The encoding model breaks values into a Merkle DAG of one or more **cells** that can be individually encoded. Cells are immutable, and may therefore be safely shared by different DAGs, or used multiple times in the the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
+The encoding model breaks values into a Merkle DAG of one or more **cells** that can be individually encoded. Cells are immutable, and may therefore be safely shared by different DAGs, or used multiple times in the same DAG. This technique of "structural sharing" is extremely important for the performance and memory efficiency of Convex. 
 
 ## Special Requirements
 
@@ -127,7 +127,7 @@ The encoding MUST have a maximum length of 16383 bytes. This ensure that a cell 
 
 The value ID of a cell is the SHA3-256 hash of the encoding of the cell.
 
-All cells have a unique encoding, therefore they also have a unique value ID (subject the the assumption that the probability of SHA3-256 collisions is extremely low).
+All cells have a unique encoding, therefore they also have a unique value ID (subject to the assumption that the probability of SHA3-256 collisions is extremely low).
 
 A value ID reference may be utilised as a "decentralised pointer" to an immutable value, or used as an index for content addressable storage.
 
@@ -238,7 +238,7 @@ Tags are designed with the following objectives:
 
 ### Categories
 
-The high hex digit of each tag byte specifies the general category of teh data value. These are defined as follows:
+The high hex digit of each tag byte specifies the general category of the data value. These are defined as follows:
 
 | Pattern  | Category             | Purpose |
 | -------- | -------------------- | -------- |
@@ -579,7 +579,7 @@ A Syntax Object is a value annotated with a Map of metadata.
 
 Where <Meta> is a value which is either:
 - 0x00 (nil) if there is no metadata (considered as empty map)
-- A a non-empty Map containing the metadata
+- A non-empty Map containing the metadata
 
 The <Value> can be any value.
 ```
@@ -703,7 +703,7 @@ Extension values are arbitrary non-negative integer values with a one byte tag, 
 
 For example, Convex uses the extension value `0xEA` to indicate an Address. Since Addresses are allocated sequentially from zero (and Accounts can be re-used), this usually results in a short VLQ encoding.
 
-Extension values are considered "BlobLike" and can therefore be used a a key in an Index
+Extension values are considered "BlobLike" and can therefore be used as a key in an Index
 
 Examples: 
 - an application might define `0xE5` as an extension where the value references a known JSON schema.

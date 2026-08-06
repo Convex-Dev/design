@@ -46,7 +46,7 @@ For more information, it is worth referring to the 1988 paper "Expansion-passing
 
 ### Macros
 
-A Macro is a specialised instanceof an Expander, with the following additional restrictions:
+A Macro is a specialised instance of an Expander, with the following additional restrictions:
 
 - It is declared using the pattern `(macro [arg1 arg2 arg3 ....])`, effectivly destructuring the form passed to the Exapnder into individual arguments. This is often more convenient and intuitive than defining Expanders directly.
 - A Macro always calls the Continuation Expander as its final step on the result of the Macro. In normal usage, this implements the standard expecation that Lisp macros will be expanded recursively until a final non-macro form is produced. This also means that if a custom language is defined by the continution expander, the macro will continue expansion logic using this same custom langauge.

@@ -43,7 +43,7 @@ The primary key for transactions should be regarded as (Peer Key, Transaction ID
 
 ### Ordering events
 
-Ordering events are any time a peer recieves an updated ordering, directly or indirectly, from another Peer. 
+Ordering events are any time a peer receives an updated ordering, directly or indirectly, from another Peer. 
 
 Important fields:
 - `peer` = Peer public key

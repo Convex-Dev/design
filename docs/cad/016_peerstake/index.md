@@ -32,7 +32,7 @@ Transaction fees are accumulated for all transactions executed within a complete
 
 When a block of transactions is successfully executed:
 - 50% are given to the peer and its stakers immediately
-- The remainder is added to the the common reward pool 
+- The remainder is added to the common reward pool 
 
 ### Reward pool distribution
 
@@ -110,7 +110,7 @@ Changing delegated stake on any peer can be done with the `set-stake` command:
 
 Peers can be evicted from the global state in two situations:
 - The peer's effective stake is less than the minimum effective stake (currently 1000 Convex Gold)
-- The peer controller can always evict it's own peer(s)
+- The peer controller can always evict its own peer(s)
 
 ```clojure
 (evict-peer 0x42272E789B7a3D57f8267c15c2d9B8BeD9b0E2035b3a8AE9A0eb9A024B7FADe5)

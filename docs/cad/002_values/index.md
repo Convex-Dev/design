@@ -95,7 +95,7 @@ The Value ID is extremely important, because:
 
 #### Integers
 
-An integer is a a whole number (positive or negative) as commonly defined in arithmetic.
+An integer is a whole number (positive or negative) as commonly defined in arithmetic.
 
 Convex allows big integers up to the size of 32768 bits, i.e. around `1.4*10^9864`. This may be extended in the future, though we haven't found a sensible use case that is likely to require integers this large.
 
@@ -154,7 +154,7 @@ A Boolean value is one of the two values `true` and `false`.
 
 In addition to their utility in general purpose programming, `true` and `false` are particularly efficient in the CVM, requiring only 1 byte of Encoding.
 
-When considering truth values in the the CVM, any Value is considered "truthy" of "falsey". `false` and `nil` are the only Values that are considered falsey, all other values are truthy. The reason for this is that it is often useful to directly test for the presence or absence of a value in a conditional expression without converting to Boolean values first, e.g.
+When considering truth values in the CVM, any Value is considered "truthy" or "falsey". `false` and `nil` are the only Values that are considered falsey, all other values are truthy. The reason for this is that it is often useful to directly test for the presence or absence of a value in a conditional expression without converting to Boolean values first, e.g.
 
 ```clojure
 (if (get {1 :foo 2 :bar} 1) "Found Foo" "No Foo")
@@ -190,7 +190,7 @@ Examples
 0x                                                                    ;; The empty Blob (0 bytes)
 ```
 
-Blobs are especially useful for storing opaque units of data that may be important to external systems (e.g. client data encodings) as well as cryptographic values such as keys, hashes (including value IDs) or verification proofs. While is is possible to manipulate Blobs in CVM code, this is not usually recommended: such handling should normally be done off-chain.
+Blobs are especially useful for storing opaque units of data that may be important to external systems (e.g. client data encodings) as well as cryptographic values such as keys, hashes (including value IDs) or verification proofs. While it is possible to manipulate Blobs in CVM code, this is not usually recommended: such handling should normally be done off-chain.
 
 #### String
 
@@ -307,7 +307,7 @@ The map may also be considered as a sequential collection of Map entries, where 
 => [1 2]
 ```
 
-Internally, a Map is structured an efficient tree indexed with the the Value ID of values in the Map. All entries will therefore be ordered by the Value ID of Map keys.
+Internally, a Map is structured as an efficient tree indexed by the Value ID of values in the Map. All entries will therefore be ordered by the Value ID of Map keys.
 
 #### Index
 

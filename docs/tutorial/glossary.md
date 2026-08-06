@@ -31,7 +31,7 @@ An Actor is defined with exactly one Account, but may send messages to and contr
 
 An address is a numerical value used to refer to accounts. An address is valid if it refers to an existing Account (User or Actor) in the CVM state.
 
-Addresses are conventionally displayed as a number with with a `#` prefix e.g.:
+Addresses are conventionally displayed as a number with a `#` prefix e.g.:
 
 `#1245`
 
@@ -94,7 +94,7 @@ The Convex Consensus Algorithm is obtains consensus through the use of a converg
 
 ## Consensus Point
 
-The greatest position in the Ordering of Blocks produced by the Consensus Algorithm which has been confirmed as being in Consensus. Each Peer maintains it's own view of the Consensus Point based on observed consensus proposals from other Peers.
+The greatest position in the Ordering of Blocks produced by the Consensus Algorithm which has been confirmed as being in Consensus. Each Peer maintains its own view of the Consensus Point based on observed consensus proposals from other Peers.
 
 The Consensus Point cannot be rolled back according to the rules of the Protocol (any attempt to do so would therefore constitute a Fork). However, some Peers may advance their Consensus Point slightly before others.
 

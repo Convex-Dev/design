@@ -569,7 +569,7 @@ User Accounts are **protected by digital signatures**. A transaction which uses 
 
 #### Environments
 
-A novel feature of the Convex Account model is that each Account receives it's own *programmable environment* where variables, data structures and code can be dynamically defined and updated. Definitions held within different accounts cannot collide since they have independent environments.
+A novel feature of the Convex Account model is that each Account receives its own *programmable environment* where variables, data structures and code can be dynamically defined and updated. Definitions held within different accounts cannot collide since they have independent environments.
 
 * For User Accounts, this behaves like a computer completely under the control of the user. Each user receives the equivalent of a fully functional "Lisp Machine", which can modify its own definitions and has read-only access to the environments of other Accounts.
 * For Actor Accounts, this can be used to store Actor code and state required for the operation of the Actor. Deployment of an Actor is equivalent to creating an Account and initialising the Actor's environment, with subsequent changes to the environment strictly controlled by a set of exported functions that can be externally called.

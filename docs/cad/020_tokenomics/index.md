@@ -17,7 +17,7 @@ Convex serves as a public utility network, where participants are free to transa
 ![Convex High Level Tokenomics](tokenomics.png)
 
 Convex Coins are initially issued in two ways:
-- 75% are available for purchase on the **release curve**. This is is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle. 
+- 75% are available for purchase on the **release curve**. This is a mathematically defined mechanism that releases coins as and when demanded by economic participation in the ecosystem. Funds raised are reinvested in the ecosystem to create a virtuous cycle. 
 - 25% are available as **awards** to contributors who add value to the ecosystem in various ways (can be software engineering, open source contributions, marketing, building great uses cases etc.). Contributions must benefit the ecosystem as a whole.
 
 Once issued, coins are fully transferable and can circulate freely according to the wishes of their holders (e.g. traded on a private basis, used in smart contracts etc.). 
@@ -202,7 +202,7 @@ The 25% allocation for awards MUST be distributed by the Convex Foundation, in i
 
 The Convex Foundation MUST make awards in the interest of developing the ecosystem, with a focus on awards to:
 - Contributors who have made positive contributions to the development of Convex core technology
-- Contributors who make positive contributions the the development of the community and ecosystem
+- Contributors who make positive contributions to the development of the community and ecosystem
 - Infrastructure providers (such as peer operators) who help to ensure the security and reliability of the network
 - Organisations or startups that help build the ecosystem by developing effective use cases
 

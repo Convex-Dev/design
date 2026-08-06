@@ -55,7 +55,7 @@ CAD3 Payload:
 Belief
 ```
 
-This message specifies a belief from an other peer that is being shared as part of the CPoS consensus algorithm.
+This message specifies a belief from another peer that is being shared as part of the CPoS consensus algorithm.
 
 Receiving peers SHOULD validate this belief message, and if valid perform a belief merge with their current belief.
 

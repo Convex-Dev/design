@@ -183,7 +183,7 @@ Note that in the compiler, `def` takes metadata from its value argument in the c
 (def b ^{:foo true} 1) 
 ```
 
-The compiler also interprets a `def` with only on argument as having a `ValueOp` equal to `nil`. This is is useful for forward definitions (e.g. as used in the core macro `declare`)
+The compiler also interprets a `def` with only one argument as having a `ValueOp` equal to `nil`. This is useful for forward definitions (e.g. as used in the core macro `declare`)
 
 ### Lookup
 

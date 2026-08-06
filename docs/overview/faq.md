@@ -42,7 +42,7 @@ We have established the Convex Foundation a non-profit organisation that facilit
 
 ## How fast is Convex?
 
-Convex can comfortably process many thousands of complex transactions per second (e.g. transfers and smart contract calls). The CVM itself has been benchmarked at over 1,000,000 TPS on a modern desktop PC. And as we continue making performance improvements it is getting faster by the day.
+Convex can comfortably process many thousands of complex transactions per second (e.g. transfers and smart contract calls). The CVM itself has been benchmarked at over 1,000,000 TPS on a modern desktop PC.
 
 But it's important to note that performance and scalability are not just about the raw throughput of transactions. Convex is designed to offer a good overall combination of:
 

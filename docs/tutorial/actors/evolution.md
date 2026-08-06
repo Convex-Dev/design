@@ -17,7 +17,7 @@ It is therefore *an option* to make actors upgradable. This is a trade-off: You 
 
 ## Example approach - Account controller
 
-The simplest way to make an actor upgradable is to the the `*controller*` account feature, which allows the controller account to use the `eval-as` function to update the actor.
+The simplest way to make an actor upgradable is to use the `*controller*` account feature, which allows the controller account to use the `eval-as` function to update the actor.
 
 ```clojure
 ;; Deploy an empty, upgradable actor that is empty but has the controller set

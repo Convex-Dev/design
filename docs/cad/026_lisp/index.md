@@ -167,7 +167,7 @@ Characters may also be used as efficient small keys in Maps or Sets. The first 2
 Strings are arbitrary length, immutable UTF-8 strings
 
 ```clojure
-;; A a literal String evaluates to itself
+;; A literal String evaluates to itself
 "Hello"
 => "Hello"
 
@@ -925,7 +925,7 @@ The current account is `*address*`. Any code executing has full control over thi
 
 The account for which the transaction was initiated is `*origin*`. This remains unchanged for the entire transaction, and is initially equal to `*address*`
 
-The account that transfered control to this account, if any, is `*caller*`. This is `nil` initially, but will be the address of the account that executed any `call` to this account.
+The account that transferred control to this account, if any, is `*caller*`. This is `nil` initially, but will be the address of the account that executed any `call` to this account.
 
 IMPORTANT: From a security perspective, `*caller*` should be regarded as the account to check for authorisation to perform any action within an actor, since that is the account that made the `call` and requested for the action to be performed. DO NOT rely on `*origin*` for security checks.
 
@@ -933,7 +933,7 @@ IMPORTANT: From a security perspective, `*caller*` should be regarded as the acc
 
 #### For callers
 
-Within the scope of the call the target actor executes within it's own account context. This **protects the caller** : the actor does not have the ability to modify the caller's account and cannot impersonate the caller for the purpose of interactions with other actors (it must act on its own behalf).
+Within the scope of the call the target actor executes within its own account context. This **protects the caller** : the actor does not have the ability to modify the caller's account and cannot impersonate the caller for the purpose of interactions with other actors (it must act on its own behalf).
 
 As with all CVM code execution, **juice costs are paid by the account that initially executed the transaction** (`*origin*`). It is possible for an actor to burn all available juice (in which case the transaction will fail). While the downside is limited by available juice, users should be aware that malicious or badly written actors may consume more juice that desired, and avoid calling untrusted actors.
 

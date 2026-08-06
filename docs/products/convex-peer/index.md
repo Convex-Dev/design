@@ -47,4 +47,4 @@ We recommend that you DO NOT add peer controller keys to a Convex peer container
 - Peer controller keys have control over significant economic assets, in particular the peer's stake on the Convex Network
 - If the system running the docker container is compromised, the controller key may be stolen
 
-Instead, is is best to operate the Peer Container with a peer key alone, and use a separate mechanism (e.g. a hardware wallet or air-gapped laptop) for signing transactions that require the controller key.
+Instead, it is best to operate the Peer Container with a peer key alone, and use a separate mechanism (e.g. a hardware wallet or air-gapped laptop) for signing transactions that require the controller key.
