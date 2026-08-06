@@ -29,7 +29,7 @@ const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 
 // Fund a new account on creation: pass a faucet amount to createAccount
 const keyPair = KeyPair.generate();
-const account = await convex.createAccount(keyPair.accountKey, 100_000_000); // 0.1 CVM
+const account = await convex.createAccount(keyPair, 100_000_000); // 0.1 CVM
 
 // Top up an existing account
 await convex.faucet(account.address, 100_000_000);
@@ -52,6 +52,8 @@ convex.request_funds(100_000_000, account)  # 0.1 CVM
 # Or top up only when needed: requests funds until the balance reaches min_balance
 convex.topup_account(account, min_balance=10_000_000)
 ```
+
+Note that `topup_account` checks the balance by querying *as* the account, so it fails with a `JUICE` error on an account that holds no coins at all. Fund a brand-new account with `request_funds` first; use `topup_account` to keep an already-funded account topped up.
 
 ## Account creation is faucet-sponsored
 
