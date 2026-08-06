@@ -68,7 +68,7 @@ System.out.println("Transaction result: " + txResult.getValue());
 
 ## Key Features
 
-### ☕ Native JVM Performance
+### Native JVM Performance
 
 Pure Java implementation with zero overhead, leveraging the full power of the JVM:
 
@@ -79,7 +79,7 @@ AKeyPair keyPair = AKeyPair.generate();
 ACell data = Vectors.of(1, 2, 3, 4, 5);
 ```
 
-### ⚡ Async with CompletableFuture
+### Async with CompletableFuture
 
 Non-blocking operations using Java's CompletableFuture:
 
@@ -93,7 +93,7 @@ future.thenAccept(result -> {
 });
 ```
 
-### 🔐 Ed25519 Key Management
+### Ed25519 Key Management
 
 Full support for Ed25519 cryptographic keys:
 
@@ -108,7 +108,7 @@ AKeyPair keyPair = AKeyPair.create(seedBytes);
 AccountKey publicKey = keyPair.getAccountKey();
 ```
 
-### 🌐 Multiple Client Types
+### Multiple Client Types
 
 Choose the right client for your use case:
 
@@ -120,7 +120,7 @@ Convex convex = Convex.connect("https://peer.convex.live");
 Convex convex = Convex.connect(InetSocketAddress.createUnresolved("peer.convex.live", 18888));
 ```
 
-### 🔄 Transaction Management
+### Transaction Management
 
 Automatic transaction preparation and signing:
 

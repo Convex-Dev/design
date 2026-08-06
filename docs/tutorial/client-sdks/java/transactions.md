@@ -10,11 +10,11 @@ Transactions are state-changing operations that execute Convex Lisp code and mod
 
 Unlike queries, transactions:
 
-- ⚡ **Modify state** - Change account balances, deploy contracts, update data
-- 💰 **Consume juice** - Require Convex Coins to pay for execution
-- 🔐 **Require signing** - Must be cryptographically signed by account key
-- ⏱️ **Achieve consensus** - Confirmed by network consensus (sub-second)
-- 📈 **Increment sequence** - Each account has a monotonic sequence number
+- **Modify state** - Change account balances, deploy contracts, update data
+- **Consume juice** - Require Convex Coins to pay for execution
+- **Require signing** - Must be cryptographically signed by account key
+- **Achieve consensus** - Confirmed by network consensus (sub-second)
+- **Increment sequence** - Each account has a monotonic sequence number
 
 ## Basic Transaction Pattern
 
@@ -394,7 +394,7 @@ if (!result.isError()) {
 }
 ```
 
-**⚠️ Warning**: Save the new keys before changing! Losing keys means losing account access.
+**Warning**: Save the new keys before changing! Losing keys means losing account access.
 
 ## Best Practices
 

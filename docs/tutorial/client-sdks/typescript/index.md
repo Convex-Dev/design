@@ -12,15 +12,15 @@ The `@convex-world/convex-ts` package provides a modern, type-safe way to intera
 
 ## Key Features
 
-- **🔍 Read-Only Queries** - Query network state without needing an account or keys
-- **🔐 Account Management** - Full support for Ed25519 key pairs and account operations
-- **💸 Transactions** - Submit and track transactions with complete type safety
-- **🪙 Asset Handles** - Fluent API for fungible tokens, generic assets, and CNS
-- **🔌 Pluggable Signers** - Extensible signer interface for hardware wallets, browser extensions, and HSM
-- **💾 Secure Keystore** - Encrypted key storage with password protection
-- **📘 Full TypeScript Support** - Complete type definitions for IntelliSense and compile-time checks
-- **🌐 Environment Agnostic** - No DOM dependencies, works everywhere JavaScript runs
-- **⚛️ React Integration** - Hooks and components via `@convex-world/convex-react`
+- **Read-Only Queries** - Query network state without needing an account or keys
+- **Account Management** - Full support for Ed25519 key pairs and account operations
+- **Transactions** - Submit and track transactions with complete type safety
+- **Asset Handles** - Fluent API for fungible tokens, generic assets, and CNS
+- **Pluggable Signers** - Extensible signer interface for hardware wallets, browser extensions, and HSM
+- **Secure Keystore** - Encrypted key storage with password protection
+- **Full TypeScript Support** - Complete type definitions for IntelliSense and compile-time checks
+- **Environment Agnostic** - No DOM dependencies, works everywhere JavaScript runs
+- **React Integration** - Hooks and components via `@convex-world/convex-react`
 
 ## Installation
 
@@ -95,7 +95,7 @@ Connect to different Convex networks:
   <div className="col col--6">
     <div className="card">
       <div className="card__header">
-        <h3>📖 Guides</h3>
+        <h3>Guides</h3>
       </div>
       <div className="card__body">
         <ul>
@@ -111,7 +111,7 @@ Connect to different Convex networks:
   <div className="col col--6">
     <div className="card">
       <div className="card__header">
-        <h3>🔧 Advanced</h3>
+        <h3>Advanced</h3>
       </div>
       <div className="card__body">
         <ul>
@@ -124,7 +124,7 @@ Connect to different Convex networks:
 
 ## Resources
 
-- **📦 npm Package**: [@convex-world/convex-ts](https://www.npmjs.com/package/@convex-world/convex-ts)
-- **🐙 GitHub**: [Convex-Dev/convex.ts](https://github.com/Convex-Dev/convex.ts)
-- **💬 Discord**: [Convex Community](https://discord.com/invite/xfYGq4CT7v)
-- **📚 Full Documentation**: [docs.convex.world](https://docs.convex.world)
+- **npm Package**: [@convex-world/convex-ts](https://www.npmjs.com/package/@convex-world/convex-ts)
+- **GitHub**: [Convex-Dev/convex.ts](https://github.com/Convex-Dev/convex.ts)
+- **Discord**: [Convex Community](https://discord.com/invite/xfYGq4CT7v)
+- **Full Documentation**: [docs.convex.world](https://docs.convex.world)

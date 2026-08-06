@@ -8,9 +8,9 @@ Asset handles provide a lightweight, fluent API for working with on-chain assets
 
 Three handle types are available:
 
-- **🪙 FungibleToken** — CAD29 fungible tokens (`@convex.fungible/*`)
-- **📦 AssetHandle** — Generic assets including NFTs (`@convex.asset/*`)
-- **🏷️ CnsHandle** — Convex Name System (`@convex.cns/*`)
+- **FungibleToken** — CAD29 fungible tokens (`@convex.fungible/*`)
+- **AssetHandle** — Generic assets including NFTs (`@convex.asset/*`)
+- **CnsHandle** — Convex Name System (`@convex.cns/*`)
 
 Handles are:
 - **Lightweight** — no network calls on construction
@@ -21,7 +21,7 @@ Handles are:
 Read-only methods such as `balance()`, `supply()`, and `decimals()` work without setting an account. State-modifying methods like `transfer()` and `mint()` require an account and signer.
 :::
 
-## 🪙 Fungible Tokens
+## Fungible Tokens
 
 Use `convex.fungible()` to create a `FungibleToken` handle for any CAD29-compliant token:
 
@@ -83,7 +83,7 @@ All amounts are validated as non-negative integers. The `BalanceLike` type accep
 
 Negative values, fractional numbers, and non-numeric strings throw immediately on the client side.
 
-## 📦 Generic Assets (NFTs and More)
+## Generic Assets (NFTs and More)
 
 Use `convex.asset()` to create an `AssetHandle` for any asset that follows the Convex asset protocol — including NFTs, multi-token contracts, and other custom assets:
 
@@ -131,7 +131,7 @@ await asset.accept('#456', 50);
 
 The offer is recorded on-chain and can only be claimed by the designated recipient through `accept()`.
 
-## 🏷️ CNS (Convex Name System)
+## CNS (Convex Name System)
 
 Use `convex.cns()` to create a `CnsHandle` for resolving and managing Convex Name System entries:
 

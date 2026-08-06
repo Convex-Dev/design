@@ -9,11 +9,11 @@ Security best practices for operating Convex peer nodes.
 ## Overview
 
 Secure peer operation requires:
-- 🔐 Key management
-- 🛡️ Network security
-- 👁️ Monitoring and alerting
-- 🔄 Regular updates
-- 📋 Incident response planning
+- Key management
+- Network security
+- Monitoring and alerting
+- Regular updates
+- Incident response planning
 
 ## Key Management
 

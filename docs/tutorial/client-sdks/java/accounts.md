@@ -25,7 +25,7 @@ An **AKeyPair** contains Ed25519 cryptographic keys:
 - **Account Key** - Public key shared with the network (32 bytes)
 - **Seed** - Private key material, used for signing (32 bytes)
 
-**⚠️ Never share your seed!** Anyone with it can control your account.
+**Never share your seed!** Anyone with it can control your account.
 
 ## Creating Key Pairs
 
@@ -293,7 +293,7 @@ if (!result.isError()) {
 }
 ```
 
-**⚠️ Warning**:
+**Warning**:
 - Save new keys BEFORE transferring!
 - Old keys will no longer work
 - Losing new keys means losing account access forever

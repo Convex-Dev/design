@@ -173,7 +173,7 @@ async function main() {
 main().catch(console.error);
 ```
 
-**🎉 Congratulations!** You've built your first Convex application with TypeScript.
+You now have a working Convex application in TypeScript: it creates an account, submits a transaction, and reads the result back with a query.
 
 ## Next Steps
 

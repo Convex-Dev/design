@@ -140,16 +140,16 @@ server.launch();
 
 ### Advantages
 
-- ⚡ **Sub-millisecond latency** - Direct method calls
-- 🔧 **Full control** - Configure everything
-- 🧪 **Isolated** - Clean state per test
-- 📦 **No external dependencies** - Pure Java
+- **Sub-millisecond latency** - Direct method calls
+- **Full control** - Configure everything
+- **Isolated** - Clean state per test
+- **No external dependencies** - Pure Java
 
 ### Considerations
 
-- ⚠️ Requires 2-4 GB RAM
-- ⚠️ State is ephemeral (lost on shutdown)
-- ⚠️ Single-peer network (no consensus testing)
+- Requires 2-4 GB RAM
+- State is ephemeral (lost on shutdown)
+- Single-peer network (no consensus testing)
 
 ## Convex Desktop
 
@@ -223,16 +223,16 @@ java -Xmx4g -jar convex.jar desktop
 
 ### Advantages
 
-- 🎨 **Visual interface** - See everything
-- 🔍 **REPL** - Instant feedback
-- 📊 **State exploration** - Browse accounts
-- 🎓 **Learning-friendly** - Interactive environment
+- **Visual interface** - See everything
+- **REPL** - Instant feedback
+- **State exploration** - Browse accounts
+- **Learning-friendly** - Interactive environment
 
 ### Considerations
 
-- ⚠️ GUI overhead (slower than headless)
-- ⚠️ Not suitable for automation
-- ⚠️ Requires display (no headless servers)
+- GUI overhead (slower than headless)
+- Not suitable for automation
+- Requires display (no headless servers)
 
 ## CLI Peer
 
@@ -358,16 +358,16 @@ jobs:
 
 ### Advantages
 
-- 🚀 **Scriptable** - Automation-friendly
-- 🔄 **CI/CD** - Perfect for pipelines
-- 💻 **Headless** - No GUI needed
-- 📝 **Logging** - File-based logs
+- **Scriptable** - Automation-friendly
+- **CI/CD** - Perfect for pipelines
+- **Headless** - No GUI needed
+- **Logging** - File-based logs
 
 ### Considerations
 
-- ⚠️ Manual process management
-- ⚠️ Requires cleanup handling
-- ⚠️ No interactive features
+- Manual process management
+- Requires cleanup handling
+- No interactive features
 
 ## Docker Peer
 
@@ -510,16 +510,16 @@ jobs:
 
 ### Advantages
 
-- 📦 **Consistent environment** - Same everywhere
-- 🔒 **Isolated** - No host contamination
-- 🧹 **Easy cleanup** - `docker-compose down -v`
-- 🚀 **CI/CD friendly** - Standard tooling
+- **Consistent environment** - Same everywhere
+- **Isolated** - No host contamination
+- **Easy cleanup** - `docker-compose down -v`
+- **CI/CD friendly** - Standard tooling
 
 ### Considerations
 
-- ⚠️ Docker overhead (slight performance impact)
-- ⚠️ Requires Docker installed
-- ⚠️ Volume management needed for persistence
+- Docker overhead (slight performance impact)
+- Requires Docker installed
+- Volume management needed for persistence
 
 ## Comparison
 

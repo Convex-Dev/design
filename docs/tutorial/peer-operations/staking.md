@@ -67,7 +67,7 @@ AKeyPair peerKeys = AKeyPair.generate();
 System.out.println("Peer Public Key: " + peerKeys.getAccountKey());
 ```
 
-**⚠️ Security:** store peer keys securely. Loss of the peer key means loss of the peer identity.
+**Security:** store peer keys securely. Loss of the peer key means loss of the peer identity.
 
 ## Staking Process
 
@@ -156,7 +156,7 @@ convex.transact(Reader.read(String.format("(set-peer-stake %s %d)", peerKey, new
 convex.transact(Reader.read(String.format("(set-peer-stake %s 0)", peerKey))).get();
 ```
 
-**⚠️ Warning:** setting stake to `0` removes the peer from consensus. Shut the peer down cleanly first.
+**Warning:** setting stake to `0` removes the peer from consensus. Shut the peer down cleanly first.
 
 ### Delegated Stake
 
@@ -178,13 +178,13 @@ convex.transact(Reader.read(String.format("(evict-peer %s)", peerKey))).get();
 
 ## Stake Security
 
-✅ **Key management**
+**Key management**
 
 - Keep the peer key and the controlling account key separate
 - Use hardware security modules (HSM) for high-value stakes
 - Maintain secure offline backups
 
-✅ **Stake protection**
+**Stake protection**
 
 - Monitor peer performance to avoid slashing
 - Keep infrastructure maintained and reachable at the registered URL

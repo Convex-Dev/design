@@ -55,7 +55,7 @@ convex.transfer('#456', 50_000_000, account)
 
 ## Key Features
 
-### 🐍 Pythonic API
+### Pythonic API
 
 Idiomatic Python with `snake_case` naming, exceptions for errors, and synchronous I/O patterns.
 
@@ -66,7 +66,7 @@ info = convex.get_account_info(account)
 result = convex.transact('(map inc [1 2 3 4])', account)
 ```
 
-### 📦 Account Objects
+### Account Objects
 
 Encapsulate address, key pair, and optional name in a convenient `Account` object:
 
@@ -80,7 +80,7 @@ print(f'Address: {account.address}')
 print(f'Public Key: {account.public_key}')
 ```
 
-### 🔐 Flexible Key Management
+### Flexible Key Management
 
 Multiple ways to create and import key pairs:
 
@@ -98,7 +98,7 @@ key_pair = KeyPair.import_from_mnemonic('word1 word2 word3 ...')
 key_pair.export_to_file('backup.pem', 'secret_password')
 ```
 
-### 🔄 Automatic Sequence Retry
+### Automatic Sequence Retry
 
 The SDK automatically retries transactions with sequence errors, handling concurrency gracefully:
 
@@ -107,7 +107,7 @@ The SDK automatically retries transactions with sequence errors, handling concur
 result = convex.transact('(transfer #789 1000000)', account)
 ```
 
-### 🌐 CNS Integration
+### CNS Integration
 
 Built-in support for Convex Name Service (CNS):
 

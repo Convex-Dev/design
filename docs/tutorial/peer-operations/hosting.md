@@ -126,8 +126,8 @@ Cost: ~$300/month
 **Considerations**:
 - Mature platform, extensive docs
 - Good global availability
-- ⚠️ Higher cost than alternatives
-- ⚠️ Complex pricing model
+- Higher cost than alternatives
+- Complex pricing model
 
 ### Google Cloud Platform (GCP)
 
@@ -179,7 +179,7 @@ Cost: ~$400/month
 **Considerations**:
 - Enterprise integration
 - Hybrid cloud options
-- ⚠️ Higher cost
+- Higher cost
 
 ### DigitalOcean
 
@@ -206,7 +206,7 @@ Cost: ~$240/month
 - Simple pricing
 - Easy to use
 - Good value
-- ⚠️ Limited regions
+- Limited regions
 
 ### Hetzner
 
@@ -225,8 +225,8 @@ Cost: ~$50/month
 **Considerations**:
 - Excellent value
 - Good performance
-- ⚠️ Limited to Europe
-- ⚠️ Strict abuse policies
+- Limited to Europe
+- Strict abuse policies
 
 ### OVH Cloud
 
@@ -245,7 +245,7 @@ Cost: ~$70/month
 **Considerations**:
 - Competitive pricing
 - Good European presence
-- ⚠️ Complex interface
+- Complex interface
 
 ## Dedicated Servers
 
@@ -254,7 +254,7 @@ Cost: ~$70/month
 **Advantages**:
 - Better performance per dollar
 - Predictable costs
-- No noisy neighbors
+- No noisy neighbours
 - Full hardware control
 
 **Use dedicated when**:

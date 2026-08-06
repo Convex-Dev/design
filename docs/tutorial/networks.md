@@ -63,7 +63,7 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 - High reliability and uptime
 - Persistent state (never resets)
 - Professionally operated infrastructure
-- ⚠️ Requires funded account to transact
+- Requires funded account to transact
 
 **When to Use**:
 - Deploying production applications
@@ -77,8 +77,8 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 **Characteristics**:
 - Public faucets available (free test funds)
 - Safe for experimentation
-- ⚠️ May reset periodically
-- ⚠️ No real value (test Convex Coins only)
+- May reset periodically
+- No real value (test Convex Coins only)
 - Publicly accessible
 
 **When to Use**:
@@ -97,7 +97,7 @@ A **Convex network** is a decentralised lattice-based system where multiple peer
 - Built-in account creation and funding
 - Perfect for unit/integration testing
 - Works offline
-- ⚠️ Requires running peer infrastructure
+- Requires running peer infrastructure
 
 **When to Use**:
 - Active development and debugging
@@ -117,10 +117,10 @@ Convex's main production network for real-world applications.
 
 **Details**:
 - **Genesis Hash**: `0xb0e44f2a645abfa539f5b96b7a0eabb0f902866feaff0f7c12d1213e02333f13`
-- **Faucet**: ❌ No
+- **Faucet**: No
 - **Funding**: Requires funded account or transfer from existing account
 
-**⚠️ Important**: Verify the [genesis hash](peer-operations#verifying-network-identity) before submitting production transactions.
+**Important**: Verify the [genesis hash](peer-operations#verifying-network-identity) before submitting production transactions.
 
 ---
 
@@ -130,10 +130,10 @@ Public testnet hosted on Hugging Face Spaces with faucet support for testing and
 
 **Connection**:
 - **HTTP**: `https://mikera1337-convex-testnet.hf.space`
-- **Binary**: ❌ Not available (HTTP only)
+- **Binary**: Not available (HTTP only)
 
 **Details**:
-- **Faucet**: ✅ Yes
+- **Faucet**: Yes
 - **Hosting**: Hugging Face Spaces
 - **Resets**: May reset periodically (genesis hash will change)
 - **Use For**: Learning, testing, experimentation
@@ -234,21 +234,21 @@ Convex convex = Convex.connect("https://peer.convex.live");
 - **Always verify genesis hash** - See [verification guide](peer-operations#verifying-network-identity)
 - Use HTTPS for encrypted connections
 - Never share private keys or seed phrases
-- ⚠️ Transactions are irreversible
-- ⚠️ Test thoroughly on testnets first
+- Transactions are irreversible
+- Test thoroughly on testnets first
 
 ### Testnets
 
-- ⚠️ Never use production keys on testnets
-- ⚠️ Testnets may reset without notice
-- ⚠️ Test funds have no real value
+- Never use production keys on testnets
+- Testnets may reset without notice
+- Test funds have no real value
 - Safe to experiment and make mistakes
 
 ### Local Peers
 
 - Completely private (no network exposure)
 - Safe for testing with production-like keys
-- ⚠️ State is ephemeral unless persisted
+- State is ephemeral unless persisted
 
 ## Next Steps
 

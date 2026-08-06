@@ -23,7 +23,7 @@ The `convex-java` module is the official Java client library for the Convex dece
 
 ## Key Features
 
-### ☕ Native JVM Performance
+### Native JVM Performance
 
 Pure Java implementation leveraging the full power of the JVM:
 
@@ -41,7 +41,7 @@ AKeyPair keyPair = AKeyPair.generate();
 Result result = convex.query(Reader.read("(balance #13)")).get();
 ```
 
-### ⚡ Async with CompletableFuture
+### Async with CompletableFuture
 
 Non-blocking operations using Java's CompletableFuture:
 
@@ -55,7 +55,7 @@ future.thenAccept(result -> {
 });
 ```
 
-### 🔐 Ed25519 Key Management
+### Ed25519 Key Management
 
 Full support for Ed25519 cryptographic keys with AKeyPair:
 
@@ -72,7 +72,7 @@ byte[] seedBackup = keyPair.getSeed();
 Files.write(Path.of("keypair.dat"), seedBackup);
 ```
 
-### 🌐 Multiple Client Types
+### Multiple Client Types
 
 Choose the right client for your use case:
 
@@ -86,7 +86,7 @@ Convex convex = Convex.connect(
 );
 ```
 
-### 🔄 Automatic Transaction Management
+### Automatic Transaction Management
 
 SDK handles transaction preparation and signing:
 
@@ -173,7 +173,7 @@ public class ConvexExample {
 Java is the language of choice for:
 
 - **Enterprise Applications** - Spring Boot, Jakarta EE, microservices
-- **High Performance** - JVM optimization, native threads, efficient GC
+- **High Performance** - JVM optimisation, native threads, efficient GC
 - **Android Development** - Mobile applications
 - **Big Data** - Hadoop, Spark, Kafka integration
 - **Legacy Systems** - Integration with existing Java infrastructure

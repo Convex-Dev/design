@@ -116,7 +116,7 @@ volumes:
   - ./peer-keys.dat:/app/keys/peer-keys.dat:ro
 ```
 
-**⚠️ Security**: Set restrictive file permissions (600) on host.
+**Security**: Set restrictive file permissions (600) on host.
 
 ## Management
 

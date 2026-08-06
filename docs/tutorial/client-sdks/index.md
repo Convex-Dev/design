@@ -78,6 +78,6 @@ For terminal-based interaction with Convex, see the [Convex CLI](/docs/products/
 
 ## Need Help?
 
-- 💬 [Discord Community](https://discord.com/invite/xfYGq4CT7v)
-- 📚 [Documentation](https://docs.convex.world)
-- 🐛 [Report Issues](https://github.com/Convex-Dev/convex.ts/issues)
+- [Discord Community](https://discord.com/invite/xfYGq4CT7v)
+- [Documentation](https://docs.convex.world)
+- [Report Issues](https://github.com/Convex-Dev/convex.ts/issues)

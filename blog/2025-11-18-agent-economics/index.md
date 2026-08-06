@@ -83,7 +83,7 @@ Convex is a true peer-to-peer network with no miners wasting resources or extrac
 - Agents writing contracts with other agents
 - High-frequency market makers running unsupervised
 - Lending protocols that reprice risk in real time
-- Agents that launch tokenized micro-economies and hedge their own exposure
+- Agents that launch tokenised micro-economies and hedge their own exposure
 - Thousands of agents negotiating, merging, or peacefully dying when unprofitable — pure economic Darwinism at 1000× speed
 
 This isn't sci-fi: The primitives are live **today** on Convex.

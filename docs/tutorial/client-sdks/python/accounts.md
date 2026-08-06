@@ -25,7 +25,7 @@ A **KeyPair** contains Ed25519 cryptographic keys:
 - **Public Key** - Shared with the network (64 hex characters)
 - **Private Key** - Secret, used for signing transactions
 
-**⚠️ Never share your private key!** Anyone with it can control your account.
+**Never share your private key!** Anyone with it can control your account.
 
 ## Creating Key Pairs
 
@@ -124,7 +124,7 @@ print(f'Recovery phrase: {mnemonic}')
 # witch collapse practice feed shame open despair creek road again ice least ...
 ```
 
-**⚠️ Warning**: Store mnemonic securely! Anyone with it can restore your keys.
+**Warning**: Store mnemonic securely! Anyone with it can restore your keys.
 
 ## Creating Accounts
 
@@ -294,7 +294,7 @@ print(f'Account #{transferred.address} now uses new keys')
 print(f'New public key: {transferred.key_pair.public_key}')
 ```
 
-**⚠️ Warning**:
+**Warning**:
 - Save new keys BEFORE transferring!
 - Old keys will no longer work
 - Losing new keys means losing account access forever

@@ -90,7 +90,7 @@ java -jar convex.jar key generate --type random
 java -jar convex.jar key list
 ```
 
-**⚠️ Security**: Store `peer-keys.dat` securely with restricted permissions (600).
+**Security**: Store `peer-keys.dat` securely with restricted permissions (600).
 
 ### Step 4: Prepare Keys and Store
 

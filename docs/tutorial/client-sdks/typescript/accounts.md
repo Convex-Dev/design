@@ -271,7 +271,7 @@ await convex.transfer('#789', 2_000_000);
 
 ## Security Best Practices
 
-### ✅ Do
+### Do
 
 - Generate seeds with cryptographically secure random number generators
 - Store seeds in environment variables or encrypted keystores
@@ -280,7 +280,7 @@ await convex.transfer('#789', 2_000_000);
 - Verify public key derivation is deterministic
 - Use hardware wallets for high-value accounts
 
-### ❌ Don't
+### Don't
 
 - Hardcode seeds in source code
 - Commit seeds to version control

@@ -426,7 +426,7 @@ convex.setSigner(timeoutSigner);
 
 ## Best Practices
 
-### ✅ Do
+### Do
 
 - Cache public keys (they don't change)
 - Make signing operations async
@@ -435,7 +435,7 @@ convex.setSigner(timeoutSigner);
 - Validate public key matches before signing
 - Use timeouts for user interactions
 
-### ❌ Don't
+### Don't
 
 - Block the main thread during signing
 - Assume signing always succeeds
