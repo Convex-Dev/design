@@ -10,7 +10,7 @@ Tools and applications for working with the Convex network — whether you are b
 
 ## For Developers
 
-- **[Convex SDKs](/docs/products/convex-ts)** — official client libraries for TypeScript / JavaScript, Java and Python
+- **[Client SDKs](/docs/tutorial/client-sdks)** — official libraries for TypeScript / JavaScript ([convex-ts](/docs/products/convex-ts)), Java and Python
 - **[Convex REPL](/docs/tools/convex-repl)** — interactive Convex Lisp REPL, right in your browser
 - **[Convex MCP](/docs/products/convex-mcp)** — Model Context Protocol servers built into every peer, so AI agents can query state and transact directly
 

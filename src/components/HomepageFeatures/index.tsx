@@ -16,8 +16,9 @@ const FeatureList: FeatureItem[] = [
     description: (
       <>
         The Lattice is the innovation at the heart of Convex — decentralised,
-        infinitely scalable, cryptographically secure data structures that
-        power everything from consensus to file systems.
+        cryptographically secure data structures with no practical limit on
+        total size, because each node replicates only the subsets it needs.
+        One technology powers consensus, file systems, SQL and streaming.
       </>
     ),
   },

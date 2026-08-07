@@ -9,7 +9,7 @@ Convex is a decentralised lattice platform for building fair, efficient, and sus
 
 If you only have a minute, these are the claims that matter, each linked to its evidence:
 
-- **Transactions confirm in under a second, with zero block delay.** Peers publish a block the moment a transaction arrives; leaderless [CPoS consensus](/docs/overview/performance) orders everything with built-in front-running resistance.
+- **Transactions confirm in under a second, with zero block delay.** Peers publish a block the moment a transaction arrives; leaderless [CPoS consensus](/docs/overview/different) orders everything with built-in front-running resistance.
 - **The CVM executes up to a million transactions per second** in [benchmarks](/docs/overview/performance), on commodity hardware — with figures validated in the EU's Next Generation Internet programme.
 - **The lattice is bigger than the chain.** The same technology runs a [replicated file system](/docs/cad/dlfs), a [SQL database](/docs/cad/convex_sql), [streaming queues](/docs/cad/lattice_queue) and [federated AI orchestration](https://covia.ai) — see [Lattice Technology](/docs/overview/lattice).
 - **AI agents are first-class economic participants.** Every peer is an [MCP server](/docs/products/convex-mcp); agents hold accounts, own assets and transact under exactly the same rules as everyone else.

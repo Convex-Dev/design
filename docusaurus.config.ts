@@ -255,11 +255,6 @@ onBrokenMarkdownLinks: 'warn'
         {
           title: 'Community',
           items: [
-
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/convex',
-            },
             {
               label: 'Discord',
               href: 'https://discord.com/invite/xfYGq4CT7v',

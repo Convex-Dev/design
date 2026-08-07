@@ -147,9 +147,7 @@ This Convex Lisp transaction:
 - **[Faucet Guide](coins/faucet)** — getting test funds
 
 **Master your SDK**
-- **[Queries](client-sdks/java/queries)** — reading state
-- **[Transactions](client-sdks/java/transactions)** — changing state
-- **[Account Management](client-sdks/java/accounts)** — keys and accounts
+- **[Client SDKs](client-sdks)** — pick TypeScript, Python or Java, then follow its queries, transactions and accounts guides
 
 **Write smart contracts**
 - **[Convex Lisp](/docs/tutorial/convex-lisp)** — the on-chain language
@@ -175,9 +173,9 @@ This Convex Lisp transaction:
 
 ## Troubleshooting
 
-**`FUNDS` error** — your account needs Convex Coins. In the Sandbox, top up from the faucet; via an SDK, request from the [faucet](coins/faucet).
+**`:FUNDS` error** — your account needs Convex Coins. In the Sandbox, top up from the faucet; via an SDK, request from the [faucet](coins/faucet).
 
-**`SEQUENCE` error** — don't submit concurrent transactions from one account; wait for the previous one to confirm.
+**`:SEQUENCE` error** — don't submit concurrent transactions from one account; wait for the previous one to confirm.
 
 **Can't connect** — check your network URL and internet connection. The testnet endpoint is `mikera1337-convex-testnet.hf.space`.
 

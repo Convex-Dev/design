@@ -25,14 +25,16 @@ The site has four main documentation sections:
 - Order controlled by `sidebar_position` frontmatter
 - Current structure:
   1. Overview (index) - Landing page
-  2. Key Concepts - Core building blocks
+  2. What Makes Convex Different - Design decisions and evidence
   3. Lattice Technology - Technical foundation
-  4. Use Cases - What you can build
-  5. Performance - Benchmarks
-  6. Governance - Network management
-  7. White Paper - Deep technical specs
-  8. Manifesto - Vision and philosophy
-  9. FAQ - Common questions
+  4. Key Concepts - Core building blocks
+  5. Use Cases - What you can build
+  6. Performance - Benchmarks
+  7. Governance - Network management
+  8. Ecosystem - Projects built on Convex
+  9. White Paper - Deep technical specs
+  10. Manifesto - Vision and philosophy
+  11. FAQ - Common questions
 
 #### `/docs/tutorial/`
 - **Manually structured sidebar** in `sidebars.ts`
@@ -45,6 +47,7 @@ The site has four main documentation sections:
   - Convex Coins
   - Convex Lisp
   - Actor Development
+  - AI Agents
   - Recipes
   - Peer Operations
   - Glossary
@@ -102,9 +105,9 @@ The site has four main documentation sections:
 
 ### 5. Homepage and Navigation
 
-**Homepage buttons** (`src/pages/index.tsx`):
-- Three buttons creating a user journey
-- Current: "Why Convex?" → "Overview" → "Start Building"
+**Homepage** (`src/pages/index.tsx`):
+- Hero has two buttons: "Start Building" (Quick Start) and "Why Convex?" (intro)
+- Followed by pathway cards for four audiences (applications, AI agents, infrastructure, design)
 - Should guide users from motivation to understanding to action
 
 **Sidebar configuration** (`sidebars.ts`):
