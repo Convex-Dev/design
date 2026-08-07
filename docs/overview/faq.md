@@ -55,6 +55,18 @@ But it's important to note that performance and scalability are not just about t
 
 We achieve all this *without* resorting to over-complicated scaling solutions that introduce various new problems (e.g. cross-shard transactions). We can always add additional scaling features later, but it may not even be necessary.
 
+## Platform X claims millions of TPS — how do these numbers compare?
+
+Treat any headline throughput figure — including ours — as a claim to scrutinise, not a fact to compare. Big numbers are usually bought with compromises that the headline doesn't mention. Things to check before accepting one:
+
+- **The test setup.** Was it a real, globally distributed network, or a handful of co-located machines in a lab?
+- **The security model.** Proof-of-authority and small validator sets go fast because they've given up decentralisation.
+- **What a "transaction" is.** Raw transfers are cheap; general-purpose smart contract execution is not. A platform that can't run arbitrary contract code isn't measuring the same thing.
+- **Cross-shard costs.** Sharded designs quote per-shard totals, but transactions that span shards are slower and more complex — and real economic activity constantly crosses shards.
+- **Time to finality.** A high submission rate means little if final, irreversible confirmation takes minutes.
+
+Our own numbers are published with their context — the [performance page](performance) states what each benchmark measures, on what hardware, and links the code so you can reproduce them.
+
 ## How do I integrate my application with Convex?
 
 Convex provides several mechanisms for integration.
