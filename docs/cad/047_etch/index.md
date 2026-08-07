@@ -4,7 +4,7 @@
 
 Etch is the embedded, append-only, content-addressable store that persists Convex cells — the immutable Merkle-tree nodes that make up CVM state, lattice data and every other value in the system. It is described in its own source as "a stupid, fast database for immutable data you want carved in stone": once a value is written for a key it is never changed, which eliminates cache-invalidation concerns entirely.
 
-This CAD specifies the **on-disk file format** (Etch format version 1). Higher-level *store management* — the store abstraction, in-memory caching, garbage collection and pinning — is a separate concern and is not specified here.
+This CAD specifies the **on-disk file format** (Etch format version 1). Higher-level *store management* is specified separately: the store abstraction and caching in [CAD048](../048_stores/index.md), garbage collection and migration in [CAD049](../049_etch_gc/index.md).
 
 Keys are fixed 32-byte identifiers, normally the SHA3-256 [Value ID](../003_encoding/index.md) of the cell being stored. Values are the canonical cell [encodings](../003_encoding/index.md). Etch is indifferent to the meaning of keys, but assumes they are pseudo-random hashes so that data distributes evenly across the index.
 
@@ -117,7 +117,7 @@ The reference implementation lives in the Convex `convex-core` module (Java), pa
 | Index traversal callback | `IEtchIndexVisitor` |
 | Format utilities | `EtchUtils` |
 
-The store abstraction that wraps Etch (caching layers, garbage collection and pinning) is a separate concern, intended for its own CAD.
+The store abstraction that wraps Etch (caching layers and persistence status) is specified in [CAD048](../048_stores/index.md); garbage collection and migration in [CAD049](../049_etch_gc/index.md).
 
 ## See Also
 
