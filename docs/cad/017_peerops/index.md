@@ -75,6 +75,11 @@ convex peer start --host peer.convex.live --port 18888
 
 ## Upgrade
 
+Network protocol upgrades are scheduled on-chain and activate at a consensus timestamp, as specified in [CAD050](../050_network_upgrade/index.md). The operator-facing consequences:
+
+- A peer whose release does not support a scheduled protocol version warns as soon as the schedule lands on-chain, sheds its stake on a best-efforts basis shortly before activation, and freezes out of consensus at the boundary. Update the peer software before the activation time to avoid this.
+- Peer Operators SHOULD monitor for scheduled-upgrade warnings in peer logs and status output, and SHOULD plan software updates with comfortable lead time ahead of any announced activation.
+- A frozen peer rejoins automatically after restarting on a release that supports the scheduled version.
 
 ## Recovery
 
