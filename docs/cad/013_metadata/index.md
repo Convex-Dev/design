@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CVM provides a powerful facility for attaching a metadata map to a defined symbol. The purpose of metadata is to provide any information on a defined symbol independent of the value this symbol holds.
+The CVM provides a facility for attaching a metadata map to a defined symbol. The purpose of metadata is to provide any information on a defined symbol independent of the value this symbol holds.
 
 Some metadata information, if specified, MUST follow a particular structure for external purposes. For instance, this CAD describes how to document a symbol by following an expected structure.
 
@@ -19,6 +19,8 @@ Metadata is a map containing any arbitrary set of key-values. It is specified af
   ^{:my ["meta" :data]}
   42)
 ```
+
+As in other Lisps, `^:flag` is shorthand for `^{:flag true}` — this is the usual way of setting boolean flags such as `:callable`.
 
 ### Retrieving metadata
 
@@ -39,9 +41,25 @@ Each account stores a map of `symbol` to `metadata map` under `:metadata`:
 ;; Following previous examples, returns `{'some-symbol {:my ["meta" :data]}}`
 ```
 
+## Standard metadata keys
+
+The following top-level metadata keys have defined meanings:
+
+| Key | Meaning | Enforced by |
+|-----|---------|-------------|
+| `:doc` | Documentation map (see below) | Convention only |
+| `:callable` | Function may be invoked on this account via `call` | CVM |
+| `:expander` | Value is an expander (see [CAD009](../009_expanders/index.md)) | Compiler |
+| `:special` | Symbol is a CVM special symbol (used in core metadata only) | Convention only |
+| `:private` | Definition is internal and not part of the account's public interface | Convention only |
+
+`:callable` is the one flag with direct CVM semantics: `(call actor (f ...))` succeeds only if `f` is defined in the target account with truthy `:callable` metadata. `:private` is advisory — the CVM does not restrict access to private definitions, so it MUST NOT be relied on for security.
+
+Keys not listed here (and not `:doc` sub-keys below) are unreserved: applications MAY attach any additional metadata. Consumers MUST ignore metadata keys they do not recognise.
+
 ## Standard structures
 
-For some purposes, metadata must follow at least a set of contraints so that the CVM or any external consumer has access to relevant information.
+For some purposes, metadata must follow at least a set of constraints so that the CVM or any external consumer has access to relevant information.
 
 ### Documentation
 
@@ -60,8 +78,8 @@ Reference example:
   ^{:doc {:description "Adds 2 numbers together."
           :errors      {:CAST "If an argument cannot be cast to a number"}
           :examples    [{:code "(add 2 3)"}]
-          :signature   [{:params  [a b]
-                         :returns Number}]
+          :signature   [{:params [a b]
+                         :return Number}]
           :type        :function}}
 
   :implementation...)
@@ -71,9 +89,12 @@ Documentation map MAY contain any of the key-values described in the following s
 
 #### `:description`
 
-String describing the symbol in human language .
+Human-language description of the symbol: either a single string, or a vector of strings where each string is one paragraph. Both forms are used in the core library — use the vector form when the description benefits from paragraph breaks.
 
-TODO. Also a vector of strings where each string is a paragraph for easier formatting?
+```clojure
+:description ["First paragraph."
+              "Second paragraph."]
+```
 
 #### `:errors`
 
@@ -89,19 +110,20 @@ Assuming the symbol is callable, vector of examples where an example is a map wh
 |---|---|
 | `:code` | String, excerpt of code demonstrating a function call |
 
-TODO. Should it be a string? Is it for memory issues?
-TODO. Should it also have a `:return` key-value?
+`:code` is deliberately a string rather than a quoted form: it is display text for documentation tools, holds no cell references to other structures, and can show reader syntax exactly as a user would type it.
+
+No other example keys are currently standardised (expected results, where useful, are conventionally shown within the `:code` string or the description). Consumers MUST ignore example keys they do not recognise; additional keys may be standardised by future updates to this CAD.
 
 #### `:signature`
 
-Assuming the symbol is callable, vector of signatures where a signature is a map which MAY contain:
+Assuming the symbol is callable, vector of signatures (one per arity) where a signature is a map which MAY contain:
 
 | Key | Value |
 |---|---|
-| `:params` | Vector of parameters |
-| `:returns` | Type of returned value |
+| `:params` | Vector of parameter symbols, possibly including `&` for variadic arguments |
+| `:return` | Symbol naming the type of the returned value |
 
-TODO. Is there a list of supported types for `:returns`? More future-proof to have a human-readable string?
+`:return` values are descriptive type names from the CVM type system (e.g. `Boolean`, `Long`, `Double`, `String`, `Blob`, `Address`, `Vector`, `Map`, `Set`, `Sequence`, `DataStructure`, `Number`, `Any`). They are documentation for humans and tools — the CVM does not check them.
 
 #### `:type`
 
@@ -112,15 +134,25 @@ Keyword designating what category the symbol belongs to:
 | `:function` | Symbol is a regular function |
 | `:macro` | Symbol is a macro |
 
-TODO. What about other values?
+Other values are not currently standardised and require an update to this CAD. Note that the core library marks special symbols with the top-level `:special` flag rather than a `:type` value.
 
 ### Expanders
 
-As described in [CAD 009](../009_expanders/index.md), expanders MUST have at least `{:expander true}` in their metadata.
+As described in [CAD 009](../009_expanders/index.md), expanders MUST have at least `{:expander true}` in their metadata. This is how the compiler recognises that a definition should be applied as an expander during expansion.
 
-TODO. Use `:expander?` for consistency.
+The key is `:expander` (not `:expander?`): the flag was defined before the question-mark convention settled, and renaming it would break every existing expander definition, so the original spelling is retained.
 
-TODO. Example here? Or rather in CAD009?
+Example (evaluate the `def` first — an expander must already be defined when a form using it is expanded, so defining and using it in the same form will not work):
 
+```clojure
+(def greet
+  ^{:expander true}
+  (fn [x e]
+    (let [[_ name] x]
+      (e `(str "Hello, " ~name) e))))
 
-TODO. Other sections besides documentation and expanders?
+(greet "World")
+;; => "Hello, World"
+```
+
+Macros are a special case of expanders: `defmacro` sets `:expander` metadata automatically. See CAD009 for expansion semantics.

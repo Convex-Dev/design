@@ -42,12 +42,12 @@ Peers can be configured at launch in various ways.
 
 #### Outgoing connections
 
-Peers MAY configure the number of concurrent outgoing Peer connections according to their available bandwidth. 20 (the default) recommended for Peers with sufficient outgoing bandwidth. There are trade-offs here:
+Peers MAY configure the number of concurrent outgoing Peer connections according to their available bandwidth. The default is 10, which is reasonable for Peers with sufficient outgoing bandwidth. There are trade-offs here:
 - With more outgoing connections, your transactions will reach consensus faster
-- You must weight this up against bandwidth costs
+- You must weigh this up against bandwidth costs
 - If the number is too low your published blocks may get lost if the destinations do not relay them.
 
-TODO: describe mechanism to set connection count controls
+The target count is the `:outgoing-connections` entry in the Server configuration map when launching a peer programmatically, or the `outgoingConnections` entry in the `peer` section of a node configuration. It is not yet exposed as a `convex peer start` command line option.
 
 
 
@@ -62,7 +62,13 @@ The following peers are available at time of writing for synchronisation:
 peer.convex.live:18888
 ```
 
-TODO: CLI commend top start peer with target host
+To start a peer and synchronise against a chosen host with the Convex CLI:
+
+```bash
+convex peer start --host peer.convex.live --port 18888
+```
+
+`--host` and `--port` identify the remote sync source (defaulting to the production peer `peer.convex.live:18888`, or the `CONVEX_HOST` environment variable if set); `--peer-port` sets the local port your own peer listens on. If no sync source is given and a local Etch store exists, the peer restores from its existing store instead. Run `convex peer start --help` for the full option list, including key selection.
 
 ## Shutdown
 
@@ -80,7 +86,13 @@ Peers are designed to automatically recover from temporary network failure and r
 
 Peer Operators SHOULD provide for an alternative way to connect to the main network, if only for the purposes of withdrawing the Peer's Stake. For example, a peer operator may monitor the connectivity of their peer and use Convex Desktop to de-stake the peer if it loses connections.
 
-TODO: describe best way to monitor this. Perhaps API peer health endpoint?
+The recommended monitoring mechanism is the peer's REST API status endpoint:
+
+```
+GET /api/v1/status
+```
+
+This returns a JSON map including the peer's current `consensus-point`, `proposal-point`, `genesis` hash and latest `belief` hash, and doubles as a heartbeat check (any response confirms the peer process is up). To detect a partition rather than a mere process failure, monitor that `consensus-point` continues to advance: a peer whose consensus point stalls while the rest of the network progresses (compare against the status of a known Good Peer) is out of consensus and SHOULD trigger an operator alert.
 
 ### Security Breach
 
