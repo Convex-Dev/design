@@ -82,11 +82,13 @@ The store MUST:
 - Handle persistence of Merkle tree structures
 - Use the encoding format specified in CAD003
 
-#### Commit Durability
+#### Store Publication and Durability
 
-A node's primary propagator commits **synchronously**. When an application calls `sync()`, the primary propagator runs announce, root persistence and broadcast on the caller's own thread, and the call returns only once the new root is durably persisted in the primary store. Persistence errors propagate to the caller rather than being swallowed, so a successful return is a durability guarantee. Any secondary propagators remain asynchronous.
+A node's primary propagator publishes **synchronously**. When an application calls `sync()`, the primary propagator runs announce, root publication and broadcast initiation on the caller's own thread. A successful return confirms that the new root and its reachable cells are available from the primary store and that the returned value is store-backed. Store-publication errors propagate to the caller. Any secondary propagators remain asynchronous.
 
-To keep this guarantee consistent under concurrency, the propagator is the **sole writer** of the store's root pointer: snapshot and persist pipelines are serialised, so an older snapshot can never demote the root pointer after a newer snapshot's sync has already returned.
+Cursor sync does not itself require a physical durability barrier. Persistent nodes SHOULD flush dirty stores periodically and MUST complete an explicit durability barrier after initial publication and during orderly shutdown. A caller that requires immediate crash durability uses the node's explicit checkpoint or flush operation; successful return from that operation confirms the barrier.
+
+To keep publication consistent under concurrency, the propagator is the **sole writer** of the store's root pointer: snapshot and persist pipelines are serialised, so an older snapshot can never demote the root pointer after a newer root has been published.
 
 ### Network Protocol
 
