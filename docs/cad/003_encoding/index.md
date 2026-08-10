@@ -544,7 +544,7 @@ A Set is encoded exactly the same as a Map, except:
 ### `0x84` Index
 
 ```
-0x84 <VLQ Count = n> <Entry> <Depth> <Mask> <Child>(repeated 1-16 times)
+0x84 <VLQ Count = n> <Entry> <VLQ Depth> <Mask> <Child>(repeated 1-16 times)
 
 Where:
 
@@ -552,7 +552,7 @@ Where:
 - 0x00                   (if no entry present at this position in Index)
 - 0x20 <Key> <Value>     (if entry present)
 
-<Depth> is an unsigned byte indicating the hex digit at which the entry / branch occurs. If an entry is present, depth must match the hex length of the entry key
+<VLQ Depth> is a canonical unsigned VLQ Count indicating the hex digit at which the entry / branch occurs. If an entry is present, depth must match the effective hex length of the entry key. Multi-entry nodes have depths from 0 to 509 inclusive; depth 510 is reserved for the singleton form, where the depth is omitted. Depths 0 to 127 therefore retain their historical one-byte encoding.
 
 <Mask> is a 16 bit bitmap of which child Index nodes are present at the given depth (low bit = `0` ... high bit = `F`)
 
@@ -568,7 +568,7 @@ An Index serves as a specialised map with ordered keys. Logically, it is a mappi
 
 Key values MUST be Blobs, Strings, Addresses, Keywords or Symbols. These are regarded as "BlobLike" because they can be considered as a sequence of bytes like a Blob.
 
-This encoding ensures that entries are encoded in lexicographic ordering. Unlike the hash based Maps, an Index is constrained to use only BlobLike keys, and cannot store two keys which have the same Blob representation (though the keys will retain their original type).
+This encoding ensures that entries are encoded in lexicographic ordering. Unlike the hash based Maps, an Index is constrained to use only BlobLike keys, and cannot store two keys which have the same Blob representation (though the keys will retain their original type). Index comparison is limited to the first 255 bytes, so keys which share that complete prefix identify the same entry.
 
 ### `0x88` Syntax
 
