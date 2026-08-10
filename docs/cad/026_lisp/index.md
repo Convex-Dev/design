@@ -360,7 +360,7 @@ Internally sets are implemented as radix trees based on the hash value of elemen
 
 #### Indexes
 
-Indexes are specialised ordered maps that support "Blob-Like" keys only (Blobs, Strings, Addresses, Keywords and Symbols). Entries are sorted based on the byte values of the keys, up to a maximum of 32 bytes.
+Indexes are specialised ordered maps that support "Blob-Like" keys only (Blobs, Strings, Addresses, Keywords and Symbols). Entries are sorted based on the first 255 byte values of the keys. Keys which share the same first 255 bytes identify the same entry.
 
 ```clojure
 ;; Construct an index, note that the map is sorted in order
