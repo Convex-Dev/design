@@ -61,7 +61,9 @@ If a `:JUICE` Error occurs in a Transaction:
 
 ## Juice Price calculation
 
-The network MUST define a governance constant INITIAL_JUICE_PRICE as a Long value (currently `2`), which is used as the juice price in the genesis state
+The network MUST define a governance constant INITIAL_JUICE_PRICE as a Long value (currently `10`), which is used as the juice price in the genesis state
+
+> **Implementation status:** the dynamic price-update mechanism specified below is not yet implemented — current networks (including Protonet) run with the juice price constant at its genesis value. Implementation is tracked in [convex#408](https://github.com/Convex-Dev/convex/issues/408) and [convex#423](https://github.com/Convex-Dev/convex/issues/423).
 
 The network MUST define a governance constant JUICE_SCALE_FACTOR as a Double value (currently `1.125`)
 
