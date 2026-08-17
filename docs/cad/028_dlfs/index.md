@@ -122,6 +122,42 @@ The Drive State MUST be a valid DLFS directory node (the "root" directory).
 
 Implementations SHOULD support immutable snapshots of Drive State.
 
+#### Named drive registry and drive tombstones
+
+An owner MAY expose multiple named drives through a registry that maps each drive
+name to a DLFS node. A live registry value is a Drive State and therefore MUST be
+a directory node. A deleted registry value is a **drive tombstone** with the
+canonical form:
+
+```
+[nil 0x nil deletion-time]
+```
+
+The `0x` value is the zero-length Blob. A drive tombstone is therefore a valid
+empty-file node under the existing DLFS node encoding, but it is not a Drive
+State. Implementations MUST exclude drive tombstones from drive listings and
+MUST NOT mount them as filesystems.
+
+Deleting a named drive MUST replace its registry value with a drive tombstone;
+it MUST NOT remove the name from the registry. The deletion time MUST be later
+than the update time of the live root it replaces. Consequently, the normal
+file-versus-directory node merge makes the deletion win over a stale replica of
+that root.
+
+Renaming a named drive MUST be one atomic registry update. The destination gets
+the source root with its update time set to the operation time, while the source
+gets a drive tombstone with the same operation time. The operation time MUST be
+later than the source root and any existing destination tombstone that the rename
+supersedes.
+
+Recreating a deleted drive replaces the drive tombstone with a new empty
+directory whose update time is later than the deletion time. The new directory
+therefore wins when merged with replicas that still hold the tombstone.
+
+Drive tombstones use an existing valid node shape and require no additional
+encoding rule. An implementation MAY remove one only when it can establish that
+no replica can later reintroduce an older value for that drive name.
+
 #### Drive State Hash
 
 The Drive State Hash MUST be the SHA3-256 hash of the root node's encoding (its Value ID per CAD003).
@@ -202,11 +238,11 @@ A file node has:
 - `directory-contents`: nil
 - `file-contents`: Blob containing file data
 
-#### Tombstones
+#### Child tombstones
 
-A tombstone records that a child name has been deleted, so that the deletion propagates during replication rather than being reintroduced by a merge with a peer that still holds the old entry.
+A child tombstone records that a child name has been deleted, so that the deletion propagates during replication rather than being reintroduced by a merge with a peer that still holds the old entry. It is distinct from the drive tombstone used as a named-drive registry value.
 
-Tombstones are **not nodes** and never appear among the live directory entries. Instead, each directory node records its deletions in a separate tombstone index — the optional fifth node element (`tombstones`) — mapping each deleted child name to its deletion timestamp. Deleting a child removes it from the live `directory-contents` and records `name → deletion-time` in this index; creating or updating a name again clears any tombstone for it.
+Child tombstones are **not nodes** and never appear among the live directory entries. Instead, each directory node records its deletions in a separate tombstone index — the optional fifth node element (`tombstones`) — mapping each deleted child name to its deletion timestamp. Deleting a child removes it from the live `directory-contents` and records `name → deletion-time` in this index; creating or updating a name again clears any tombstone for it.
 
 Because tombstones live outside the live entries, ordinary directory operations — listing, emptiness checks, and navigation — read only the live entries and never scan tombstones. The tombstone index participates only in merge (see Merge Semantics).
 
