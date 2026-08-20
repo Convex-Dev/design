@@ -215,19 +215,31 @@ Cursors integrate with the Data Lattice (CAD024) for distributed state managemen
 When cursors are used with lattice-aware systems (see CAD036), merge operations combine values according to lattice semantics.
 
 Each lattice type defines its merge function satisfying:
-- **Commutativity**: `merge(a, b) = merge(b, a)`
+- **Commutativity up to tie preference**: operand order does not matter when the
+  lattice ordering selects a strict winner; an exact tie retains the first,
+  own/current operand
 - **Associativity**: `merge(merge(a, b), c) = merge(a, merge(b, c))`
 - **Idempotency**: `merge(a, a) = a`
 
 ### Lattice Context
 
-Lattice-aware cursors carry a `LatticeContext` — the ambient information a merge or write needs:
+Lattice-aware cursors carry a `LatticeContext` — an application-supplied policy
+providing the ambient information a merge or write needs:
 
-- **Timestamp**: the single write clock. Stamp-on-write regions read it to stamp values (the same clock DLFS uses for node update times); a `StampedCursor` with no context timestamp is an error
-- **Signing Key**: used by a `SignedCursor` to sign values at a signing boundary
+- **Timestamp**: the single write clock. The policy may provide an immutable
+  snapshot or a dynamic value at application-defined cadence; consumers use the
+  supplied value exactly
+- **Signing Service**: used by a `SignedCursor` to sign values at a signing
+  boundary. A signing request MAY identify the account key required by an owner
+  path; the policy decides whether and how that key is accessible, so it need not
+  be the application's primary key
 - **Owner Verifier**: used to authorise owners during merge (see [CAD038](../038_lattice_auth/index.md))
 
-A cursor is given a context with `withContext(ctx)`, and context-aware merge takes the form `merge(context, own, other) → merged`.
+A context is normally installed once on an application or root cursor and inherited
+dynamically by descendants. The policy itself MAY be static or dynamic and MUST be
+thread-safe when its cursor is shared. An implementation MAY take an explicit
+immutable snapshot for a detached fork. Context-aware merge takes the form
+`merge(context, own, other) → merged`.
 
 ## Encoding
 

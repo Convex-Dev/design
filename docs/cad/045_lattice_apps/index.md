@@ -4,7 +4,7 @@
 
 Lattice Applications are decentralised, self-sovereign data applications built on the [Data Lattice](../024_data_lattice/index.md). They use [Lattice Cursors](../035_cursors/index.md) as their primary interface for reading, writing, navigating and synchronising state, and compose [Lattice Types](../024_data_lattice/index.md) to define merge semantics for their domain data.
 
-Unlike traditional client-server applications where a central authority mediates access, lattice applications operate in a peer-to-peer environment where each participant owns and controls their own data. Conflict resolution is automatic — the algebraic properties of the lattice (commutativity, associativity, idempotence) guarantee that peers always converge to the same state without coordination.
+Unlike traditional client-server applications where a central authority mediates access, lattice applications operate in a peer-to-peer environment where each participant owns and controls their own data. Conflict resolution is automatic for strictly ordered values. An exact ordering tie deliberately preserves the receiving application's own/current value, as specified by CAD024.
 
 This CAD defines the architecture, composition rules and best practices for building lattice applications, using a social networking application (`convex-social`) as a running example.
 
@@ -12,7 +12,7 @@ This CAD defines the architecture, composition rules and best practices for buil
 
 The Data Lattice provides a powerful substrate for decentralised applications, but the raw lattice primitives (merge functions, lattice types, cursors) leave significant design decisions to application developers. Without clear guidance, common mistakes include:
 
-- **Incorrect merge semantics** — choosing merge strategies that violate CRDT properties or lose data
+- **Incorrect merge semantics** — choosing merge strategies that violate the lattice merge properties or lose data
 - **Type mismatches** — writing through uninitialised paths that create wrong container types
 - **Missing signing boundaries** — forgetting that self-sovereign data requires cryptographic ownership enforcement
 - **Monolithic state** — failing to decompose state into independently mergeable components
@@ -63,7 +63,7 @@ Feed = IndexLattice(LWWLattice)
 
 When a data structure has multiple named children with different merge strategies, applications SHOULD define a custom lattice type. A custom lattice type MUST implement:
 
-- **`merge(own, other)`** — the core merge function, satisfying commutativity, associativity and idempotence as specified in [CAD024](../024_data_lattice/index.md)
+- **`merge(own, other)`** — the core merge function, satisfying associativity, idempotence and commutativity up to the documented own-value tie preference in [CAD024](../024_data_lattice/index.md)
 - **`zero()`** — the identity element, used by cursors for auto-initialisation of empty paths
 - **`path(key)`** — returns the child lattice type for a given key, enabling lattice-aware cursor navigation
 
@@ -79,17 +79,23 @@ SocialLattice
   zero()         → Empty Index
 ```
 
-#### CRDT Properties
+#### Merge Properties
 
-Every custom merge function MUST satisfy the three CRDT properties:
+Every custom merge function MUST satisfy the merge properties defined by CAD024:
 
-- **Commutativity**: `merge(a, b) = merge(b, a)`
+- **Commutativity up to tie preference**: swapping operands produces the same
+  result whenever their ordering priority differs; exact ties retain `own`
 - **Associativity**: `merge(merge(a, b), c) = merge(a, merge(b, c))`
 - **Idempotence**: `merge(a, a) = a`
 
-Violation of these properties causes divergence between peers — nodes that have received the same data in different orders will hold different state, with no mechanism for convergence.
+Violation of associativity or idempotence causes order-dependent or unstable state.
+The documented own-value tie preference is intentional: two peers with distinct
+equal-priority values may each retain their current value until a later non-tied
+update resolves the conflict.
 
-Applications SHOULD use deterministic tiebreakers (e.g. hash comparison) when timestamps are equal, to preserve commutativity. A merge function that picks "first argument on tie" is not commutative.
+Applications SHOULD normally use the standard own/current preference when timestamps
+are equal. A custom lattice MAY instead define a canonical symmetric tiebreaker when
+its domain requires immediate convergence of independently produced equal-time values.
 
 Applications MUST handle null values in merge: `merge(nil, x) = x` and `merge(x, nil) = x`. This is required for the lattice identity law and for correct initialisation of new entries.
 
@@ -124,9 +130,9 @@ This structure enforces that only the holder of the owner's private key can crea
 
 #### Signing Boundary
 
-Applications MUST NOT attempt to handle signing directly. The cursor system inserts a Signed Cursor automatically when `path()` crosses a Signed Lattice boundary. All writes through the cursor chain are signed transparently using the key pair from the Lattice Context.
+Applications MUST NOT attempt to handle signing directly. The cursor system inserts a Signed Cursor automatically when `path()` crosses a Signed Lattice boundary. All writes through the cursor chain are signed transparently using the signing service provided by the Lattice Context. An owner path MAY request a specific account key from that service; the key need not be the primary key, but it MUST be accessible under application policy.
 
-Applications MUST set a Lattice Context with a valid signing key pair before performing writes that cross a signing boundary. Failure to do so will result in an error at the Signed Cursor.
+Applications MUST install a Lattice Context with a valid signing capability before performing writes that cross a signing boundary. The context is normally installed once at the application root and may dynamically provide signing, timestamp and verification policy thereafter. Failure to provide signing capability will result in an error at the Signed Cursor.
 
 #### Local Trust vs Network Verification
 

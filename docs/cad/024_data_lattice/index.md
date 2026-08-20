@@ -63,9 +63,9 @@ The Lattice MUST partition data by owner public key. Each owner's data MUST be w
 
 #### Replicated, Self-Healing Structures
 
-The Lattice is designed for replication across an open network of peers. Any peer may hold a partial or complete copy of the Lattice state. Because merge operations are commutative, associative and idempotent (see CRDT Properties below), peers can synchronise in any order, at any time, and always converge to the same result.
+The Lattice is designed for replication across an open network of peers. Any peer may hold a partial or complete copy of the Lattice state. Merge operations are associative and idempotent, and are commutative wherever their ordering rule selects a strict winner (see Merge Properties below). An exact ordering tie deliberately favours the first, own/current operand.
 
-This makes the Lattice inherently self-healing. If a peer loses data due to disk corruption, network partitioning or any other failure, it MUST recover that data on the next successful merge with any peer that still holds it. No co-ordination protocol is required — the algebraic properties of the merge guarantee convergence. As long as at least one copy of any datum survives somewhere in the network, it can be recovered by all peers through normal replication.
+This makes the Lattice inherently self-healing. If a peer loses data due to disk corruption, network partitioning or any other failure, it MUST recover that data on the next successful merge with any peer that still holds it. No co-ordination protocol is required for recovery. As long as at least one copy of any datum survives somewhere in the network, it can be recovered by all peers through normal replication; the exact-tie preference affects selection between conflicting values, not acquisition of missing data.
 
 #### Atomic Updates
 
@@ -79,17 +79,28 @@ Because all Lattice values are immutable persistent data structures (Merkle Tree
 
 This enables powerful patterns: historical queries, audit trails, rollback, branching workflows, and diff-based synchronisation between peers. The structural sharing property ensures that snapshots are storage-efficient — only the cells that differ between versions occupy additional space.
 
-#### Fully Mergeable CRDTs at Internet Scale
+#### Merge Properties and Tie Preference
 
-The Data Lattice forms a Conflict-free Replicated Data Type (CRDT). Every lattice type MUST define a `merge` function with the following algebraic properties:
+Every lattice type MUST define a `merge(own, other)` function. The operands are
+directional: `own` is the value already selected at the receiving cursor, store or
+publication boundary, and `other` is the candidate being incorporated. Merge has
+the following properties:
 
-- **Commutativity**: `merge(a, b) = merge(b, a)` — merge order does not matter
+- **Commutativity up to tie preference**: when the lattice ordering distinguishes
+  the operands, `merge(a, b) = merge(b, a)`. If distinct operands have exactly
+  equal ordering priority, the first (`own`) operand is retained.
 - **Associativity**: `merge(merge(a, b), c) = merge(a, merge(b, c))` — grouping does not matter
 - **Idempotence**: `merge(a, a) = a` — re-merging the same data is a no-op
 
-These properties guarantee that any number of peers, merging in any order, with any degree of message duplication or reordering, will always converge to the same final state. This eliminates the need for complex consensus protocols for off-chain data — eventual consistency is guaranteed by the mathematics of the lattice.
+The own-value preference makes local mutation, remote incorporation and
+persistence/publication consistent: the value already current at that boundary
+survives an exact tie. It also means two peers holding distinct, independently
+produced values with exactly equal priority are not forced to choose the same value
+by exchanging those values alone. Such a tie remains locally stable until a later
+non-tied update resolves it. Outside this explicit tie case, merge order, message
+duplication and reordering do not affect the selected result.
 
-The CRDT merge extends hierarchically through the entire Lattice structure. The root lattice merges by delegating to child lattices at each key, which in turn delegate to their children, and so on. This compositional design means the full Lattice — from the root down to individual data entries — is a single, coherent CRDT that can scale to internet level.
+The merge model extends hierarchically through the entire Lattice structure. The root lattice merges by delegating to child lattices at each key, which in turn delegate to their children, and so on. This compositional design applies the same structural merge and documented tie preference from the root down to individual data entries.
 
 #### Cursor-Based Application Interface
 
@@ -99,7 +110,7 @@ Applications interact with the Lattice through cursors — lightweight handles t
 
 A Lattice Type defines the merge semantics for a particular kind of value. Every lattice type MUST define:
 
-- `merge(ownValue, otherValue)` — the core merge function, which MUST satisfy the CRDT properties (commutativity, associativity, idempotence)
+- `merge(ownValue, otherValue)` — the core merge function, which MUST satisfy the merge properties and own-value tie rule above
 - `zero` — the identity element of the lattice (i.e. `merge(zero, x) = x` for all `x`)
 - `validate(value)` — validation that a received value is well-formed for this lattice type
 - `child(key)` — returns the child lattice type for a given key, or nil if the lattice has no defined child structure at that key
@@ -114,7 +125,7 @@ The following standard lattice types are defined:
 
 **Max / Min Lattice** — Merges by taking the maximum (or minimum) value. Useful for monotonically increasing counters, timestamps, or version numbers.
 
-**LWW Lattice** (Last-Write-Wins) — Merges by selecting the **whole value** with the most recent timestamp; it never recurses into the inner structure. In the case of equal timestamps, a deterministic tiebreaker MUST be applied to ensure a stable result. Because the newer value replaces the old wholesale, whole-value LWW makes **deletions durable**: a smaller value carrying a newer timestamp replaces the larger old one, and removed entries do not reappear on merge. This is what lets applications delete directly rather than accumulate tombstones.
+**LWW Lattice** (Last-Write-Wins) — Merges by selecting the **whole value** with the most recent timestamp; it never recurses into the inner structure. Distinct values with equal timestamps retain the first, own/current operand. Because the newer value replaces the old wholesale, whole-value LWW makes **deletions durable**: a smaller value carrying a newer timestamp replaces the larger old one, and removed entries do not reappear on merge. This is what lets applications delete directly rather than accumulate tombstones.
 
 **JSON Lattice** — A structural navigation layer for JSON-shaped data (maps, vectors, strings, numbers, booleans and nil). It defines how to navigate and how to build intermediate containers from the shape of a key, but deliberately defines **no merge of its own** — it is composed under a merge layer.
 
@@ -160,13 +171,19 @@ The full cursor specification is defined in [CAD035: Lattice Cursors](../035_cur
 
 ### Merge Context
 
-Merge and write operations may require contextual information beyond the two values being merged. The merge context (`LatticeContext`) MUST provide:
+Merge and write operations may require contextual information beyond the two values being merged. `LatticeContext` is an application-supplied policy object installed on a cursor and inherited through its cursor hierarchy. It MUST be capable of providing:
 
-- **Timestamp** — the single write clock. Used by LWW Lattice for conflict resolution and by stamp-on-write regions to stamp values as they are written (the same clock DLFS uses for node update times)
-- **Signing key** — used by a Signed Lattice boundary to sign values on write
+- **Timestamp** — the single write clock. The policy may return a fixed snapshot or obtain the current value dynamically at the cadence chosen by the application. Consumers MUST use the value exactly and MUST NOT ratchet it from stored state.
+- **Signing service** — used by a Signed Lattice boundary to sign values on write; it may be backed by an in-memory key pair or another application-defined signer
 - **Owner verifier** — used by Owner Lattice to verify that a signer is authorised to write to an owner's partition
 
-The context MUST be propagated through the lattice hierarchy and made available to merge and write functions as needed.
+The context MAY be an immutable snapshot or a long-lived dynamic policy. A dynamic
+implementation MUST be safe for every thread which can use its cursor. It is normally
+installed once at the application or hosted root; descendants resolve policy through
+inheritance rather than replacing the context for each operation. Implementations
+MAY snapshot a policy explicitly when stable values are required, for example for a
+detached fork. Mutation code that needs one timestamp across several structural
+updates MUST request it once and reuse that exact value.
 
 ### Cursor Sync Guarantees
 
@@ -189,9 +206,9 @@ Peers replicate Lattice data using a propagation model:
 
 3. **Broadcast** — The delta is broadcast to connected peers.
 
-4. **Receive and Merge** — When a peer receives a broadcast, it merges the received value into its local state. The CRDT properties guarantee convergence regardless of message ordering, duplication or partial delivery.
+4. **Receive and Merge** — When a peer receives a broadcast, it merges the received value into its local state. Merge is insensitive to message duplication and, except for the documented exact-tie preference, to ordering.
 
-This model requires no central co-ordinator. Peers form an open mesh and replicate data transitively. The commutativity and idempotence of merge mean that redundant messages are harmless and message ordering is irrelevant.
+This model requires no central co-ordinator. Peers form an open mesh and replicate data transitively. Idempotence makes redundant messages harmless; strict ordering differences converge normally, while distinct equal-priority values remain stable at the peer which currently owns them until a later update breaks the tie.
 
 ### Data Types
 

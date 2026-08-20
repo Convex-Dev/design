@@ -80,7 +80,8 @@ DLFS operates over a **P2P network** of Lattice Nodes (CAD036) that manage **dri
 
 **Lattice Nodes** (CAD036) handle network replication, automatically propagating changes to peers with delta encoding.
 
-**DLFSLattice** defines rsync-like merge semantics ensuring drives converge to consistent state.
+**DLFSLattice** defines rsync-like merge semantics with the own-value preference
+for exact timestamp ties specified below.
 
 ### Cryptographic Security
 
@@ -139,20 +140,25 @@ State. Implementations MUST exclude drive tombstones from drive listings and
 MUST NOT mount them as filesystems.
 
 Deleting a named drive MUST replace its registry value with a drive tombstone;
-it MUST NOT remove the name from the registry. The deletion time MUST be later
-than the update time of the live root it replaces. Consequently, the normal
-file-versus-directory node merge makes the deletion win over a stale replica of
-that root.
+it MUST NOT remove the name from the registry. Deletion is an ordinary local
+modification: the tombstone MUST use the application-provided operation time
+exactly, including when that time equals the update time of the live root it
+replaces. Implementations MUST NOT advance or ratchet the operation time from
+stored state. The local update directly overwrites the registry value, and the
+updated tombstone is the own/current value in a later merge; it therefore wins
+an equal-timestamp stale replica under the normal own-value tie rule.
 
 Renaming a named drive MUST be one atomic registry update. The destination gets
 the source root with its update time set to the operation time, while the source
-gets a drive tombstone with the same operation time. The operation time MUST be
-later than the source root and any existing destination tombstone that the rename
-supersedes.
+gets a drive tombstone with the same operation time. Both values MUST use the
+application-provided operation time exactly. The rename MUST NOT advance that
+time based on the source root or an existing destination tombstone.
 
 Recreating a deleted drive replaces the drive tombstone with a new empty
-directory whose update time is later than the deletion time. The new directory
-therefore wins when merged with replicas that still hold the tombstone.
+directory whose update time is the application-provided operation time exactly,
+even when it equals the deletion time. The local directory directly overwrites
+the tombstone and, as the own/current value, wins an equal-timestamp stale
+tombstone in a later merge.
 
 Drive tombstones use an existing valid node shape and require no additional
 encoding rule. An implementation MAY remove one only when it can establish that
@@ -305,10 +311,16 @@ When merging non-directory nodes:
 
 All conflicts resolve deterministically:
 - **Timestamp-based**: Newer modifications win
-- **Deterministic tie-break**: on equal timestamps the first operand is favoured (by design), so the outcome is stable for any given pair
+- **Own-value tie preference**: on equal timestamps the first operand is favoured;
+  this is the value already current at a local mutation, remote merge, persistence
+  or publication boundary
 - **Idempotent**: merge(a, a) = a
 
-Replicas exchange state bidirectionally, so all replicas converge to identical state regardless of the order in which updates arrive.
+Merge is commutative when timestamps differ. Distinct equal-timestamp states are an
+intentional exception: each replica retains its own/current state until a later
+non-tied update resolves the conflict. Applications SHOULD advance their supplied
+timestamp when they require an operation to supersede an independently produced
+equal-time value; DLFS itself MUST NOT manufacture that ordering.
 
 #### Robust Merge
 
