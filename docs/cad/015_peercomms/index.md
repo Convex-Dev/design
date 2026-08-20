@@ -37,6 +37,9 @@ Each individual cell encoding MUST fit within a fixed size buffer (currently 163
 - Large data structures can be passed in a single message
 - Branch cells can be omitted, in which case the message is regarded as **partial**. Partial messages are appropriate for values such as lattice deltas where the recipient is expected to already be in possession of the omitted branches. A partial message is valid, however the receiver may not be able to access the full payload immediately.
 
+The complete encoded Message body MUST NOT exceed 50,000,000 bytes. A
+transport or application MAY impose a lower message limit.
+
 The overall size of the message is not part of the message itself, but will typically be provided by the transport mechanism e.g.:
 - For binary protocol messages, the message length precedes the message
 - For HTTP messages of type `application/cvx-raw` the message length is specified in the HTTP `Content-Length` header.
@@ -52,7 +55,7 @@ Currently recognised message types follow:
 
 ```
 CAD3 Payload:
-Belief
+Belief | SignedData<Order>
 ```
 
 This message specifies a belief from another peer that is being shared as part of the CPoS consensus algorithm ([CAD051](../051_cpos/index.md)).
@@ -113,6 +116,28 @@ Peers SHOULD respond to the status request immediately if able.
 
 Peers MAY cache their most recent status response for efficiency reasons.
 
+#### DATA
+
+```
+CAD3 Payload:
+[:DATA cell0 cell1 .....]
+```
+
+This message sends an unsolicited, bounded batch of independently addressable
+non-embedded cells ahead of a later composite message. It enables a sender to
+propagate a value larger than one application message without requiring the
+receiver to hold the complete value in a single inbound frame.
+
+Receiving peers MUST treat DATA as staging only: receipt does not itself merge,
+publish or otherwise activate a value. A subsequent BELIEF, LATTICE_VALUE or
+other application root identifies the value to process. Missing or dropped DATA
+messages are recoverable through DATA_REQUEST or another application pull path.
+
+Peers SHOULD accept unsolicited DATA only from a connection authorised to write
+to the selected store. A sender MUST bound each DATA message to the receiving
+application's message-size limit. A DATA message MUST contain no more than 254
+cells and remains subject to the overall 50,000,000-byte Message limit.
+
 #### DATA_REQUEST
 
 ```
@@ -149,8 +174,4 @@ Messages are sent as:
 ### UDP Connections
 
 UDP will be explored as a potential future transport protocol for efficiency and performance reasons.
-
-
-
-
 

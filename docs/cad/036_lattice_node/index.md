@@ -107,6 +107,7 @@ Message types are identified by a Keyword tag at the start of the message payloa
 | Tag | Name | Description |
 |-----|------|-------------|
 | `:DR` | DATA_REQUEST | Request missing data cells |
+| `:DATA` | DATA | Stage bounded data cells ahead of a lattice root |
 | `:PING` | PING | Connectivity test |
 | `:LV` | LATTICE_VALUE | Announce lattice value update |
 | `:LQ` | LATTICE_QUERY | Request lattice value at path |
@@ -177,6 +178,21 @@ Request missing data cells by hash.
 
 Nodes SHOULD respond with available data from their store. Unavailable cells SHOULD be encoded as nil values.
 
+#### DATA (`:DATA`)
+
+Stage a bounded batch of independently addressable cells before a later
+LATTICE_VALUE root announcement.
+
+**Message format:**
+```
+[:DATA cell1 cell2 ...]
+```
+
+DATA does not carry a lattice path and MUST NOT trigger a merge. A node MUST
+stage it only in the store selected by the connection's operator-assigned
+propagator capability. Missing DATA batches remain recoverable when the later
+root triggers DATA_REQUEST acquisition.
+
 ### Value Encoding
 
 All values exchanged between nodes MUST use the canonical encoding format specified in CAD003.
@@ -238,6 +254,11 @@ Receivers reconstruct the full value by:
 2. Resolving the top cell's references
 3. Acquiring any still-missing data from peers
 
+The maximum complete inbound lattice value and the maximum encoded propagation
+message are separate limits. Implementations MUST bound both. A complete value
+may be much larger than one message because its independently addressable cells
+can be transferred in bounded DATA batches or acquired by hash.
+
 ### Update Propagation
 
 Nodes SHOULD implement automatic propagation of updates to peers.
@@ -260,9 +281,10 @@ Propagation SHOULD be triggered when:
 
 When local values change:
 1. Detect novel cells (not previously announced)
-2. Create delta-encoded LATTICE_VALUE message
-3. Broadcast to all connected peers
-4. Track announced values to avoid redundant transmission
+2. If the delta fits the application message limit, create one delta-encoded LATTICE_VALUE message
+3. Otherwise partition novel cells into bounded DATA batches and append one root-only LATTICE_VALUE message
+4. Broadcast the sequence to connected peers
+5. Track announced values to avoid redundant transmission
 
 #### Root Sync
 
