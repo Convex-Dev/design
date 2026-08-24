@@ -26,7 +26,7 @@ Confirmation proceeds through four **consensus levels**. Level 0 is the raw Bloc
 | 2 | Consensus | Prefix backed by ≥ 2/3 effective stake at level 1 |
 | 3 | Finality | Prefix backed by ≥ 2/3 effective stake at level 2 |
 
-Each level's point MUST be a prefix of the level beneath it, and points MUST never retreat. The CVM State is executed against the **finalised** prefix only; proposal and consensus are the intermediate confirmations that precede it. The 2/3 thresholds give classic BFT-style tolerance of up to 1/3 adversarial effective stake.
+Each level's point MUST be a prefix of the level beneath it, and confirmed points — consensus and finality — MUST never retreat: a confirmation records that the stake threshold was observed at some time, which later vote fluctuation (for example lagging Order copies re-entering the voting set) does not un-observe. The proposal point is deliberately exempt: proposal switching re-derives it over the new ordering, and vote changes are expected at that stage. The CVM State is executed against the **finalised** prefix only; proposal and consensus are the intermediate confirmations that precede it. The 2/3 thresholds give classic BFT-style tolerance of up to 1/3 adversarial effective stake.
 
 ### Belief merge
 
