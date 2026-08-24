@@ -47,7 +47,7 @@ Official client libraries, each with a copy-paste quickstart:
 
 - **[TypeScript / JavaScript](/docs/tutorial/client-sdks/typescript)** — `npm install @convex-world/convex-ts`
 - **[Python](/docs/tutorial/client-sdks/python)** — `pip install convex-sdk`
-- **[Java](/docs/tutorial/client-sdks/java)** — `world.convex:convex-java:0.8.14`
+- **[Java](/docs/tutorial/client-sdks/java)** — `world.convex:convex-java:0.8.15`
 
 For command-line interaction, see the [Convex CLI](/docs/products/convex-cli).
 
