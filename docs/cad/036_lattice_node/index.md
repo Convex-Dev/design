@@ -120,11 +120,13 @@ Connectivity test message.
 ```
 [:PING id]
 ```
-- `id`: Request identifier (any CVM value)
+- `id`: Request identifier
 
-**Response:** Result message containing `(id, "PONG")`
+**Response:** Successful Result containing the same `id` and the receiver's current
+timestamp as its value.
 
-Nodes MUST respond to PING messages with a Result containing the same ID.
+Nodes MUST respond to PING messages with `Result(id, timestamp)`, where `timestamp` is
+the receiver's current Unix time in milliseconds.
 
 #### LATTICE_QUERY (`:LQ`)
 
@@ -146,12 +148,29 @@ Nodes MUST respond with the current value at the specified path, or an error Res
 
 Announce a lattice value update.
 
-**Message format:**
+**Optimistic push format:**
 ```
 [:LV path value]
 ```
 - `path`: Vector of keys specifying path (empty vector `[]` = root)
 - `value`: New lattice value to merge (encoded per CAD003)
+
+An optimistic push is fire-and-forget. The receiver attempts the merge but MUST NOT
+return a Result.
+
+**Confirmed push format:**
+
+```
+[:LV id path value]
+```
+
+- `id`: Request identifier
+- `path`: Vector of keys specifying path (empty vector `[]` = root)
+- `value`: New lattice value to merge (encoded per CAD003)
+
+A confirmed push requests a Result after the merge. Receivers distinguish the two forms
+by vector length and MUST reject any other length. For compatibility, a four-field
+message with a nil ID has the same fire-and-forget semantics as an optimistic push.
 
 Messages MAY include delta-encoded data for bandwidth efficiency (see Delta Encoding below).
 
@@ -162,6 +181,9 @@ Upon receiving a LATTICE_VALUE message, nodes MUST:
 4. Merge the value using lattice semantics
 5. Handle missing data by acquiring from peers (see Missing Data Recovery)
 6. Trigger propagation of merged changes
+
+For a confirmed push, the receiver MUST return a successful Result with the same ID only
+after the merge completes.
 
 #### DATA_REQUEST (`:DR`)
 
@@ -328,6 +350,7 @@ Lattice Nodes support hierarchical access into nested lattice structures.
 - Deep path (`[:a :b :c]`) navigates nested structures
 
 Path operations MUST:
+- Represent every protocol path as a vector; nil, omitted and scalar paths are invalid
 - Use the sub-lattice at the path for merge semantics
 - Apply updates atomically to the root cursor
 - Support arbitrary nesting depth
