@@ -333,10 +333,11 @@ DLFS drives replicate via Lattice Nodes (CAD036).
 #### Automatic Propagation
 
 When drive state changes:
-1. Cursor update triggers Lattice Node propagator
-2. Delta-encoded LATTICE_VALUE broadcast to peers
-3. Peers merge received state using DLFSLattice
-4. Missing data automatically acquired via DATA_REQUEST
+1. Root cursor sync publishes the authoritative Lattice Node value
+2. The node independently notifies each application-configured propagation group
+3. A group broadcasts its filtered, delta-encoded LATTICE_VALUE to its routes
+4. Peers merge received state using DLFSLattice
+5. Authenticated sources may supply missing data via DATA_REQUEST
 
 #### Manual Synchronisation
 
@@ -434,7 +435,12 @@ cursor.updateAndGet(root ->
 ```java
 // Create lattice node for DLFS replication
 ALattice<ACell> rootLattice = Lattice.ROOT;
-NodeServer<ACell> node = new NodeServer<>(rootLattice, store, 19999);
+NodeConfig config = NodeConfig.port(0);
+NodeServer<ACell> node = new NodeServer<>(rootLattice, store, config);
+LatticePropagator group = new LatticePropagator(
+    store, rootLattice, value -> value, config);
+node.addPropagator(group);
+node.setInboundPropagatorSelector(connection -> group);
 node.launch();
 
 // Access DLFS via cursor path
@@ -444,10 +450,11 @@ ACell driveState = cursor.get(Keywords.FS, owner, Strings.create("main"));
 
 // Update drive and trigger automatic replication
 cursor.set(newDriveState, Keywords.FS, owner, Strings.create("main"));
+cursor.sync();
 
 // Connect to peer for replication
 Convex peer = Convex.connect(peerAddress);
-node.addPeer(peer);
+group.addPeer(expectedPeerKey, peer);
 
 // Changes automatically propagate via LatticePropagator
 ```

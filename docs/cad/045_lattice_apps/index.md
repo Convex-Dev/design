@@ -200,7 +200,11 @@ Applications SHOULD provide two factory methods:
 - **Standalone** — creates its own root cursor, useful for testing and isolated operation
 - **Connected** — navigates from a node's root cursor via `path()`, useful for participation in the lattice network
 
-The connected pattern is how applications participate in peer-to-peer replication. Writes propagate up through the cursor chain to the node's root, where the propagator broadcasts deltas to peers (see [CAD036](../036_lattice_node/index.md)).
+The connected pattern is how applications participate in peer-to-peer
+replication. Writes propagate up through the cursor chain to the node's
+authoritative root. After root publication, the node independently notifies the
+application-configured propagation groups, which materialise and broadcast their
+filtered views (see [CAD036](../036_lattice_node/index.md)).
 
 ### Data Model
 
