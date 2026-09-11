@@ -88,6 +88,30 @@ Apart from lower transaction fees, the Call instruction MUST be functionally equ
 
 Call Transaction are primarily intended for efficient execution of Smart Contract functionality by Clients that need to utilise the functionality of a specific Actor.
 
+### Multi
+
+A `Multi` is a transaction that groups several child transactions under one signature. In addition to the common fields it contains:
+- A **mode** governing how the outcomes of the children combine
+- A vector of **child transactions**, each of any transaction type including `Multi`
+
+A `Multi` is several transactions nested under a single signing transaction. The signature on the `Multi` authorises every child, and each child executes as a transaction for its own origin, exactly as if that origin had submitted it: within a child, `*origin*` and `*address*` are the child's origin and `*caller*` is `nil`.
+
+For each child, the origin of the `Multi` MUST be either the child's origin or an account that controls it. Control is determined by the same rule as `eval-as`: the account's controller, resolved through a trust monitor when the controller is a scoped actor. A child whose origin does not exist MUST fail with a `:NOBODY` error, and a child whose origin the signer does not control MUST fail with a `:TRUST` error.
+
+Children carry no signature of their own. Their sequence numbers MUST be ignored, and the sequence number of a child origin MUST NOT be advanced. The sequence number of the `Multi` protects the whole bundle against replay.
+
+The origin of the `Multi` pays all fees for the bundle, including memory costs, and its balance bounds the juice available to the bundle as a whole. A controller acting through a `Multi` therefore sponsors the accounts it acts for.
+
+Children MUST be applied in order, each observing the state changes of the children before it. The mode determines how outcomes combine:
+- `0` (any): every child is executed and reported. A failed child is rolled back individually.
+- `1` (all): either every child succeeds, or every state change of the bundle is rolled back and the `Multi` fails with a `:CHILD` error whose message is the vector of child results.
+- `2` (first): execution stops after the first successful child. Only its state changes apply.
+- `3` (until): execution stops at the first failed child. The state changes of the preceding children apply.
+
+The result of a successful `Multi` is a vector containing the `Result` of each child executed, in order. Log entries from every child are accumulated into the log of the `Multi`, attributed to the child's origin at the location of the `Multi`. Log entries from a child whose state changes were rolled back are discarded, as for any failed transaction.
+
+Each level of `Multi` nesting counts against the execution depth limit, so a child beyond the limit fails with a `:DEPTH` error.
+
 ## General Handling
 
 ### Construction
@@ -136,6 +160,8 @@ Memory costs MUST be zero if no memory was used, or if the origin account had su
 In the case of a failed transaction, memory fees MUST be zero (since state changes are rolled back)
 
 If a transaction failed signature or sequence verification, the base transaction cost is paid by the peer that submitted the erroneous transaction.
+
+For a `Multi` transaction, the origin of the `Multi` pays the fees for every child, including memory costs, whether or not a child has a different origin.
 
 ### Verification
 
