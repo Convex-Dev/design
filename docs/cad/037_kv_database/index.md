@@ -4,7 +4,7 @@
 
 The KV Database is a replicated key-value store built on the [Lattice](../024_data_lattice/index.md). It provides Redis-like data structure operations with CRDT merge semantics, cryptographic signing of replicas, and automatic network replication via [Lattice Nodes](../036_lattice_node/index.md).
 
-Each KV Database is a named, multi-writer store where independent nodes maintain signed replicas. Replicas converge through lattice merge without coordination, enabling offline-first distributed applications with rich data types.
+Each KV Database is a named, multi-writer store where independent nodes maintain signed replicas. Replicas merge without coordination, enabling offline-first distributed applications with rich data types. Distinct values with equal ordering priority retain the local value until a later non-tied update resolves the conflict, as specified in [CAD024](/docs/cad/data_lattice).
 
 ## Motivation
 
@@ -15,7 +15,7 @@ Decentralised applications frequently need shared mutable state beyond what a gl
 - **Per-user or per-organisation databases** with cryptographic ownership
 - **Offline-capable writes** that merge when connectivity is restored
 
-Traditional distributed databases solve these problems with consensus protocols, leader election, or conflict resolution callbacks. The KV Database instead uses the mathematical properties of lattice merge to guarantee convergence without coordination.
+Traditional distributed databases solve these problems with consensus protocols, leader election, or conflict resolution callbacks. The KV Database instead uses structural merge and timestamp ordering, with the own-value preference for exact ties described below.
 
 ### Design Goals
 
@@ -125,18 +125,18 @@ KV entry merge follows these rules, evaluated in order:
 4. **Otherwise** (value, list, or type conflict) — newer timestamp wins (LWW)
 5. **Tombstone vs live** — newer timestamp wins
 
-These rules satisfy the lattice properties:
-- **Commutative**: merge(a, b) = merge(b, a)
+These rules use the merge properties and exact-tie preference specified in [CAD024](/docs/cad/data_lattice) and [CAD045](/docs/cad/lattice_apps):
+- **Commutativity up to tie preference**: swapping operands produces the same result when their ordering priority differs; exact ties retain the own/current operand
 - **Associative**: merge(merge(a, b), c) = merge(a, merge(b, c))
 - **Idempotent**: merge(a, a) = a
 
 #### Value/List Merge (LWW)
 
-The entry with the greater timestamp wins. Equal timestamps favour the first operand for determinism.
+The entry with the greater timestamp wins. Equal timestamps retain the first (own/current) operand. If two replicas hold distinct values with the same timestamp, exchanging those values alone does not force convergence: each retains its current value until a later non-tied update resolves the conflict. Wrapping the entry in a cursor or a signed replica does not add a symmetric tiebreaker.
 
 #### Hash Merge
 
-Each field is independently merged by LWW on its per-field timestamp. Fields present in only one side are included. Field tombstones (nil value with timestamp) propagate deletes.
+Each field is independently merged by LWW on its per-field timestamp, retaining the own/current field value on an exact tie. Fields present in only one side are included. Field tombstones (nil value with timestamp) propagate deletes.
 
 #### Set Merge
 
