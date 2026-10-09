@@ -76,6 +76,21 @@ The JVM implementation retains the original through a hard link, avoiding a full
 
 A snapshot left by a failed or interrupted operation is not a confirmed backup. The operator must inspect recovery state before using it: before cutover commits, a hard link can still refer to the source that recovery needs to modify.
 
+### Online checkpoint export
+
+An implementation MAY export an explicit root from an already-open store into a fresh, independent checkpoint while the source remains live. The exported root MUST be the supplied hash, even if the live root changes during export. Every reachable cell MUST be present before success; an unavailable root or missing descendant MUST fail the operation. Export MUST NOT require a source cutover, shutdown or application reference handover.
+
+The implementation MUST retain access to the chosen graph throughout copying, including overlapping collection and cancellation. Retaining old physical files for the duration of export does not add those entries to the collected live store's retention set. The JVM implementation uses private read leases managed by the shared GC coordinator; these leases can outlive closure of the application's source handle.
+
+Copying MUST establish child persistence before recording a parent's persistence, and MUST preserve each entry's observed announcement status independently. A parent's announcement MUST NOT announce its descendants. Implementations MUST document status sampling under concurrent announcement upgrades. The JVM samples recorded status per entry from the files leased when export starts; later upgrades or upgrades in later generations need not appear in the checkpoint.
+
+Optional destination configuration overrides MUST change only explicitly specified fields over the source's effective configuration. Key resolution is inherited unless explicitly replaced. Format and encryption changes MUST be validated together, and newly created encrypted files MUST have fresh file-specific cryptographic material.
+
+The child-first copy establishes destination completeness. Verification MUST be a separate function invoked at the caller's discretion, rather than an automatic export pass. The destination MUST be flushed and cleanly closed before successful publication. Existing destinations MUST NOT be overwritten, including concurrent creation. A failed or interrupted export MUST NOT advertise a partially copied file as a completed checkpoint. Publication is the commit point; subsequent temporary-file cleanup failure does not invalidate a completed export.
+
+The JVM API is `EtchStore.exportCheckpoint(rootHash, destination[, overrides[, keyResolver]])`. It shares the child-first tree copier with GC. Callers can separately invoke `EtchVerifier.verifyPersisted(etch)` on an open, quiescent checkpoint for destination-only completeness and persistence-status verification without a visited-hash set. It builds a private staging file beside the destination and publishes a hard link to that **newly built file**, not to the live source. The destination filesystem must support hard links; source and destination may be on different filesystems. This publication path supports Windows MBB mappings without requiring immediate staging-file deletion. File contents are forced before publication, while power-loss durability of the new directory entry remains platform/filesystem dependent.
+
+
 ### Crash recovery
 
 Opening a store MUST first reconcile any interrupted collection state, and recovery MUST be idempotent (a crash during recovery leaves a state the next run recognises). The required outcomes:
