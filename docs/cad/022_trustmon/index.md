@@ -76,7 +76,7 @@ The `check-trusted?` function must accept three arguments corresponding to `subj
       (= action :examine-self))))
 ```
 
-The Trust Monitor MUST return `true` or `false` for all possible argument values. Callers may expect these specific values, so returning anything else risks breaking compatibility with some applications. Checkers however MUST NOT rely on this contract being honoured — see the defensive checking requirements under "Trust checks" below.
+The SPI MAY return any CVM value. Checkers MUST interpret the result using normal CVM truthiness: `nil` and `false` deny access; every other value grants access. Monitor implementations MAY return a lookup result directly without a redundant `boolean` conversion. Callers requiring literal `true` or `false` SHOULD use the public `convex.trust/trusted?` function.
 
 The Trust Monitor MAY implement arbitrary access control logic on the basis of the arguments provided and the current CVM state. This might include looking up values in an on-chain database or calling other actors for confirmatory information.
 
@@ -86,17 +86,17 @@ The Trust Monitor MUST NOT rely on side effects, and MUST operate correctly when
 
 ### Trust checks
 
-A trust monitor MUST return `true` or `false` for any `[subject action object]` combination, and SHOULD never fail (except for hitting resource constraints like `:JUICE`).
+A trust monitor SHOULD return an authorisation result for every `[subject action object]` combination rather than fail. Resource constraints such as `:JUICE` may prevent completion.
 
-Checkers however MUST NOT rely on external monitor implementations honouring this contract: a defective or malicious monitor may throw an error or return a non-boolean value. A checker MUST be **defensive and fail closed** — a monitor error or non-`true` result MUST be treated as a denial, and MUST NOT be allowed to propagate as either a grant or an error that disrupts the caller. (An error-propagating checker also creates a denial-of-service shape: an actor holding an attacker-supplied monitor reference would throw on every check.)
+Checkers MUST catch ordinary monitor errors as denial and MUST NOT convert an execution failure into a grant. Resource exhaustion may still abort the check or enclosing transaction; the checker cannot guarantee successful completion after the monitor consumes its remaining Juice. A successful non-boolean result is not an error: its truthiness determines authorisation. In particular, `0`, empty collections, empty strings and keywords such as `:DENIED` are truthy. A monitor MUST convert any denial sentinel or error-as-data to `nil` or `false` itself.
 
 When checking a `[subject action object]` combination against a trust monitor the following procedure SHOULD be performed:
 
-1. If the trust monitor is an account implementing a callable function `check-trusted?` then call that function protected by a query (against re-entrancy), catching any error as denial and coercing the result to a strict boolean: `(boolean (try (query (call trust-monitor (check-trusted? subject action object))) false))`
+1. If the trust monitor is an account implementing a callable function `check-trusted?` then call that function within a query to roll back state changes, catching ordinary errors as denial and coercing successful results to a strict boolean: `(boolean (try (query (call trust-monitor (check-trusted? subject action object))) false))`
 2. If the trust monitor is an unscoped Address, and is precisely equal to the `subject`, then return `true`
 3. Return `false`
 
-This is the behaviour of the reference `trust/trusted?` from protocol version 1: monitor errors are caught and yield `false`, and the result is always a strict `true` or `false` regardless of what the monitor returned. A monitor MAY still fail internally on malformed input (e.g. a bad scope) — the standard genesis monitors do — since the checker contains such failures as denials.
+This is the behaviour of the reference `trust/trusted?` from protocol version 1. Every normal return MUST be a literal `true` or `false`: ordinary monitor errors yield `false`, while successful SPI results are normalised according to CVM truthiness. Resource exhaustion may remain exceptional. A monitor MAY still fail internally on malformed input (e.g. a bad scope) — the standard genesis monitors do — since the checker contains such failures as denials.
 
 If the trust monitor is known and trusted, then the caller MAY simplify the above procedure and call the SPI directly:
 
@@ -142,7 +142,7 @@ The `convex.trust` library provides a canonical CAD22 compatible interface to tr
 
 Action and object are optional: if omitted, they are passed to the Trust Monitor as the value `nil`.
 
-From protocol version 1, `trusted?` is defensive as specified under "Trust checks": it always returns a strict `true` or `false`, treating any monitor error or non-`true` result as a denial.
+From protocol version 1, `trusted?` follows the defensive procedure under "Trust checks": every normal return is a literal boolean, `nil` and `false` SPI results deny access, and all other successful values grant access. Ordinary monitor errors yield `false`; resource exhaustion may abort the check. Before version 1, the wrapper preserves the SPI result without boolean conversion and lets errors propagate.
 
 ### `convex.trust.monitors` library
 
