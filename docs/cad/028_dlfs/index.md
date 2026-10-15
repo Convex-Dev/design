@@ -217,7 +217,7 @@ Each object in a DLFS drive is represented as a Node.
 A Node is a Vector with the following structure:
 
 ```
-[directory-contents file-contents metadata update-time tombstones?]
+[directory-contents file-contents metadata update-time tombstones? mtime? ...future-fields]
 ```
 
 | Index | Field | Type | Description |
@@ -225,10 +225,13 @@ A Node is a Vector with the following structure:
 | 0 | directory-contents | Index or nil | Map of names to live child nodes |
 | 1 | file-contents | Blob or nil | File data |
 | 2 | metadata | Any or nil | Arbitrary metadata |
-| 3 | update-time | Long | Timestamp of last modification |
-| 4 | tombstones | Index or absent | Per-directory index of deleted child name → deletion timestamp; on directory nodes only, present only when non-empty |
+| 3 | update-time | Long | Application-supplied mutation clock used for merge ordering |
+| 4 | tombstones | Index, nil or absent | Non-empty directory index of deleted child name → deletion timestamp; nil padding before later fields |
+| 5 | mtime | Long, nil or absent | Content modification time in epoch milliseconds; absent or nil falls back to update-time |
 
-Nodes MUST contain the first four fields. Directory nodes MAY carry an optional fifth element — the tombstone index — subject to the canonical invariant that it is present **if and only if** it is non-empty: a directory with no deletions has length 4, and one with pending deletions has length 5.
+Nodes MUST contain the first four fields. A populated tombstone slot MUST be a non-empty Index and MUST occur only on a directory. An unused tombstone slot MUST be omitted unless later fields require nil padding. Legacy nodes therefore have four fields, or five when carrying tombstones. File and directory nodes MAY carry the sixth field, `mtime`.
+
+Readers MUST accept unknown trailing fields and ordinary mutations MUST preserve them. Reading a legacy node MUST NOT rewrite it. Released implementations which reject additional fields require an upgrade before accepting extended nodes; this extension guarantees legacy reads, not acceptance by those older readers.
 
 Future extensions MAY include additional fields. Implementations MUST preserve unrecognised fields.
 
@@ -261,6 +264,14 @@ The metadata field MAY contain:
 - Any valid CVM value
 
 Implementations MAY assign custom semantics to metadata.
+
+#### Modification Time
+
+`mtime` is separate from the mutation/merge clock. File content writes and truncation SHOULD set it to the application-supplied operation time. Directory entry creation, removal and replacement SHOULD update the immediate parent directory's `mtime`; changes only to a descendant's contents MUST NOT update an ancestor's `mtime`. Metadata-only edits and renames MUST preserve the effective `mtime`, materialising the legacy fallback before changing update-time if necessary.
+
+Explicit modification-time setters MAY import an arbitrary timestamp, including an older one, while setting update-time to the current application-supplied operation time. Merge MUST use update-time, never `mtime`, to select scalar node fields. Directory metadata, `mtime` and unknown extensions follow the selected node (own on a tie). Merge MUST NOT synthesise optional timestamp fields or stamp a receiving clock.
+
+No access, creation or status-change timestamp is defined. NIO adapters SHOULD report last access as effective `mtime`, creation as epoch zero, and ignore setters for unsupported times without mutating state. Attribute-preserving copies and moves SHOULD preserve effective `mtime`; ordinary copies SHOULD stamp the copied entry with destination operation time.
 
 #### Update Time
 
@@ -324,7 +335,7 @@ equal-time value; DLFS itself MUST NOT manufacture that ordering.
 
 #### Robust Merge
 
-Because merge combines data from untrusted peers, it fails closed on malformed input. Incoming foreign nodes are validated before they are accepted — a node must be a vector with at least the four required elements, a Long update time, and (where a fifth element is present) a non-empty tombstone index. If a foreign node is malformed, or a merge step would otherwise throw, the merge falls back to the local ("own") value rather than propagating the error. A malicious or corrupt value can therefore neither crash the merge (a denial of service) nor corrupt merged state — it is simply ignored.
+Because merge combines data from untrusted peers, it fails closed on malformed input. Incoming foreign nodes are validated before they are accepted — a node must be a vector with at least the four required elements, a Long update time, a valid optional tombstone slot (including nil padding before extensions), and a Long or nil modification time when present. Unknown trailing fields MUST NOT cause rejection. If a foreign node is malformed, or a merge step would otherwise throw, the merge falls back to the local ("own") value rather than propagating the error. A malicious or corrupt value can therefore neither crash the merge (a denial of service) nor corrupt merged state — it is simply ignored.
 
 ### Replication
 
@@ -401,12 +412,13 @@ A reference implementation is provided in the Convex `convex-core` module (Java)
 ### Node Structure Constants
 
 ```java
-public static final long NODE_LENGTH = 4; // Minimum node length (directory nodes may add POS_TOMBS)
+public static final long NODE_LENGTH = 4; // Required legacy prefix; later fields are optional
 public static final int POS_DIR = 0;      // Directory entries index (live children)
 public static final int POS_DATA = 1;     // File data blob
 public static final int POS_METADATA = 2; // Arbitrary metadata
 public static final int POS_UTIME = 3;    // Update timestamp
-public static final int POS_TOMBS = 4;    // Optional per-directory tombstone index (present only when non-empty)
+public static final int POS_TOMBS = 4;    // Non-empty directory tombstone index, or nil padding
+public static final int POS_MTIME = 5;    // Optional content modification time
 ```
 
 ### Example: Local Drive with Cursor
