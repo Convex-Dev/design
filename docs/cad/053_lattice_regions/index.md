@@ -53,7 +53,7 @@ A node MAY host any subset of the allocated regions, by composing their lattices
 | `:kad` | Kademlia | Reserved for peer routing; merge semantics not decided | `convex-p2p` reference implementation | Reserved |
 | `:social` | Social | Owner Lattice of per-user social state: feeds, profiles, follows | `convex-social` reference implementation; used as the running example in [CAD045](../045_lattice_apps/index.md) | Allocated; a specification is to be written |
 | `:app` | Applications | Keyed Lattice of application lattices, keyed by application name | [CAD045](../045_lattice_apps/index.md) | Allocated; not yet in the core root |
-| `:sql` | SQL | Anticipated for [Convex SQL](../039_convex_sql/index.md) | [CAD039](../039_convex_sql/index.md) | Proposed |
+| `:convex` | Convex networks | Reserved for state relating to one or more Convex networks; lattice not yet defined | This CAD | Reserved |
 
 ### In use, not allocated
 
