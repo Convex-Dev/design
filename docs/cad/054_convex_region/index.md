@@ -40,13 +40,9 @@ The entry under a peer key MUST be an Order signed by that key ([CAD038](../038_
 
 ### Order Precedence
 
-Two Orders from the same peer are merged by precedence, which MUST be a total order so that merge is commutative, associative and idempotent:
+Of two Orders from the same peer, the one with the greater timestamp takes precedence, as in Belief merge ([CAD051](../051_cpos/index.md)). Equal timestamps are resolved as the reference implementation's Order comparison resolves them.
 
-1. The Order with the greater timestamp takes precedence.
-2. With equal timestamps, the Order whose consensus points are greater, compared level by level from level 0, takes precedence.
-3. If those are equal too, the Order whose signed encoding has the greater hash takes precedence.
-
-An honest peer never publishes two different Orders with the same timestamp, so steps 2 and 3 only resolve faults; they make sure such faults converge.
+A peer that behaves correctly never publishes two different Orders with the same timestamp. If a faulty peer does, nodes may briefly hold different Orders for it, and its next Order supersedes both.
 
 ### Relationship to CPoS
 
@@ -70,7 +66,6 @@ A node MAY host the `:convex` region for any subset of networks. A peer of a net
 
 ## Open Issues
 
-- **Tie-breaking in the reference implementation.** `BeliefMerge.compareOrders` treats a newer Order as taking precedence on equal timestamps if any consensus level is greater. That is not a total order: two Orders each ahead at a different level would each replace the other, depending on merge order. The implementation should adopt the precedence above before the region is hosted.
 - **Peer metadata.** Whether a network's entry should also carry peer metadata, such as announced addresses, is left to a revision; P2P node records are in the `:p2p` region ([CAD053](../053_lattice_regions/index.md)).
 
 ## Reference Implementation
