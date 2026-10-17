@@ -147,7 +147,7 @@ The following standard lattice types are defined:
 
 ### Root Lattice Structure
 
-The system-wide Lattice root is a Keyed Lattice with the following standard sections:
+The system-wide Lattice root is a Keyed Lattice whose sections are called regions. The official list of regions, with their keys, status and where each is defined, is [CAD053: Lattice Regions](../053_lattice_regions/index.md). The standard sections are:
 
 - **Data** — General-purpose content-addressable data store. Stores arbitrary cells indexed by hash.
 
@@ -163,7 +163,7 @@ The system-wide Lattice root is a Keyed Lattice with the following standard sect
 
 - **App** — Application-specific lattices, keyed by application name. Each application's own state lives here rather than in a root section of its own.
 
-Root sections are ecosystem-owned and allocated by the Convex Foundation, typically for facilities that many applications can use, such as a social graph (`:social`) beside those above; each is defined by a CAD. An application MUST NOT add a root section for its own state: it registers its lattice under the App section instead. [CAD045](../045_lattice_apps/index.md) defines both kinds of registration.
+Root sections are ecosystem-owned and allocated by the Convex Foundation, typically for facilities that many applications can use; CAD053 lists further allocated regions, such as P2P identity and a social graph. An application MUST NOT add a root section for its own state: it registers its lattice under the App section instead. [CAD045](../045_lattice_apps/index.md) defines both kinds of registration.
 
 ### Cursors
 

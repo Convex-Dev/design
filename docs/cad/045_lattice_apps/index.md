@@ -244,9 +244,9 @@ The root Keyed Lattice holds two kinds of section: ecosystem regions directly un
 
 #### Ecosystem Regions
 
-Sections directly under the root are ecosystem-owned and allocated by the Convex Foundation. A root region is typically a facility that many applications can use, such as storage (`:fs`, `:kv`), peer-to-peer co-ordination (`:p2p`) or a social graph (`:social`). Its key, lattice type and merge semantics are defined by a CAD, so every node that hosts it agrees on what it means.
+Sections directly under the root are ecosystem-owned and allocated by the Convex Foundation. A root region is typically a facility that many applications can use, such as storage (`:fs`, `:kv`), peer-to-peer co-ordination (`:p2p`) or a social graph (`:social`). [CAD053: Lattice Regions](../053_lattice_regions/index.md) is the official list: each region's key, its status, and where its lattice and merge semantics are defined, so every node that hosts it agrees on what it means.
 
-An application MUST NOT register a section of its own directly under the root. An application that uses a facility reads and writes that facility's region, through the facility's components, under the rules its CAD sets.
+An application MUST NOT register a section of its own directly under the root. An application that uses a facility reads and writes that facility's region, through the facility's components, under the rules its definition sets.
 
 A node composes the ecosystem regions it hosts:
 
@@ -354,5 +354,6 @@ Design documents for cursor internals (path collapsing, auto-initialisation, for
 - [CAD035: Lattice Cursors](../035_cursors/index.md) — Cursor specification and lattice integration
 - [CAD036: Lattice Node](../036_lattice_node/index.md) — Networked lattice replication
 - [CAD038: Lattice Authentication](../038_lattice_auth/index.md) — Owner verification and signing boundaries
+- [CAD053: Lattice Regions](../053_lattice_regions/index.md) — The official list of root regions
 - [CAD037: KV Database](../037_kv_database/index.md) — Example lattice application (key-value store)
 - [CAD028: DLFS](../028_dlfs/index.md) — Example lattice application (distributed filesystem)

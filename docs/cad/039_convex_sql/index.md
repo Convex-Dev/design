@@ -32,7 +32,7 @@ Traditional distributed databases solve these problems with consensus protocols 
 ### Lattice Structure
 
 :::note Provisional structure
-Convex SQL does not yet occupy a region in the standard lattice ROOT (which currently registers `:data`, `:fs`, `:kv`, `:queue`, `:p2p` and `:local`). A dedicated region (e.g. `:sql`) is anticipated, but its name and structure are still open design questions and may change. This section documents the current implementation.
+Convex SQL does not yet occupy a region in the root lattice ([CAD053](../053_lattice_regions/index.md) lists the regions that do). A dedicated region (e.g. `:sql`) is anticipated, but its name and structure are still open design questions and may change. This section documents the current implementation.
 :::
 
 Convex SQL currently operates as a **standalone lattice**, managed by `ConvexDB`:
