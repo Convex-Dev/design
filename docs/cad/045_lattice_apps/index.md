@@ -120,7 +120,7 @@ Applications that manage per-user data SHOULD wrap their application lattice wit
 The resulting structure is:
 
 ```
-Section (e.g. :social, or [:app :favourites])
+Section (e.g. :social, or [:app :myapp])
   └── OwnerLattice
         └── <ownerKey> → SignedData<V>
               └── Application Lattice (e.g. SocialLattice)
@@ -259,7 +259,7 @@ root = Lattice.ROOT.addLattice(:social, socialLattice)
 State that belongs to a single application MUST be registered under `:app`, a Keyed Lattice whose keys are application names and whose children are each application's own lattice:
 
 ```
-apps = KeyedLattice(:favourites, favouritesLattice)
+apps = KeyedLattice(:myapp, myAppLattice)
 root = Lattice.ROOT.addLattice(:app, apps)
 ```
 
