@@ -161,7 +161,9 @@ The system-wide Lattice root is a Keyed Lattice with the following standard sect
 
 - **Local** — Peer-local storage that is not replicated across the network.
 
-Applications MAY extend the root structure with additional sections by registering new keys and lattice types. For example, a social networking application could register a section with an Owner Lattice containing per-user social state (feeds, profiles, follow graphs), each with appropriate merge semantics.
+- **App** — Application-specific lattices, keyed by application name. Each application's own state lives here rather than in a root section of its own.
+
+Root sections are ecosystem-owned and allocated by the Convex Foundation, typically for facilities that many applications can use, such as a social graph (`:social`) beside those above; each is defined by a CAD. An application MUST NOT add a root section for its own state: it registers its lattice under the App section instead. [CAD045](../045_lattice_apps/index.md) defines both kinds of registration.
 
 ### Cursors
 

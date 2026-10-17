@@ -120,7 +120,7 @@ Applications that manage per-user data SHOULD wrap their application lattice wit
 The resulting structure is:
 
 ```
-Application Section (e.g. :social)
+Section (e.g. :social, or [:app :favourites])
   └── OwnerLattice
         └── <ownerKey> → SignedData<V>
               └── Application Lattice (e.g. SocialLattice)
@@ -240,13 +240,34 @@ Applications SHOULD prefer `Index` for lattice-level containers and `AHashMap` f
 
 ### Registration
 
-Applications SHOULD register their lattice under a Keyword in the root Keyed Lattice, enabling nodes to opt in to hosting the application's data:
+The root Keyed Lattice holds two kinds of section: ecosystem regions directly under the root, and application regions under `:app`.
+
+#### Ecosystem Regions
+
+Sections directly under the root are ecosystem-owned and allocated by the Convex Foundation. A root region is typically a facility that many applications can use, such as storage (`:fs`, `:kv`), peer-to-peer co-ordination (`:p2p`) or a social graph (`:social`). Its key, lattice type and merge semantics are defined by a CAD, so every node that hosts it agrees on what it means.
+
+An application MUST NOT register a section of its own directly under the root. An application that uses a facility reads and writes that facility's region, through the facility's components, under the rules its CAD sets.
+
+A node composes the ecosystem regions it hosts:
 
 ```
 root = Lattice.ROOT.addLattice(:social, socialLattice)
 ```
 
-The keyword becomes the first path element when navigating from the node's root cursor. Different nodes may host different combinations of applications by composing different sets of lattice sections.
+#### Application Regions
+
+State that belongs to a single application MUST be registered under `:app`, a Keyed Lattice whose keys are application names and whose children are each application's own lattice:
+
+```
+apps = KeyedLattice(:favourites, favouritesLattice)
+root = Lattice.ROOT.addLattice(:app, apps)
+```
+
+The application's state is then found at `[:app <name> ...]`. An application name is a Keyword chosen by the application, not allocated by the Foundation, and SHOULD be distinctive enough not to collide with other applications a node might host.
+
+`:app` composes as the root does, one level down. A node registers the applications it hosts; on merge, an application it does not know is ignored and one it already holds is retained, so hosting one application never requires hosting another, and adding an application never requires a new root region.
+
+In both cases the section key becomes a path element when navigating from the node's root cursor, and different nodes may host different combinations of regions and applications by composing different sets of lattice sections.
 
 ### Testing
 
