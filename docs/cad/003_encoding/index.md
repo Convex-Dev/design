@@ -550,9 +550,9 @@ Where:
 
 <Entry> is either:
 - 0x00                   (if no entry present at this position in Index)
-- 0x20 <Key> <Value>     (if entry present)
+- 0x80 <Key> <Value>     (if entry present; key and value are encoded as refs)
 
-<Depth> is an unsigned byte indicating the hex digit at which the entry / branch occurs. If an entry is present, depth must match the hex length of the entry key
+<Depth> is a non-negative VLQ count indicating the zero-based hex digit at which the entry / branch occurs. Depths below 128 occupy one byte; larger depths use the canonical multi-byte VLQ encoding. If an entry is present, depth MUST match the effective hex length of its key.
 
 <Mask> is a 16 bit bitmap of which child Index nodes are present at the given depth (low bit = `0` ... high bit = `F`)
 
@@ -568,7 +568,9 @@ An Index serves as a specialised map with ordered keys. Logically, it is a mappi
 
 Key values MUST be Blobs, Strings, Addresses, Keywords or Symbols. These are regarded as "BlobLike" because they can be considered as a sequence of bytes like a Blob.
 
-This encoding ensures that entries are encoded in lexicographic ordering. Unlike the hash based Maps, an Index is constrained to use only BlobLike keys, and cannot store two keys which have the same Blob representation (though the keys will retain their original type).
+Key identity and ordering use the first 255 bytes of each key's Blob representation, or the whole representation if shorter. The effective key length is therefore at most 510 hex digits. Keys with identical effective bytes identify the same entry, even if their original types or bytes beyond this limit differ. The stored key retains its original type and value.
+
+This encoding orders entries lexicographically by their effective key bytes. A key precedes every longer key for which it is a prefix.
 
 ### `0x88` Syntax
 
