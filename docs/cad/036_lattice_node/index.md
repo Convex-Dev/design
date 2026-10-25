@@ -76,38 +76,27 @@ The store MUST:
 
 #### Store Publication and Durability
 
-A node MUST be the sole writer of its authoritative store root. When an
-application calls `sync()`, the node announces the value and publishes the root
-on the caller's thread. A successful return confirms that the authoritative root
-and its reachable cells are available from the node store and that the returned
-value is store-backed. Store-publication errors propagate to the caller.
+Published state and its reachable cells MUST be available from the node's
+serving store before the node advertises that state as available. Retention and
+store-relative persistence are defined by [CAD048](/docs/cad/stores).
+Concurrent publication MUST NOT allow completion of an older publication to
+replace a newer authoritative root with an obsolete snapshot.
 
-After authoritative publication, the node SHOULD notify every attached
-propagation group independently and without blocking on network work. A group
-materialises its own filtered serving view and initiates broadcast asynchronously.
-Consecutive monotonic notifications MAY coalesce. Failure in one group MUST NOT
-fail authoritative node publication or prevent another group from progressing.
+Publication and replication acknowledgement do not by themselves imply crash
+durability. A service offering a durable acknowledgement MUST state its
+durability guarantee and ensure that the acknowledged state and its reachable
+cells satisfy that guarantee before issuing the acknowledgement. Storage failure
+MUST NOT be reported as durable success. A durability failure does not imply
+rollback of state already published or replicated.
 
-Logical host publication does not itself require a physical durability barrier.
-Component sync only publishes into its supplied destination; it does not
-implicitly persist the host. The host owns retained-root publication and exposes
-an explicit durability barrier using its store's semantics. A host checkpoint
-MUST retain one snapshot and complete its durability barrier before reporting
-success. It MUST NOT publish private application drafts or implicitly exchange a
-forked host with its origin. A failed barrier does not undo prior publication.
+Implementations MAY use volatile storage or batch durable writes. This CAD does
+not prescribe application APIs, flushing schedules or ownership of storage
+lifecycle operations.
 
-The owning service chooses its durability policy independently of network
-attachment. A service promising durable completion MUST complete a host barrier
-before acknowledging that completion. Services using batched durability SHOULD
-flush retained state periodically, expose background failures, and complete a
-final barrier during orderly shutdown before closing the store. Such workers
-MUST NOT implicitly publish pending application or host state. Network launch
-and shutdown MUST NOT choose or change the host's durability policy. Closing a
-network attachment releases its replication resources without publishing pending
-host state or flushing the borrowed store.
-
-Root publication and checkpoint pipelines MUST be serialised so an older
-snapshot cannot demote the root pointer after a newer root has been published.
+Published updates SHOULD become available to every applicable propagation group
+according to that group's policy. Failure in one group MUST NOT invalidate
+successful local publication or prevent another group from progressing.
+Consecutive monotonic updates MAY coalesce.
 
 #### Propagation Policy Groups
 
