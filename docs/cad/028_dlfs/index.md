@@ -231,9 +231,19 @@ A Node is a Vector with the following structure:
 
 Nodes MUST contain the first four fields. A populated tombstone slot MUST be a non-empty Index and MUST occur only on a directory. An unused tombstone slot MUST be omitted unless later fields require nil padding. Legacy nodes therefore have four fields, or five when carrying tombstones. File and directory nodes MAY carry the sixth field, `mtime`.
 
-Readers MUST accept unknown trailing fields and ordinary mutations MUST preserve them. Reading a legacy node MUST NOT rewrite it. Released implementations which reject additional fields require an upgrade before accepting extended nodes; this extension guarantees legacy reads, not acceptance by those older readers.
+Readers MUST accept unknown trailing fields and ordinary mutations MUST preserve them. Reading a legacy node MUST NOT rewrite it.
 
 Future extensions MAY include additional fields. Implementations MUST preserve unrecognised fields.
+
+#### Compatibility
+
+Adoption of the `mtime` field is a one-way format upgrade. Implementations that predate it accept only four- and five-field nodes and reject any node carrying `mtime`. An implementation that supports `mtime` reads legacy nodes unchanged, but its first ordinary mutation extends every node on the mutated path, including the drive root, because ancestors preserve their effective `mtime` while their update-time advances (see Modification Time). From then on an older implementation cannot read the drive. As a replica, it ignores incoming values for that drive under Robust Merge, so it stops converging without reporting an error.
+
+Therefore:
+
+- All replicas of a drive MUST support `mtime` before any replica writes an extended node. A replica with `mtime` support MUST accept legacy nodes from replicas that do not yet support it, and merge them under the ordinary rules.
+- No downgrade is defined, and implementations are not required to produce nodes that older implementations accept. The only way to return to an older implementation is to restore a copy of the drive state taken before the upgrade, so operators SHOULD take one before upgrading.
+- Because readers MUST accept unknown trailing fields, a later trailing extension does not make drives unreadable to implementations that conform to this version.
 
 #### Directory Nodes
 
