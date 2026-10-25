@@ -88,7 +88,23 @@ materialises its own filtered serving view and initiates broadcast asynchronousl
 Consecutive monotonic notifications MAY coalesce. Failure in one group MUST NOT
 fail authoritative node publication or prevent another group from progressing.
 
-Cursor sync does not itself require a physical durability barrier. Persistent nodes SHOULD flush dirty stores periodically and MUST complete an explicit durability barrier after initial publication and during orderly shutdown. A caller that requires immediate crash durability uses the node's explicit checkpoint or flush operation; successful return from that operation confirms the barrier.
+Logical host publication does not itself require a physical durability barrier.
+Component sync only publishes into its supplied destination; it does not
+implicitly persist the host. The host owns retained-root publication and exposes
+an explicit durability barrier using its store's semantics. A host checkpoint
+MUST retain one snapshot and complete its durability barrier before reporting
+success. It MUST NOT publish private application drafts or implicitly exchange a
+forked host with its origin. A failed barrier does not undo prior publication.
+
+The owning service chooses its durability policy independently of network
+attachment. A service promising durable completion MUST complete a host barrier
+before acknowledging that completion. Services using batched durability SHOULD
+flush retained state periodically, expose background failures, and complete a
+final barrier during orderly shutdown before closing the store. Such workers
+MUST NOT implicitly publish pending application or host state. Network launch
+and shutdown MUST NOT choose or change the host's durability policy. Closing a
+network attachment releases its replication resources without publishing pending
+host state or flushing the borrowed store.
 
 Root publication and checkpoint pipelines MUST be serialised so an older
 snapshot cannot demote the root pointer after a newer root has been published.
