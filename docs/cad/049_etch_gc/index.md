@@ -97,9 +97,11 @@ Opening a store MUST first reconcile any interrupted collection state, and recov
 
 - **A completed cutover is adopted**: the collected store becomes the store, and the superseded live filename is removed. Without a retained snapshot, this deletion reclaims the old file's space. A requested snapshot remains available separately. Retirement is safe precisely because cutover was gated on verified completeness.
 - **A superseded or rolled-back GC file is deleted, never rolled back**: re-importing it would resurrect collected garbage. Implementations MUST record enough on-disk state to distinguish this case from the next one. Explicitly retained backup snapshots are outside this cleanup set.
-- **An abandoned cycle is rolled back, never discarded**: an interrupted target holds writes that exist nowhere else; its contents are migrated back into the original store, tolerating a torn tail at the crash point.
+- **An abandoned cycle is rolled back, never discarded**: an interrupted target holds writes that exist nowhere else; its contents are migrated back into the original store, tolerating a torn tail at the crash point. A target that records no committed root holds only the unflushed tail of writes, so recovery MAY delete it instead. An Etch v3 target that was never checkpointed is such a target.
 
 The original file is never modified during a cycle except by roll-back (which only adds entries and monotonically merges status), so a crash at any point loses at most the usual unflushed tail of writes.
+
+Recovery MUST NOT modify any file whose integrity it cannot establish, such as an Etch v3 file left dirty by a crash. Opening then fails, and the operator restores a backup or repairs the file explicitly.
 
 ### Store-to-store migration
 
