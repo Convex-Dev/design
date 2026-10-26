@@ -97,33 +97,97 @@ A standalone (non-replicated) ConvexDB uses the same hierarchy from `MapLattice`
 Each table is stored as a **Table Entry**, a positional vector:
 
 ```
-[schema, rows, utime]
+[schema, rows, utime, live-count, version]
 ```
 
 | Index | Field | Type | Description |
 |-------|-------|------|-------------|
-| 0 | schema | vector | Column definitions: `[[name, type], ...]` |
+| 0 | schema | vector | Column definitions: `[column₁, column₂, ...]` |
 | 1 | rows | Index | Row data: `{primary-key → RowEntry, ...}` |
 | 2 | utime | integer | Schema update timestamp (epoch millis) |
+| 3 | live-count | integer | Number of live (non-tombstone) rows |
+| 4 | version | integer | Format version of the entry |
+
+The live count is derived from the rows and recomputed when a merge changes them. Readers MUST accept an entry without it, counting the live rows instead.
+
+#### Format Version
+
+The version determines how the whole entry is read: the meaning of its schema's type identifiers ([Column Types](#column-types)), the CVM values that represent each column's data in its rows, and the encoding of its primary keys. An entry without a version field is **version 0**.
+
+Implementations MUST create new tables as version 1. They MUST NOT read or write an entry whose version they do not implement as if it were another version. Older implementations rebuild a table entry from its first four fields when they merge it, dropping the version, and would then read a version 1 table as version 0. Every node that replicates a database holding version 1 tables MUST therefore implement version 1.
+
+A table changes version only when its schema changes. The writer then rewrites every row in the new version's representation, under the new schema's timestamp.
 
 #### Schema Format
 
-The schema is a vector of column definitions, each a vector of `[name, type]`:
+The schema binds a table's data to its column types: it is replicated, signed and merged with the rows it describes, so it determines, with the entry's version, how every node reads them. The schema is a vector of column definitions, each a positional vector:
 
 ```
-[[name₁, type₁], [name₂, type₂], ...]
+[name, type, precision, scale]
 ```
 
-Where:
-- **name** — column name (string)
-- **type** — column type (nil = any, or a type identifier)
+| Index | Field | Type | Description |
+|-------|-------|------|-------------|
+| 0 | name | string | Column name |
+| 1 | type | string / nil | Type identifier; nil means any CVM value |
+| 2 | precision | integer / nil | Declared precision or length, if any |
+| 3 | scale | integer / nil | Declared scale, if any |
 
-Example:
+Trailing nil fields MAY be omitted. The meaning of a type identifier depends on the entry's version, as described under [Column Types](#column-types).
+
+Example of the schema of a version 1 table:
 ```
-[["id", nil], ["name", nil], ["email", nil]]
+[["id", "BIGINT"], ["name", "VARCHAR", 100], ["balance", "NUMERIC", 40, 0], ["notes", nil]]
 ```
 
-Column types are advisory for now; all values accept any CVM data type.
+### Column Types
+
+A column's declared type determines which values it holds and how SQL reads them. Types are chosen by the user who creates the table; an implementation records the declared type exactly and maps it to the CVM values below.
+
+#### Version 1 Types
+
+In a version 1 table, the type identifier is the declared SQL type, normalised to the names below. Aliases such as `INT`, `INT8`, `DECIMAL`, `FLOAT`, `FLOAT8`, `TEXT` and `BYTEA` normalise to the name shown.
+
+| Type identifier | SQL type | Stored CVM value | Constraint |
+|-----------------|----------|------------------|------------|
+| `SMALLINT` | 16-bit integer | Integer | −2¹⁵ to 2¹⁵−1 |
+| `INTEGER` | 32-bit integer | Integer | −2³¹ to 2³¹−1 |
+| `BIGINT` | 64-bit integer | Integer | −2⁶³ to 2⁶³−1 |
+| `NUMERIC` | Exact numeric with precision *p* and scale *s* | Integer: the value × 10^*s* | At most *p* digits; *s* defaults to 0; without *p*, any value representable as a CVM integer |
+| `REAL` | Single-precision floating point | Double, rounded to single precision | |
+| `DOUBLE PRECISION` | Double-precision floating point | Double | |
+| `BOOLEAN` | Boolean | Boolean | |
+| `CHAR` | Fixed-length character string, length *n* | String, padded to *n* | At most *n* characters |
+| `VARCHAR` | Variable-length character string, length *n* | String | At most *n* characters, if *n* is declared |
+| `VARBINARY` | Binary string | Blob | At most *n* bytes, if *n* is declared |
+| `TIMESTAMP` | Timestamp without time zone, fractional precision *p* ≤ 6 | Integer: microseconds since 1970-01-01T00:00:00 | |
+| `JSON` | JSON document | Any CVM value | |
+
+All integers are CVM integers of arbitrary precision ([CAD002](../002_values/index.md)), so a column's range is a constraint on values, not a property of their representation. A `NUMERIC` column with scale 0 holds integers of any size the CVM can represent. Implementations MUST compare and key integers by value, whatever their internal representation.
+
+An implementation MUST reject a write that does not conform to the column's declared type. It MUST reject a table definition that uses a SQL type not listed here, rather than store it as another type.
+
+#### Non-conforming Values
+
+Merge never rejects or alters a row for its types: merge is the trust boundary, and rows written under another schema or by another node may hold values that do not conform to the current schema. Readers MUST NOT alter or discard such values, and MUST NOT present one as if it conformed: reading it through SQL is an error.
+
+#### Version 0 Types
+
+A version 0 table uses the reference implementation's original type identifiers. Implementations MUST read version 0 tables with these meanings.
+
+| Type identifier | Stored CVM value |
+|-----------------|------------------|
+| nil | Any CVM value |
+| `BIGINT` | Integer, any size |
+| `INTEGER` | Integer in the 64-bit range |
+| `DECIMAL`, `DOUBLE` | Double |
+| `CHAR`, `VARCHAR` | String |
+| `BOOLEAN` | Boolean |
+| `VARBINARY`, `BLOB` | Blob |
+| `TIMESTAMP` | Integer: milliseconds since 1970-01-01T00:00:00 |
+| `JSON` | Map, or the JSON text as a string |
+
+How each type is presented to SQL clients, including version 0 types, is described in the reference implementation's design notes (`convex-db/docs/SQL-TYPES.md` in the [Convex repository](https://github.com/Convex-Dev/convex)).
 
 #### Table Tombstones
 
@@ -154,9 +218,12 @@ A row tombstone has `nil` values and a non-nil deleted timestamp. The deletion t
 Primary keys MUST be blob-like types (Blob, String, AccountKey, etc.) as required by the Index data structure for lexicographic ordering.
 
 Implementations SHOULD provide automatic key conversion:
-- **Integer** → 8-byte big-endian encoding
+- **Integer** in the signed 64-bit range → 8-byte big-endian two's-complement encoding
+- **Integer** beyond the 64-bit range → its minimal big-endian two's-complement encoding, which is at least 9 bytes
 - **String** → UTF-8 byte encoding
 - **Blob** → direct use
+
+An integer key is converted from its value, whatever its internal representation, so equal integers always give the same key. The two integer encodings differ in length, so they cannot collide. A `NUMERIC` value is keyed by its stored integer.
 
 This allows natural primary key usage while maintaining Index compatibility.
 
@@ -172,7 +239,7 @@ Per-table-name merge using `SQLTableLattice.merge()` for each table entry.
 
 For each table:
 
-1. **Schema**: LWW by timestamp — latest schema wins
+1. **Schema**: LWW by timestamp — latest schema wins, with its version. If both entries have the same timestamp and schema, the higher version is kept, restoring a version that an older implementation dropped.
 2. **Rows**: Merge using `TableLattice` (per-primary-key merge)
 3. **Tombstone handling**: If the schema winner is a tombstone, the tombstone wins (table dropped)
 
