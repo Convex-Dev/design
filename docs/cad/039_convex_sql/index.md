@@ -97,7 +97,7 @@ The live count is derived from the rows and recomputed when a merge changes them
 
 A table entry's ctime records when the table was created, or for a tombstone when it was dropped; only creating or dropping the table sets it. Each row entry records when the row was written. Timestamps come from the writer's clock, which the application supplies; the reference implementation defaults to the runtime clock, in milliseconds since 1970-01-01T00:00:00 UTC. A writer reads its clock once for each write, and merges never read it. How a writer orders its own writes, for example with strictly increasing timestamps, is for the application.
 
-A row write or deletion MUST leave its table's ctime unchanged, and MUST carry a timestamp at or after that ctime: a writer whose clock is behind the ctime stamps the write with the ctime. A merge policy can then tell a table's own rows from those of an earlier table of the same name, whatever the writers' clocks, as [RowLWW](#rowlww) does.
+A row write or deletion MUST leave its table's ctime unchanged. A merge policy can then tell a table's own rows, stamped at or after its ctime, from those of an earlier table of the same name, as [RowLWW](#rowlww) does. Merges take timestamps as written: a writer whose clock stamps a row before its table's ctime has written it to an earlier table, and loses it on merge.
 
 #### Format Version
 
@@ -253,7 +253,7 @@ An entry without a ctime carries only rows, and the policy decides whether they 
 2. **Rows**: merged by primary key, whichever schema wins. A row held by both entries merges as a row entry, below. A row held by one entry only survives if it was written at or after the other entry's ctime: a row written before a table was created belongs to an earlier table of that name, and one written before a drop belongs to the dropped table.
 3. **Rows only**: an entry without a ctime, from a [path delivery](#path-delivery), merges its rows into an existing table, live or dropped, as in 2. A table that does not exist takes nothing.
 
-So rows written before a table is dropped never return, whether the table is created again or a copy that missed the drop merges later, and every copy of a single writer's tables converges to the writer's own. Two creations of one table name by different writers are two different tables: rows written to the earlier one before the later creation are dropped. A dropped table holds only rows written after the drop, and readers do not see them.
+So rows written before a table is dropped never return, whether the table is created again or a copy that missed the drop merges later, and every copy of a single writer's tables converges to the writer's own while the writer stamps each row at or after its table's ctime. Two creations of one table name by different writers are two different tables: rows written to the earlier one before the later creation are dropped. A dropped table holds only rows written after the drop, and readers do not see them.
 
 **Row entry.** For each primary key:
 
@@ -262,7 +262,7 @@ So rows written before a table is dropped never return, whether the table is cre
 3. **Compare timestamps** — newer wins
 4. **Equal timestamps** — deletion wins; otherwise the own entry is kept
 
-RowLWW is idempotent. It is commutative except at exact ties, where the own value is kept as CAD024 allows: two live rows with equal timestamps and different values, or two table entries with equal ctimes and different schemas. It is associative for tables whose rows were all written at or after the table's ctime, as [Timestamps](#timestamps) requires.
+RowLWW is idempotent. It is commutative except at exact ties, where the own value is kept as CAD024 allows: two live rows with equal timestamps and different values, or two table entries with equal ctimes and different schemas. It is associative for tables whose rows were all written at or after the table's ctime ([Timestamps](#timestamps)).
 
 ### Ownership and Authentication
 
