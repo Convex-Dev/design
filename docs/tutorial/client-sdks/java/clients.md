@@ -85,7 +85,7 @@ Result result = convex.query("(balance #11)").get();
 CVMLong balance = result.getValue();
 ```
 
-It is a thinner client than the binary one. It holds no connection, so `close()` does nothing, and `acquire` is not implemented (it returns `null`), so anything that fetches missing data by hash through the client does not work over it. For ordinary queries and transactions it behaves like any other `Convex`.
+It is a thinner client than the binary one. It holds no connection, so `close()` does nothing, and `acquire` is not implemented (it returns `null`), so anything that fetches missing data by hash through the client does not work over it. It also uses only the scheme, host and port of the URI you give it, so a path prefix is dropped. For ordinary queries and transactions it behaves like any other `Convex`.
 
 ## Binary protocol client (`Convex`)
 
