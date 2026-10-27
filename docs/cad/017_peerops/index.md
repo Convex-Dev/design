@@ -51,6 +51,51 @@ The target count is the `:outgoing-connections` entry in the Server configuratio
 
 
 
+#### Delta propagation limits
+
+When a peer publishes a lattice or Belief update that is too large to send as one message, it splits the novelty into bounded `:DATA` batches and follows them with a root announcement ([CAD015](../015_peercomms/index.md)). Two limits control this, and they exist for different reasons:
+
+- The **per-message limit** bounds one encoded delta message. A receiver rejects anything larger, so this must stay within what your peers accept.
+- The **broadcast limit** bounds the total novelty a peer materialises eagerly for one publication. It is what stops a very large update from being held in memory all at once; anything beyond it is left for the receiver to pull.
+
+CPoS Beliefs have the per-message limit only.
+
+| Setting | Lattice applications | CPoS Beliefs | Default |
+|---|---|---|---|
+| Per-message | `maxDeltaMessageSize` | `:max-belief-delta-message-size` | 4 MiB |
+| Total broadcast | `maxDeltaBroadcastSize` | — | 16 MiB |
+
+The broadcast limit MUST NOT be set below the per-message limit. Complete inbound values are governed by a separate size policy and are not affected by these settings.
+
+Operators SHOULD leave these at their defaults unless they have measured a reason to change them. Raising them trades memory for fewer round trips on large updates; lowering them does the reverse. Neither affects correctness: a dropped `:DATA` batch is recoverable through `DATA_REQUEST` or an application pull path.
+
+#### REST transaction concurrency
+
+A peer's REST API holds a permit for the whole time a `/api/v1/transact` request is waiting for consensus, so the concurrency cap decides how many callers can be in flight at once rather than how much CPU is in use. Request handling runs on virtual threads, so a waiting request is cheap.
+
+| Setting | Meaning | Default |
+|---|---|---|
+| `transact-limit` | Concurrent transaction requests server-wide | 10000 |
+| `transact-limit-client` | Concurrent transaction requests from one client, or `0` for no per-client bound | 100 |
+
+The per-client bound keeps one caller from consuming the whole server-wide allowance. Clients are identified by **direct socket address only**: forwarded client-address headers are set by the caller, so a limit keyed on one is bypassed by sending a different value, and the peer never consults them.
+
+Behind a reverse proxy, every caller shares the proxy's address, so the per-client bound degenerates into a second server-wide cap. Operators running behind a proxy SHOULD set `transact-limit-client` to `0` and apply per-client policy at the proxy, which holds the true client address — `limit_conn` keyed on `$binary_remote_addr` in nginx, stick tables in HAProxy, or the equivalent. The server-wide cap still bounds total load either way.
+
+#### Public query limits
+
+Queries are free and unsigned, so a peer bounds them separately, under the `query` section of its REST configuration:
+
+| Setting | Meaning | Default |
+|---|---|---|
+| `maxJuice` | Execution ceiling for one public query | 100000 |
+| `maxConcurrent` | Public queries executed at once | ~1/10 of available processors, minimum 1 |
+| `maxWaitMillis` | Time a query waits for a free slot before returning a load result | 1000 |
+
+`maxJuice` is the one callers notice. It is generous for reads, but not enough to *deploy* a substantial actor inside a query — deploying a `convex.fungible` token costs roughly 135,000 juice, so evaluating one against a default-configured peer returns `:JUICE`, not a result. That is working as intended: deployment belongs in a transaction. Operators who want a query sandbox permissive enough to deploy should raise `maxJuice` deliberately, understanding that it raises the CPU one unsigned request can consume.
+
+`maxConcurrent` bounds the cores public reads may take from consensus rather than throughput; a single core evaluates queries fast enough to serve a high query rate. A short `maxWaitMillis` absorbs bursts without rejecting, so only sustained overload sheds load.
+
 ## Startup
 
 ## Syncing
