@@ -202,8 +202,8 @@ print(f'Name: {account.name}')  # None if not registered
 
 The **Convex Name Service (CNS)** allows human-readable names for accounts.
 
-:::warning
-In convex-sdk 0.3.3, `register_account_name` and `setup_account` (when the name is not yet registered) fail on current peers. Resolving and loading names works. See the [known limitations](/docs/tutorial/client-sdks/python).
+:::note Registering needs a CNS node you own
+CNS is hierarchical: `account.alice` is the entry `alice` in the node `account`, and only the owner of a node can create entries in it ([CAD014](/docs/cad/cns)). Neither Protonet nor the public testnet has an `account` node, so there `register_account_name` and `setup_account` (for a name that is not yet registered) raise `ConvexAPIError` with code `TRUST`. Reading works on every network: `resolve_name`, `resolve_account_name` and `load_account` need no ownership.
 :::
 
 ### Register Account Name

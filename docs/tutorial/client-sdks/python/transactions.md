@@ -6,10 +6,6 @@ sidebar_position: 3
 
 Transactions are state-changing operations that execute Convex Lisp code and modify the network state.
 
-:::warning
-convex-sdk 0.3.3 cannot submit transactions to peers running Convex 0.8.17 or later. See the [known limitations](/docs/tutorial/client-sdks/python).
-:::
-
 ## Transaction Basics
 
 Unlike queries, transactions:

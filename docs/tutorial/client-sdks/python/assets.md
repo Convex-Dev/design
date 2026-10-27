@@ -54,7 +54,8 @@ supply = convex.query(f'(@convex.fungible/total-supply #{token})', account).valu
 The Convex Name System maps human-readable names to addresses. Account names are registered under the `account.` namespace.
 
 ```python
-# Register account.my-service -> your account address
+# Register account.my-service -> your account address. Only the owner of the `account`
+# CNS node can create entries in it; anyone else gets ConvexAPIError with code TRUST
 convex.register_account_name('my-service', account.address, account)
 
 # Resolve a name back to an address (returns an int, or None if unregistered)

@@ -111,10 +111,6 @@ print(f'Result: {result.value}')  # [2, 3, 4, 5]
 
 `transact` returns a response model, so the result is the `value` attribute. A failed transaction raises `ConvexAPIError` instead of returning an error value.
 
-:::warning
-convex-sdk 0.3.3 cannot submit transactions to peers running Convex 0.8.17 or later. See the [known limitations](/docs/tutorial/client-sdks/python).
-:::
-
 Transactions **modify state** and **consume juice**. They require:
 - A funded account (balance > 0)
 - A valid key pair for signing
@@ -187,7 +183,7 @@ Run the script:
 python hello_convex.py
 ```
 
-Expected output, captured against a local peer with the SDK's submit call patched to send `data` (see the [known limitations](/docs/tutorial/client-sdks/python)). The address and the cost differ from run to run and between networks:
+Expected output (the address and the cost differ from run to run and between networks):
 
 ```
 Connected to Convex

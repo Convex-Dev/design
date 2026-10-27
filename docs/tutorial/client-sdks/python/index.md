@@ -57,12 +57,6 @@ convex.transfer('#456', 50_000_000, account)
 Examples on these pages run against the public testnet, because `create_account` and `request_funds` both depend on a faucet. Production (`https://peer.convex.live`) has no faucet: a request there is refused with `403 Forbidden`, and accounts must instead be created and funded by an account that already holds coins. See the [Faucet Guide](/docs/tutorial/coins/faucet) and [Networks](/docs/tutorial/networks).
 :::
 
-:::warning Known limitations of convex-sdk 0.3.3
-- **Transactions.** `transact`, `transfer` and `transfer_account` submit a transaction without the `data` field that peers running Convex 0.8.17 or later require, and fail with `ConvexRequestError: _post: 400 ... Parameter 'data' is required`. Checked against a local peer built from the Convex develop branch; not checked against the public testnet.
-- **Account names.** `register_account_name` and `setup_account` call `cns-update` on the CNS registry, which the registry on current peers does not define. They fail with `STATE ... does not define Symbol: cns-update`.
-
-Queries, `create_account`, `request_funds`, `get_balance`, `resolve_name` and `resolve_account_name` are unaffected. The transaction examples on these pages show the SDK's intended behaviour; their results were checked against a local peer with the submit call patched to send `data`.
-:::
 
 ## Key Features
 
@@ -123,7 +117,7 @@ result = convex.transact('(transfer #789 1000000)', account)
 Built-in support for Convex Name Service (CNS):
 
 ```python
-# Register an account name
+# Register an account name (requires owning the CNS `account` node, see Account Management)
 convex.register_account_name('alice', account)
 
 # Resolve names to addresses
