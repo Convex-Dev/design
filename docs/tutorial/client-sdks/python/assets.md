@@ -21,7 +21,7 @@ convex.request_funds(100_000_000, account)  # 0.1 CVM for juice
 
 # Deploy a token with an initial supply of 1,000,000 units, held by the deployer
 result = convex.transact('(deploy [(@convex.fungible/build-token {:supply 1000000})])', account)
-token = result['value']   # the token's actor address (an integer)
+token = result.value   # the token's actor address (an integer)
 print(f'Deployed token at #{token}')
 ```
 
@@ -30,7 +30,7 @@ print(f'Deployed token at #{token}')
 Pass the querying account as the second argument to `query`:
 
 ```python
-balance = convex.query(f'(@convex.fungible/balance #{token} #{account.address})', account)['value']
+balance = convex.query(f'(@convex.fungible/balance #{token} #{account.address})', account).value
 print(f'Balance: {balance}')  # 1000000
 ```
 
@@ -46,7 +46,7 @@ convex.transact(f'(@convex.asset/transfer #{recipient.address} [#{token} 1000])'
 ### Total supply
 
 ```python
-supply = convex.query(f'(@convex.fungible/total-supply #{token})', account)['value']
+supply = convex.query(f'(@convex.fungible/total-supply #{token})', account).value
 ```
 
 ## CNS names

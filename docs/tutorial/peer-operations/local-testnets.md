@@ -81,9 +81,17 @@ public class LocalTestnetExample {
 ### JUnit Test Example
 
 ```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.*;
-import convex.peer.Server;
+
 import convex.api.Convex;
+import convex.core.Result;
+import convex.core.crypto.AKeyPair;
+import convex.core.cvm.Address;
+import convex.core.data.prim.CVMLong;
+import convex.peer.API;
+import convex.peer.Server;
 
 class MyConvexTest {
     private static Server server;
@@ -110,7 +118,8 @@ class MyConvexTest {
     @Test
     void testTransaction() throws Exception {
         Result result = convex.transact("(+ 1 2 3)").get();
-        assertEquals(6L, result.getValue());
+        // Results are CVM values: a CVMLong never equals a Java Long
+        assertEquals(CVMLong.create(6), result.getValue());
     }
 
     @AfterEach

@@ -8,7 +8,7 @@ Build your first Python application on Convex in under 5 minutes.
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - pip or Poetry package manager
 
 ## Step 1: Install the SDK
@@ -38,7 +38,7 @@ convex = Convex('https://mikera1337-convex-testnet.hf.space')
 print('Connected to Convex network')
 ```
 
-The peer URL `https://mikera1337-convex-testnet.hf.space` connects you to the public Convex network. You can also run a local peer for development.
+The peer URL `https://mikera1337-convex-testnet.hf.space` connects you to the public Convex testnet. You can also run a local peer for development.
 
 ## Step 3: Create an Account
 
@@ -106,8 +106,10 @@ Submit a transaction to execute Convex Lisp code:
 # Execute a simple Lisp expression
 result = convex.transact('(map inc [1 2 3 4])', account)
 
-print(f'Result: {result['value']}')  # [2, 3, 4, 5]
+print(f'Result: {result.value}')  # [2, 3, 4, 5]
 ```
+
+`transact` returns a response model, so the result is the `value` attribute. A failed transaction raises `ConvexAPIError` instead of returning an error value.
 
 Transactions **modify state** and **consume juice**. They require:
 - A funded account (balance > 0)
@@ -164,12 +166,12 @@ def main():
 
     # Execute transaction
     result = convex.transact('(+ 1 2 3)', account)
-    print(f'Transaction result: {result['value']}')
+    print(f'Transaction result: {result.value}')
 
     # Query balance after transaction
     new_balance = convex.get_balance(account)
-    juice_used = balance - new_balance
-    print(f'Juice consumed: {juice_used} copper')
+    cost = balance - new_balance
+    print(f'Transaction cost: {cost} copper')
 
 if __name__ == '__main__':
     main()
@@ -181,16 +183,16 @@ Run the script:
 python hello_convex.py
 ```
 
-Expected output:
+Expected output (the address and the cost differ from run to run and between networks):
 
 ```
 Connected to Convex
-Created account: #1234
+Created account: #136
 Keys saved to my_account.pem
 Received test funds
 Balance: 0.1 CVM
 Transaction result: 6
-Juice consumed: 1480 copper
+Transaction cost: 15240 copper
 ```
 
 ## Next Steps

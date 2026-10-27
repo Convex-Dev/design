@@ -487,11 +487,12 @@ convex.transact("(do (def x 1) (def y 2))").get();
 Minimize memory allocation and computation:
 
 ```java
-// ❌ EXPENSIVE - Creates large data structure
-convex.transact("(def big-list (range 1000000))").get();
+// ❌ EXPENSIVE - Builds and stores a 1,000-element vector
+convex.transact(
+    "(def big-list (loop [i 0 v []] (if (< i 1000) (recur (inc i) (conj v i)) v)))").get();
 
-// ✅ CHEAPER - Store minimal data
-convex.transact("(def count 1000000)").get();
+// ✅ CHEAPER - Store a single number
+convex.transact("(def element-count 1000)").get();
 ```
 
 ## Transaction Lifecycle

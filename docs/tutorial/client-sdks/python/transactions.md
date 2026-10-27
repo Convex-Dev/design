@@ -21,7 +21,7 @@ Unlike queries, transactions:
 ```python
 from convex_sdk import Convex, KeyPair
 
-convex = Convex('https://peer.convex.live')
+convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
 # Create and fund an account
 key_pair = KeyPair()
@@ -31,7 +31,7 @@ convex.request_funds(100_000_000, account)
 # Execute a transaction
 result = convex.transact('(def my-value 42)', account)
 
-print(result['value'])  # 42
+print(result.value)  # 42
 ```
 
 ## Transaction Methods
@@ -49,18 +49,11 @@ result = convex.transact('(def x 10)', account)
 - `account` (Account): Account to sign and execute the transaction
 - `sequence_retry_count` (int): Number of times to retry on sequence errors (default: 20)
 
-**Returns:** Dictionary with transaction result:
-```python
-{
-    'value': <result_value>,
-    'id': <transaction_id>,
-    'error': <error_code>  # Only present if transaction failed
-}
-```
+**Returns:** a `SubmitTransactionResponse` model whose `value` attribute holds the result of the transaction as a Python value. Read it as `result.value`; the model is not a dictionary, so `result['value']` raises `TypeError`.
 
 **Raises:**
-- `ConvexAPIError` - If transaction fails (after retries)
-- `ValueError` - If transaction string is invalid
+- `ConvexAPIError` - If the transaction fails (after retries). The CVM error code is in `e.code` and the message in `e.text`
+- `ValueError` - If the transaction string is empty
 
 ### `transfer(to_address_account, amount, account)`
 
@@ -97,18 +90,24 @@ balance_before = convex.get_balance(account)
 # Execute transaction
 convex.transact('(def x [1 2 3 4 5])', account)
 
-# Calculate juice consumed
+# The difference is what the transaction cost
 balance_after = convex.get_balance(account)
-juice_consumed = balance_before - balance_after
+cost = balance_before - balance_after
 
-print(f'Juice consumed: {juice_consumed} copper')
+print(f'Transaction cost: {cost} copper')
 ```
 
-Typical costs:
-- **Simple expression**: 1,000 - 5,000 copper
-- **Transfer**: 2,000 - 3,000 copper
-- **Define variable**: 1,500 - 10,000 copper
-- **Deploy contract**: 50,000 - 500,000 copper
+Measured on a freshly started local peer, the cost in copper of a few transactions:
+
+| Transaction | Cost (copper) |
+|---|---|
+| `(+ 1 2 3)` | about 15,000 |
+| `(def x 10)` | about 24,000 |
+| `(def my-map {:name "Alice" :age 30})` | about 74,000 |
+| `(transfer #<address> 10000000)` | about 18,000 to 24,000, plus the 10,000,000 sent |
+| Deploying the counter actor below | about 627,000 |
+
+Costs rise with the memory a transaction allocates, and they depend on the network's current prices, so treat these as orders of magnitude and measure on the network you use.
 
 ## Transaction Patterns
 
@@ -128,7 +127,7 @@ convex.transact('(def my-map {:name "Alice" :age 30})', account)
 
 # Read back with a query
 result = convex.query('my-number', account)
-print(result['value'])  # 42
+print(result.value)  # 42
 ```
 
 ### Transferring Funds
@@ -150,23 +149,25 @@ print(f'Recipient balance: {balance / 1_000_000_000} CVM')
 
 Deploy an actor (smart contract) using `deploy`:
 
+Two details make the difference between a deployed actor and code that merely ran in your own account: the source passed to `deploy` must be **quoted**, so it executes inside the new account rather than the caller's, and any function meant to be reachable from outside needs the `^:callable` metadata. Note also that the state is named `counter-value` — `count` is a core function, and compiled code links core definitions statically, so an actor that defines `count` fails at call time with `:CAST`.
+
 ```python
 # Deploy a simple counter contract
 contract_source = """
 (deploy
-  (do
-    (def count 0)
+  '(do
+     (def counter-value 0)
 
-    (defn increment []
-      (def count (inc count))
-      count)
+     (defn ^:callable increment []
+       (def counter-value (inc counter-value))
+       counter-value)
 
-    (defn get-count []
-      count)))
+     (defn ^:callable get-count []
+       counter-value)))
 """
 
 result = convex.transact(contract_source, account)
-contract_address = result['value']
+contract_address = result.value
 
 print(f'Contract deployed at: #{contract_address}')
 ```
@@ -182,7 +183,7 @@ result = convex.transact(
     account
 )
 
-print(f'New count: {result['value']}')
+print(f'New count: {result.value}')
 
 # Query actor state (free)
 result = convex.query(
@@ -190,7 +191,7 @@ result = convex.query(
     account
 )
 
-print(f'Current count: {result['value']}')
+print(f'Current count: {result.value}')
 ```
 
 ### Multi-Step Transactions
@@ -208,7 +209,7 @@ transaction = """
 """
 
 result = convex.transact(transaction, account)
-print(f'Transferred {result['value']} copper')
+print(f'Transferred {result.value} copper')
 ```
 
 If any step fails, the entire transaction is rolled back.
@@ -263,7 +264,7 @@ except ConvexAPIError as e:
     elif e.code == 'SEQUENCE':
         print('Sequence error (unlikely after retries)')
     else:
-        print(f'Transaction failed: {e.code} - {e.message}')
+        print(f'Transaction failed: {e.code} - {e.text}')
 ```
 
 Common error codes:
@@ -319,7 +320,7 @@ Some contracts allow creating controlled sub-accounts:
 transaction = f'(call #{contract_address} (create-account))'
 result = convex.transact(transaction, account)
 
-sub_account_address = result['value']
+sub_account_address = result.value
 print(f'Created sub-account: #{sub_account_address}')
 ```
 
@@ -330,11 +331,13 @@ print(f'Created sub-account: #{sub_account_address}')
 Test transactions with queries first:
 
 ```python
-# Test with query (free)
-result = convex.query('(transfer #456 1000000)', account)
+from convex_sdk.exceptions import ConvexAPIError
 
-if 'errorCode' in result:
-    print(f'Would fail: {result["errorCode"]}')
+# Test with query (free). A failing query raises, and changes nothing
+try:
+    convex.query('(transfer #456 1000000)', account)
+except ConvexAPIError as e:
+    print(f'Would fail: {e.code}')
 else:
     # Proceed with transaction
     convex.transact('(transfer #456 1000000)', account)
@@ -375,11 +378,12 @@ def safe_transfer(convex, to_address, amount, from_account):
 Group related operations in a single transaction:
 
 ```python
-# ❌ BAD - Two separate transactions
+# ❌ BAD - Two separate transactions: two fees, and if the second fails
+# the first has already taken effect
 convex.transact('(def x 10)', account)
-convex.transact('(def y (* x 2))', account)  # Might fail if first didn't commit
+convex.transact('(def y (* x 2))', account)
 
-# ✅ GOOD - One atomic transaction
+# ✅ GOOD - One atomic transaction: both steps apply or neither does
 convex.transact('(do (def x 10) (def y (* x 2)))', account)
 ```
 
@@ -388,11 +392,14 @@ convex.transact('(do (def x 10) (def y (* x 2)))', account)
 Minimize memory allocation and computation:
 
 ```python
-# ❌ EXPENSIVE - Creates large data structure
-convex.transact('(def big-list (range 1000000))', account)
+# ❌ EXPENSIVE - Builds and stores a 1,000-element vector (about 2,700,000 copper)
+convex.transact(
+    '(def big-list (loop [i 0 v []] (if (< i 1000) (recur (inc i) (conj v i)) v)))',
+    account
+)
 
-# ✅ CHEAPER - Store minimal data
-convex.transact('(def count 1000000)', account)
+# ✅ CHEAPER - Store a single number (about 45,000 copper)
+convex.transact('(def element-count 1000)', account)
 ```
 
 ## Transaction Lifecycle

@@ -81,7 +81,7 @@ key_pair = KeyPair()
 account = Account(key_pair, address=1234, name='my_account')
 
 print(f'Address: {account.address}')
-print(f'Public Key: {account.public_key}')
+print(f'Public Key: {account.key_pair.public_key}')
 ```
 
 ### Flexible Key Management
@@ -128,7 +128,7 @@ address = convex.resolve_name('convex.trust')
 
 ## Copper and Convex Coins
 
-The Convex network uses **copper** as the smallest unit of currency. Like Bitcoin's satoshis or Ethereum's wei, copper allows for precise fractional amounts:
+The Convex network uses **copper** as the smallest unit of currency, so amounts are always whole numbers of copper:
 
 **1 Convex Coin = 1,000,000,000 copper**
 
@@ -149,8 +149,7 @@ print(f'Balance: {balance_coins} CVM')
 
 ## Python Version Support
 
-- **Python 3.8+** required
-- **Python 3.10+** recommended for full type hint support
+- **Python 3.10 or later** is required (`convex-sdk` declares `python_requires>=3.10`)
 
 ## Dependencies
 

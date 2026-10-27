@@ -56,11 +56,11 @@ print(f'Imported public key: {key_pair.public_key}')
 
 ### Import from Mnemonic
 
-Restore keys from a BIP39 mnemonic phrase:
+Restore keys from the 24-word BIP39 mnemonic phrase that `export_to_mnemonic` produces:
 
 ```python
-# Import from 24-word phrase
-mnemonic = 'witch collapse practice feed shame open despair creek road again ice least'
+# Import from a 24-word phrase
+mnemonic = '<YOUR_24_WORD_PHRASE>'
 key_pair = KeyPair.import_from_mnemonic(mnemonic)
 
 print(f'Restored public key: {key_pair.public_key}')
@@ -450,18 +450,18 @@ Require multiple signatures (requires custom contract):
 # Deploy multi-sig contract
 multisig_source = """
 (deploy
-  (do
-    (def signers #{#123 #456 #789})
-    (def threshold 2)
+  '(do
+     (def signers #{#123 #456 #789})
+     (def threshold 2)
 
-    (defn execute [action signatures]
-      (if (>= (count signatures) threshold)
-        (eval action)
-        :insufficient-signatures))))
+     (defn ^:callable execute [action signatures]
+       (if (>= (count signatures) threshold)
+         (eval action)
+         :insufficient-signatures))))
 """
 
 result = convex.transact(multisig_source, account)
-multisig_address = result['value']
+multisig_address = result.value
 ```
 
 ## Next Steps
