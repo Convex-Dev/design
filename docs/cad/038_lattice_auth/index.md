@@ -175,10 +175,12 @@ remains authoritative regardless of the signing capability supplied. A draft may
 remain unsigned while private; publication into a signed slot requires an
 authorised envelope.
 
-The older Java `OwnerLattice` API retains a permissive context-based fallback for
-indirect identities for compatibility. That fallback does not implement the
-fail-closed policy specified here. Existing uses MUST supply an explicit verifier
-to satisfy this CAD; the normal owned-map components require one at construction.
+The older Java `OwnerLattice` API resolves its owner rule from the merge context
+rather than binding it to the lattice instance. Without a context verifier it
+applies the same fail-closed default: an owner that directly denotes an account
+key, such as a public key or `did:key` DID, must be the signer, and any other
+owner is refused. New applications SHOULD use the owned-map components, which
+require a verifier at construction.
 
 ## UCAN Capability Tokens
 
