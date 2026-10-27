@@ -40,9 +40,10 @@ Agents transact using standard Convex Lisp, the same language humans use in the 
 ```clojure
 (deploy
   '(do
-     (def state (atom {}))
+     (def registry {})
      (defn ^:callable register [name]
-       (swap! state assoc *caller* name))))
+       (def registry (assoc registry *caller* name))
+       name)))
 ```
 
 **Interact with fungible tokens:**
@@ -211,17 +212,26 @@ Agents coordinate through a shared contract rather than direct messaging:
 
 ```clojure
 ;; Task queue actor — agents post tasks and claim them
+(def tasks {})
+(def next-id 0)
+
 (defn ^:callable post-task [description reward]
-  (let [id (inc @next-id)]
-    (swap! tasks assoc id {:poster *caller* :desc description :reward reward :status :open})
+  (let [id (inc next-id)]
+    (def next-id id)
+    (def tasks (assoc tasks id {:poster *caller*
+                                :desc description
+                                :reward reward
+                                :status :open}))
     id))
 
 (defn ^:callable claim-task [id]
-  (let [task (get @tasks id)]
+  (let [task (get tasks id)]
     (assert (= (:status task) :open))
-    (swap! tasks assoc-in [id :status] :claimed)
-    (swap! tasks assoc-in [id :worker] *caller*)))
+    (def tasks (assoc tasks id (assoc task :status :claimed :worker *caller*)))
+    id))
 ```
+
+An actor's state lives in its account environment, so it is updated with `def`. Convex Lisp reads like Clojure and deliberately shares much of its vocabulary, but its state model is different: a transaction executes atomically against the account environment, so `atom`, `swap!` and `reset!` — the primitives Clojure needs for concurrent mutation — have no counterpart here and are not defined. (Convex Lisp does use `@`, but for CNS resolution as in `@convex.fungible/balance` above, not as a deref.)
 
 ### Off-chain discovery, on-chain settlement
 

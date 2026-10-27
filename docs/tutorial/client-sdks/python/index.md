@@ -36,7 +36,7 @@ poetry add convex-sdk
 from convex_sdk import Convex, KeyPair
 
 # Connect to the network
-convex = Convex('https://peer.convex.live')
+convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
 # Create a new account
 key_pair = KeyPair()
@@ -52,6 +52,10 @@ print(f'Balance: {balance / 1_000_000_000} Convex Coins')
 # Transfer funds
 convex.transfer('#456', 50_000_000, account)
 ```
+
+:::note Which network
+Examples on these pages run against the public testnet, because `create_account` and `request_funds` both depend on a faucet. Production (`https://peer.convex.live`) has no faucet: a request there is refused with `403 Forbidden`, and accounts must instead be created and funded by an account that already holds coins. See the [Faucet Guide](/docs/tutorial/coins/faucet) and [Networks](/docs/tutorial/networks).
+:::
 
 ## Key Features
 

@@ -40,7 +40,7 @@ To create an account with a specific public key (e.g. one you generated elsewher
 ```typescript
 import { Convex, KeyPair } from '@convex-world/convex-ts';
 
-const convex = new Convex('https://peer.convex.live');
+const convex = new Convex('https://mikera1337-convex-testnet.hf.space');
 const kp = KeyPair.generate();
 const info = await convex.createAccount(kp, 100_000_000);
 convex.setAccount(info.address, kp);

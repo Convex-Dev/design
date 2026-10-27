@@ -160,29 +160,33 @@ async function transactWithRetry(
 
 ### Deploy Smart Contract
 
+Two details make the difference between a deployed actor and code that merely ran in your own account: the source passed to `deploy` must be **quoted**, so it executes inside the new account rather than the caller's, and any function meant to be reachable from outside needs the `^:callable` metadata.
+
 ```typescript
 try {
   const contract = await convex.transact(`
-    (do
-      (def token-balance
-        (let [balances {}]
-          {:balances balances}))
+    (deploy
+      '(do
+         (def balances {})
 
-      (defn transfer [to amount]
-        (let [from *caller*
-              from-bal (get-in token-balance [:balances from] 0)
-              to-bal (get-in token-balance [:balances to] 0)]
-          (cond
-            (< from-bal amount)
-              (fail "Insufficient balance")
-            :else
-              (do
-                (assoc-in! token-balance [:balances from] (- from-bal amount))
-                (assoc-in! token-balance [:balances to] (+ to-bal amount))
-                {:success true})))))
+         (defn ^:callable mint [amount]
+           (def balances (assoc balances *caller* (+ (get balances *caller* 0) amount)))
+           amount)
+
+         (defn ^:callable transfer [to amount]
+           (let [from *caller*
+                 from-bal (get balances from 0)
+                 to-bal (get balances to 0)]
+             (when (< from-bal amount)
+               (fail :FUNDS "Insufficient balance"))
+             (def balances (assoc balances from (- from-bal amount) to (+ to-bal amount)))
+             {:success true}))
+
+         (defn ^:callable balance [addr]
+           (get balances addr 0))))
   `);
 
-  console.log('Contract deployed:', contract.value);
+  console.log('Contract deployed:', contract.value);  // e.g. #789
 } catch (e) {
   if (e instanceof ConvexError) {
     console.error('Deploy failed:', e.code);
@@ -194,8 +198,14 @@ try {
 
 ```typescript
 try {
-  const result = await convex.transact('(call #789 (transfer #456 1000))');
-  console.log('Contract call result:', result.value);
+  // Mint yourself a balance, then transfer some of it
+  await convex.transact('(call #789 (mint 1000))');
+  const result = await convex.transact('(call #789 (transfer #456 250))');
+  console.log('Contract call result:', result.value);  // { success: true }
+
+  // Reading a balance changes nothing, so it can be a free query
+  const balance = await convex.query('(call #789 (balance #456))');
+  console.log('Recipient balance:', balance.value);    // 250
 } catch (e) {
   if (e instanceof ConvexError) {
     console.error('Contract call failed:', e.code);

@@ -135,7 +135,7 @@ Register a new account address on the network:
 ```python
 from convex_sdk import Convex, KeyPair
 
-convex = Convex('https://peer.convex.live')
+convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
 # Generate keys and create account
 key_pair = KeyPair()
@@ -377,7 +377,7 @@ print(f'Send funds to: #{account.address}')
 ```python
 from convex_sdk import Convex, KeyPair, Account
 
-convex = Convex('https://peer.convex.live')
+convex = Convex('https://mikera1337-convex-testnet.hf.space')
 
 # 1. Generate keys
 key_pair = KeyPair()
@@ -416,7 +416,7 @@ def create_dev_account(convex):
     return account
 
 # Use in development
-convex = Convex('https://peer.convex.live')
+convex = Convex('https://mikera1337-convex-testnet.hf.space')
 dev_account = create_dev_account(convex)
 ```
 

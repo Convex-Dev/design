@@ -150,8 +150,8 @@ const restored = KeyPair.fromSeed(seed);
 
 Store credentials in environment variables:
 
-```typescript
-// .env file (never commit this!)
+```bash title=".env"
+# Never commit this file
 CONVEX_SEED=abc123...
 CONVEX_ADDRESS=#1678
 CONVEX_PEER=https://peer.convex.live

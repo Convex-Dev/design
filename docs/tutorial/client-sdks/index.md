@@ -53,7 +53,7 @@ Pythonic client for scripting, automation, and data science.
 
 Zero-cost abstractions for systems programming.
 
-- **Status**: 🚧 Planned
+- **Status**: Planned
 - **Features**: Memory-safe, high-performance
 - **Use Cases**: Performance-critical applications, embedded systems
 
