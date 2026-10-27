@@ -86,10 +86,10 @@ An example procedure for doing this securely is:
 - Transfer away any digital assets or other access control rights you want to keep
 - Set the controller to `nil`
 - Delete unwanted definitions from the account's environment with `undef`
-- Especially, it is important to delete:
-  - any exported functions that might be called externally
-  - The `*schedule-start*` value, which may enable scheduled operations
+- Especially, it is important to delete any exported (`:callable`) functions that might be invoked externally
 - Set the account public key to the public key of the new owner
+
+Note that scheduled operations cannot be revoked. The schedule is global state (see [CAD018](../018_scheduler/index.md)), not a value held in the account, so an operation already scheduled to run in this account's context will still execute after the account changes hands. An account with pending scheduled operations MUST NOT be recycled until they have run.
 
 With this method, accounts may be re-used by different individuals, with the secure knowledge that the previous owner(s) no longer have any control over the account. 
 
