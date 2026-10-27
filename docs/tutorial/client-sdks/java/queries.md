@@ -17,7 +17,7 @@ import convex.core.cvm.Address;
 import convex.core.lang.Reader;
 import java.util.concurrent.CompletableFuture;
 
-Convex convex = Convex.connect("https://peer.convex.live");
+Convex convex = Convex.connect("peer.convex.live:18888");
 
 // Execute a query
 CompletableFuture<Result> future = convex.query(
@@ -78,7 +78,7 @@ Result result = convex.query(
 ).get();
 
 if (!result.isError()) {
-    long balanceCopper = ((Number) result.getValue()).longValue();
+    long balanceCopper = ((CVMLong) result.getValue()).longValue();
     double balanceCoins = balanceCopper / 1_000_000_000.0;
     System.out.println("Balance: " + balanceCoins + " CVM");
 }
@@ -214,7 +214,7 @@ convex.query(
     Address.create(1)
 ).thenAccept(result -> {
     if (!result.isError()) {
-        long balance = ((Number) result.getValue()).longValue();
+        long balance = ((CVMLong) result.getValue()).longValue();
         System.out.println("Balance: " + balance);
     }
 }).exceptionally(ex -> {
@@ -292,7 +292,7 @@ Result testResult = convex.query(
 
 if (!testResult.isError()) {
     // If successful, transact
-    convex.transact(Reader.read("(transfer #456 1000000)")).get();
+    convex.transact("(transfer #456 1000000)").get();
 }
 ```
 
@@ -302,9 +302,7 @@ Never use transactions when queries suffice:
 
 ```java
 // ❌ BAD - wastes juice
-Result result = convex.transact(
-    Reader.read("(balance #123)")
-).get();
+Result result = convex.transact("(balance #123)").get();
 
 // ✅ GOOD - free query
 Result result = convex.query(
@@ -396,10 +394,7 @@ List<Address> addresses = List.of(
 );
 
 List<CompletableFuture<Result>> futures = addresses.stream()
-    .map(addr -> convex.query(
-        Reader.read("(balance " + addr + ")"),
-        Address.create(1)
-    ))
+    .map(addr -> convex.query("(balance " + addr + ")"))
     .toList();
 
 // Wait for all to complete

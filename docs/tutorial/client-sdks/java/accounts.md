@@ -78,15 +78,16 @@ Save the seed bytes securely:
 ```java
 import java.nio.file.Files;
 import java.nio.file.Path;
+import convex.core.data.Blob;
 
 AKeyPair keyPair = AKeyPair.generate();
 
 // Get seed bytes (32 bytes)
-byte[] seed = keyPair.getSeed();
+Blob seed = keyPair.getSeed();
 
 // Save to file (should be encrypted in production!)
 Path keyFile = Path.of("keypair.dat");
-Files.write(keyFile, seed);
+Files.write(keyFile, seed.getBytes());
 
 System.out.println("Keys saved to " + keyFile);
 ```
@@ -102,8 +103,8 @@ System.out.println("Keys saved to " + keyFile);
 Get seed as a hex string:
 
 ```java
-byte[] seed = keyPair.getSeed();
-String seedHex = Blob.create(seed).toHexString();
+// getSeed() already returns a Blob, which knows how to print itself as hex
+String seedHex = keyPair.getSeed().toHexString();
 
 System.out.println("Seed (hex): " + seedHex);
 // 5b32f8ff94d1f901098fa41a4045449726849dda5e1a3de34ae123037418795c
@@ -120,7 +121,7 @@ import convex.api.Convex;
 import convex.core.crypto.AKeyPair;
 import convex.core.cvm.Address;
 
-Convex convex = Convex.connect("https://peer.convex.live");
+Convex convex = Convex.connect("peer.convex.live:18888");
 
 // Generate or load key pair
 AKeyPair keyPair = AKeyPair.generate();
@@ -226,7 +227,7 @@ Result result = convex.query(
 ).get();
 
 if (!result.isError()) {
-    long balanceCopper = ((Number) result.getValue()).longValue();
+    long balanceCopper = ((CVMLong) result.getValue()).longValue();
     double balanceCoins = balanceCopper / 1_000_000_000.0;
 
     System.out.println("Balance: " + balanceCoins + " CVM");
@@ -238,11 +239,11 @@ if (!result.isError()) {
 Accounts sign transactions using their private keys:
 
 ```java
-import convex.core.transactions.Invoke;
+import convex.core.cvm.transactions.Invoke;
 import convex.core.data.SignedData;
 
 // The SDK handles signing automatically when you call transact()
-Result result = convex.transact(Reader.read("(def x 42)")).get();
+Result result = convex.transact("(def x 42)").get();
 
 // For manual signing:
 ATransaction tx = Invoke.create(myAddress, Reader.read("(def x 42)"));
@@ -257,14 +258,14 @@ Result manualResult = convex.transact(signed).get();
 For advanced use cases, manually sign data:
 
 ```java
-import convex.core.data.ABlob;
-import convex.core.data.Hash;
+import convex.core.crypto.ASignature;
+import convex.core.data.Blob;
 
 // Data to sign
-ABlob data = Blob.fromHex("7e2f1062f5fc51ed65a28b5945b49425aa42df6b7e67107efec357794096e05e");
+Blob data = Blob.fromHex("7e2f1062f5fc51ed65a28b5945b49425aa42df6b7e67107efec357794096e05e");
 
-// Sign with key pair
-ASignature signature = keyPair.sign(data.getBytes());
+// Sign with key pair. sign() takes the Blob itself, not its bytes
+ASignature signature = keyPair.sign(data);
 
 System.out.println("Signature: " + signature);
 ```
@@ -280,7 +281,7 @@ AKeyPair newKeys = AKeyPair.generate();
 // Set the new public key on-chain
 String transaction = "(set-key " + newKeys.getAccountKey() + ")";
 
-Result result = convex.transact(Reader.read(transaction)).get();
+Result result = convex.transact(transaction).get();
 
 if (!result.isError()) {
     // Update local key pair
@@ -288,8 +289,8 @@ if (!result.isError()) {
     System.out.println("Account keys updated");
 
     // IMPORTANT: Save new keys before this step!
-    byte[] newSeed = newKeys.getSeed();
-    Files.write(Path.of("new_keypair.dat"), newSeed);
+    Blob newSeed = newKeys.getSeed();
+    Files.write(Path.of("new_keypair.dat"), newSeed.getBytes());
 }
 ```
 
@@ -306,10 +307,11 @@ if (!result.isError()) {
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import convex.core.data.Blob;
 
 // ✅ GOOD - Encrypted storage
 public void saveKeysSecurely(AKeyPair keyPair, String password) throws Exception {
-    byte[] seed = keyPair.getSeed();
+    Blob seed = keyPair.getSeed();
 
     // Derive encryption key from password (use proper KDF in production)
     SecretKey key = deriveKey(password);
@@ -317,7 +319,7 @@ public void saveKeysSecurely(AKeyPair keyPair, String password) throws Exception
     // Encrypt seed
     Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
     cipher.init(Cipher.ENCRYPT_MODE, key);
-    byte[] encrypted = cipher.doFinal(seed);
+    byte[] encrypted = cipher.doFinal(seed.getBytes());
 
     // Save encrypted seed
     Files.write(Path.of("keys.enc"), encrypted);
@@ -325,7 +327,7 @@ public void saveKeysSecurely(AKeyPair keyPair, String password) throws Exception
 
 // ❌ BAD - Plaintext storage
 // Don't do this in production!
-Files.write(Path.of("keys.txt"), keyPair.getSeed());
+Files.write(Path.of("keys.txt"), keyPair.getSeed().getBytes());
 ```
 
 ### 2. Use Secure Random
@@ -343,22 +345,25 @@ AKeyPair keyPair = AKeyPair.generate();
 ### 3. Clear Sensitive Data
 
 ```java
-// Clear sensitive data from memory when done
-byte[] seed = keyPair.getSeed();
+import java.util.Arrays;
+
+// getBytes() hands back a fresh copy each call, so zero the copy you took
+byte[] seedBytes = keyPair.getSeed().getBytes();
 try {
-    // Use seed...
+    // Use seedBytes...
 } finally {
-    // Clear array
-    Arrays.fill(seed, (byte) 0);
+    Arrays.fill(seedBytes, (byte) 0);
 }
 ```
+
+Be clear about what this achieves. Zeroing the array clears *your* copy; the `Blob` inside the `AKeyPair` still holds the seed, and so does any other copy you took. Wiping a byte array is worth doing when you have deliberately extracted key material, but it is not a substitute for keeping the key pair itself short-lived.
 
 ### 4. Separate Hot and Cold Wallets
 
 ```java
 // Cold wallet - offline, secure storage
 AKeyPair coldWallet = AKeyPair.generate();
-byte[] coldSeed = coldWallet.getSeed();
+Blob coldSeed = coldWallet.getSeed();
 // Store offline, never expose to network
 
 // Hot wallet - online, small balance
@@ -378,7 +383,7 @@ System.out.println("My public key: " + keyPair.getAccountKey());
 System.out.println("Send funds to: #" + myAddress);
 
 // ❌ BAD - Never do this!
-// System.out.println("My seed: " + Blob.create(keyPair.getSeed()));  // NEVER!
+// System.out.println("My seed: " + keyPair.getSeed());  // NEVER!
 ```
 
 ## Account Lifecycle
@@ -394,18 +399,18 @@ import java.nio.file.Path;
 AKeyPair keyPair = AKeyPair.generate();
 
 // 2. Save keys securely
-Files.write(Path.of("keypair.dat"), keyPair.getSeed());
+Files.write(Path.of("keypair.dat"), keyPair.getSeed().getBytes());
 
 // 3. Create account on network (requires existing funded account)
 // This step varies by network configuration
 
 // 4. Configure client
-Convex convex = Convex.connect("https://peer.convex.live");
+Convex convex = Convex.connect("peer.convex.live:18888");
 convex.setKeyPair(keyPair);
 convex.setAddress(Address.create(1234));
 
 // 5. Use account
-Result result = convex.transact(Reader.read("(def x 42)")).get();
+Result result = convex.transact("(def x 42)").get();
 
 // 6. Later: restore from backup
 byte[] restoredSeed = Files.readAllBytes(Path.of("keypair.dat"));
@@ -421,7 +426,7 @@ Quick account setup for testing:
 
 ```java
 public Convex createDevAccount() throws Exception {
-    Convex convex = Convex.connect("https://peer.convex.live");
+    Convex convex = Convex.connect("peer.convex.live:18888");
 
     AKeyPair keyPair = AKeyPair.generate();
     convex.setKeyPair(keyPair);
@@ -446,7 +451,7 @@ public Convex loadProductionAccount() throws Exception {
     byte[] seed = Files.readAllBytes(Path.of(keyPath));
     AKeyPair keyPair = AKeyPair.create(seed);
 
-    Convex convex = Convex.connect("https://peer.convex.live");
+    Convex convex = Convex.connect("peer.convex.live:18888");
     convex.setKeyPair(keyPair);
     convex.setAddress(Address.create(Long.parseLong(addressStr)));
 
@@ -464,12 +469,10 @@ public void rotateKeys(Convex convex, AKeyPair oldKeys) throws Exception {
     AKeyPair newKeys = AKeyPair.generate();
 
     // Save new keys first!
-    Files.write(Path.of("new_keypair.dat"), newKeys.getSeed());
+    Files.write(Path.of("new_keypair.dat"), newKeys.getSeed().getBytes());
 
     // Update on-chain
-    Result result = convex.transact(
-        Reader.read("(set-key " + newKeys.getAccountKey() + ")")
-    ).get();
+    Result result = convex.transact("(set-key " + newKeys.getAccountKey() + ")").get();
 
     if (!result.isError()) {
         // Update client

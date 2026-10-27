@@ -17,20 +17,19 @@ The snippets below assume a connected `Convex convex` with a key pair and addres
 ```java
 import convex.api.Convex;
 import convex.core.Result;
-import convex.core.lang.Reader;
 import convex.core.cvm.Address;
 
-Result deploy = convex.transact(Reader.read(
-    "(deploy [(@convex.fungible/build-token {:supply 1000000})])")).get();
+Result deploy = convex.transact("(deploy [(@convex.fungible/build-token {:supply 1000000})])").get();
 Address token = (Address) deploy.getValue();   // the token's actor address
 ```
 
 ## Check a balance
 
 ```java
-Result r = convex.query(Reader.read(
-    "(@convex.fungible/balance " + token + " " + myAddress + ")")).get();
-long balance = ((Number) r.getValue()).longValue();   // 1000000
+import convex.core.data.prim.CVMLong;
+
+Result r = convex.query("(@convex.fungible/balance " + token + " " + myAddress + ")").get();
+long balance = ((CVMLong) r.getValue()).longValue();   // 1000000
 ```
 
 ## Transfer tokens
@@ -39,8 +38,7 @@ The generic `convex.asset` library moves any asset; the amount is paired with th
 
 ```java
 Address recipient = /* ... */;
-convex.transact(Reader.read(
-    "(@convex.asset/transfer " + recipient + " [" + token + " 1000])")).get();
+convex.transact("(@convex.asset/transfer " + recipient + " [" + token + " 1000])").get();
 ```
 
 ## Convenience: TokenBuilder

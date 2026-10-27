@@ -23,9 +23,8 @@ import convex.api.Convex;
 import convex.core.Result;
 import convex.core.crypto.AKeyPair;
 import convex.core.cvm.Address;
-import convex.core.lang.Reader;
 
-Convex convex = Convex.connect("https://peer.convex.live");
+Convex convex = Convex.connect("peer.convex.live:18888");
 
 // Set up account
 AKeyPair keyPair = AKeyPair.generate();
@@ -33,9 +32,7 @@ convex.setKeyPair(keyPair);
 convex.setAddress(Address.create(1234));
 
 // Execute a transaction
-Result result = convex.transact(
-    Reader.read("(def my-value 42)")
-).get();
+Result result = convex.transact("(def my-value 42)").get();
 
 if (result.isError()) {
     System.err.println("Transaction failed: " + result.getErrorCode());
@@ -105,10 +102,10 @@ Result balanceBefore = convex.query(
     myAddress
 ).get();
 
-long before = ((Number) balanceBefore.getValue()).longValue();
+long before = ((CVMLong) balanceBefore.getValue()).longValue();
 
 // Execute transaction
-convex.transact(Reader.read("(def x [1 2 3 4 5])")).get();
+convex.transact("(def x [1 2 3 4 5])").get();
 
 // Calculate juice consumed
 Result balanceAfter = convex.query(
@@ -116,7 +113,7 @@ Result balanceAfter = convex.query(
     myAddress
 ).get();
 
-long after = ((Number) balanceAfter.getValue()).longValue();
+long after = ((CVMLong) balanceAfter.getValue()).longValue();
 long juiceConsumed = before - after;
 
 System.out.println("Juice consumed: " + juiceConsumed + " copper");
@@ -136,13 +133,13 @@ Store data in your account's environment:
 
 ```java
 // Define a simple value
-convex.transact(Reader.read("(def my-number 42)")).get();
+convex.transact("(def my-number 42)").get();
 
 // Define a collection
-convex.transact(Reader.read("(def my-list [1 2 3 4 5])")).get();
+convex.transact("(def my-list [1 2 3 4 5])").get();
 
 // Define a map
-convex.transact(Reader.read("(def my-map {:name \"Alice\" :age 30})")).get();
+convex.transact("(def my-map {:name \"Alice\" :age 30})").get();
 
 // Read back with a query
 Result result = convex.query(
@@ -160,9 +157,7 @@ System.out.println("Value: " + result.getValue());  // 42
 Address recipientAddress = Address.create(456);
 long amount = 50_000_000L;
 
-Result result = convex.transact(
-    Reader.read("(transfer " + recipientAddress + " " + amount + ")")
-).get();
+Result result = convex.transact("(transfer " + recipientAddress + " " + amount + ")").get();
 
 if (!result.isError()) {
     System.out.println("Transferred " + (amount / 1_000_000_000.0) + " CVM");
@@ -175,21 +170,23 @@ if (!result.isError()) {
 
 Deploy an actor (smart contract) using `deploy`:
 
+Two details make the difference between a deployed actor and code that merely ran in your own account: the source passed to `deploy` must be **quoted**, so it executes inside the new account rather than the caller's, and any function meant to be reachable from outside needs the `^:callable` metadata. Note also that the state is named `counter-value` — `count` is a core function, and compiled code links core definitions statically, so an actor that defines `count` fails at call time with `:CAST`.
+
 ```java
 String contractSource = """
 (deploy
-  (do
-    (def count 0)
+  '(do
+     (def counter-value 0)
 
-    (defn increment []
-      (def count (inc count))
-      count)
+     (defn ^:callable increment []
+       (def counter-value (inc counter-value))
+       counter-value)
 
-    (defn get-count []
-      count)))
+     (defn ^:callable get-count []
+       counter-value)))
 """;
 
-Result result = convex.transact(Reader.read(contractSource)).get();
+Result result = convex.transact(contractSource).get();
 
 if (!result.isError()) {
     Address contractAddress = (Address) result.getValue();
@@ -207,9 +204,7 @@ Interact with deployed actors:
 Address contractAddress = Address.create(789);
 
 // Call actor function
-Result result = convex.transact(
-    Reader.read("(call " + contractAddress + " (increment))")
-).get();
+Result result = convex.transact("(call " + contractAddress + " (increment))").get();
 
 if (!result.isError()) {
     System.out.println("New count: " + result.getValue());
@@ -238,7 +233,7 @@ String transaction = """
   sum)
 """;
 
-Result result = convex.transact(Reader.read(transaction)).get();
+Result result = convex.transact(transaction).get();
 
 if (!result.isError()) {
     System.out.println("Transferred " + result.getValue() + " copper");
@@ -267,9 +262,7 @@ Result info = convex.query(
 Transactions can fail for various reasons:
 
 ```java
-Result result = convex.transact(
-    Reader.read("(transfer #999999 1000000000000)")
-).get();
+Result result = convex.transact("(transfer #999999 1000000000000)").get();
 
 if (result.isError()) {
     String errorCode = result.getErrorCode().toString();
@@ -313,9 +306,7 @@ Execute transactions asynchronously:
 
 ```java
 // Submit transaction without blocking
-CompletableFuture<Result> future = convex.transact(
-    Reader.read("(def x 42)")
-);
+CompletableFuture<Result> future = convex.transact("(def x 42)");
 
 // Do other work while transaction processes
 System.out.println("Transaction submitted...");
@@ -345,7 +336,7 @@ List<String> transactions = List.of(
 );
 
 for (String tx : transactions) {
-    Result result = convex.transact(Reader.read(tx)).get();
+    Result result = convex.transact(tx).get();
 
     if (result.isError()) {
         System.err.println("Transaction failed: " + result.getErrorCode());
@@ -367,7 +358,7 @@ String transaction = """
   :insufficient-funds)
 """;
 
-Result result = convex.transact(Reader.read(transaction)).get();
+Result result = convex.transact(transaction).get();
 
 if (!result.isError()) {
     System.out.println("Result: " + result.getValue());
@@ -385,7 +376,7 @@ AKeyPair newKeys = AKeyPair.generate();
 // Set the new public key on-chain
 String transaction = "(set-key " + newKeys.getAccountKey() + ")";
 
-Result result = convex.transact(Reader.read(transaction)).get();
+Result result = convex.transact(transaction).get();
 
 if (!result.isError()) {
     // Update local key pair
@@ -413,7 +404,7 @@ if (testResult.isError()) {
     System.err.println("Would fail: " + testResult.getErrorCode());
 } else {
     // Proceed with transaction
-    convex.transact(Reader.read("(transfer #456 1000000)")).get();
+    convex.transact("(transfer #456 1000000)").get();
 }
 ```
 
@@ -428,15 +419,13 @@ Result balanceResult = convex.query(
     myAddress
 ).get();
 
-long balance = ((Number) balanceResult.getValue()).longValue();
+long balance = ((CVMLong) balanceResult.getValue()).longValue();
 long transferAmount = 50_000_000L;
 
 if (balance < transferAmount + 10_000) {  // Extra for juice
     System.err.println("Insufficient balance");
 } else {
-    convex.transact(
-        Reader.read("(transfer #456 " + transferAmount + ")")
-    ).get();
+    convex.transact("(transfer #456 " + transferAmount + ")").get();
 }
 ```
 
@@ -447,7 +436,7 @@ Always handle potential errors:
 ```java
 public Result safeTransact(Convex convex, String transaction) {
     try {
-        Result result = convex.transact(Reader.read(transaction)).get();
+        Result result = convex.transact(transaction).get();
 
         if (result.isError()) {
             logger.error("Transaction failed: {}", result.getErrorCode());
@@ -468,11 +457,11 @@ Group related operations in a single transaction:
 
 ```java
 // ❌ BAD - Two separate transactions
-convex.transact(Reader.read("(def x 10)")).get();
-convex.transact(Reader.read("(def y (* x 2))")).get();  // Might fail
+convex.transact("(def x 10)").get();
+convex.transact("(def y (* x 2))").get();  // Might fail
 
 // ✅ GOOD - One atomic transaction
-convex.transact(Reader.read("(do (def x 10) (def y (* x 2)))")).get();
+convex.transact("(do (def x 10) (def y (* x 2)))").get();
 ```
 
 ### 5. Avoid Concurrent Transactions
@@ -481,16 +470,16 @@ Don't submit multiple transactions from the same account concurrently:
 
 ```java
 // ❌ BAD - Concurrent transactions on same account
-CompletableFuture<Result> tx1 = convex.transact(Reader.read("(def x 1)"));
-CompletableFuture<Result> tx2 = convex.transact(Reader.read("(def y 2)"));
+CompletableFuture<Result> tx1 = convex.transact("(def x 1)");
+CompletableFuture<Result> tx2 = convex.transact("(def y 2)");
 // May cause SEQUENCE errors
 
 // ✅ GOOD - Sequential transactions
-convex.transact(Reader.read("(def x 1)")).get();
-convex.transact(Reader.read("(def y 2)")).get();
+convex.transact("(def x 1)").get();
+convex.transact("(def y 2)").get();
 
 // OR use one atomic transaction
-convex.transact(Reader.read("(do (def x 1) (def y 2))")).get();
+convex.transact("(do (def x 1) (def y 2))").get();
 ```
 
 ### 6. Keep Juice Costs Low
@@ -499,10 +488,10 @@ Minimize memory allocation and computation:
 
 ```java
 // ❌ EXPENSIVE - Creates large data structure
-convex.transact(Reader.read("(def big-list (range 1000000))")).get();
+convex.transact("(def big-list (range 1000000))").get();
 
 // ✅ CHEAPER - Store minimal data
-convex.transact(Reader.read("(def count 1000000)")).get();
+convex.transact("(def count 1000000)").get();
 ```
 
 ## Transaction Lifecycle
@@ -516,7 +505,7 @@ convex.transact(Reader.read("(def count 1000000)")).get();
 
 ```java
 // All handled automatically by SDK
-Result result = convex.transact(Reader.read("(def x 42)")).get();
+Result result = convex.transact("(def x 42)").get();
 
 // But you can handle each step manually if needed
 ATransaction tx = Invoke.create(myAddress, Reader.read("(def x 42)"));
@@ -529,7 +518,7 @@ Result result = convex.transact(signed).get();
 ### Check Transaction Status
 
 ```java
-Result result = convex.transact(Reader.read("(def x 42)")).get();
+Result result = convex.transact("(def x 42)").get();
 
 if (!result.isError()) {
     System.out.println("Transaction ID: " + result.getID());
@@ -551,7 +540,7 @@ private static final Logger logger = LoggerFactory.getLogger(MyClass.class);
 public void executeTransaction(String transaction) {
     logger.info("Submitting transaction: {}", transaction);
 
-    Result result = convex.transact(Reader.read(transaction)).get();
+    Result result = convex.transact(transaction).get();
 
     if (result.isError()) {
         logger.error("Transaction failed: {} - {}",

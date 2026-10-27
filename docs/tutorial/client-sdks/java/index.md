@@ -47,8 +47,8 @@ import convex.core.crypto.AKeyPair;
 import convex.core.cvm.Address;
 import convex.core.lang.Reader;
 
-// Connect to a public testnet
-Convex convex = Convex.connect("https://mikera1337-convex-testnet.hf.space");
+// Connect to a peer over the binary protocol (a local peer here)
+Convex convex = Convex.connect("localhost:18888");
 
 // Execute a query
 Result result = convex.query(Reader.read("(balance #13)")).get();
@@ -60,11 +60,11 @@ convex.setKeyPair(keyPair);
 convex.setAddress(Address.create(1234));
 
 // Submit a transaction (requires funded account)
-Result txResult = convex.transact(Reader.read("(def my-value 42)")).get();
+Result txResult = convex.transact("(def my-value 42)").get();
 System.out.println("Transaction result: " + txResult.getValue());
 ```
 
-**Note**: This example uses a public testnet with faucet support. For production use `https://peer.convex.live` (no faucet). For development, consider [running a local peer](java/clients#local-peer-client) for best performance.
+**Note**: `Convex` needs a peer's binary port. For development, [run a local peer](java/clients#local-peer-client); for production, connect to `peer.convex.live:18888` (Protonet, no faucet). The Hugging Face testnet is HTTP only, so use `ConvexJSON` there.
 
 ## Key Features
 
@@ -114,7 +114,7 @@ Choose the right client for your use case:
 
 ```java
 // JSON API client (REST)
-Convex convex = Convex.connect("https://peer.convex.live");
+ConvexJSON json = ConvexJSON.connect("https://peer.convex.live");
 
 // Direct peer connection (binary protocol)
 Convex convex = Convex.connect(InetSocketAddress.createUnresolved("peer.convex.live", 18888));
@@ -142,7 +142,7 @@ All balance and transfer amounts in the API are in **copper**:
 ```java
 // Query balance in copper
 Result result = convex.query(Reader.read("(balance #123)")).get();
-long balanceCopper = ((Long) result.getValue()).longValue();
+long balanceCopper = ((CVMLong) result.getValue()).longValue();
 
 // Convert to Convex Coins
 double balanceCoins = balanceCopper / 1_000_000_000.0;
@@ -150,9 +150,7 @@ System.out.println("Balance: " + balanceCoins + " CVM");
 
 // Transfer 0.1 Convex Coins (100 million copper)
 long amount = 100_000_000L;
-Result txResult = convex.transact(
-    Reader.read("(transfer #456 " + amount + ")")
-).get();
+Result txResult = convex.transact("(transfer #456 " + amount + ")").get();
 ```
 
 ## Java Version Support

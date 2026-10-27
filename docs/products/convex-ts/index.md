@@ -70,7 +70,7 @@ import convex.api.Convex;
 import convex.core.Result;
 import convex.core.lang.Reader;
 
-Convex convex = Convex.connect("https://peer.convex.live");
+Convex convex = Convex.connect("peer.convex.live:18888");
 
 Result result = convex.query(Reader.read("(balance #9)")).get();
 System.out.println("Balance: " + result.getValue());
