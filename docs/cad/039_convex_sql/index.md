@@ -30,7 +30,7 @@ Traditional distributed databases solve these problems with consensus protocols 
 ### Lattice Structure
 
 :::note Location
-Convex SQL does not occupy a region in the root lattice ([CAD053](../053_lattice_regions/index.md) lists the regions that do). Where a database lives is the choice of the application that uses it: an application's own databases live in its state under `:app` ([CAD045](../045_lattice_apps/index.md)). A database of reference tables shared by many applications would need a root region listed in CAD053, and none is listed.
+Where a database lives is the choice of the application that uses it: an application's own databases live in its state under `:app` ([CAD045](../045_lattice_apps/index.md)). [CAD053](../053_lattice_regions/index.md) reserves the `:sql` region for databases published for many applications to read, such as reference tables, each owner's under the signed owner envelope below. What the region holds is not yet defined beyond that.
 :::
 
 A **database map** holds databases by name. Each database is a keyword-keyed structure: the `:tables` section holds the table store, leaving room for further per-database sections in future.

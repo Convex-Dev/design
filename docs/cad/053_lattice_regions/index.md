@@ -8,7 +8,9 @@ Root regions are ecosystem-owned and allocated by the Convex Foundation. They ar
 
 ## Motivation
 
-Every node merges the regions it hosts by the lattice registered for each key. Two pieces of software that used the same key with different lattices would corrupt each other's state on merge, and a key used without being recorded anywhere invites exactly that. A single list, maintained by the Foundation, lets implementers see which keys are taken, what each means, and where to find its definition, and gives a new facility one place to be allocated.
+A root region key is shared by every application that uses it, so it needs one meaning: what the data under it is, and how it is represented. A key used without being recorded anywhere invites two pieces of software to give it different meanings. A single list, maintained by the Foundation, lets implementers see which keys are taken, what each means, and where to find its definition, and gives a new facility one place to be allocated.
+
+The list does not decide what a node merges: that is for the lattice applications the node runs ([Hosting](#hosting)).
 
 ## Specification
 
@@ -18,15 +20,15 @@ A region key MUST be a Keyword. It is the first path element when navigating fro
 
 A root region MUST be listed in this CAD before software uses it. A key that is not listed MUST NOT be used at the root: an application's own state belongs under `:app` instead ([CAD045](../045_lattice_apps/index.md)).
 
-A key, once allocated, MUST NOT be reassigned to a different lattice. A region that is no longer used is marked Retired and stays in the list, so its key is not reused.
+A key, once allocated, MUST NOT be given a different meaning. A region that is no longer used is marked Retired and stays in the list, so its key is not reused.
 
 ### Allocation
 
-Regions are allocated by the Convex Foundation, by a change to this CAD. A region is allocated for a facility that more than one application can use, with a defined lattice type and merge semantics. The allocation names where the region is defined: a CAD where one exists, otherwise the reference implementation until a CAD is written.
+Regions are allocated by the Convex Foundation, by a change to this CAD. A region is allocated for a facility that more than one application can use, with a defined data representation. The allocation names where the region is defined: a CAD where one exists, otherwise the reference implementation until a CAD is written.
 
 ### Hosting
 
-A node MAY host any subset of the allocated regions, by composing their lattices into its root. The keyed merge ignores an incoming region the node does not host and retains one it already holds ([CAD024](../024_data_lattice/index.md)), so nodes hosting different sets of regions interoperate on the regions they share.
+A node MAY host any subset of the allocated regions. The lattice applications it runs decide which of them it merges, and how ([CAD045](../045_lattice_apps/index.md)). An application MUST ignore incoming data it does not understand or does not serve, leaving what it already holds unchanged, so nodes hosting different sets of regions interoperate on the regions they share.
 
 ### Status
 
@@ -34,8 +36,8 @@ A node MAY host any subset of the allocated regions, by composing their lattices
 |---|---|
 | **Standard** | Allocated, specified by its defining CAD, and present in the core root lattice. |
 | **Allocated** | Allocated to a facility whose lattice is implemented, but whose specification is partial or still to be written, or which is not yet in the core root. |
-| **Reserved** | Allocated, with nothing yet merged into it. Nodes discard what arrives there. |
-| **Proposed** | Anticipated for a facility, with neither the key nor the lattice settled. Not to be used. |
+| **Reserved** | Allocated, but not yet served by any application, so what arrives there is ignored. |
+| **Proposed** | Anticipated for a facility, with neither the key nor the representation settled. Not to be used. |
 | **In use, not allocated** | Used at the root by deployed software, but not allocated by this CAD. Listed so the key is not taken for anything else, pending a decision. |
 | **Retired** | No longer used. The key is kept so it is never reassigned. |
 
@@ -54,6 +56,7 @@ A node MAY host any subset of the allocated regions, by composing their lattices
 | `:social` | Social | Owner Lattice of per-user social state: feeds, profiles, follows | `convex-social` reference implementation; used as the running example in [CAD045](../045_lattice_apps/index.md) | Allocated; a specification is to be written |
 | `:app` | Applications | Keyed Lattice of application lattices, keyed by application name | [CAD045](../045_lattice_apps/index.md) | Allocated; not yet in the core root |
 | `:convex` | Convex networks | Map Lattice from network ID to each network's peer Orders, the content of a Belief | [CAD054](../054_convex_region/index.md) (draft) | Reserved; not yet hosted |
+| `:sql` | SQL | Databases published for many applications to read, such as reference tables: each owner's signed [Convex SQL](../039_convex_sql/index.md) databases | [CAD039](../039_convex_sql/index.md) | Reserved; content not yet defined |
 
 ### In use, not allocated
 

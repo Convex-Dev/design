@@ -244,7 +244,7 @@ The root Keyed Lattice holds two kinds of section: ecosystem regions directly un
 
 #### Ecosystem Regions
 
-Sections directly under the root are ecosystem-owned and allocated by the Convex Foundation. A root region is typically a facility that many applications can use, such as storage (`:fs`, `:kv`), peer-to-peer co-ordination (`:p2p`) or a social graph (`:social`). [CAD053: Lattice Regions](../053_lattice_regions/index.md) is the official list: each region's key, its status, and where its lattice and merge semantics are defined, so every node that hosts it agrees on what it means.
+Sections directly under the root are ecosystem-owned and allocated by the Convex Foundation. A root region is typically a facility that many applications can use, such as storage (`:fs`, `:kv`), peer-to-peer co-ordination (`:p2p`) or a social graph (`:social`). [CAD053: Lattice Regions](../053_lattice_regions/index.md) is the official list: each region's key, its status, and where its data representation is defined, so every application that uses it agrees on what its data means. Which regions an application merges, and how, is for the application; it ignores data it does not understand or serve.
 
 An application MUST NOT register a section of its own directly under the root. An application that uses a facility reads and writes that facility's region, through the facility's components, under the rules its definition sets.
 
