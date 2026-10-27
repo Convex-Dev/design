@@ -11,7 +11,7 @@ The compiler is designed for Convex Lisp, which is a natural fit the Lambda Calc
 The Compiler operates in two phases, expansion and compilation.
 
 These phases can be accessed in several ways:
-- The `eval` runtime function function can be used to perform both phases of the Compiler and execute the result.
+- The `eval` runtime function can be used to perform both phases of the Compiler and execute the result.
 - The `expand` runtime function can be used to perform expansion alone, typically using the `*initial-expander*`.
 - The `compile` runtime function can be used to execute the expansion and compilation phase (i.e. without execution).
 
@@ -62,7 +62,7 @@ When compiling a symbol, the following possibilities are checked in turn:
 
 ### Special Ops
 
-Special Ops are conventionally named with "earmuffs" like `*address*` are are intended to provide efficient access to CVM execution information from the current convex. 
+Special Ops are conventionally named with "earmuffs" like `*address*`, and are intended to provide efficient access to CVM execution information from the current execution context. 
 
 Developers SHOULD prefer Special Ops over alternate methods of accessing such information, as it is likely to be benefit from special optimisations in the CVM and correspondingly lower juice costs.
 

@@ -135,8 +135,7 @@ messages are recoverable through DATA_REQUEST or another application pull path.
 
 Peers SHOULD accept unsolicited DATA only from a connection authorised to write
 to the selected store. A sender MUST bound each DATA message to the receiving
-application's message-size limit. A DATA message MUST contain no more than 254
-cells and remains subject to the overall 50,000,000-byte Message limit.
+application's message-size limit and the overall 50,000,000-byte Message limit.
 
 #### DATA_REQUEST
 
@@ -148,6 +147,10 @@ CAD3 Payload:
 This message represents a request for missing data. Usually, this is sent by a peer when it is attempting to process a partial message but some data is missing locally, and it needs to acquire the missing data before proceeding.
 
 The Missing Data request must include the Value IDs (hash of encoding) for the missing data branches. Note: It is guaranteed that if a peer has received a partial message, it must be able to determine the hashes of any directly missing data (since they will be encoded as branch refs in the partial message).
+
+A DATA_REQUEST MUST contain no more than 254 requested hashes. This bounds the
+corresponding values returned in its RESULT; it does not limit unsolicited DATA
+messages.
 
 Peer that send this message MAY suspend processing of a message pending receipt of missing data from the original sender. If the original sender is unable to satisfy this request in a timely manner, the suspended message SHOULD be discarded.
 
@@ -174,4 +177,3 @@ Messages are sent as:
 ### UDP Connections
 
 UDP will be explored as a potential future transport protocol for efficiency and performance reasons.
-

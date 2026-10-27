@@ -30,13 +30,13 @@ Transaction Size Cost = TRANSACTION_PER_BYTE * Storage Size of Transaction
 
 ## Juice Allowance
 
-Each Transaction MUST have a **juice allowance**
+Each Transaction MUST have an **execution juice allowance**.
 
-The juice allowance MAY by specified by the user in the transaction, otherwise the maximum juice allowance shall be assumed (subject to available coins).
+The execution juice allowance MAY be specified by the user in the transaction, otherwise the maximum execution juice allowance shall be assumed (subject to available coins).
 
-The juice allowance MUST NOT exceed the ability of the transaction origin account to pay the juice fees for the transaction
+The execution juice allowance MUST NOT exceed the ability of the transaction origin account to pay the juice fees for the transaction.
 
-The juice allowance MUST be limited to a maximum value in order to place an upper bound on computation costs for any single Transaction (currently `10,000,000`)
+The execution juice allowance MUST be limited to a maximum value in order to place an upper bound on computation costs for any single Transaction (currently `10,000,000`). Transaction Size Cost is charged separately from this execution allowance, so the total Juice used to calculate fees MAY exceed this maximum.
 
 ## Juice Consumed
 
@@ -92,5 +92,4 @@ The variation of juice prices implies:
 Since we assume good peers are able to handle over JUICE_PER_SECOND worth of computation, an attacker would be unable to put excessive load on the network for long periods of time without incurring exponentially rising costs, which makes such sustained attacks infeasible.
 
 Alternatively, an attacker could attempt temporary DoS attacks when the Juice Price is low. However, since these cannot be sustained, they would only cause temporary delays to confirmation of final State updates, and would not stop legitimate Transactions from being included in consensus and ultimately executed.
-
 

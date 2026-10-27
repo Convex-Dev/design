@@ -131,7 +131,7 @@ Alternatives to this design that were considered include techniques such as refe
 
 - On-chain reference counts would be computationally expensive to track and maintain
 - It would mean that the cost of Memory allocations would be unpredictable, based on Memory usage of other users
-- Accounting for refunds of memory become highly complicated, and can create perverse incentives: If only the last User to release the object gets the refund, there is no incentive to be the first one to do do.
+- Accounting for refunds of memory become highly complicated, and can create perverse incentives: If only the last User to release the object gets the refund, there is no incentive to be the first one to do so.
 
 ## Technical implementation
 

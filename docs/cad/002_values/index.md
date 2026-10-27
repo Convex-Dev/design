@@ -390,7 +390,7 @@ For more details see CAD010.
 
 A `SignedData` record combines any other CVM value with an Ed25519 digital signature.
 
-SignedData records are used extensively for security, since the represent proof that someone constructing such data was in posession of the correct cryptographic key. In particular: 
+SignedData records are used extensively for security, since they represent proof that someone constructing such data was in possession of the correct cryptographic key. In particular: 
 - Peers sign Blocks and Orderings as part of CPoS
 - Clients sign Transaction records that they wish to execute
 

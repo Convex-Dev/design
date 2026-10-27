@@ -141,7 +141,7 @@ Transaction results MUST be returned in a `Result` record which contains the fol
  - `:fees` - Total fee paid in Convex coppers, including memory cost
  - `:source` - The source location at which the Result was generated 
 
-An an optimisation, peers MAY avoid creating `Result` records if they have no requirement to report results back to clients.
+As an optimisation, peers MAY avoid creating `Result` records if they have no requirement to report results back to clients.
 
 ### Fees
 

@@ -364,12 +364,12 @@ Indexes are specialised ordered maps that support "Blob-Like" keys only (Blobs, 
 
 ```clojure
 ;; Construct an index, note that the map is sorted in order
-(index 0x1234 :foo 0x3456 :bar :5678 :baz)
-=> {0x1234 :foo,0x3456 :bar,0x5678 :baz}
+(index 0x1234 :foo 0x3456 :bar 0x5678 :baz)
+=> #Index {0x1234 :foo,0x3456 :bar,0x5678 :baz}
 
 ;; Keys with identical byte values in their content will overwrite previous entries (even if a different type!)
 (assoc (index :foo 567) "foo" 789)
-=> {"foo" 789}
+=> #Index {"foo" 789}
 ```
 
 Use an Index instead of a Map if both of the following are true:
@@ -455,9 +455,11 @@ Records are CVM data structures that behave like maps with a fixed set of keys. 
 
 ```clojure
 ;; Get the account status record for an account
-(account #14)
-=> {:sequence 1,:key 0x168e11d2512217576c30ec305ed672147125c9e20636fac29f4fca46cda0f003,:balance 132933333327304,:allowance 9999977,:holdings {},:controller nil,:environment {},:metadata {},:parent nil}
+(account #12)
+=> {:sequence 1,:key 0x6d1934f7c6c92e8c87610db12893a04ac5bdef3cf3950d953e6f8b3d12b7604d,:balance 399599999956350,:allowance 9772,:holdings nil,:controller #7,:environment nil,:metadata nil,:parent nil}
 ```
+
+The values are specific to the account and network queried; the field names are what matter. `:holdings`, `:environment` and `:metadata` read as `nil` in an account that has never set them.
 
 For practical purposes, Records behave as an immutable Map, and can be used in similar ways.
 
@@ -490,7 +492,7 @@ If the number of arguments is variable, you can use `apply` to apply a function 
 (def numbers [1 2 3 4 5])
 
 (apply * numbers)
-=> 60
+=> 120
 ```
 
 ### Defining functions
@@ -554,7 +556,7 @@ A good example is `map`, which applies a function to all elements of a collectio
 
 Another very useful higher order function is `reduce`, which can be used to sequentially apply a function to create an accumulated result:
 
-```clojre
+```clojure
 (defn square [x] (* x x))
 
 (defn sum-of-squares [coll]
@@ -966,7 +968,7 @@ The Convex Lisp reader does not distinguish between different types of whitespac
 
 In some cases, whitespace MAY be omitted, where the syntax is unambiguous to the reader. This is NOT RECOMMENDED, since it may harm legibility and does not result in any on-chain data savings.
 
-```cloure
+```clojure
 (+(+ 1 2)(+ 3 4))
 ```
 
@@ -1050,7 +1052,7 @@ Key use cases for metadata:
 ```clojure
 ;; example of accessing documentation metadata via the `doc` macro
 (doc count)
- => {:description "Returns the number of elements in the given collection, blob, or string.",:signature [{:return Long,:params [coll]}],:errors {:CAST "If the argument is not a countable object."},:examples [{:code "(count [1 2 3])"}]}
+ => {:description "Returns the number of elements in the given data structure or other countable value.",:signature [{:return Long,:params [coll]}],:errors {:CAST "If the argument is not a countable object."},:examples [{:code "(count [1 2 3])"}]}
 ```
 
 ## The Reader

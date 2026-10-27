@@ -223,7 +223,7 @@ If a pre-condition is not met, it may then be appropriate to `fail` immediately 
 
 ## Error Sources
 
-Error sources indicate the region in the network where an error occurred. These are important mainly because they can indicate responsibility for failure and/or or how to diagnose the problem.
+Error sources indicate the region in the network where an error occurred. These are important mainly because they can indicate responsibility for failure and/or how to diagnose the problem.
 
 All error results SHOULD include a source code to indicate the source of the error.
 

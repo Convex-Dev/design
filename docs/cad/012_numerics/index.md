@@ -136,7 +136,7 @@ Many numerical functions promote to the largest number type used in the sequence
 
 ;; Any Double argument causes the result to be Double
 (+ 1 1.2)
-=> 1.2
+=> 2.2
 
 ;; Functions using Long values that overflow Long range automatically promote to full (big) Integers:
 (* 9999999999999 9999999999999)
@@ -166,9 +166,9 @@ It is worth noting some of the more esoteric conversions to Integers possible:
 (int 0x00ffff)
 => 65535
 
-;; Booleans convert to 1 / 0
+;; Booleans are NOT numeric and do not convert
 (int true)
-=> 1
+=> Exception: :CAST Can't convert argument at position 1 (with type Boolean) to type Integer
 
 ;; Doubles convert to integers (rounding towards zero, like Java casts)
 (int -2.7)
