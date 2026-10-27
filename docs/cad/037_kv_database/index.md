@@ -102,7 +102,7 @@ A tombstone is an entry with `nil` value and `nil` type. The timestamp is preser
 
 Tombstones are required for lattice-compatible deletes: since lattice values can only grow monotonically, a delete is represented as a tombstone that wins over older live entries during merge.
 
-Implementations SHOULD support garbage collection of expired entries and old tombstones.
+Tombstones persist. Removing a tombstone, or an expired entry, loses the timestamp that orders it after older values, so any replica still holding an older value would restore the key on merge. Implementations MUST NOT remove either from replicated state.
 
 ### Data Types
 
@@ -163,7 +163,7 @@ Entries MAY have an expiry timestamp at position 3.
 - **nil** means no expiry
 - An integer value is the absolute epoch millis at which the entry expires
 
-Implementations SHOULD check expiry on read and return nil for expired entries. Implementations SHOULD provide a garbage collection operation to remove expired entries.
+Implementations SHOULD check expiry on read and return nil for expired entries. An expired entry remains stored until a later write or delete replaces it; a delete replaces its value with a tombstone.
 
 ### Ownership and Authentication
 
@@ -294,12 +294,6 @@ Counter operations require a **replica ID** to identify the calling node. Each r
 | `llen(key)` | Get list length |
 
 Lists use LWW merge on the entire list. They are not CRDT-friendly for concurrent modification; applications requiring concurrent list operations SHOULD use sets or sorted sets instead.
-
-### Maintenance
-
-| Operation | Description |
-|-----------|-------------|
-| `gc()` | Remove expired entries and old tombstones |
 
 ---
 
