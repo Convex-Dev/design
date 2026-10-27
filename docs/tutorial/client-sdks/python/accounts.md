@@ -202,6 +202,10 @@ print(f'Name: {account.name}')  # None if not registered
 
 The **Convex Name Service (CNS)** allows human-readable names for accounts.
 
+:::warning
+In convex-sdk 0.3.3, `register_account_name` and `setup_account` (when the name is not yet registered) fail on current peers. Resolving and loading names works. See the [known limitations](/docs/tutorial/client-sdks/python).
+:::
+
 ### Register Account Name
 
 Register a name in the format `account.<name>`:

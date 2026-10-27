@@ -170,7 +170,7 @@ A peer that publishes a REST API returns its status map from `GET /api/v1/status
 curl -s http://localhost:8080/api/v1/status
 ```
 
-This is the output of a freshly started local peer on Convex 0.8.18, which reports eleven fields. A running network has higher points, and its `genesis` no longer equals its `state`:
+This is the output of a freshly started local peer on Convex 0.8.18 or later, which reports eleven fields. A running network has higher points, and its `genesis` no longer equals its `state`:
 
 ```json
 {
