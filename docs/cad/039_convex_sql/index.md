@@ -95,9 +95,9 @@ The live count is derived from the rows and recomputed when a merge changes them
 
 #### Timestamps
 
-A table entry's ctime records when the table was created, or for a tombstone when it was dropped; only creating or dropping the table sets it. Each row entry records when the row was written. Timestamps come from the writer's clock, which the application supplies; the reference implementation defaults to the runtime clock, in milliseconds since 1970-01-01T00:00:00 UTC. A writer reads its clock once for each write, and merges never read it. How a writer orders its own writes, for example with strictly increasing timestamps, is for the application.
+A table entry's ctime records when the table was created, or for a tombstone when it was dropped. Only creating or dropping a table sets it: row writes and deletions MUST leave it unchanged. Each row entry records when the row was written.
 
-A row write or deletion MUST leave its table's ctime unchanged. A merge policy can then tell a table's own rows, stamped at or after its ctime, from those of an earlier table of the same name, as [RowLWW](#rowlww) does. Merges take timestamps as written: a writer whose clock stamps a row before its table's ctime has written it to an earlier table, and loses it on merge.
+Timestamps come from the writer's clock, which the application supplies, and merges take them as written; the reference implementation defaults to the runtime clock, in milliseconds since 1970-01-01T00:00:00 UTC.
 
 #### Format Version
 
@@ -180,7 +180,7 @@ How each type is presented to SQL clients, including version 0 types, is describ
 
 #### Table Tombstones
 
-A tombstone is a table entry with `nil` schema; its ctime records when the table was dropped. DROP TABLE writes it with `nil` rows. A merge policy may keep rows in a tombstone, such as rows written after the drop by a copy that had not seen it ([RowLWW](#rowlww)). Readers MUST treat an entry with `nil` schema as a dropped table, whatever its rows.
+A tombstone is a table entry with `nil` schema; its ctime records when the table was dropped. DROP TABLE writes it with `nil` rows. A merge policy may keep rows in a tombstone. Readers MUST treat an entry with `nil` schema as a dropped table, whatever its rows.
 
 Tombstones make DROP TABLE mergeable: a policy can order a drop against a table's creations by their ctimes.
 
@@ -224,8 +224,6 @@ A database merges with a **merge policy**: a function that takes two states of t
 
 An implementation MUST merge a database with its policy on every route: an incoming database state, a value delivered to a path below the database, the publication of a transaction, and a replica from another node. A policy MUST satisfy the merge properties of [CAD024](../024_data_lattice/index.md#merge-properties-and-tie-preference), as every custom merge must ([CAD045](../045_lattice_apps/index.md#merge-properties)).
 
-How creations, drops and schema changes of one table name by several writers are ordered is application policy. An application whose writers change a table's schema concurrently orders those changes itself, or supplies a policy that does.
-
 #### Path Delivery
 
 A value delivered to a path below a database ([CAD036](../036_lattice_node/index.md#path-based-operations)) is merged as a database state holding only what was delivered. Sub-lattice resolution stops at the database: there is no separate merge for a table or a row, so a delivery gives the same result as merging the equivalent database state.
@@ -238,31 +236,6 @@ A value delivered to a path below a database ([CAD036](../036_lattice_node/index
 | `[:tables name 1 key]` | One row, in an entry without a ctime |
 
 An entry without a ctime carries only rows, and the policy decides whether they apply. Convex SQL defines only the `:tables` section, so values delivered to other sections are not merged. A delivery to any other path into a table entry MUST be refused.
-
-#### RowLWW
-
-`RowLWW` is the merge policy Convex SQL provides for databases whose tables several writers update row by row: last-write-wins per row. The JDBC driver's `mem:` and `file:` databases use it. Other policies are possible, and an application can compose one from RowLWW's parts, for example to treat one table differently.
-
-**Database.** The incoming `:tables` section merges with the own table store. Other incoming sections are ignored, and those already held are kept.
-
-**Table store.** A union of table names, with the two entries for each name merged as below.
-
-**Table entry.**
-
-1. **Schema**: last-writer-wins on ctime, with the own entry kept when the ctimes are equal; a tombstone wins in the same way. The winner's version is kept, except that when both entries have the same ctime and schema, the higher version is kept, restoring a version that an older implementation dropped.
-2. **Rows**: merged by primary key, whichever schema wins. A row held by both entries merges as a row entry, below. A row held by one entry only survives if it was written at or after the other entry's ctime: a row written before a table was created belongs to an earlier table of that name, and one written before a drop belongs to the dropped table.
-3. **Rows only**: an entry without a ctime, from a [path delivery](#path-delivery), merges its rows into an existing table, live or dropped, as in 2. A table that does not exist takes nothing.
-
-So rows written before a table is dropped never return, whether the table is created again or a copy that missed the drop merges later, and every copy of a single writer's tables converges to the writer's own while the writer stamps each row at or after its table's ctime. Two creations of one table name by different writers are two different tables: rows written to the earlier one before the later creation are dropped. A dropped table holds only rows written after the drop, and readers do not see them.
-
-**Row entry.** For each primary key:
-
-1. **Equal entries** — return own
-2. **One side nil** — return the other
-3. **Compare timestamps** — newer wins
-4. **Equal timestamps** — deletion wins; otherwise the own entry is kept
-
-RowLWW is idempotent. It is commutative except at exact ties, where the own value is kept as CAD024 allows: two live rows with equal timestamps and different values, or two table entries with equal ctimes and different schemas. It is associative for tables whose rows were all written at or after the table's ctime ([Timestamps](#timestamps)).
 
 ### Ownership and Authentication
 
@@ -291,7 +264,7 @@ Convex SQL uses the same **merge-on-write** replication model as KV Database:
 4. On receive, the node accepts or refuses each replica in the owner map, as described under [Ownership and Authentication](#ownership-and-authentication)
 5. The node merges each accepted replica's state for the database into its own database, with the database's merge policy
 
-A node that absorbs other owners' replicas into its own database has several writers by construction, so it needs a merge policy designed for several writers, such as [RowLWW](#rowlww).
+A node that absorbs other owners' replicas into its own database has several writers by construction, so its merge policy must combine their writes.
 
 ```
 ┌──────────┐         ┌──────────┐         ┌──────────┐
@@ -307,19 +280,6 @@ A node that absorbs other owners' replicas into its own database has several wri
 │          │   Merge  │          │   Merge  │          │
 └──────────┘         └──────────┘         └──────────┘
 ```
-
-#### Concurrent Schema Changes
-
-How schema changes by several writers are ordered is application policy ([Merge Policy](#merge-policy)). Under RowLWW, the later creation or drop of a table wins, and a copy's rows from before it do not carry over: two writers that create the same table independently create two tables, and rows written to the earlier one before the later creation are dropped.
-
-An application whose writers change a table's schema SHOULD order those changes itself, for example by leaving them to one writer or to governance, or supply a policy that orders them.
-
-#### Row-Level Convergence
-
-Under RowLWW, row merges are deterministic and converge across all replicas:
-- Rows with different primary keys merge independently
-- Rows with the same primary key use LWW
-- Deletions propagate correctly via tombstones
 
 ## Operations
 
@@ -429,7 +389,7 @@ The JDBC driver supports transaction isolation via the lattice fork/sync model:
 | `rollback()` | Discards the fork |
 | `setAutoCommit(true)` | Direct writes, no isolation |
 
-A transaction forks the whole database, its unit of merging. On commit, the fork's state is merged with the database's current state using the database's merge policy, so the policy decides how the transaction's writes combine with concurrent ones. Under RowLWW, which the driver's `mem:` and `file:` databases use, a commit never fails because of a concurrent write.
+A transaction forks the whole database, its unit of merging. On commit, the fork's state is merged with the database's current state using the database's merge policy, so the policy decides how the transaction's writes combine with concurrent ones.
 
 An implementation MUST publish only the `:tables` section on commit and keep the database's other sections as they are. The transaction's state is the established side of that merge, so merging the whole database would undo concurrent changes to sections the transaction never touched.
 
@@ -458,7 +418,7 @@ while (rs.next()) {
 // Transactions
 conn.setAutoCommit(false);
 stmt.execute("INSERT INTO users VALUES (2, 'Bob', 'bob@example.com')");
-conn.commit();  // Merged with the database's policy: RowLWW for jdbc:convex:mem
+conn.commit();  // Merged with the database's merge policy
 
 conn.close();
 ```
@@ -499,7 +459,7 @@ A reference implementation is provided in the `convex-db` module (Java).
 | Planner rules | `ConvexRules` | `convex.db.calcite.rules` |
 | PostgreSQL server | `PgServer` | `convex.db.psql` |
 
-The `SQLDatabaseTest` and `ConvexDBTest` classes provide test coverage for table operations, JDBC and replication; `RowLWWTest` and `ConvexDBMergeTest` cover the merge policy and its use on every route.
+The reference implementation provides `RowLWW`, per-row last-write-wins, as one merge policy, and its JDBC driver's `mem:` and `file:` databases use it. Its rules are part of the implementation, described in `convex-db/docs/LATTICE-DB-ARCHITECTURE.md`.
 
 ### Example: Basic Table Operations
 
@@ -540,7 +500,7 @@ AKeyPair keyB = AKeyPair.generate();
 SQLDatabase dbA = SQLDatabase.create("shared", keyA, RowLWW::merge);
 SQLDatabase dbB = SQLDatabase.create("shared", keyB, RowLWW::merge);
 
-// A creates the table and B receives it: independent creations would be two tables
+// A creates the table and B receives it
 dbA.tables().createTable("data", new String[]{"id", "value"});
 dbB.mergeReplicas(dbA.exportReplica());
 
@@ -565,7 +525,7 @@ dbB.tables().getRowCount("data");  // 2
 | Schema | Implicit (type tag per entry) | Explicit column definitions |
 | Key Types | String keys | Primary key (blob-like) |
 | Value Types | Multiple (string, hash, set, counter, etc.) | Row vectors |
-| Merge Granularity | Per-key, type-specific | Per database, with the application's merge policy; RowLWW merges per row |
+| Merge Granularity | Per-key, type-specific | Per database, with the application's merge policy |
 | Query Language | API methods | SQL (via Calcite) |
 | Use Case | Caches, sessions, counters | Structured business data |
 
