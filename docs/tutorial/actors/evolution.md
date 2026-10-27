@@ -6,7 +6,7 @@ sidebar_position: 2
 
 Convex is designed for real-time dApps and self-sovereign economic systems.
 
-This is a rapidly evolving space, and it is likely that actors will need to be upgraded to access new capabilities. While in an ideal world, you might want actors be be completely immutable in terms of their behaviour, in practice this is often not desirable and you want to upgrade and evolve them.
+This is a rapidly evolving space, and it is likely that actors will need to be upgraded to access new capabilities. While in an ideal world, you might want actors to be completely immutable in terms of their behaviour, in practice this is often not desirable and you want to upgrade and evolve them.
 
 
 ## Upgradable Actors

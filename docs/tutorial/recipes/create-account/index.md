@@ -4,7 +4,7 @@ sidebar_position: 0
 
 # Creating Accounts
 
-Maybe you have an account on Convex already, but would like to give on to a friend so that they can also get into the Convex ecosystem early!
+Maybe you have an account on Convex already, but would like to give one to a friend so that they can also get into the Convex ecosystem early!
 
 This recipe is all how to create accounts for yourself or other users.
 
@@ -34,7 +34,7 @@ To make an account for a new user there are three steps:
 
 1. Get the user to create and **give you their public key** - this is needed because you want them to be able to sign transactions for their own account right away!
 2. Create the **account on Convex**, which will allocate a new address like `#1567`
-3. Tell the user their **account address**, so they can start using it (theoretically, they can also search on the Convex global state to find which account(s) match their public key, but it's easier if you just tell them 🙂)
+3. Tell the user their **account address**, so they can start using it (theoretically, they can also search on the Convex global state to find which account(s) match their public key, but it's easier if you just tell them.)
 
 You can do this with a single "Transact" command at the Convex terminal:
 
@@ -72,7 +72,7 @@ Just remember that each convex coin is subdivided into 1 billion coppers, so a t
 
 ## Adding a controller for account recovery
 
-There's a risk above that the user loses their private key, and the account and any coins transferred to it will be forever lost.... 😢 
+There's a risk above that the user loses their private key, and the account and any coins transferred to it will be forever lost.
 
 That's a situation we want to avoid, so you can solve the problem by setting a **controller** that will be able to recover the account and funds if something goes wrong. The controller would typically be the creator of the new account, but you need to set this at account creation time (after this point, the account is outside your control).
 

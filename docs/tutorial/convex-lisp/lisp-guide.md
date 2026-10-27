@@ -289,7 +289,7 @@ A map associates a finite set of keys with a value for each. You can create a ma
 ```clojure
 ;; A map with two key/value pairs
 {:foo 1 :bar 2}
-=> {:foo 1 :bar 2}
+=> {:foo 1,:bar 2}
 
 ;; An empty map
 {}
@@ -328,7 +328,7 @@ There are a variety of useful functions in the core library that are designed to
 ```clojure
 ;; Update a map with a new key / value association using 'assoc'
 (assoc {:foo 1 :bar 2} :baz 3)
-=> {:baz 3 :foo 1 :bar 2}
+=> {:baz 3,:foo 1,:bar 2}
 
 ;; Remove a key/value pair from a map with 'dissoc'
 (dissoc {1 2 3 4} 1)
@@ -350,28 +350,35 @@ In general, you should use Maps whenever you need to look up values with a speci
 Sets are an unordered collection of values. You can create a set as a literal value by enclosing any list of expressions with a hash symbol followed by curly braces `#{...}`
 
 ```clojure
-;; A set of 3 numbers
+;; A set of 3 numbers. Note the printed order — see the note below
 #{1 2 3}
-=> #{1 2 3}
+=> #{2,3,1}
 
 ;; The empty set
 #{}
+=> #{}
 ```
 
 The most common operation with a set is to test whether it contains a specific value.
 
 ```clojure
-;; 'get' returns the value from a set if it is present, or nil otherwise
+;; On a set, 'get' is a membership test: true if present, false if not
 (get #{1 2} 2)
-=> 2
+=> true
 
 (get #{1 2} 3)
-=> nil
+=> false
 
-;; An optional 'not-found' value can also be added
+;; An optional 'not-found' value replaces the false result
 (get #{1 2} 3 :OOPS)
 => :OOPS
+
+;; ...but a present element still answers true, not the element itself
+(get #{1 2} 2 :OOPS)
+=> true
 ```
+
+This differs from `get` on a map, which returns the value stored under a key. A set stores no values, only membership, so there is nothing else for it to return.
 
 You can also use a set as a function, in which case it will return a boolean value indicating whether the set contains the specified argument.
 
@@ -389,18 +396,19 @@ Some examples of functions from the core library that work with sets:
 
 ```clojure
 ;; Add a value to a set
-;; NOTE: when displaying the elements of the resulting set, the order is not guaranteed
 (conj #{1 2 3} 4)
-=> #{1 2 3 4}
+=> #{4,2,3,1}
 
 ;; Use 'into' to add a sequence of extra elements to a set (will de-duplicate automatically)
 (into #{1 2 3} [3 4 5])
-=> #{1 2 3 4 5}
+=> #{5,4,2,3,1}
 
 ;; Remove an element from a set with 'disj'
 (disj #{1 2 3} 2)
-=> #{1 3}
+=> #{3,1}
 ```
+
+Note the printed order. A set stores its elements by the hash of each value, so what you see is neither insertion order nor sorted order — it is a deterministic consequence of the values in the set. Two sets containing the same elements always print identically, but adding one element can move several others. Never write code, or a test, that depends on the order elements come out of a set; if you need a specific order, produce a vector and sort it.
 
 #### Lists
 

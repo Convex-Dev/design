@@ -68,7 +68,7 @@ Suppose your friend lost their key pair. Luckily, they set you as a controller f
   '(set-key 0x89b5142678bfef7a2245af5ae5b9ab1e10c282b375fa297c5aaeccc48ac97cac))
 ```
 
-Et voila! They can now use their account again 😃.
+Et voilà — they can now use their account again.
 
 ### Upgrade an actor
 

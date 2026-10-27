@@ -67,7 +67,7 @@ Typical validation patterns:
 **Check numeric types and ranges.** A cast fails on invalid types and guarantees the expected type afterwards; re-binding the cast value in a `let` is idiomatic:
 
 ```clojure
-(let [amount (integer amount)]
+(let [amount (int amount)]
   (or (<= 0 amount max-amount) (fail "Amount out of range"))
   ...)
 ```

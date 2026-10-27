@@ -124,7 +124,7 @@ The smallest unit of the Convex Coin. 1 CVM = 1,000,000,000 copper (10^9). Coin 
 
 ## CPoS (Convergent Proof of Stake)
 
-CPoS is Convex's breakthrough consensus mechanism that guarantees convergence on a single, fork-free global state using belief merge functions and stake-weighted peer coordination. Unlike traditional PoS, CPoS enables parallel block processing and sub-second finality—perfect for high-throughput dApps that demand speed and reliability.
+Convex's consensus algorithm. Peers converge on a single fork-free ordering by repeatedly merging each other's Beliefs, weighted by effective stake, rather than by electing a leader or mining blocks. Because there is no leader, peers publish blocks concurrently and consensus orders them afterwards. Specified in [CAD051](/docs/cad/cpos).
 
 ## CRDT
 

@@ -16,23 +16,27 @@ We deploy in one step, defining the owner, the initial state, and three callable
   (deploy
     '(do
        (def owner *caller*)        ;; the account that deploys becomes the owner
-       (def count 0)
+       (def counter-value 0)
 
        (defn ^:callable increment []
-         (def count (inc count))
-         count)
+         (def counter-value (inc counter-value))
+         counter-value)
 
        (defn ^:callable get-count []
-         count)
+         counter-value)
 
        (defn ^:callable reset []
          (when-not (= *caller* owner)
            (fail :TRUST "Only the owner may reset"))
-         (def count 0)))))
+         (def counter-value 0)))))
 => #1234
 ```
 
 `deploy` runs the quoted code inside a brand-new account and returns its address. `owner` captures `*caller*` — the deployer — as the trusted account.
+
+:::caution Don't name state after a core function
+The state is `counter-value`, not `count`, because `count` is a core function. Compiled code links core definitions statically ([CAD008](/docs/cad/compiler)), so a body written as `(inc count)` compiles against the *core* `count` before your `(def count 0)` ever runs — and the actor fails at call time with `:CAST`, not at deploy time. The same applies to `first`, `get`, `list`, `hash` and every other core name. When a definition needs a common word, qualify it.
+:::
 
 ## 2. Call it
 

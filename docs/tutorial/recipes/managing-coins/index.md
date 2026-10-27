@@ -79,5 +79,5 @@ If you have excess coins and want to get rid of some, you can burn them to the a
 (transfer #0 5000000000)
 ```
 
-Coins burnt in this way will be added to the peer reward pool, and eventually be re-circulated as rewards to peers for continuing to operate the network. So indirectly, you are contributing to the future development of the network 😀
+Coins burnt in this way will be added to the peer reward pool, and eventually be re-circulated as rewards to peers for continuing to operate the network. So indirectly, you are contributing to the future development of the network.
 

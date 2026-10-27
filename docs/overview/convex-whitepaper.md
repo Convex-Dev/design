@@ -889,7 +889,7 @@ The same encoding is utilised in both durable storage and in network transmissio
 
 #### Value IDs as storage keys
 
-The cryptographic hash of the Cell encoding is used an an identifier (the "Value ID" or "VID") to refer to a Cell, and as a key for addressing data in the storage system. 
+The cryptographic hash of the Cell encoding is used as an identifier (the "Value ID" or "VID") to refer to a Cell, and as a key for addressing data in the storage system. 
 
 This has the important property that it requires all values in the storage system *immutable* - the data value cannot change for a given key, or else the VID will no longer be valid. This restriction may seem limiting at first, but in fact provides significant advantages for the Convex storage implementation:
 
@@ -1072,7 +1072,7 @@ It is permissible to make an allowance transfer directly between accounts. This 
 
 #### Actor Considerations
 
-All Accounts, including actors, have a memory allowance. However, in most cases actors have no need for a memory allowance: any memory consumed during interaction with an actor will be accounted for via the user account account that originated the transaction.
+All Accounts, including actors, have a memory allowance. However, in most cases actors have no need for a memory allowance: any memory consumed during interaction with an actor will be accounted for via the user account that originated the transaction.
 
 One exception to this is with scheduled execution, where an actor itself may be the origin for a transaction.
 
