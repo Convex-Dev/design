@@ -2,9 +2,23 @@
 
 ## Overview
 
-Lattice Authentication defines how the [Lattice](../024_data_lattice/index.md) validates ownership and authenticity of incoming values during merge operations. Since lattice merges combine data from untrusted sources, every incoming signed value must be verified before it is accepted into the local state.
+Lattice Authentication defines how the [Lattice](/docs/cad/data_lattice) validates ownership and authenticity of incoming values during merge operations. Since lattice merges combine data from untrusted sources, every incoming signed value must be verified before it is accepted into the local state.
 
-The authentication model is built into the `OwnerLattice` merge path, operates at O(delta) cost (only verifying entries that differ), and is safe by default: if ownership cannot be verified, the merge is rejected.
+The authentication model is built into the `OwnerLattice` merge path, operates at O(delta) cost (only verifying entries that differ), and is safe by default: incoming data that cannot be positively verified is rejected.
+
+## Scope
+
+This CAD defines **authorisation semantics**, independently of a particular
+component or lattice class hierarchy. [CAD024](/docs/cad/data_lattice) defines
+value and merge semantics. [CAD045](/docs/cad/lattice_apps) specifies the normal
+implementation through components that bind an owner rule and delegate to reusable
+owner and signed lattices. [CAD035](/docs/cad/cursors) supplies storage and signing
+view mechanisms; merely navigating a cursor grants no authority.
+
+An abstract Owner Lattice describes per-owner merge semantics. It does not
+require map keys to be public keys or require applications to subclass a lattice.
+DID interpretation belongs to [CAD043](/docs/cad/did), and account keys and
+controllers to [CAD004](/docs/cad/accounts).
 
 ## Motivation
 
@@ -22,14 +36,14 @@ This is a fundamental property of the lattice: **merge is the security boundary*
 
 1. **Verify on merge** — authentication happens inside the merge operation, not at the transport layer
 2. **O(delta) verification** — only changed entries are verified, via the keyed `MergeFunction` in `mergeDifferences`
-3. **Safe by default** — if verification is not possible (no verifier, unknown owner type), the merge is rejected for typed owners, and lenient only for raw public key owners where equality is self-evident
+3. **Safe by default** — an unknown or unresolved owner is rejected. Direct public-key ownership uses equality; indirect ownership requires an explicit authorisation rule
 4. **Flexible ownership** — the same lattice structure supports multiple owner identity types without changes to the merge infrastructure
 
 ## Specification
 
 ### Owner Identity Types
 
-The OwnerLattice maps owner identities to signed values. The owner key determines the verification scheme. Three owner types are supported:
+The OwnerLattice maps owner identities to signed values. The owner key determines the verification scheme. Three owner types SHOULD be supported:
 
 | Owner Type | Key Format | Verification | State Required |
 |-----------|------------|-------------|----------------|
@@ -39,22 +53,24 @@ The OwnerLattice maps owner identities to signed values. The owner key determine
 
 All three types ultimately verify against the Ed25519 public key embedded in the signed data.
 
+Applications MAY add additional methods.
+
 ### Verification Flow
 
-For each incoming entry during merge:
+For each changed incoming entry, the merge boundary MUST establish:
 
-```
-1. Extract owner key (map key) and signer key (from signed data)
-2. Verify signer is authorised for this owner:
-   - Public key: signer == owner (identity check)
-   - Address: delegate to owner verifier (state lookup)
-   - DID string: delegate to owner verifier (DID resolution)
-3. If verification fails → reject (keep own value)
-4. If verification passes → proceed with SignedLattice merge
-5. SignedLattice validates Ed25519 signature on the data
-```
+1. The entry is a signed envelope with an acceptable payload representation.
+2. Its signature is valid for that payload and signing public key.
+3. That key is authorised for the identity in the map key.
 
-Both checks must pass: the signer must be authorised for the owner **and** the cryptographic signature must be valid.
+Only then may the value participate in that owner's merge. Implementations may
+order these checks for efficiency. Rejected entries leave the established owner
+slot unchanged. A malformed containing value may abort the atomic merge.
+
+Whole-map delivery and direct delivery to an owner slot MUST apply the same rule.
+An incoming path MUST NOT cross into an unsigned envelope interior. Payload
+validation follows the value lattice; Java type parameters do not validate
+received cells.
 
 ### Keyed Merge
 
@@ -66,12 +82,12 @@ Verification requires access to the map key during merge. The merge infrastructu
 
 ### Owner Verifier
 
-The merge context carries an optional owner verifier — a predicate that takes `(ownerKey, signerKey)` and returns `true` if the signer is authorised for that owner. This supports:
+An ownership boundary binds a verifier: a predicate taking `(ownerIdentity, signerKey)` and returning whether that key is authorised for the owner. In the component implementation, the component supplies the rule and binds it to its owner lattice; context supplies signing capabilities rather than replacing the rule. This supports:
 
 - **Single-key owners** — one public key per owner
 - **Multi-key owners** — organisations with multiple authorised signers
 - **Key rotation** — verification against current state, not historical keys
-- **Revocation** — removed keys immediately fail verification
+- **Revocation** — removed keys fail subsequent incoming verification and local authoring under the updated policy; previously accepted state is not automatically deleted
 
 #### Public Key Owners
 
@@ -94,21 +110,21 @@ For string owners containing DID identifiers, the verifier resolves the DID:
 | DID Method | Resolution |
 |-----------|-----------|
 | `did:key:z6Mk...` | Extract Ed25519 public key from multibase encoding |
-| `did:convex:#1337` | Resolve to Convex address, then lookup account key |
+| `did:convex:1337` | Resolve account identity and authorised keys under CAD043 and CAD004 |
 | `did:web:example.com` | Fetch DID document, extract verification methods |
 
-The `did:key:` method is a pure computation (no external state). Other methods may require network access or state lookups.
+The `did:key:` method is a pure computation. Stateful methods may require network or state lookups; resolve and refresh that information outside atomic merge callbacks. Verifiers used by shared components MUST be thread-safe and use the available authority view. These examples do not replace the method and verification-relationship rules in CAD043.
 
 ### Safety Properties
 
 The authentication model is safe by default:
 
 1. **No verifier, blob owner** — direct equality check, always deterministic
-2. **No verifier, non-blob owner** — lenient mode accepts (for backward compatibility); production deployments SHOULD always set a verifier
+2. **No verifier, indirect owner** — reject; the normal owned-map components require an explicit verifier
 3. **Verifier present, verification fails** — merge rejected, own value preserved
 4. **Verifier present, verification passes** — proceed to signature check
 5. **Signature invalid** — merge rejected by SignedLattice
-6. **Both pass** — value accepted into lattice merge
+6. **Authorisation, signature and payload validation pass** — value may participate in its owner-slot merge
 
 The two-layer check (owner authorisation + signature validity) means:
 - A valid signature alone is not sufficient — it must be from an authorised signer
@@ -126,23 +142,43 @@ merge(ownValue, otherValue)
 
 This is consistent with the lattice merge model where `ownValue` represents the node's current state and `otherValue` is received from the network.
 
+### Authoring and synthesised values
+
+Standard local authoring MUST use the same owner rule as incoming verification.
+Signing capability alone is not authorisation. An existing envelope selected by
+merge retains its signature. A merge that synthesises a different payload MUST
+produce a new authorised signature before storing it as that owner's value. If
+the implementation cannot author the result, it retains its established value;
+convergence requiring synthesis is then for an authorised participant to complete.
+
 ## Lattice Composition
 
-The authentication layer sits within the standard lattice composition:
+The abstract composition is an owner map whose entries are signed values governed
+by a payload lattice. It describes semantics independently of storage wrappers.
+The usual Java implementation is an `OwnedMap` or `OwnedIndex` component using an
+instance-bound owner lattice. `KeyOwnedIndex` supplies public-key equality.
 
-```
-ROOT
-  └── :kv → OwnerLattice       ← owner key verification here
-               └── SignedLattice   ← Ed25519 signature verification here
-                     └── MapLattice
-                           └── KVStoreLattice
-```
+Owned-map components merge and reconcile publication conflicts using public
+information only. They MUST NOT resolve private signing capabilities. If merging
+would require a newly signed payload, they retain the established envelope until
+an authorised component authors a result. Components which re-sign MUST define
+an explicit key-resolution strategy; the containing map supplies no implicit
+signer. This is separate from the public verifier which determines which keys
+are authorised for an owner.
 
-The same pattern applies to any lattice path using OwnerLattice:
+Signed domain components and independent `SignedComponent` drafts
+are specified in CAD045. CAD038 governs authorisation for both. They take an
+explicit signer function, which may resolve keys when called, without requiring
+a signing context. Its returned envelope MUST contain exactly the requested
+payload, a valid signature and an authorised signer. The public owner verifier
+remains authoritative regardless of the signing capability supplied. A draft may
+remain unsigned while private; publication into a signed slot requires an
+authorised envelope.
 
-```
-:fs → OwnerLattice → SignedLattice → MapLattice → DLFSLattice
-```
+The older Java `OwnerLattice` API retains a permissive context-based fallback for
+indirect identities for compatibility. That fallback does not implement the
+fail-closed policy specified here. Existing uses MUST supply an explicit verifier
+to satisfy this CAD; the normal owned-map components require one at construction.
 
 ## UCAN Capability Tokens
 
@@ -280,8 +316,10 @@ The reference implementation is in the Convex `convex-core` module (Java).
 | Concept | Class | Package |
 |---------|-------|---------|
 | Keyed merge function | `MergeFunction` | `convex.core.util` |
-| Merge context with verifier | `LatticeContext` | `convex.lattice` |
-| Owner-based signed map | `OwnerLattice` | `convex.lattice.generic` |
+| Owned-map components | `OwnedMap`, `OwnedIndex`, `KeyOwnedIndex` | `convex.lattice` |
+| Component capabilities | `LatticeContext` | `convex.lattice` |
+| Instance-bound owner rules | `OwnerMapLattice`, `OwnerIndexLattice`, `OwnerKeyLattice` | `convex.lattice.generic` |
+| Legacy context-verified owner map | `OwnerLattice` | `convex.lattice.generic` |
 | Signed value merge | `SignedLattice` | `convex.lattice.generic` |
 | O(delta) map merge | `AHashMap.mergeDifferences` | `convex.core.data` |
 | UCAN capability & resource/ability matching | `Capability` | `convex.auth.ucan` |
@@ -292,31 +330,41 @@ The `OwnerLatticeTest` class provides comprehensive test coverage including adve
 
 ### Example: Setting Up Owner Verification
 
+This complete local example supplies a verifier to a component. The example DID
+and authority predicate are test fixtures, not an implementation of a DID method.
+A deployed resolver follows CAD043 and supplies its authority view here.
+
 ```java
-// Create a verifier that checks Address owners against CVM state
-// and supports multiple authorised keys per account
-BiPredicate<ACell, AccountKey> verifier = (owner, signerKey) -> {
-    if (owner instanceof Address addr) {
-        AccountStatus as = state.getAccount(addr);
-        return as != null && as.isAuthorised(signerKey);
-    }
-    if (owner instanceof AString s) {
-        return verifyDID(s.toString(), signerKey);
-    }
-    return false;
-};
+import convex.core.crypto.AKeyPair;
+import convex.core.data.AString;
+import convex.core.data.AccountKey;
+import convex.core.data.Strings;
+import convex.core.data.prim.AInteger;
+import convex.core.data.prim.CVMLong;
+import convex.lattice.OwnedIndex;
+import convex.lattice.cursor.Root;
+import convex.lattice.generic.MaxLattice;
 
-// Create context with verifier
-LatticeContext ctx = LatticeContext.create(timestamp, signingKey, verifier);
-
-// Merge with verification
-AHashMap<ACell, SignedData<V>> result = ownerLattice.merge(ctx, ownMap, incomingMap);
+public class OwnerExample {
+    public static void main(String[] args) {
+        var key = AKeyPair.createSeeded(4101);
+        AString owner = Strings.create("did:example:team");
+        var scores = new OwnedIndex<AString, AInteger>(
+            new Root<>(), MaxLattice.INSTANCE,
+            (AString identity, AccountKey signer) ->
+                owner.equals(identity) && key.getAccountKey().equals(signer));
+        var incoming = key.signData(CVMLong.ONE);
+        scores.mergeAt(incoming, owner);
+        if (!incoming.equals(scores.get(owner))) throw new AssertionError();
+        scores.sync();
+    }
+}
 ```
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/index.md) — Value types including AccountKey and Address
-- [CAD024: Lattice](../024_data_lattice/index.md) — Lattice merge foundations
-- [CAD035: Lattice Cursors](../035_cursors/index.md) — Cursor system and LatticeContext
-- [CAD036: Lattice Node](../036_lattice_node/index.md) — Network replication where authentication is applied
-- [CAD037: KV Database](../037_kv_database/index.md) — KV store using OwnerLattice authentication
+- [CAD002: CVM Values](/docs/cad/values) — Value types including AccountKey and Address
+- [CAD024: Lattice](/docs/cad/data_lattice) — Lattice merge foundations
+- [CAD035: Lattice Cursors](/docs/cad/cursors) — Cursor system and LatticeContext
+- [CAD036: Lattice Node](/docs/cad/lattice_node) — Network replication where authentication is applied
+- [CAD037: KV Database](/docs/cad/kv_database) — KV store using OwnerLattice authentication

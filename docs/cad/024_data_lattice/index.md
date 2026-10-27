@@ -8,6 +8,27 @@ Convex maintains data as part of the operation of the CVM global state (on-chain
 
 While off-chain data can be provided in many different ways, including via traditional Web 2.0 server infrastructure, there is a compelling case for a more powerful decentralised storage solution to support hybrid dApps on Convex
 
+## Scope and related CADs
+
+This CAD specifies the **abstract data and merge model**. A lattice definition
+describes values, validation and merge semantics independently of the objects
+used to execute it. Abstract compositions remain valid specifications: an
+implementation need not instantiate one Java object for every node in a diagram.
+
+| CAD | Responsibility |
+|---|---|
+| CAD024 (this document) | Values, abstract lattice types and merge semantics |
+| [CAD038: Lattice Authentication](/docs/cad/lattice_auth) | Owner and signer authorisation, signed-value acceptance and authoring rules |
+| [CAD045: Lattice Applications](/docs/cad/lattice_apps) | Application implementation through components: domain operations, policy, routing and publication boundaries |
+| [CAD035: Lattice Cursors](/docs/cad/cursors) | Atomic storage, path views and fork reconciliation used by components |
+| [CAD036: Lattice Node](/docs/cad/lattice_node) | Network delivery, replication and publication of hosted state |
+| [CAD053: Lattice Regions](/docs/cad/lattice_regions) | Shared region names and references to their semantic definitions |
+
+Applications SHOULD normally implement their behaviour through components as
+specified in CAD045, composing reusable lattice definitions where appropriate.
+Components MUST preserve the semantics of the regions they serve. A component
+boundary does not change a region's data format or merge rule.
+
 ## Rationale
 
 Here are some of the key reasons data storage and processing extrinsic to Convex is useful for decentralised applications:
@@ -44,7 +65,7 @@ The Data Lattice provides the following capabilities:
 
 - **Self healing** - The CRDT also makes the data lattice "self-healing": nodes which lose access to some data (e.g. due to disk corruption) may obtain it again on subsequent merges as long as at least one copy survives somewhere in the network.
 
-- **Garbage Collection**: Stores can be garbage collected to reduce resource requirements at any time, simply by specifying which data is required to be maintained ("pinning"). This facilitates better operational management and allows flexible control by data lattice providers regarding what data they are interested in preserving or hosting. The collection procedure and the precise retention model are specified in [CAD049](../049_etch_gc/index.md).
+- **Garbage Collection**: Stores can be garbage collected to reduce resource requirements at any time, simply by specifying which data is required to be maintained ("pinning"). This facilitates better operational management and allows flexible control by data lattice providers regarding what data they are interested in preserving or hosting. The collection procedure and the precise retention model are specified in [CAD049](/docs/cad/etch_gc).
 
 - **Access Control**: data lattice hosts may optionally impose whatever access controls they require for governance, security or privacy purposes. Typically, these would involve authentications against a decentralised ID (DID) and a digital signature (Ed25519 as standard, though other systems can also be adopted)
 
@@ -59,7 +80,7 @@ The Data Lattice is built on a set of core principles that together enable self-
 
 Data in the Lattice is inherently self-sovereign. Each participant owns and controls their own data, signed with their Ed25519 key pair. There is no central authority that mediates access or dictates structure. Participants publish data into the Lattice and other participants may choose to replicate, merge and act upon it — but the original author retains cryptographic proof of authorship and control over their own slice of the data structure.
 
-The Lattice MUST partition data by owner public key. Each owner's data MUST be wrapped in a cryptographic signing boundary that enforces signing at the point of mutation. Only the holder of the corresponding private key may create or update values within their partition. Any reader MUST be able to independently verify the authenticity and integrity of data they receive without trusting the peer that delivered it.
+Owned data MUST be partitioned by owner identity, which may be a public key, account address or DID. Each independently mergeable signed value MUST retain a valid signature from a key authorised for that owner, as specified by [CAD038](/docs/cad/lattice_auth). A public-key owner uses key equality; an indirect identity requires its authorisation rule. Readers verify authenticity independently of the delivering peer.
 
 #### Replicated, Self-Healing Structures
 
@@ -71,7 +92,7 @@ This makes the Lattice inherently self-healing. If a peer loses data due to disk
 
 All updates to the Lattice MUST be atomic. Observers MUST never see partially applied changes.
 
-A fork/sync model provides transactional semantics: `fork()` creates an isolated working copy where local changes accumulate without affecting the parent. When `sync()` is called, all changes are applied to the parent atomically via lattice merge. Because merge is always well-defined (see CRDT Properties below), merge-aware atomic updates never fail or require retry — the merge function deterministically combines the local changes with whatever concurrent state the parent holds.
+Atomicity applies at the selected publication boundary. A component may stage a working copy and reconcile it with its destination on publication. Independent child components may publish separately; an application requiring an atomic aggregate MUST choose a boundary enclosing that aggregate. [CAD045](/docs/cad/lattice_apps) specifies this choice and [CAD035](/docs/cad/cursors) specifies the storage operations. Validation, unavailable signing capabilities or storage errors may prevent publication; concurrent writes may require internal retries.
 
 #### Time Travel and Snapshots
 
@@ -102,16 +123,20 @@ duplication and reordering do not affect the selected result.
 
 The merge model extends hierarchically through the entire Lattice structure. The root lattice merges by delegating to child lattices at each key, which in turn delegate to their children, and so on. This compositional design applies the same structural merge and documented tie preference from the root down to individual data entries.
 
-#### Cursor-Based Application Interface
+#### Application interface
 
-Applications interact with the Lattice through cursors — lightweight handles that provide a uniform interface for reading, writing, navigating and synchronising Lattice data. Cursors abstract away the details of atomic updates, lattice merging, cryptographic signing and hierarchical navigation, allowing application developers to focus on their domain logic.
+Components provide the normal application interface: domain operations, incoming
+merge policy, signing and publication. They use cursors for atomic storage and
+path access. [CAD045](/docs/cad/lattice_apps) specifies components and
+[CAD035](/docs/cad/cursors) specifies cursor mechanics. Neither the abstract
+lattice hierarchy nor path navigation alone determines a publication boundary.
 
 ### Lattice Types
 
 A Lattice Type defines the merge semantics for a particular kind of value. Every lattice type MUST define:
 
 - `merge(ownValue, otherValue)` — the core merge function, which MUST satisfy the merge properties and own-value tie rule above
-- `zero` — the identity element of the lattice (i.e. `merge(zero, x) = x` for all `x`)
+- `zero` — the identity element for valid, authorised values (i.e. `merge(zero, x) = x` for such `x`); foreign values still undergo validation
 - `validate(value)` — validation that a received value is well-formed for this lattice type
 - `child(key)` — returns the child lattice type for a given key, or nil if the lattice has no defined child structure at that key
 
@@ -129,17 +154,23 @@ The following standard lattice types are defined:
 
 **JSON Lattice** — A structural navigation layer for JSON-shaped data (maps, vectors, strings, numbers, booleans and nil). It defines how to navigate and how to build intermediate containers from the shape of a key, but deliberately defines **no merge of its own** — it is composed under a merge layer.
 
-**Stamping Lattice** — A stamp-on-write layer that stamps values with the write timestamp from the merge context as they are written, without altering merge or navigation. Composed as `StampingLattice(LWWLattice(JSONLattice))`, these three single-concern layers together give a navigable, whole-value-LWW region with durable deletes — the standard shape for mutable application state.
+**Stamp-on-write composition** — A write policy assigns a timestamp to local edits without changing the merge rule. Combined with whole-value LWW and structural navigation, it supports navigable mutable state with durable deletes. This is a logical composition, not a required `StampingLattice` class: CAD045 components bind the clock and write transformation; the Java implementation supplies `StampedCursor` as a mechanism.
 
-**Map Lattice** — Merges maps by applying a value lattice to each key independently. Keys present in only one map are included directly. Keys present in both maps have their values merged using the configured child lattice. Zero is the empty map.
+**Map Lattice** — Merges maps by applying a value lattice to each key independently. Foreign entries are validated even when their key is absent locally. Keys present in both maps have their values merged using the configured child lattice. Zero is the empty map.
 
 **Index Lattice** — Similar to Map Lattice but operates on sorted indexes with blob keys. Suitable for ordered data such as time-series feeds.
 
 **Keyed Lattice** — A map-like lattice where each key has a distinct, statically configured child lattice type. Used for the root Lattice structure where different sections (e.g. data, filesystem, key-value, queue) each require different merge semantics.
 
-**Owner Lattice** — Partitions data by owner public key. Each owner's slot is wrapped in a Signed Lattice. Merge operates independently per owner. This is the foundation for self-sovereign data — each owner controls their own partition via their signing key.
+**Owner Lattice** — Partitions data by owner identity. Each owner's slot contains a signed value, and merge operates independently per owner under that slot's authorisation rule. Direct public-key ownership is the special case in which the owner key must equal the signing key. CAD038 defines verification; CAD045 defines the usual owned-map components.
 
-**Signed Lattice** — Wraps a child lattice in a cryptographic signing boundary. Values MUST be stored as signed data and verified on merge. Signing on write is enforced at the boundary by a `SignedCursor` (see [CAD035](../035_cursors/index.md)), which signs values with the merge context's key as they are written — rather than by re-signing during merge. This ensures data integrity and provenance throughout the lattice hierarchy.
+**Signed Lattice** — Wraps a value lattice in a cryptographic boundary. Incoming
+envelopes MUST satisfy signature, owner-authorisation and payload-validation rules.
+Selecting an existing input preserves its envelope. Synthesising a different
+payload requires a new authorised signature; an implementation without that
+capability retains its established value. CAD038 specifies these rules; CAD045
+components choose immediate signing or an unsigned draft signed on publication.
+An incoming path cannot bypass the envelope by addressing its unsigned interior.
 
 **Data Lattice** — A general-purpose content store indexed by hash. Merge is set union over the hash-indexed cells. Useful for bulk data storage where individual items are referenced by content hash.
 
@@ -147,7 +178,7 @@ The following standard lattice types are defined:
 
 ### Root Lattice Structure
 
-The system-wide Lattice root is a Keyed Lattice whose sections are called regions. The official list of regions, with their keys, status and where each is defined, is [CAD053: Lattice Regions](../053_lattice_regions/index.md). The standard sections are:
+The system-wide Lattice root is a Keyed Lattice whose sections are called regions. The official list of regions, with their keys, status and where each is defined, is [CAD053: Lattice Regions](/docs/cad/lattice_regions). The standard sections are:
 
 - **Data** — General-purpose content-addressable data store. Stores arbitrary cells indexed by hash.
 
@@ -163,40 +194,39 @@ The system-wide Lattice root is a Keyed Lattice whose sections are called region
 
 - **App** — Application-specific lattices, keyed by application name. Each application's own state lives here rather than in a root section of its own.
 
-Root sections are ecosystem-owned and allocated by the Convex Foundation, typically for facilities that many applications can use; CAD053 lists further allocated regions, such as P2P identity and a social graph. An application MUST NOT add a root section for its own state: it registers its lattice under the App section instead. [CAD045](../045_lattice_apps/index.md) defines both kinds of registration.
+Root sections are ecosystem-owned and allocated by the Convex Foundation, typically for facilities that many applications can use; CAD053 lists further allocated regions, such as P2P identity and a social graph. An application MUST NOT add a root section for its own state: it registers its lattice under the App section instead. [CAD045](/docs/cad/lattice_apps) defines both kinds of registration.
 
 ### Cursors
 
-Cursors are the primary interface for interacting with Lattice data. A cursor is a lightweight handle to a position within the Lattice hierarchy, providing atomic operations for reading, writing, navigating and merging values. In particular, lattice-aware cursors extend the base cursor model with fork/sync semantics: forking creates an isolated working copy, and syncing pushes changes back to the parent via lattice merge — which always succeeds without retry.
-
-The full cursor specification is defined in [CAD035: Lattice Cursors](../035_cursors/index.md). When used with the Data Lattice, cursor path navigation MUST be lattice-aware: at each level, the cursor consults the lattice type to determine the child lattice for the next key, and when a Signed Lattice boundary is crossed, cryptographic signing MUST be enforced transparently.
+Cursors provide atomic access to immutable values. Components supply any
+construction, merge, signing or stamping functions needed at a path. Cursors do
+not infer authorisation, initialise missing containers on read, or publish an
+application merely because a nested value changed. Their mechanics are defined
+in [CAD035](/docs/cad/cursors).
 
 ### Merge Context
 
-Merge and write operations may require contextual information beyond the two values being merged. `LatticeContext` is an application-supplied policy object installed on a cursor and inherited through its cursor hierarchy. It MUST be capable of providing:
+Merge and write operations may require policy beyond their input values. In the
+Java implementation, a component holds a `LatticeContext` supplying a write clock
+and signing capabilities. Newly constructed children receive policy explicitly;
+sharing a component does not replace its policy. Dynamic policy MUST be safe for
+the threads using it. One logical timestamped edit MUST use one clock reading.
 
-- **Timestamp** — the single write clock. The policy may return a fixed snapshot or obtain the current value dynamically at the cadence chosen by the application. Consumers MUST use the value exactly and MUST NOT ratchet it from stored state.
-- **Signing service** — used by a Signed Lattice boundary to sign values on write; it may be backed by an in-memory key pair or another application-defined signer
-- **Owner verifier** — used by Owner Lattice to verify that a signer is authorised to write to an owner's partition
+The owner-authorisation rule belongs to the served ownership boundary. It MUST
+remain the same for whole-map delivery, owner-path delivery and local authoring.
+CAD038 defines the rule; CAD045 defines how a component binds it to reusable
+lattice machinery. Providing a signing key does not confer authority over an
+unrelated owner.
 
-The context MAY be an immutable snapshot or a long-lived dynamic policy. A dynamic
-implementation MUST be safe for every thread which can use its cursor. It is normally
-installed once at the application or hosted root; descendants resolve policy through
-inheritance rather than replacing the context for each operation. Implementations
-MAY snapshot a policy explicitly when stable values are required, for example for a
-detached fork. Mutation code that needs one timestamp across several structural
-updates MUST request it once and reuse that exact value.
+### Publication boundaries
 
-### Cursor Sync Guarantees
-
-The fork/sync model has specific guarantees that applications MUST observe:
-
-1. **`sync()` fires the cursor's `onSync` callback** — this is the mechanism by which persistence layers are notified of changes
-2. **`ForkedLatticeCursor.sync()` merges into the parent but does NOT fire the parent's `onSync`** — the fork deliberately does not propagate the sync signal upward. Applications requiring full persistence MUST call `sync()` on both the fork and the root cursor.
-3. **Path-derived cursors are transparent views** — writes through a path cursor land directly at the parent's storage. They are not independent snapshots.
-4. **Broken cursor chains throw `IllegalStateException`** — cursor chain integrity is validated; invalid chains are rejected rather than silently producing incorrect results.
-
-This asymmetry is intentional. It allows applications to batch writes in a fork and control exactly when the persistence layer is notified. For example, a venue may accumulate many writes in a forked cursor and periodically sync both the fork (to merge into root) and the root (to trigger persistence).
+A component publishes only into its supplied destination. Publication MUST NOT
+implicitly publish an enclosing component, host or store. A lightweight view
+shares existing working state and has no independent publication step. A region
+collection publishes its registered children and leaves other paths unchanged.
+Persistence and replication of published host state are separate operations.
+CAD045 specifies these boundaries; CAD035 specifies fork reconciliation and
+CAD036 specifies network publication.
 
 ### P2P Replication
 
@@ -227,12 +257,12 @@ Key implementation notes:
 - **Etch** is the storage subsystem, specialised for efficient storage of content addressable Merkle Trees.
 - The Data Lattice operates using the same efficient **binary protocol** used by Convex peer-to-peer communication. Peers SHOULD support hosting Data Lattice access on a different port from CPoS / peer communication.
 - A **REST API** provides access to key data lattice capabilities: insert data, retrieve data, pin/unpin data, access controls and replication.
-- The implementation is **lock-free**, using atomic references containing immutable values. Merge-aware atomic updates ensure progress without retry. Multiple threads may concurrently read, write, fork and sync without external synchronisation.
-- Cursor types in the implementation include root cursors, forked cursors, descended cursors (for sub-path navigation), and update-on-write cursors — the shared `AUpdateCursor` funnel with its two instances: signed cursors (inserted at Signed Lattice boundaries) and stamped cursors (inserted at stamp-on-write regions).
+- Root storage uses atomic references to immutable values. Compare-and-set retries and fork synchronisation provide the guarantees in CAD035; this is not a blanket lock-free guarantee for application operations.
+- CAD045 components bind reusable `ALattice` definitions to storage and policy. Cursor mechanisms include `Root`, `PathCursor`, `ProjectionCursor`, `ForkedCursor`, `SignedCursor` and `StampedCursor`; components explicitly construct signing and stamping views.
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/index.md) — Immutable value types used in the Lattice
-- [CAD003: Encoding](../003_encoding/index.md) — Binary encoding and content addressing
-- [CAD035: Lattice Cursors](../035_cursors/index.md) — Full cursor specification
-- [CAD036: Lattice Node](../036_lattice_node/index.md) — Networked lattice replication
+- [CAD002: CVM Values](/docs/cad/values) — Immutable value types used in the Lattice
+- [CAD003: Encoding](/docs/cad/encoding) — Binary encoding and content addressing
+- [CAD035: Lattice Cursors](/docs/cad/cursors) — Full cursor specification
+- [CAD036: Lattice Node](/docs/cad/lattice_node) — Networked lattice replication

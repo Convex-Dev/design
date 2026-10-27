@@ -6,6 +6,17 @@ A Lattice Node is a networked server that participates in Data Lattice replicati
 
 Lattice Nodes enable decentralised applications to share and replicate data without blockchain consensus overhead, while still benefiting from content-addressable storage, Merkle verification, and automatic conflict resolution through lattice merge semantics.
 
+## Scope
+
+This CAD specifies **network delivery and replication of hosted state**.
+[CAD024](/docs/cad/data_lattice) defines abstract merge semantics and
+[CAD038](/docs/cad/lattice_auth) defines authorisation. The normal implementation
+delegates incoming values to application components assembled over a host, as
+specified in [CAD045](/docs/cad/lattice_apps). References here to a node's lattice
+describe the served semantics; they do not require the transport to own a lattice
+object, choose a signer or implement domain merges. Cursor mechanics belong to
+[CAD035](/docs/cad/cursors).
+
 ## Motivation
 
 The Data Lattice (CAD024) provides the theoretical foundation for decentralised data storage. However, applications need practical infrastructure to:
@@ -32,7 +43,7 @@ A Lattice Node consists of the following logical components:
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │                        Lattice Node                          │
-│  Cursor + Lattice + Authoritative Store Root                │
+│  Host + Applications + Authoritative Store Root             │
 │  Merge + Logical Publication + Durability                   │
 ├──────────────────────────────────────────────────────────────┤
 │  Shared listener: socket acceptance and group assignment    │
@@ -56,13 +67,15 @@ The cursor MUST:
 
 #### Lattice (Merge)
 
-The lattice defines merge semantics for conflict resolution.
+The hosted application defines merge behaviour consistent with CAD024 and the
+served regions' specifications. Foreign validation and CAD038 authorisation MUST
+be enforced at the receiving merge boundary; a separate `checkForeign` pre-check
+is not sufficient. Components may delegate these operations to reusable lattices.
 
-The lattice MUST:
-- Satisfy CRDT properties (commutative, associative, idempotent)
-- Provide a `zero` identity value
-- Validate foreign values before merging via `checkForeign()`
-- Support hierarchical path navigation to sub-lattices
+The host routes roots and paths to configured application components. The node
+transport MUST NOT bypass that policy by directly applying a child lattice to
+published storage. Components own staging and publication decisions under CAD045;
+the transport replicates the resulting published host state.
 
 #### Store (Persistence)
 
@@ -201,7 +214,7 @@ Messages MAY include delta-encoded data for bandwidth efficiency (see Delta Enco
 
 Upon receiving a LATTICE_VALUE message, the selected propagation group and node MUST:
 1. Extract the path from the message
-2. Validate the path against the lattice structure
+2. Validate the protocol path and route it through the configured application boundaries
 3. Decode a complete value in the selected serving store, acquiring missing data
    from that same connection only when it is authenticated
 4. Apply the group's complete-value ingress policy
@@ -384,26 +397,28 @@ Lattice Nodes support hierarchical access into nested lattice structures.
 
 Path operations MUST:
 - Represent every protocol path as a vector; nil, omitted and scalar paths are invalid
-- Use the sub-lattice at the path for merge semantics
-- Apply updates atomically to the root cursor
+- Use the addressed component's merge policy, consistent with the served region semantics
+- Apply each update atomically at its declared boundary; a component may stage changes before publishing them to the host
 - Support arbitrary nesting depth
 
 #### Sub-Lattice Resolution
 
-Given a path, nodes resolve the applicable sub-lattice:
-1. Start with root lattice
-2. For each path key, navigate to child lattice
-3. Use child lattice's merge semantics for that path
+Path delivery selects the semantics of the addressed region while preserving the
+policy of its owning component. In the component implementation, the host hands
+the path and complete incoming value to configured applications, which route it
+to the responsible child or merge it through their declared shape. Whole-value
+and path delivery MUST enforce equivalent owner and signing boundaries. The node
+does not require a global lattice tree to perform this delegation.
 
 #### JSON Key Compatibility
 
-Lattice paths internally use CVM-native key types (Keywords, AccountKeys, etc.), but JSON-based APIs address paths using JSON-native types (strings, integers). Each lattice level provides a `resolveKey` function that translates an external key to the canonical CVM key for that level. On a cursor this is exposed as `resolve(keys...)` — the user-facing counterpart to `path(keys...)`, which navigates with already-canonical keys (see [CAD035](../035_cursors/index.md)):
+Lattice paths internally use CVM-native key types (Keywords, AccountKeys, etc.), but JSON-based APIs address paths using JSON-native types (strings, integers). Each lattice level provides a `resolveKey` function that translates an external key to the canonical CVM key for that level. Components may expose resolution helpers using these rules before constructing cursor views; plain cursor `path(keys...)` uses already-canonical keys (see [CAD035](/docs/cad/cursors)):
 
 | Lattice Level | JSON Key | Canonical CVM Key |
 |---------------|----------|-------------------|
 | KeyedLattice (root) | `"kv"` | Keyword `:kv` |
 | OwnerLattice | `"0x49b44c..."` | ABlob (parsed hex) |
-| SignedLattice | `"value"` | Keyword `:value` |
+| SignedLattice | No interior path | Supply a complete envelope at its slot |
 | Vector-valued (e.g. DLFSLattice) | `"0"` | AInteger `0` (parsed numeric string for vector position) |
 | MapLattice / IndexLattice | `"mykey"` | AString (identity) |
 
@@ -411,7 +426,7 @@ The reverse mapping (`toJSONKey`) converts canonical keys back to JSON represent
 
 JSON-based callers MUST resolve each path element through `resolveKey` before using standard lattice operations. CVM-native code that already uses canonical key types does not need resolution.
 
-The `SignedLattice` `:value` step is a virtual key consumed at the signing boundary (`consumesPathKey`) — it selects the `SignedCursor` enforcement point rather than indexing an ordinary map entry.
+There is no incoming `:value` step through a signed envelope. A local component may explicitly expose an authorised unsigned editing view; that is not a network path.
 
 ### Thread Safety
 
@@ -468,7 +483,7 @@ KeyedLattice (Index<Keyword, ACell>) {
 
 ### Foreign Value Validation
 
-Nodes MUST validate all received values using `checkForeign()` before merging. This prevents:
+The receiving application merge MUST reject invalid foreign values. A lattice may use `checkForeign()` internally, but callers MUST NOT rely on an optional pre-check as the enforcement boundary. This protects against:
 - Malformed data injection
 - Type confusion attacks
 - Invalid lattice structures
@@ -492,7 +507,7 @@ Lattice Nodes require the following configuration:
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| Lattice | Yes | Lattice type defining merge semantics |
+| Host | Yes | Published state and configured application components defining merge policy |
 | Store | Yes | Storage backend for persistence |
 | Port | No | Network port (default: implementation-defined) |
 
@@ -512,48 +527,23 @@ A reference implementation is provided in the Convex `convex-peer` module (Java)
 
 | Specification Concept | Java Class | Package |
 |-----------------------|------------|---------|
+| Application host | `LatticeHost<V>` | `convex.lattice` |
 | Lattice Node | `NodeServer<V>` | `convex.node` |
 | Propagation Policy Group | `LatticePropagator` | `convex.node` |
 | Outbound Route Manager | `LatticeConnectionManager` | `convex.node` |
 
-### Example (Java)
+### Component assembly
 
-```java
-// Create lattice node with SetLattice semantics
-ALattice<ASet<ACell>> lattice = SetLattice.create();
-AStore store = EtchStore.createTemp();
-NodeConfig config = NodeConfig.port(0);
+Assemble a `LatticeHost` and its application components before constructing
+`NodeServer` from that host. Configure each propagation group with its own serving
+store and policy before attaching it. Local operations edit a domain component;
+that component publishes into the host, and host publication makes the resulting
+state available to persistence and propagation policy.
 
-NodeServer<ASet<ACell>> node = new NodeServer<>(lattice, store, config);
-LatticePropagator group = new LatticePropagator(
-    store, lattice, value -> value, config);
-node.addPropagator(group);
-node.setInboundPropagatorSelector(connection -> group);
-node.launch();
-
-// Update local value
-ASet<ACell> data = Sets.of("item1", "item2");
-node.getCursor().merge(data);
-node.getCursor().sync();
-
-// Connect to peer
-AccountKey peerKey = /* expected remote transport key */;
-Convex peer = Convex.connect(new InetSocketAddress("peer.example.com", 19999));
-group.addPeer(peerKey, peer);
-
-// Manual sync with peer
-node.pull(group, peer).join();
-
-// Get current value
-ASet<ACell> current = node.getLocalValue();
-
-// Access via cursor
-ALatticeCursor<ASet<ACell>> cursor = node.getCursor();
-cursor.updateAndGet(set -> set.include(Strings.create("item3")));
-
-// Clean up
-node.close();
-```
+`RelayHost` is a convenience for assembling one live application over a supplied
+whole-value lattice. It does not move merge policy into the transport. Executable
+network application examples live in `convex-peer/src/test/java/convex/node/app`
+in the Convex repository; the in-memory component testbed is described by CAD045.
 
 ### Implementation Notes
 
@@ -564,9 +554,9 @@ node.close();
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/index.md) - Value types
-- [CAD003: Encoding](../003_encoding/index.md) - Binary encoding format
-- [CAD024: Data Lattice](../024_data_lattice/index.md) - Theoretical foundation
-- [CAD028: DLFS](../028_dlfs/index.md) - Distributed filesystem
-- [CAD035: Lattice Cursors](../035_cursors/index.md) - Cursor system
-- [CAD037: KV Database](../037_kv_database/index.md) - Replicated key-value store
+- [CAD002: CVM Values](/docs/cad/values) - Value types
+- [CAD003: Encoding](/docs/cad/encoding) - Binary encoding format
+- [CAD024: Data Lattice](/docs/cad/data_lattice) - Theoretical foundation
+- [CAD028: DLFS](/docs/cad/dlfs) - Distributed filesystem
+- [CAD035: Lattice Cursors](/docs/cad/cursors) - Cursor system
+- [CAD037: KV Database](/docs/cad/kv_database) - Replicated key-value store

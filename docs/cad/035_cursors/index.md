@@ -6,6 +6,15 @@ Lattice Cursors provide mutable access points into immutable CVM data structures
 
 A cursor can be thought of as a mutable pointer that references an immutable value. When the value is "updated", the cursor atomically switches to reference a new immutable value while the old value remains unchanged. This pattern preserves all benefits of immutable data (structural sharing, safe concurrency, Merkle verification) while providing a familiar mutable interface.
 
+## Scope
+
+This CAD specifies **storage and update mechanisms** used by application
+components. [CAD024](/docs/cad/data_lattice) defines abstract merge semantics;
+[CAD038](/docs/cad/lattice_auth) defines authorisation; and
+[CAD045](/docs/cad/lattice_apps) defines the components that bind those rules to
+storage, domain operations and publication. A cursor does not choose application
+policy, discover an owner resolver or own persistence.
+
 ## Motivation
 
 The Data Lattice (CAD024) provides decentralised storage using immutable, content-addressable data structures. While immutability offers strong guarantees for verification and replication, applications need practical mechanisms to:
@@ -47,7 +56,7 @@ Root cursors MUST support the following operations:
 
 All operations MUST be atomic with respect to concurrent access.
 
-Root cursors MUST track their initial value (the value at cursor creation time) to support synchronisation patterns.
+A root holds its current value. Reconciliation baselines belong to forks; a root need not retain its creation-time value or a publication callback.
 
 #### Path Cursor
 
@@ -67,25 +76,34 @@ Path navigation uses these semantics:
 Path updates use associative (`assoc` / `assocIn`) semantics:
 - For maps: `assoc-in` style nested update
 - For vectors: index-based update
-- A missing intermediate is **not** silently promoted to a map: without a lattice, writing through a nil intermediate is an error; with a lattice (see [Lattice-Aware Cursors](#lattice-aware-cursors)) intermediates are created from the lattice's `zero()` value, so they take the correct type (e.g. an `Index`, not a hash map)
+- A missing intermediate is an error for a plain path write. A component may supply a projection that constructs the correct container atomically on a changed write; construction and reads MUST NOT create state. A path MUST NOT write through a signed envelope as if it were an ordinary record.
 
 #### Forkable Cursor
 
-A forkable cursor tracks its initial value, enabling optimistic concurrency and transactional update patterns. Forkable cursors MUST provide:
+A forkable cursor can create independent working storage. In the Java
+implementation, `fork()` returns a `ForkedCursor`, and `sync(merge)` supplies the
+reconciliation function for each publication. Only the fork retains its
+destination and reconciliation baseline; it MUST NOT retain the supplied merge
+function between sync operations. A detached snapshot can instead use independent
+root storage.
 
-- `getInitialValue() → V`: the value at fork time
-- `fork() → Cursor`: create an independent working copy
-- `merge(detached) → bool`: attempt to merge a detached working copy back by compare-and-set
+On sync, an unchanged working value adopts the destination; an unchanged
+destination accepts the working value. If both changed, the fork applies its
+operation-supplied reconciliation function. It publishes by compare-and-set and retries
+when concurrent writes require it. A successful sync returns the published
+snapshot; later edits may remain pending. A failed preparation or merge MUST NOT
+install a partially prepared value.
 
-There are two ways to converge a working copy back to its parent:
+Ordinary writable cursors, including paths and transformed views over forks,
+implement `sync(merge)` as a read-only operation. They MUST NOT invoke the merge
+function or publish enclosing storage. An empty path returns the same cursor and
+therefore retains that cursor's sync behaviour.
 
-- **`merge(detached) → bool` (compare-and-set)** — succeeds only if the parent still holds the value it had at fork time; returns `false` if the parent moved concurrently, leaving the caller to retry. This is the plain optimistic-concurrency path.
-- **`sync() → V` (lattice merge)** — available on lattice-aware cursors (see [Lattice-Aware Cursors](#lattice-aware-cursors)). Instead of compare-and-set, it merges the working copy into the parent using lattice semantics, so it **always succeeds** and never needs a retry: concurrent forks converge by merge rather than one overwriting the other.
-
-The **fork-modify-sync** pattern:
-1. `fork()` a working copy (records the initial value)
-2. Make one or more updates to the working copy, in isolation
-3. `sync()` the changes back — lattice merge folds them into the parent, combining with any concurrent changes
+The fork stops at its destination and MUST NOT invoke publication on an enclosing
+component or host. Components choose this boundary and supply reconciliation and,
+where needed, stored-value conversion functions. Signing failure and storage or
+validation errors may prevent publication; sync is not guaranteed to succeed for
+arbitrary inputs or unavailable capabilities.
 
 ### View Types
 
@@ -171,75 +189,63 @@ For complex types (maps, vectors, etc.), implementations SHOULD preserve CVM val
 
 ### Cursor Hierarchy
 
-```
+The Java implementation separates atomic storage, projections and write views:
+
+```text
 ACursor<V>
-├── AForkableCursor<V>                 (fork; tracks initial value; merge/CAS)
-│   ├── Root<V>                        (atomic CAS value holder)
-│   ├── PathCursor<V>                  (non-lattice path navigation)
-│   └── ALatticeCursor<V>             (lattice-aware: fork/sync, path/resolve)
-│       ├── RootLatticeCursor<V>       (root of a lattice tree)
-│       ├── ForkedLatticeCursor<V>     (independent working copy)
-│       ├── DescendedCursor<V>         (navigated into a sub-path)
-│       └── AUpdateCursor<V,S>         (update-on-write funnel)
-│           ├── StampedCursor<V>       (V → V: stamp on write, LWW)
-│           └── SignedCursor<V>        (V → SignedData<V>: sign on write)
-└── AView<T>                           (read-only base)
-    ├── ACachedView<V>                 (caching base)
-    │   └── TimeCache<V>               (TTL caching)
-    └── Transformer<S,T>               (lazy transformation)
+  AForkableCursor<V>
+    Root<V>
+    PathCursor<V>
+    ProjectionCursor<S,V>
+    ForkedCursor<V>
+    AUpdateCursor<V,S>
+      SignedCursor<V>
+      StampedCursor<V>
+      DefaultCursor<V>
+  AView<T>
+    ACachedView<V>
+      TimeCache<V>
+    Transformer<S,T>
 ```
 
-### Lattice-Aware Cursors
+### Component-supplied views
 
-Cursors that carry an `ALattice` — the `ALatticeCursor` family — understand lattice merge semantics. They add three capabilities over a plain cursor.
+A projection takes explicit read and write functions. The owning component
+supplies any construction rule for absent storage. Plain cursor update functions
+receive the actual stored value, including nil; no ambient lattice substitutes a
+zero value for them.
 
-**Fork and sync.** `fork()` produces an independent working copy; `sync()` merges it back into the parent via the lattice merge function, and therefore always succeeds (see [Forkable Cursor](#forkable-cursor)). `merge(value)` folds an external value into the cursor the same way.
+A component may explicitly opt into `cursor.withDefault(value)`. This returns a
+`DefaultCursor` whose reads and atomic update functions see the supplied value
+in place of nil. Reading or writing back that default MUST leave absent storage
+absent. A changed value is stored normally; writing nil clears storage and restores
+the default view. The caller chooses the default's type. For example, a record can
+supply an empty map before exposing ordinary paths to its fields, while a set
+component handles its own absent field as an empty set. No lattice policy or
+container type is inferred by navigation.
 
-**Canonical vs logical keys — `path` vs `resolve`.** `path(keys...)` navigates using already-canonical keys and is the hot primitive; at each level it descends into the sub-lattice given by `ALattice.path(key)`. `resolve(keys...)` is the user-facing counterpart: it canonicalises external or logical keys (via the lattice's `resolveKey`) before navigating. Navigation copies on change only, reusing shared structure where keys are already canonical.
-
-**Auto-initialising writes.** `assoc(key, value)` and `assocIn(value, keys...)` are the write primitives. On a lattice cursor a missing intermediate is created from the value lattice's `zero()` — the correctly typed empty value — rather than a default hash map, and an update function that would otherwise receive a missing value receives `lattice.zero()` in place of nil. Writing through a missing intermediate with no lattice present is an error, not a silent promotion.
-
-**Write interception (update cursors).** Some lattice layers must transform a value on the way out — stamping it with a write time, or wrapping it in a signature. Rather than special-casing these in the navigation code, a lattice declares its own write boundary through generic hooks (`isWriteBoundary`, `createPathCursor`, `consumesPathKey`); crossing that boundary inserts an **update cursor** (`AUpdateCursor`), a shared funnel whose update-on-write step runs on every write. There are two instances:
-
-- **`StampedCursor`** (`V → V`) — stamps the value with the context write clock on write; used by stamp-on-write regions such as DLFS node times.
-- **`SignedCursor`** (`V → SignedData<V>`) — signs the value on write using the key from the merge context, so a `SignedLattice` boundary yields correctly signed data. Deferred through a fork, the value is signed once at `sync()` rather than on every intermediate edit.
-
-Because signing and stamping are enforced by the cursor at the boundary — not by `instanceof` checks in the navigation code — new boundary behaviours can be added as new lattice layers without touching the cursor machinery.
+`SignedCursor` takes an explicit authoring function and exposes an unsigned view
+over signed storage. `StampedCursor` takes a clock and stamp function. Components
+bind authorisation and other policy before exposing these views. Path navigation
+does not insert either view automatically. Incoming signed data is merged at its
+envelope boundary, and incoming timestamps are preserved rather than re-stamped.
 
 ## Lattice Integration
 
-Cursors integrate with the Data Lattice (CAD024) for distributed state management.
-
-### Lattice Merge Operations
-
-When cursors are used with lattice-aware systems (see CAD036), merge operations combine values according to lattice semantics.
-
-Each lattice type defines its merge function satisfying:
-- **Commutativity up to tie preference**: operand order does not matter when the
-  lattice ordering selects a strict winner; an exact tie retains the first,
-  own/current operand
-- **Associativity**: `merge(merge(a, b), c) = merge(a, merge(b, c))`
-- **Idempotency**: `merge(a, a) = a`
+Components may use abstract lattice definitions from CAD024 for merge, validation,
+key resolution and correctly typed empty values. A cursor operates on the
+functions the component supplies; it does not need a lattice object or a
+`LatticeContext` field. External keys may be canonicalised through lattice
+`resolveKey` operations before constructing a view.
 
 ### Lattice Context
 
-Lattice-aware cursors carry a `LatticeContext` — an application-supplied policy
-providing the ambient information a merge or write needs:
-
-- **Timestamp**: the single write clock. The policy may provide an immutable
-  snapshot or a dynamic value at application-defined cadence; consumers use the
-  supplied value exactly
-- **Signing Service**: used by a `SignedCursor` to sign values at a signing
-  boundary. A signing request MAY identify the account key required by an owner
-  path; the policy decides whether and how that key is accessible, so it need not
-  be the application's primary key
-- **Owner Verifier**: used to authorise owners during merge (see [CAD038](../038_lattice_auth/index.md))
-
-A context is normally installed once on an application or root cursor and inherited
-dynamically by descendants. The policy itself MAY be static or dynamic and MUST be
-thread-safe when its cursor is shared. An implementation MAY take an explicit
-immutable snapshot for a detached fork. Context-aware merge takes the form
-`merge(context, own, other) → merged`.
+The Java `LatticeContext` is component policy, normally supplying signing
+capabilities and a write clock. A component passes policy to newly constructed
+children or captures it in a write function. Existing shared children retain their
+policy. Dynamic capabilities MUST be thread-safe when shared. Owner verification
+is bound to the ownership boundary as specified by CAD038 and CAD045; context
+inheritance through cursor parent links is not required.
 
 ## Encoding
 
@@ -258,60 +264,42 @@ A reference implementation is provided in the Convex `convex-core` module (Java)
 
 ### Classes
 
-| Specification Concept | Java Class | Package |
-|-----------------------|------------|---------|
-| Cursor (abstract) | `ACursor<V>` | `convex.lattice.cursor` |
-| Forkable cursor (fork/merge/CAS) | `AForkableCursor<V>` | `convex.lattice.cursor` |
-| Root cursor (atomic CAS holder) | `Root<V>` | `convex.lattice.cursor` |
-| Path cursor (non-lattice navigation) | `PathCursor<V>` | `convex.lattice.cursor` |
-| Lattice-aware cursor | `ALatticeCursor<V>` | `convex.lattice.cursor` |
-| Root of a lattice tree | `RootLatticeCursor<V>` | `convex.lattice.cursor` |
-| Forked working copy | `ForkedLatticeCursor<V>` | `convex.lattice.cursor` |
-| Descended sub-path cursor | `DescendedCursor<V>` | `convex.lattice.cursor` |
-| Update-on-write funnel | `AUpdateCursor<V,S>` | `convex.lattice.cursor` |
-| Stamp-on-write cursor | `StampedCursor<V>` | `convex.lattice.cursor` |
-| Sign-on-write cursor | `SignedCursor<V>` | `convex.lattice.cursor` |
-| View | `AView<T>` | `convex.lattice.cursor` |
-| Cached View | `ACachedView<V>` | `convex.lattice.cursor` |
-| Time Cache | `TimeCache<V>` | `convex.lattice.cursor` |
-| Transformer | `Transformer<S,T>` | `convex.lattice.cursor` |
-| Merge context (timestamp, key, verifier) | `LatticeContext` | `convex.lattice` |
-| Lattice base + write-boundary hooks | `ALattice` | `convex.lattice` |
-| Factory | `Cursors` | `convex.lattice.cursor` |
+| Mechanism | Java class |
+|---|---|
+| Atomic storage interface | `ACursor`, `AForkableCursor` |
+| Root storage | `Root`, `TransactionalRootCursor` |
+| Existing-path access | `PathCursor` |
+| Supplied read/write projection | `ProjectionCursor` |
+| Independent working state and reconciliation | `ForkedCursor` |
+| Write transformation | `AUpdateCursor`, `SignedCursor`, `StampedCursor` |
+| Read-only or cached views | `AView`, `ACachedView`, `TimeCache`, `Transformer` |
+
+These classes are in `convex.lattice.cursor`. Application component classes and
+their policy are described in CAD045.
 
 ### Example (Java)
 
+This complete example uses a supplied set-union merge function. It performs no
+network or store publication.
+
 ```java
-// Plain root cursor (atomic CAS value holder)
-Root<AInteger> counter = Root.create(CVMLong.ZERO);
-counter.set(CVMLong.ONE);
-CVMLong old = counter.getAndUpdate(v -> v.inc());
+import convex.core.data.ASet;
+import convex.core.data.Sets;
+import convex.core.data.prim.CVMLong;
+import convex.lattice.cursor.Root;
+import convex.lattice.generic.SetLattice;
 
-// Lattice-aware cursor: fork / modify / sync — always succeeds, merges concurrently
-RootLatticeCursor<ASet<ACell>> root = Cursors.createLattice(SetLattice.create(), Sets.empty());
-ALatticeCursor<ASet<ACell>> fork = root.fork();
-fork.updateAndGet(s -> s.include(item1));
-fork.updateAndGet(s -> s.include(item2));
-fork.sync();                        // both items merged into root by set union
-
-// Navigate to a sub-lattice with path(); merge folds a value in via lattice semantics
-ALatticeCursor<ASet<CVMLong>> foo = mapRoot.path(Keywords.FOO);
-foo.merge(Sets.of(CVMLong.create(2)));
-
-// Cross a signing boundary — deferred signing via SignedCursor
-ALatticeCursor<AVector<ACell>> drive = root2.path(
-    Keywords.FS,        // KeyedLattice → OwnerLattice
-    ownerKey,           // OwnerLattice → SignedLattice
-    Keywords.VALUE,     // SignedLattice → SignedCursor (signing enforced here)
-    driveName);         // MapLattice → DLFSLattice
-ALatticeCursor<AVector<ACell>> dfork = drive.fork();
-dfork.updateAndGet(state -> addFile(state, "a.txt"));   // local, unsigned
-dfork.sync();                                           // signs once, merges into parent
-
-// Transformer (lazy, no caching) and a 5-second time cache
-Transformer<CVMLong, CVMLong> doubled =
-    Transformer.create(counter, v -> CVMLong.create(v.longValue() * 2));
-TimeCache<ACell> cached = new TimeCache<>(expensiveCursor, 5000);
+public class CursorExample {
+    public static void main(String[] args) {
+        var lattice = SetLattice.<CVMLong>create();
+        Root<ASet<CVMLong>> root = Root.create(Sets.empty());
+        var draft = root.fork();
+        draft.updateAndGet(values -> values.include(CVMLong.ONE));
+        root.updateAndGet(values -> values.include(CVMLong.TWO));
+        draft.sync(lattice::merge);
+        if (!root.get().equals(Sets.of(1, 2))) throw new AssertionError();
+    }
+}
 ```
 
 ### Implementation Notes
@@ -320,8 +308,8 @@ The Java implementation uses `java.util.concurrent.atomic.AtomicReference` for t
 
 ## See Also
 
-- [CAD002: CVM Values](../002_values/index.md) - Immutable value types
-- [CAD003: Encoding](../003_encoding/index.md) - Binary encoding format
-- [CAD024: Data Lattice](../024_data_lattice/index.md) - Distributed storage
-- [CAD028: DLFS](../028_dlfs/index.md) - Distributed filesystem using lattice
-- [CAD036: Lattice Node](../036_lattice_node/index.md) - Networked lattice replication
+- [CAD002: CVM Values](/docs/cad/values) - Immutable value types
+- [CAD003: Encoding](/docs/cad/encoding) - Binary encoding format
+- [CAD024: Data Lattice](/docs/cad/data_lattice) - Distributed storage
+- [CAD028: DLFS](/docs/cad/dlfs) - Distributed filesystem using lattice
+- [CAD036: Lattice Node](/docs/cad/lattice_node) - Networked lattice replication

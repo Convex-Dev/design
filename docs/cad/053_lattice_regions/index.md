@@ -2,9 +2,19 @@
 
 ## Overview
 
-The global lattice root is a [Keyed Lattice](../024_data_lattice/index.md) whose top-level keys are **regions**: `:fs` for the distributed filesystem, `:p2p` for peer co-ordination, and so on. This CAD is the official list of those regions. For each it gives the key, what the region is for, where its lattice is defined, and its status.
+The global lattice root is a [Keyed Lattice](/docs/cad/data_lattice) whose top-level keys are **regions**: `:fs` for the distributed filesystem, `:p2p` for peer co-ordination, and so on. This CAD is the official list of those regions. For each it gives the key, what the region is for, where its lattice is defined, and its status.
 
-Root regions are ecosystem-owned and allocated by the Convex Foundation. They are typically facilities that many applications can use. State that belongs to a single application does not get a region: it lives under the `:app` region, keyed by application name ([CAD045](../045_lattice_apps/index.md)).
+Root regions are ecosystem-owned and allocated by the Convex Foundation. They are typically facilities that many applications can use. State that belongs to a single application does not get a region: it lives under the `:app` region, keyed by application name ([CAD045](/docs/cad/lattice_apps)).
+
+## Scope
+
+This CAD is a **namespace and semantic-definition registry**. Its lattice column
+describes a region's data and merge semantics, not a mandatory implementation
+class. [CAD024](/docs/cad/data_lattice) defines the abstract lattice vocabulary,
+[CAD038](/docs/cad/lattice_auth) defines authorisation and
+[CAD045](/docs/cad/lattice_apps) specifies the usual component implementation.
+Implementations normally assemble region components under a host; they MUST
+preserve each registered region's meaning regardless of their class hierarchy.
 
 ## Motivation
 
@@ -18,7 +28,7 @@ The list does not decide what a node merges: that is for the lattice application
 
 A region key MUST be a Keyword. It is the first path element when navigating from a node's root cursor, as in `[:kv <owner> ...]`.
 
-A root region MUST be listed in this CAD before software uses it. A key that is not listed MUST NOT be used at the root: an application's own state belongs under `:app` instead ([CAD045](../045_lattice_apps/index.md)).
+A root region MUST be listed in this CAD before software uses it. A key that is not listed MUST NOT be used at the root: an application's own state belongs under `:app` instead ([CAD045](/docs/cad/lattice_apps)).
 
 A key, once allocated, MUST NOT be given a different meaning. A region that is no longer used is marked Retired and stays in the list, so its key is not reused.
 
@@ -28,7 +38,7 @@ Regions are allocated by the Convex Foundation, by a change to this CAD. A regio
 
 ### Hosting
 
-A node MAY host any subset of the allocated regions. The lattice applications it runs decide which of them it merges, and how ([CAD045](../045_lattice_apps/index.md)). An application MUST ignore incoming data it does not understand or does not serve, leaving what it already holds unchanged, so nodes hosting different sets of regions interoperate on the regions they share.
+A node MAY host any subset of allocated regions. Abstractly, its root composes those regions' semantics; normally its host assembles the corresponding CAD045 components. Incoming regions outside its interests are ignored, and publication preserves unrelated state already held. This does not require a monolithic root lattice object.
 
 ### Status
 
@@ -45,18 +55,18 @@ A node MAY host any subset of the allocated regions. The lattice applications it
 
 | Key | Region | Lattice | Defined by | Status |
 |---|---|---|---|---|
-| `:data` | Data | Content-addressable store of cells indexed by hash | [CAD024](../024_data_lattice/index.md) | Standard |
-| `:fs` | Filesystem | Owner Lattice of named [DLFS](../028_dlfs/index.md) drives | [CAD028](../028_dlfs/index.md) | Standard |
-| `:kv` | Key-Value | Owner Lattice of named key-value stores with per-entry merge | [CAD037](../037_kv_database/index.md) | Standard |
-| `:queue` | Queue | Owner Lattice of topics of partitioned, append-only streams | [CAD040](../040_lattice_queue/index.md) | Standard; its structure is still being refined |
-| `:p2p` | P2P | Peer-to-peer network state: the node registry, signed node records per node key | [CAD036](../036_lattice_node/index.md) for replication; the region's content in the `convex-p2p` reference implementation | Allocated; a specification is to be written |
-| `:local` | Local | Peer-local state that is never replicated | [CAD024](../024_data_lattice/index.md) | Standard |
+| `:data` | Data | Content-addressable store of cells indexed by hash | [CAD024](/docs/cad/data_lattice) | Standard |
+| `:fs` | Filesystem | Owner Lattice of named [DLFS](/docs/cad/dlfs) drives | [CAD028](/docs/cad/dlfs) | Standard |
+| `:kv` | Key-Value | Owner Lattice of named key-value stores with per-entry merge | [CAD037](/docs/cad/kv_database) | Standard |
+| `:queue` | Queue | Owner Lattice of topics of partitioned, append-only streams | [CAD040](/docs/cad/lattice_queue) | Standard; its structure is still being refined |
+| `:p2p` | P2P | Peer-to-peer network state: the node registry, signed node records per node key | [CAD036](/docs/cad/lattice_node) for replication; the region's content in the `convex-p2p` reference implementation | Allocated; a specification is to be written |
+| `:local` | Local | Peer-local state that is never replicated | [CAD024](/docs/cad/data_lattice) | Standard |
 | `:id` | Identity | Owner Lattice of signed P2P user identity records, separate from node records | `convex-p2p` reference implementation | Allocated; a specification is to be written |
 | `:kad` | Kademlia | Reserved for peer routing; merge semantics not decided | `convex-p2p` reference implementation | Reserved |
-| `:social` | Social | Owner Lattice of per-user social state: feeds, profiles, follows | `convex-social` reference implementation; used as the running example in [CAD045](../045_lattice_apps/index.md) | Allocated; a specification is to be written |
-| `:app` | Applications | Keyed Lattice of application lattices, keyed by application name | [CAD045](../045_lattice_apps/index.md) | Allocated; not yet in the core root |
-| `:convex` | Convex networks | Map Lattice from network ID to each network's peer Orders, the content of a Belief | [CAD054](../054_convex_region/index.md) (draft) | Reserved; not yet hosted |
-| `:sql` | SQL | Databases published for many applications to read, such as reference tables: each owner's signed [Convex SQL](../039_convex_sql/index.md) databases | [CAD039](../039_convex_sql/index.md) | Reserved; content not yet defined |
+| `:social` | Social | Owner Lattice of per-user social state: feeds, profiles, follows | `convex-social` reference implementation; used as the running example in [CAD045](/docs/cad/lattice_apps) | Allocated; a specification is to be written |
+| `:app` | Applications | Keyed Lattice of application lattices, keyed by application name | [CAD045](/docs/cad/lattice_apps) | Allocated; not yet in the core root |
+| `:convex` | Convex networks | Map Lattice from network ID to each network's peer Orders, the content of a Belief | [CAD054](/docs/cad/convex_region) (draft) | Reserved; not yet hosted |
+| `:sql` | SQL | Databases published for many applications to read, such as reference tables: each owner's signed [Convex SQL](/docs/cad/convex_sql) databases | [CAD039](/docs/cad/convex_sql) | Reserved; content not yet defined |
 
 ### In use, not allocated
 
@@ -80,6 +90,6 @@ Region keywords are defined with the region's lattice; core ones are in `Keyword
 
 ## See Also
 
-- [CAD024: Data Lattice](../024_data_lattice/index.md) — the root lattice and how regions merge
-- [CAD036: Lattice Node](../036_lattice_node/index.md) — hosting and replicating regions
-- [CAD045: Lattice Applications](../045_lattice_apps/index.md) — application regions under `:app`
+- [CAD024: Data Lattice](/docs/cad/data_lattice) — the root lattice and how regions merge
+- [CAD036: Lattice Node](/docs/cad/lattice_node) — hosting and replicating regions
+- [CAD045: Lattice Applications](/docs/cad/lattice_apps) — application regions under `:app`
