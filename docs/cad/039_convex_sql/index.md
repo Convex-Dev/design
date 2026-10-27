@@ -41,7 +41,7 @@ A **database map**, managed by `ConvexDB`, holds databases by name. Each databas
 database map    {db-name → database}
   database      {:tables → table store}
     table store {table-name → table entry}
-      table entry [schema, rows, utime, live-count, version]
+      table entry [schema, rows, ctime, live-count, version]
         rows      {primary-key → row entry}
 ```
 
@@ -80,14 +80,14 @@ A signed owner map is the exchange format between nodes, not a lattice that merg
 Each table is stored as a **Table Entry**, a positional vector:
 
 ```
-[schema, rows, utime, live-count, version]
+[schema, rows, ctime, live-count, version]
 ```
 
 | Index | Field | Type | Description |
 |-------|-------|------|-------------|
 | 0 | schema | vector | Column definitions: `[column₁, column₂, ...]` |
 | 1 | rows | Index | Row data: `{primary-key → RowEntry, ...}` |
-| 2 | utime | integer | Time of the table's latest schema change ([Timestamps](#timestamps)) |
+| 2 | ctime | integer | Time the table was created, or dropped for a tombstone ([Timestamps](#timestamps)) |
 | 3 | live-count | integer | Number of live (non-tombstone) rows |
 | 4 | version | integer | Format version of the entry |
 
@@ -95,9 +95,9 @@ The live count is derived from the rows and recomputed when a merge changes them
 
 #### Timestamps
 
-A table entry's utime records its latest schema change: when the table was created or dropped. Each row entry records when the row was written. Timestamps come from the writer's clock, which the application supplies; the reference implementation defaults to the runtime clock, in milliseconds since 1970-01-01T00:00:00 UTC. A writer reads its clock once for each write, and merges never read it. How a writer orders its own writes, for example with strictly increasing timestamps, is for the application.
+A table entry's ctime records when the table was created, or for a tombstone when it was dropped; only creating or dropping the table sets it. Each row entry records when the row was written. Timestamps come from the writer's clock, which the application supplies; the reference implementation defaults to the runtime clock, in milliseconds since 1970-01-01T00:00:00 UTC. A writer reads its clock once for each write, and merges never read it. How a writer orders its own writes, for example with strictly increasing timestamps, is for the application.
 
-A row write or deletion MUST leave its table's utime unchanged, and MUST carry a timestamp at or after that utime. A merge policy can then tell a table's own rows from those of an earlier table of the same name, as [RowLWW](#rowlww) does. The reference implementation does not yet ensure the second requirement when the writer's clock is behind the table's utime: RowLWW then discards the rows it writes when they merge with another copy of the table.
+A row write or deletion MUST leave its table's ctime unchanged, and MUST carry a timestamp at or after that ctime: a writer whose clock is behind the ctime stamps the write with the ctime. A merge policy can then tell a table's own rows from those of an earlier table of the same name, whatever the writers' clocks, as [RowLWW](#rowlww) does.
 
 #### Format Version
 
@@ -105,7 +105,7 @@ The version determines how the whole entry is read: the meaning of its schema's 
 
 Implementations MUST create new tables as version 1. They MUST NOT read or write an entry whose version they do not implement as if it were another version. Older implementations rebuild a table entry from its first four fields when they merge it, dropping the version, and would then read a version 1 table as version 0. Every node that replicates a database holding version 1 tables MUST therefore implement version 1.
 
-A table changes version only when its schema changes. The writer then rewrites every row in the new version's representation, under the new schema's timestamp.
+A table changes version only when it is created again with its schema in the new version. The writer then rewrites every row in the new version's representation, stamped at the new ctime.
 
 #### Schema Format
 
@@ -180,9 +180,9 @@ How each type is presented to SQL clients, including version 0 types, is describ
 
 #### Table Tombstones
 
-A tombstone is a table entry with `nil` schema; its utime records when the table was dropped. DROP TABLE writes it with `nil` rows. A merge policy may keep rows in a tombstone, such as rows written after the drop by a copy that had not seen it ([RowLWW](#rowlww)). Readers MUST treat an entry with `nil` schema as a dropped table, whatever its rows.
+A tombstone is a table entry with `nil` schema; its ctime records when the table was dropped. DROP TABLE writes it with `nil` rows. A merge policy may keep rows in a tombstone, such as rows written after the drop by a copy that had not seen it ([RowLWW](#rowlww)). Readers MUST treat an entry with `nil` schema as a dropped table, whatever its rows.
 
-Tombstones make DROP TABLE mergeable: a policy can order a drop against a table's creations by their utimes.
+Tombstones make DROP TABLE mergeable: a policy can order a drop against a table's creations by their ctimes.
 
 ### Row Entries
 
@@ -234,10 +234,10 @@ A value delivered to a path below a database ([CAD036](../036_lattice_node/index
 |-------------------------|-----------|
 | `[:tables]` | The table store |
 | `[:tables name]` | One table entry |
-| `[:tables name 1]` | The table's rows, in an entry without a utime |
-| `[:tables name 1 key]` | One row, in an entry without a utime |
+| `[:tables name 1]` | The table's rows, in an entry without a ctime |
+| `[:tables name 1 key]` | One row, in an entry without a ctime |
 
-An entry without a utime carries only rows, and the policy decides whether they apply. Convex SQL defines only the `:tables` section, so values delivered to other sections are not merged. A delivery to any other path into a table entry MUST be refused.
+An entry without a ctime carries only rows, and the policy decides whether they apply. Convex SQL defines only the `:tables` section, so values delivered to other sections are not merged. A delivery to any other path into a table entry MUST be refused.
 
 #### RowLWW
 
@@ -249,9 +249,9 @@ An entry without a utime carries only rows, and the policy decides whether they 
 
 **Table entry.**
 
-1. **Schema**: last-writer-wins on utime, with the own entry kept when the utimes are equal; a tombstone wins in the same way. The winner's version is kept, except that when both entries have the same utime and schema, the higher version is kept, restoring a version that an older implementation dropped.
-2. **Rows**: merged by primary key, whichever schema wins. A row held by both entries merges as a row entry, below. A row held by one entry only survives if it was written at or after the other entry's utime: a row written before a table was created belongs to an earlier table of that name, and one written before a drop belongs to the dropped table.
-3. **Rows only**: an entry without a utime, from a [path delivery](#path-delivery), merges its rows into an existing table, live or dropped, as in 2. A table that does not exist takes nothing.
+1. **Schema**: last-writer-wins on ctime, with the own entry kept when the ctimes are equal; a tombstone wins in the same way. The winner's version is kept, except that when both entries have the same ctime and schema, the higher version is kept, restoring a version that an older implementation dropped.
+2. **Rows**: merged by primary key, whichever schema wins. A row held by both entries merges as a row entry, below. A row held by one entry only survives if it was written at or after the other entry's ctime: a row written before a table was created belongs to an earlier table of that name, and one written before a drop belongs to the dropped table.
+3. **Rows only**: an entry without a ctime, from a [path delivery](#path-delivery), merges its rows into an existing table, live or dropped, as in 2. A table that does not exist takes nothing.
 
 So rows written before a table is dropped never return, whether the table is created again or a copy that missed the drop merges later, and every copy of a single writer's tables converges to the writer's own. Two creations of one table name by different writers are two different tables: rows written to the earlier one before the later creation are dropped. A dropped table holds only rows written after the drop, and readers do not see them.
 
@@ -262,7 +262,7 @@ So rows written before a table is dropped never return, whether the table is cre
 3. **Compare timestamps** — newer wins
 4. **Equal timestamps** — deletion wins; otherwise the own entry is kept
 
-RowLWW is idempotent. It is commutative except at exact ties, where the own value is kept as CAD024 allows: two live rows with equal timestamps and different values, or two table entries with equal utimes and different schemas. It is associative for tables whose rows were all written at or after the table's utime, as [Timestamps](#timestamps) requires.
+RowLWW is idempotent. It is commutative except at exact ties, where the own value is kept as CAD024 allows: two live rows with equal timestamps and different values, or two table entries with equal ctimes and different schemas. It is associative for tables whose rows were all written at or after the table's ctime, as [Timestamps](#timestamps) requires.
 
 ### Ownership and Authentication
 
@@ -401,7 +401,7 @@ Row count queries avoid materialising rows — the count is derived directly fro
 
 Calcite query plans are cached for PreparedStatements, avoiding repeated parsing and planning for repeated queries with different parameters.
 
-A cached plan is valid only for the **binding** it was planned against: the schema and format version of each table it reads or writes, which together determine how that table's rows are read ([Format Version](#format-version), [Schema Format](#schema-format)). Row writes leave a table's binding unchanged. Dropping a table or replacing its schema changes it, whether by a local write or by a merge from another replica. The utime is not part of the binding: it orders schema changes but does not change how rows are read, so re-creating a table with the same columns and version keeps cached plans valid.
+A cached plan is valid only for the **binding** it was planned against: the schema and format version of each table it reads or writes, which together determine how that table's rows are read ([Format Version](#format-version), [Schema Format](#schema-format)). Row writes leave a table's binding unchanged. Dropping a table or replacing its schema changes it, whether by a local write or by a merge from another replica. The ctime is not part of the binding: it orders a table's creations and drops but does not change how rows are read, so re-creating a table with the same columns and version keeps cached plans valid.
 
 An implementation MUST record, for each table a plan reads or writes, the binding of the table description the plan was validated against. Before a cached plan reads or writes a table's rows, it MUST check that the table still has the recorded binding. If the table has been dropped, or its schema or version differs, execution MUST fail rather than read or write its rows.
 
