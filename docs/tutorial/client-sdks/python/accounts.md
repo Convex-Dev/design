@@ -392,7 +392,8 @@ account = convex.create_account(key_pair)
 # 3. Fund account
 convex.request_funds(100_000_000, account)
 
-# 4. Register name (optional)
+# 4. Register name (optional: needs ownership of the CNS account node, so
+#    it raises ConvexAPIError with code TRUST on the public networks)
 convex.register_account_name('alice', account)
 
 # 5. Backup keys
