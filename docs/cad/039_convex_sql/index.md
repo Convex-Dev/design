@@ -2,7 +2,7 @@
 
 ## Overview
 
-Convex SQL is a SQL database layer built on the [Lattice](../024_data_lattice/index.md). It provides relational table storage with CRDT merge semantics, enabling SQL-like operations over distributed, replicated data structures. Tables support schema definitions, primary key indexing, and row-level merge replication via [Lattice Nodes](../036_lattice_node/index.md).
+Convex SQL is a SQL database layer built on the [Lattice](../024_data_lattice/index.md). It provides relational table storage that replicates by lattice merge, enabling SQL-like operations over distributed, replicated data structures. Tables support schema definitions, primary key indexing, and replication via [Lattice Nodes](../036_lattice_node/index.md). How concurrent writes combine is a merge policy chosen by the application that uses the database.
 
 Convex SQL enables standard SQL query capabilities over lattice data through Apache Calcite, bridging familiar database paradigms with the convergent properties of lattice technology.
 
@@ -16,7 +16,7 @@ While the [KV Database](../037_kv_database/index.md) provides excellent support 
 - **Primary key indexing** for efficient row lookups
 - **Schema evolution** with controlled migrations
 
-Traditional distributed databases solve these problems with consensus protocols or conflict resolution callbacks. Convex SQL instead uses lattice merge properties to guarantee convergence while maintaining relational semantics.
+Traditional distributed databases solve these problems with consensus protocols or conflict resolution callbacks. Convex SQL instead merges copies of a database with a lattice merge, so every copy converges whatever order updates arrive in. The application decides what they converge to. With one writer, every copy converges to that writer's data. With several writers, copies converge to whatever the application's [merge policy](#merge-policy) defines, and relational guarantees across writers are the policy's to give.
 
 ### Design Goals
 
@@ -31,19 +31,21 @@ Traditional distributed databases solve these problems with consensus protocols 
 
 ### Lattice Structure
 
-:::note Provisional structure
-Convex SQL does not occupy a region in the root lattice ([CAD053](../053_lattice_regions/index.md) lists the regions that do). A database is more likely to live within the state of the application that uses it, under `:app` ([CAD045](../045_lattice_apps/index.md)), than in a root region of its own; where it lives and how it is structured are still open design questions and may change. This section documents the current implementation.
+:::note Location
+Convex SQL does not occupy a region in the root lattice ([CAD053](../053_lattice_regions/index.md) lists the regions that do). Where a database lives is the choice of the application that uses it: an application's own databases live in its state under `:app` ([CAD045](../045_lattice_apps/index.md)). A database of reference tables shared by many applications would need a root region listed in CAD053, and none is listed.
 :::
 
-Convex SQL currently operates as a **standalone lattice**, managed by `ConvexDB`:
+A **database map**, managed by `ConvexDB`, holds databases by name. Each database is a keyword-keyed structure: the `:tables` section holds the table store, leaving room for further per-database sections in future.
 
 ```
-ConvexDB (MapLattice: db-name → database state)
-  └── SQLDatabase (KeyedLattice: :tables → table store)
-        └── TableStoreLattice (table-name → TableEntry)
+database map    {db-name → database}
+  database      {:tables → table store}
+    table store {table-name → table entry}
+      table entry [schema, rows, utime, live-count, version]
+        rows      {primary-key → row entry}
 ```
 
-Each database is a keyword-keyed structure: the `:tables` key holds the table store, leaving room for further per-database sections in future.
+The database is the unit of merging and of transactions: it merges as a whole, with the [merge policy](#merge-policy) supplied for it.
 
 For replication between nodes, the database map is wrapped in a signed owner envelope:
 
@@ -61,36 +63,17 @@ This structure mirrors the KV Database pattern: each owner has their own namespa
 
 ### Lattice Composition
 
-The full lattice hierarchy for a replicated Convex SQL owner map:
+Only the database has a merge rule of its own:
 
-```
-OwnerLattice                    ← per-owner merge with auth (CAD038)
-  └── SignedLattice             ← Ed25519 signature verification
-        └── MapLattice          ← per-database-name merge
-              └── KeyedLattice  ← per-database sections (:tables)
-                    └── TableStoreLattice
-                          └── per-table-name merge
-                                └── SQLTableLattice
-                                      └── schema + rows merge
-                                            └── TableLattice
-                                                  └── per-row merge (by primary key)
-                                                        └── SQLRowLattice (LWW)
-```
+| Level | Merge |
+|-------|-------|
+| Database map | Per database name, each database with its merge policy |
+| Database | The [merge policy](#merge-policy) supplied for it |
+| Table store, table entry, rows | No rule of their own: merged only as part of their database |
 
-A standalone (non-replicated) ConvexDB uses the same hierarchy from `MapLattice` down, without the owner/signature envelope.
+Because everything below a database merges as part of it, a value delivered to a table or a row and a replica from another node merge exactly as the equivalent whole database would.
 
-#### Layer Descriptions
-
-| Layer | Lattice | Merge Behaviour |
-|-------|---------|-----------------|
-| Owner | `OwnerLattice` | Per-owner with authentication ([CAD038](../038_lattice_auth/index.md)) |
-| Signature | `SignedLattice` | Ed25519 signature verification |
-| Database Map | `MapLattice` | Per-database-name merge |
-| Database | `KeyedLattice` | Per-section merge (`:tables`) |
-| Table Store | `TableStoreLattice` | Per-table-name merge using `SQLTableLattice` |
-| Table | `SQLTableLattice` | Schema LWW + row-level merge via `TableLattice` |
-| Rows | `TableLattice` | Per-primary-key merge using `SQLRowLattice` |
-| Row | `SQLRowLattice` | LWW by timestamp; equal timestamps favour deletions |
+A signed owner map is the exchange format between nodes, not a lattice that merges as a whole: a node checks each replica in it and merges the accepted replica's database state into its own database with the policy ([Replication Model](#replication-model)).
 
 ### Table Entries
 
@@ -104,11 +87,17 @@ Each table is stored as a **Table Entry**, a positional vector:
 |-------|-------|------|-------------|
 | 0 | schema | vector | Column definitions: `[column₁, column₂, ...]` |
 | 1 | rows | Index | Row data: `{primary-key → RowEntry, ...}` |
-| 2 | utime | integer | Schema update timestamp (epoch millis) |
+| 2 | utime | integer | Time of the table's latest schema change ([Timestamps](#timestamps)) |
 | 3 | live-count | integer | Number of live (non-tombstone) rows |
 | 4 | version | integer | Format version of the entry |
 
 The live count is derived from the rows and recomputed when a merge changes them. Readers MUST accept an entry without it, counting the live rows instead.
+
+#### Timestamps
+
+A table entry's utime records its latest schema change: when the table was created or dropped. Each row entry records when the row was written. Timestamps come from the writer's clock, which the application supplies; the reference implementation defaults to the runtime clock, in milliseconds since 1970-01-01T00:00:00 UTC. A writer reads its clock once for each write, and merges never read it. How a writer orders its own writes, for example with strictly increasing timestamps, is for the application.
+
+A row write or deletion MUST leave its table's utime unchanged, and MUST carry a timestamp at or after that utime. A merge policy can then tell a table's own rows from those of an earlier table of the same name, as [RowLWW](#rowlww) does. The reference implementation does not yet ensure the second requirement when the writer's clock is behind the table's utime: RowLWW then discards the rows it writes when they merge with another copy of the table.
 
 #### Format Version
 
@@ -191,9 +180,9 @@ How each type is presented to SQL clients, including version 0 types, is describ
 
 #### Table Tombstones
 
-A tombstone is a table entry with `nil` schema and `nil` rows. The timestamp is preserved.
+A tombstone is a table entry with `nil` schema; its utime records when the table was dropped. DROP TABLE writes it with `nil` rows. A merge policy may keep rows in a tombstone, such as rows written after the drop by a copy that had not seen it ([RowLWW](#rowlww)). Readers MUST treat an entry with `nil` schema as a dropped table, whatever its rows.
 
-Tombstones are required for lattice-compatible DROP TABLE: a tombstone wins over older live tables during merge.
+Tombstones make DROP TABLE mergeable: a policy can order a drop against a table's creations by their utimes.
 
 ### Row Entries
 
@@ -206,7 +195,7 @@ Each row within a table is stored as a **Row Entry**, a positional vector:
 | Index | Field | Type | Description |
 |-------|-------|------|-------------|
 | 0 | values | vector | Column values for this row |
-| 1 | utime | integer | Update timestamp (epoch millis) |
+| 1 | utime | integer | Time the row was written ([Timestamps](#timestamps)) |
 | 2 | deleted | integer / nil | Deletion timestamp (nil = live) |
 
 #### Row Tombstones
@@ -225,43 +214,61 @@ Implementations SHOULD provide automatic key conversion:
 
 An integer key is converted from its value, whatever its internal representation, so equal integers always give the same key. The two integer encodings differ in length, so they cannot collide. A `NUMERIC` value is keyed by its stored integer.
 
+The reference implementation does not yet encode integer keys beyond the 64-bit range: it refuses to write a row with such a key, and finds no row when looking one up.
+
 This allows natural primary key usage while maintaining Index compatibility.
 
-### Merge Semantics
+### Merge Policy
 
-Merge operates at multiple levels:
+A database merges with a **merge policy**: a function that takes two states of the database, the established (own) state and an incoming one, and returns the merged state. Convex SQL specifies the data format, not how concurrent writes combine. Whatever constructs a database, normally the application that uses it, supplies its policy. There is no default.
 
-#### Table Store Merge
+An implementation MUST merge a database with its policy on every route: an incoming database state, a value delivered to a path below the database, the publication of a transaction, and a replica from another node. A policy MUST satisfy the merge properties of [CAD024](../024_data_lattice/index.md#merge-properties-and-tie-preference), as every custom merge must ([CAD045](../045_lattice_apps/index.md#merge-properties)).
 
-Per-table-name merge using `SQLTableLattice.merge()` for each table entry.
+How creations, drops and schema changes of one table name by several writers are ordered is application policy. An application whose writers change a table's schema concurrently orders those changes itself, or supplies a policy that does.
 
-#### Table Entry Merge
+#### Path Delivery
 
-For each table:
+A value delivered to a path below a database ([CAD036](../036_lattice_node/index.md#path-based-operations)) is merged as a database state holding only what was delivered. Sub-lattice resolution stops at the database: there is no separate merge for a table or a row, so a delivery gives the same result as merging the equivalent database state.
 
-1. **Schema**: LWW by timestamp — latest schema wins, with its version. If both entries have the same timestamp and schema, the higher version is kept, restoring a version that an older implementation dropped.
-2. **Rows**: Merge using `TableLattice` (per-primary-key merge)
-3. **Tombstone handling**: If the schema winner is a tombstone, the tombstone wins (table dropped)
+| Path below the database | Merged as |
+|-------------------------|-----------|
+| `[:tables]` | The table store |
+| `[:tables name]` | One table entry |
+| `[:tables name 1]` | The table's rows, in an entry without a utime |
+| `[:tables name 1 key]` | One row, in an entry without a utime |
 
-This means schema changes from a later timestamp override earlier schemas, while row data merges independently regardless of schema changes.
+An entry without a utime carries only rows, and the policy decides whether they apply. Convex SQL defines only the `:tables` section, so values delivered to other sections are not merged. A delivery to any other path into a table entry MUST be refused.
 
-#### Row Entry Merge
+#### RowLWW
 
-For each row (by primary key):
+`RowLWW` is the merge policy Convex SQL provides for databases whose tables several writers update row by row: last-write-wins per row. The JDBC driver's `mem:` and `file:` databases use it. Other policies are possible, and an application can compose one from RowLWW's parts, for example to treat one table differently.
 
-1. **Equal entries** — return own (identity)
+**Database.** The incoming `:tables` section merges with the own table store. Other incoming sections are ignored, and those already held are kept.
+
+**Table store.** A union of table names, with the two entries for each name merged as below.
+
+**Table entry.**
+
+1. **Schema**: last-writer-wins on utime, with the own entry kept when the utimes are equal; a tombstone wins in the same way. The winner's version is kept, except that when both entries have the same utime and schema, the higher version is kept, restoring a version that an older implementation dropped.
+2. **Rows**: merged by primary key, whichever schema wins. A row held by both entries merges as a row entry, below. A row held by one entry only survives if it was written at or after the other entry's utime: a row written before a table was created belongs to an earlier table of that name, and one written before a drop belongs to the dropped table.
+3. **Rows only**: an entry without a utime, from a [path delivery](#path-delivery), merges its rows into an existing table, live or dropped, as in 2. A table that does not exist takes nothing.
+
+So rows written before a table is dropped never return, whether the table is created again or a copy that missed the drop merges later, and every copy of a single writer's tables converges to the writer's own. Two creations of one table name by different writers are two different tables: rows written to the earlier one before the later creation are dropped. A dropped table holds only rows written after the drop, and readers do not see them.
+
+**Row entry.** For each primary key:
+
+1. **Equal entries** — return own
 2. **One side nil** — return the other
-3. **Compare timestamps** — newer wins (LWW)
-4. **Equal timestamps** — deletion wins (tombstone takes precedence)
+3. **Compare timestamps** — newer wins
+4. **Equal timestamps** — deletion wins; otherwise the own entry is kept
 
-These rules satisfy the lattice properties:
-- **Commutative**: merge(a, b) = merge(b, a)
-- **Associative**: merge(merge(a, b), c) = merge(a, merge(b, c))
-- **Idempotent**: merge(a, a) = a
+RowLWW is idempotent. It is commutative except at exact ties, where the own value is kept as CAD024 allows: two live rows with equal timestamps and different values, or two table entries with equal utimes and different schemas. It is associative for tables whose rows were all written at or after the table's utime, as [Timestamps](#timestamps) requires.
 
 ### Ownership and Authentication
 
-Like KV Database, Convex SQL uses OwnerLattice for per-owner authentication. Each owner's data is signed with an Ed25519 key pair and verified during merge ([CAD038](../038_lattice_auth/index.md)).
+Each owner's databases are signed with an Ed25519 key pair ([CAD038](../038_lattice_auth/index.md)). A node accepts a replica only if its signature verifies and its signer is authorised for the owner it is published under. A node applies the same check to its own replica, and refuses to export one that it would refuse to accept.
+
+When an [owner verifier](../038_lattice_auth/index.md#owner-verifier) is supplied, it decides who is authorised, for every owner. Without one, an owner that is an account key, or a `did:key` that denotes one, MUST be the signer, and any other owner, such as an address or another DID, MUST be refused.
 
 The signed state per owner is:
 
@@ -272,17 +279,19 @@ Signed({db-name → {:tables → {table-name → TableEntry, ...}}, ...})
 Authentication provides:
 - **Data integrity** — tampering invalidates the signature
 - **Owner verification** — only authorised signers can update an owner's tables
-- **Multi-key support** — address and DID owners may authorise multiple signing keys
+- **Multi-key support** — address and DID owners may authorise multiple signing keys, through a supplied owner verifier
 
 ### Replication Model
 
 Convex SQL uses the same **merge-on-write** replication model as KV Database:
 
-1. Each node maintains its own signed replica (databases containing tables)
+1. Each node holds its own databases and signs them as its replica
 2. The node exports its replica as a signed owner map (`exportReplica()`)
-3. Replicas are exchanged between nodes (a standard global lattice region for automatic propagation is anticipated but not yet defined — see the provisional note above)
-4. On receive, OwnerLattice merge verifies signatures and combines entries from all owners
-5. Applications read the merged owner map and absorb remote data
+3. Replicas are exchanged between nodes (no root region is defined for this; see the location note above)
+4. On receive, the node accepts or refuses each replica in the owner map, as described under [Ownership and Authentication](#ownership-and-authentication)
+5. The node merges each accepted replica's state for the database into its own database, with the database's merge policy
+
+A node that absorbs other owners' replicas into its own database has several writers by construction, so it needs a merge policy designed for several writers, such as [RowLWW](#rowlww).
 
 ```
 ┌──────────┐         ┌──────────┐         ┌──────────┐
@@ -301,13 +310,13 @@ Convex SQL uses the same **merge-on-write** replication model as KV Database:
 
 #### Concurrent Schema Changes
 
-When two nodes change a table's schema concurrently, LWW applies: the schema with the later timestamp wins. Row data merges independently, so rows from both nodes are preserved even if the schema changed.
+How schema changes by several writers are ordered is application policy ([Merge Policy](#merge-policy)). Under RowLWW, the later creation or drop of a table wins, and a copy's rows from before it do not carry over: two writers that create the same table independently create two tables, and rows written to the earlier one before the later creation are dropped.
 
-Applications SHOULD coordinate schema changes through external mechanisms (e.g. governance) to avoid unexpected schema conflicts.
+An application whose writers change a table's schema SHOULD order those changes itself, for example by leaving them to one writer or to governance, or supply a policy that orders them.
 
 #### Row-Level Convergence
 
-Row merges are deterministic and converge across all replicas:
+Under RowLWW, row merges are deterministic and converge across all replicas:
 - Rows with different primary keys merge independently
 - Rows with the same primary key use LWW
 - Deletions propagate correctly via tombstones
@@ -339,9 +348,10 @@ Row merges are deterministic and converge across all replicas:
 
 | Operation | Description |
 |-----------|-------------|
-| `exportReplica()` | Export signed replica for lattice publication |
-| `mergeReplicas(ownerMap)` | Merge remote replicas into local store |
-| `mergeReplicas(ownerMap, filter)` | Merge with owner filter predicate |
+| `exportReplica()` | Export signed replica for lattice publication; refused if the node's key is not authorised for its owner |
+| `mergeReplicas(ownerMap)` | Merge each accepted replica into the local database with its merge policy |
+
+Which replicas are accepted is decided replica by replica. An application can apply another ownership rule, or replicate selectively, by overriding that check (`acceptsReplica` in the reference implementation).
 
 ## SQL Integration
 
@@ -391,6 +401,10 @@ Row count queries avoid materialising rows — the count is derived directly fro
 
 Calcite query plans are cached for PreparedStatements, avoiding repeated parsing and planning for repeated queries with different parameters.
 
+A cached plan is valid only for the **binding** it was planned against: the schema and format version of each table it reads or writes, which together determine how that table's rows are read ([Format Version](#format-version), [Schema Format](#schema-format)). Row writes leave a table's binding unchanged. Dropping a table or replacing its schema changes it, whether by a local write or by a merge from another replica. The utime is not part of the binding: it orders schema changes but does not change how rows are read, so re-creating a table with the same columns and version keeps cached plans valid.
+
+An implementation MUST record, for each table a plan reads or writes, the binding of the table description the plan was validated against. Before a cached plan reads or writes a table's rows, it MUST check that the table still has the recorded binding. If the table has been dropped, or its schema or version differs, execution MUST fail rather than read or write its rows.
+
 ## JDBC Driver
 
 Convex SQL provides a standard JDBC driver for direct integration with any JDBC-compatible tool or application.
@@ -410,12 +424,14 @@ The JDBC driver supports transaction isolation via the lattice fork/sync model:
 
 | Operation | Lattice Effect |
 |-----------|----------------|
-| `setAutoCommit(false)` | Forks the cursor (snapshot isolation) |
-| `commit()` | Syncs the fork back to parent (lattice merge) |
+| `setAutoCommit(false)` | Forks the database (snapshot isolation) |
+| `commit()` | Merges the fork's tables into the database with its merge policy |
 | `rollback()` | Discards the fork |
 | `setAutoCommit(true)` | Direct writes, no isolation |
 
-Because lattice merge is always well-defined, commits never fail due to conflicts — the merge function deterministically combines the transaction's writes with concurrent state.
+A transaction forks the whole database, its unit of merging. On commit, the fork's state is merged with the database's current state using the database's merge policy, so the policy decides how the transaction's writes combine with concurrent ones. Under RowLWW, which the driver's `mem:` and `file:` databases use, a commit never fails because of a concurrent write.
+
+An implementation MUST publish only the `:tables` section on commit and keep the database's other sections as they are. The transaction's state is the established side of that merge, so merging the whole database would undo concurrent changes to sections the transaction never touched.
 
 ### Example: JDBC Usage
 
@@ -442,7 +458,7 @@ while (rs.next()) {
 // Transactions
 conn.setAutoCommit(false);
 stmt.execute("INSERT INTO users VALUES (2, 'Bob', 'bob@example.com')");
-conn.commit();  // Lattice merge — always succeeds
+conn.commit();  // Merged with the database's policy: RowLWW for jdbc:convex:mem
 
 conn.close();
 ```
@@ -459,6 +475,8 @@ The PG server reuses the Calcite pipeline and ConvexSchema, providing the same S
 
 Write operations (INSERT, UPDATE, DELETE) modify the local replica, which is then signed and propagated via the lattice.
 
+The server keeps prepared statements on a client's behalf. When a kept statement's plan fails because a table's binding changed ([PreparedStatement Caching](#preparedstatement-caching)), the server SHOULD prepare the statement again from its SQL text. If the statement then returns rows of the same description, the server SHOULD execute it as if nothing had changed. Otherwise the server MUST fail each execution with SQLSTATE `0A000` until the client prepares the statement again, as PostgreSQL does, since the client may decode rows by the description it was given.
+
 ## Reference Implementation
 
 A reference implementation is provided in the `convex-db` module (Java).
@@ -469,13 +487,10 @@ A reference implementation is provided in the `convex-db` module (Java).
 |-----------------------|------------|---------|
 | Root database manager | `ConvexDB` | `convex.db` |
 | SQL Database wrapper | `SQLDatabase` | `convex.db.lattice` |
-| Table operations facade | `SQLSchema` | `convex.db.lattice` |
-| Table store lattice | `TableStoreLattice` | `convex.db.lattice` |
-| Table entry merge | `SQLTableLattice` | `convex.db.lattice` |
-| Table utilities | `SQLTable` | `convex.db.lattice` |
-| Row index lattice | `TableLattice` | `convex.db.lattice` |
-| Row entry merge | `SQLRowLattice` | `convex.db.lattice` |
+| Table store view and operations | `SQLSchema` | `convex.db.lattice` |
+| Table entry view and utilities | `SQLTable` | `convex.db.lattice` |
 | Row utilities | `SQLRow` | `convex.db.lattice` |
+| Per-row last-write-wins merge policy | `RowLWW` | `convex.db.lattice` |
 | JDBC Driver | `ConvexDriver` | `convex.db.jdbc` |
 | Calcite schema bridge | `ConvexSchema` | `convex.db.calcite` |
 | Calcite table | `ConvexTable` | `convex.db.calcite` |
@@ -484,14 +499,14 @@ A reference implementation is provided in the `convex-db` module (Java).
 | Planner rules | `ConvexRules` | `convex.db.calcite.rules` |
 | PostgreSQL server | `PgServer` | `convex.db.psql` |
 
-The `SQLDatabaseTest` and `ConvexDBTest` classes provide test coverage for table operations, JDBC, replication, and merge semantics.
+The `SQLDatabaseTest` and `ConvexDBTest` classes provide test coverage for table operations, JDBC and replication; `RowLWWTest` and `ConvexDBMergeTest` cover the merge policy and its use on every route.
 
 ### Example: Basic Table Operations
 
 ```java
-// Create a database with signing key
+// Create a database with a signing key and a merge policy
 AKeyPair keyPair = AKeyPair.generate();
-SQLDatabase db = SQLDatabase.create("mydb", keyPair);
+SQLDatabase db = SQLDatabase.create("mydb", keyPair, RowLWW::merge);
 
 // Create a table
 db.tables().createTable("users", new String[]{"id", "name", "email"});
@@ -522,12 +537,12 @@ db.tables().dropTable("users");
 AKeyPair keyA = AKeyPair.generate();
 AKeyPair keyB = AKeyPair.generate();
 
-SQLDatabase dbA = SQLDatabase.create("shared", keyA);
-SQLDatabase dbB = SQLDatabase.create("shared", keyB);
+SQLDatabase dbA = SQLDatabase.create("shared", keyA, RowLWW::merge);
+SQLDatabase dbB = SQLDatabase.create("shared", keyB, RowLWW::merge);
 
-// Both create the same table
+// A creates the table and B receives it: independent creations would be two tables
 dbA.tables().createTable("data", new String[]{"id", "value"});
-dbB.tables().createTable("data", new String[]{"id", "value"});
+dbB.mergeReplicas(dbA.exportReplica());
 
 // Each writes different rows
 dbA.tables().insert("data", CVMLong.create(1), Vectors.of(CVMLong.create(1), Strings.create("from-a")));
@@ -550,11 +565,11 @@ dbB.tables().getRowCount("data");  // 2
 | Schema | Implicit (type tag per entry) | Explicit column definitions |
 | Key Types | String keys | Primary key (blob-like) |
 | Value Types | Multiple (string, hash, set, counter, etc.) | Row vectors |
-| Merge Granularity | Per-key, type-specific | Per-row (LWW) |
+| Merge Granularity | Per-key, type-specific | Per database, with the application's merge policy; RowLWW merges per row |
 | Query Language | API methods | SQL (via Calcite) |
 | Use Case | Caches, sessions, counters | Structured business data |
 
-Both share the same OwnerLattice authentication model and lattice replication infrastructure.
+Both sign replicas per owner, apply the same owner verification rule ([CAD038](../038_lattice_auth/index.md)) and share the lattice replication infrastructure.
 
 ## See Also
 
