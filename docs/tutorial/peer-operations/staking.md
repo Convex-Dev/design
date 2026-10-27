@@ -81,16 +81,17 @@ import convex.core.Result;
 import convex.core.crypto.AKeyPair;
 import convex.core.cvm.Address;
 import convex.core.lang.Reader;
+import convex.core.data.prim.CVMLong;
 
-// Connect to your target network (Protonet shown; use the public testnet to practise)
-Convex convex = Convex.connect("https://peer.convex.live");
+// Connect to your target network (Protonet shown; practise against a local peer)
+Convex convex = Convex.connect("peer.convex.live:18888");
 
 AKeyPair controllerKeys = AKeyPair.create(controllerKeySeed);
 convex.setKeyPair(controllerKeys);
 convex.setAddress(controllerAddress);
 
 Result balance = convex.query(Reader.read("(balance " + controllerAddress + ")")).get();
-long balanceCopper = ((Number) balance.getValue()).longValue();
+long balanceCopper = ((CVMLong) balance.getValue()).longValue();
 System.out.println("Balance: " + (balanceCopper / 1_000_000_000.0) + " CVM");
 ```
 
@@ -105,7 +106,7 @@ AccountKey peerKey = peerKeys.getAccountKey();
 long stakeAmount = 1_000L * 1_000_000_000L; // 1000 CVM in copper
 
 String stakeCommand = String.format("(create-peer %s %d)", peerKey, stakeAmount);
-Result result = convex.transact(Reader.read(stakeCommand)).get();
+Result result = convex.transact(stakeCommand).get();
 
 if (!result.isError()) {
     System.out.println("✓ Peer created with stake");
@@ -123,7 +124,7 @@ String registerCommand = String.format(
     "(set-peer-data %s {:url \"peer.example.com:18888\"})",
     peerKey);
 
-Result result = convex.transact(Reader.read(registerCommand)).get();
+Result result = convex.transact(registerCommand).get();
 System.out.println(result.isError() ? "✗ " + result.getErrorCode() : "✓ Peer data registered");
 ```
 
@@ -138,7 +139,7 @@ String stakeQuery = String.format("(get-peer-stake %s)", peerKey);
 Result result = convex.query(Reader.read(stakeQuery)).get();
 
 if (!result.isError()) {
-    long stake = ((Number) result.getValue()).longValue();
+    long stake = ((CVMLong) result.getValue()).longValue();
     System.out.println("Current Stake: " + (stake / 1_000_000_000.0) + " CVM");
 }
 ```
@@ -150,10 +151,10 @@ if (!result.isError()) {
 ```java
 // Increase total stake to 2000 CVM
 long newStake = 2_000L * 1_000_000_000L;
-convex.transact(Reader.read(String.format("(set-peer-stake %s %d)", peerKey, newStake))).get();
+convex.transact(String.format("(set-peer-stake %s %d)", peerKey, newStake)).get();
 
 // Fully unstake (stop participating in consensus)
-convex.transact(Reader.read(String.format("(set-peer-stake %s 0)", peerKey))).get();
+convex.transact(String.format("(set-peer-stake %s 0)", peerKey)).get();
 ```
 
 **Warning:** setting stake to `0` removes the peer from consensus. Shut the peer down cleanly first.
@@ -165,7 +166,7 @@ Any coin holder can back a peer they trust with *delegated* stake using `set-sta
 ```java
 // Delegate 500 CVM of stake to a trusted peer
 long delegated = 500L * 1_000_000_000L;
-convex.transact(Reader.read(String.format("(set-stake %s %d)", trustedPeerKey, delegated))).get();
+convex.transact(String.format("(set-stake %s %d)", trustedPeerKey, delegated)).get();
 ```
 
 ### Evicting a Peer
@@ -173,7 +174,7 @@ convex.transact(Reader.read(String.format("(set-stake %s %d)", trustedPeerKey, d
 `evict-peer` removes an inactive or misbehaving peer from the peer set (subject to network rules):
 
 ```java
-convex.transact(Reader.read(String.format("(evict-peer %s)", peerKey))).get();
+convex.transact(String.format("(evict-peer %s)", peerKey)).get();
 ```
 
 ## Stake Security
@@ -215,7 +216,7 @@ public class StakeMonitor {
             System.err.println("⚠ Cannot query stake");
             return;
         }
-        long stake = ((Number) result.getValue()).longValue();
+        long stake = ((CVMLong) result.getValue()).longValue();
         double stakeCoins = stake / 1_000_000_000.0;
 
         long minStake = 1_000L; // 1000 CVM Protonet minimum

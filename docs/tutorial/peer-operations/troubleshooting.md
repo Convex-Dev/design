@@ -137,11 +137,13 @@ free -h
 
 **Symptoms**: Different state than network
 
-**Check Genesis**:
+**Check Genesis**: the genesis hash is peer metadata, not consensus state — read it from the status endpoint, not with a CVM query:
+
 ```bash
-curl http://localhost:8080/api/v1/query \
-  -d '{"source":"*genesis*"}'
+curl -s http://localhost:8080/api/v1/status
 ```
+
+Compare the `genesis` field against the network you expect to be on. See [Verifying network identity](index.md#verifying-network-identity).
 
 **Solutions**:
 1. Verify correct network

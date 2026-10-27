@@ -41,33 +41,33 @@ Launch a peer directly in your JVM process - fastest option for testing.
 
 **Java**:
 ```java
+import convex.peer.API;
 import convex.peer.Server;
 import convex.api.Convex;
 import convex.core.Result;
 import convex.core.crypto.AKeyPair;
 import convex.core.cvm.Address;
-import convex.core.lang.Reader;
 
 public class LocalTestnetExample {
     public static void main(String[] args) throws Exception {
         // Launch local peer
-        Server server = Server.create();
-        server.launch();
+        Server server = API.launchPeer();
 
         try {
-            // Connect directly
-            Convex convex = Convex.connect(server);
+            // Connect as the peer's controller account, which holds the genesis coins
+            Convex convex = Convex.connect(server, server.getPeerController(), server.getKeyPair());
 
-            // Create test account
+            // Create a test account
             AKeyPair keyPair = AKeyPair.generate();
             Address address = convex.createAccountSync(keyPair.getAccountKey());
 
-            // Fund account (no faucet needed, you control the peer!)
-            convex.setKeyPair(keyPair);
+            // Fund it (no faucet needed, you control the peer!) and switch to it
+            convex.transfer(address, 1_000_000_000L).get();
             convex.setAddress(address);
+            convex.setKeyPair(keyPair);
 
             // Use for testing
-            Result result = convex.transact(Reader.read("(def test-value 42)")).get();
+            Result result = convex.transact("(def test-value 42)").get();
             System.out.println("Result: " + result.getValue());
 
         } finally {
@@ -91,24 +91,25 @@ class MyConvexTest {
 
     @BeforeAll
     static void startPeer() throws Exception {
-        server = Server.create();
-        server.launch();
+        server = API.launchPeer();
     }
 
     @BeforeEach
     void connect() throws Exception {
-        convex = Convex.connect(server);
+        // Connect as the controller first: creating an account is a signed transaction
+        convex = Convex.connect(server, server.getPeerController(), server.getKeyPair());
 
-        // Create fresh account for each test
+        // Create a fresh, funded account for each test
         AKeyPair keyPair = AKeyPair.generate();
         Address address = convex.createAccountSync(keyPair.getAccountKey());
-        convex.setKeyPair(keyPair);
+        convex.transfer(address, 1_000_000_000L).get();
         convex.setAddress(address);
+        convex.setKeyPair(keyPair);
     }
 
     @Test
     void testTransaction() throws Exception {
-        Result result = convex.transact(Reader.read("(+ 1 2 3)")).get();
+        Result result = convex.transact("(+ 1 2 3)").get();
         assertEquals(6L, result.getValue());
     }
 
@@ -127,15 +128,20 @@ class MyConvexTest {
 ### Configuration
 
 ```java
-import convex.peer.Config;
+import java.util.HashMap;
 
-// Custom configuration
-Config config = Config.create();
-config = config.withPort(18888);
-config = config.withRestPort(8080);
+import convex.core.crypto.AKeyPair;
+import convex.core.data.Keyword;
+import convex.core.cvm.Keywords;
+import convex.peer.API;
+import convex.peer.Server;
 
-Server server = Server.create(config);
-server.launch();
+// Peer configuration is a keyword map, not a builder
+HashMap<Keyword, Object> config = new HashMap<>();
+config.put(Keywords.KEYPAIR, AKeyPair.generate());
+config.put(Keywords.PORT, 18888);
+
+Server server = API.launchPeer(config);
 ```
 
 ### Advantages

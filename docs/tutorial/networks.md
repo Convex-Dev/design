@@ -4,192 +4,60 @@ sidebar_position: 2
 
 # Networks
 
-Understanding Convex networks and choosing the right one for your needs.
+Convex is not a single network. The same peer software, client SDKs and Convex Lisp run against a production network, public testnets, and a peer on your own laptop — you switch between them by changing a URL. This page covers which one to use, how to reach it, and what changes when you move between them.
 
-## Network Reference
+## Network reference
 
-Quick reference for available Convex networks:
+| Network | Type | HTTP | Binary | Faucet | Genesis hash |
+|---|---|---|---|---|---|
+| **Protonet** | Production | `https://peer.convex.live` | `peer.convex.live:18888` | ❌ | `0xb0e44f2a...` (stable) |
+| **Hugging Face testnet** | Testnet | `https://mikera1337-convex-testnet.hf.space` | ❌ | ✅ | changes on reset |
+| **Local peer** | Development | `http://localhost:8080` | `localhost:18888` | ✅ | new on each store |
 
-| Network | Type | HTTP Access | Binary Access | Faucet | Genesis Hash |
-|---------|------|-------------|---------------|--------|--------------|
-| **Protonet** | Production | `https://peer.convex.live` | `peer.convex.live:18888` | ❌ No | `0xb0e44f2a...` |
-| **Hugging Face Testnet** | Testnet | `https://mikera1337-convex-testnet.hf.space` | ❌ Not available | ✅ Yes | *(varies)* |
-| **Local Peer** | Development | `http://localhost:8080` | `localhost:18888` | ✅ Yes | *(varies)* |
+**HTTP** is the REST API — JSON over HTTPS, and the right choice for web apps and anything behind a corporate proxy. **Binary** is the native peer protocol over TCP: a persistent connection with lower per-call overhead, used by the Java SDK and by peers talking to each other. Both accept the same transactions and queries.
 
-**Connection Types**:
-- **HTTP Access** - REST API for web apps, simple integration (HTTPS/JSON)
-- **Binary Access** - Direct peer protocol for higher performance (TCP binary, not available on all networks)
+## Protonet
 
-**Note**: Genesis hashes for testnets and local peers change when networks reset or restart.
+Protonet is the production network. Convex Coins on it have real value, its state is never reset, and there is no faucet — you fund an account by receiving a transfer from one that already holds coins.
 
-**→ [Peer Operations Guide](peer-operations)** - Connection details, verification, troubleshooting
+Its genesis hash is stable and is the thing to pin in production code:
 
----
+```
+0xb0e44f2a645abfa539f5b96b7a0eabb0f902866feaff0f7c12d1213e02333f13
+```
 
-## What is a Convex Network?
+Verify it before submitting a transaction that matters, and fail closed if it does not match. The [peer operations guide](peer-operations#verifying-network-identity) has working examples for each SDK, and explains why the check cannot be done with a CVM query.
 
-A **Convex network** is a decentralised lattice-based system where multiple peers work together to maintain a shared global state. Unlike traditional blockchains, Convex uses lattice technology and Convergent Proof of Stake (CPoS) consensus to achieve high performance and instant finality.
+## Hugging Face testnet
 
-### Key Characteristics
+The public testnet runs on Hugging Face Spaces and exists for learning, demos and pre-deployment testing. It has a faucet, so an account costs nothing, and its coins are worth nothing.
 
-**Decentralised Architecture**
-- Network of peers maintaining consensus
-- No central authority or single point of failure
-- Cryptographically secure state transitions
+It is HTTP only — there is no binary port — so use a local peer if you need to exercise the binary protocol. It may also reset without notice, which changes its genesis hash and discards every account and actor on it. Anything you want to keep, keep in source control.
 
-**Lattice Technology**
-- State merges like CRDTs (Conflict-free Replicated Data Types)
-- Not a linear blockchain
-- Enables parallel transaction processing
+## Local peer
 
-**Global Shared State**
-- All peers converge on the same state
-- Atomic transactions with cryptographic signatures
-- Self-sovereign accounts with Ed25519 keys
+A local peer is a complete Convex network with one participant, running on your machine. It is the fastest option — no network round trip — gives you the binary protocol, creates and funds accounts on demand, and works offline. It is what to develop and run integration tests against.
 
-**Consensus Mechanism**
-- Convergent Proof of Stake (CPoS)
-- Sub-second consensus finality
-- Byzantine fault tolerant
+The trade-off is that it is genuinely a different network: a new store generates a new genesis hash, so nothing you deploy against it exists anywhere else, and a pinned genesis hash in your test setup breaks the first time you start from a clean directory.
 
-## Network Types
+See [Local Testnets](peer-operations/local-testnets) for the setup options.
 
-### Production Networks
+## Choosing a network
 
-**Purpose**: Real-world applications with actual value
-
-**Characteristics**:
-- No public faucets (Convex Coins have real value)
-- High reliability and uptime
-- Persistent state (never resets)
-- Professionally operated infrastructure
-- Requires funded account to transact
-
-**When to Use**:
-- Deploying production applications
-- Managing real assets
-- Interacting with production actors and services
-
-### Test Networks (Testnets)
-
-**Purpose**: Testing and learning without risk
-
-**Characteristics**:
-- Public faucets available (free test funds)
-- Safe for experimentation
-- May reset periodically
-- No real value (test Convex Coins only)
-- Publicly accessible
-
-**When to Use**:
-- Learning Convex development
-- Testing applications before deployment
-- Experimenting with actors (smart contracts)
-- Demonstrating features to others
-
-### Local Development Peers
-
-**Purpose**: Private development environment
-
-**Characteristics**:
-- Full control over configuration
-- Fastest performance (no network latency)
-- Built-in account creation and funding
-- Perfect for unit/integration testing
-- Works offline
-- Requires running peer infrastructure
-
-**When to Use**:
-- Active development and debugging
-- Running automated tests
-- Learning Convex internals
-- Building without network dependency
-
-## Known Networks
-
-### Protonet (Production)
-
-Convex's main production network for real-world applications.
-
-**Connection**:
-- **HTTP**: `https://peer.convex.live`
-- **Binary**: `peer.convex.live:18888`
-
-**Details**:
-- **Genesis Hash**: `0xb0e44f2a645abfa539f5b96b7a0eabb0f902866feaff0f7c12d1213e02333f13`
-- **Faucet**: No
-- **Funding**: Requires funded account or transfer from existing account
-
-**Important**: Verify the [genesis hash](peer-operations#verifying-network-identity) before submitting production transactions.
-
----
-
-### Hugging Face Testnet
-
-Public testnet hosted on Hugging Face Spaces with faucet support for testing and learning.
-
-**Connection**:
-- **HTTP**: `https://mikera1337-convex-testnet.hf.space`
-- **Binary**: Not available (HTTP only)
-
-**Details**:
-- **Faucet**: Yes
-- **Hosting**: Hugging Face Spaces
-- **Resets**: May reset periodically (genesis hash will change)
-- **Use For**: Learning, testing, experimentation
-- **Limitation**: HTTP access only, use local peer for binary protocol testing
-
----
-
-### Local Development Peer
-
-Run your own peer locally for maximum performance and control.
-
-**Connection**:
-- **HTTP**: `http://localhost:8080`
-- **Binary**: `localhost:18888`
-
-**Details**:
-- **Performance**: &lt;1ms latency (fastest option)
-- **Control**: Full configuration access
-- **Privacy**: No network exposure
-- **Faucet**: Built-in account creation and funding
-
-**→ See**: [Peer Operations - Local Testnets](peer-operations/local-testnets) for setup options.
-
----
-
-### Finding More Networks
-
-Additional test networks and community-run peers:
-
-- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - `#network-status` channel
-- **[Convex Foundation](https://convex.world)** - Official announcements
-- **Community Forums** - User-operated test networks
-
-**Note**: Always verify network URLs before connecting, especially for production use.
-
-## Choosing the Right Network
-
-### Decision Guide
-
-| Scenario | Recommended Network | Why |
-|----------|-------------------|-----|
-| **First time learning** | Hugging Face Testnet | No setup required, safe to experiment |
-| **Daily development** | Local Peer | Fastest, binary protocol, full control |
-| **Integration tests** | Local Peer | Deterministic, fast, isolated |
-| **Public demos** | Hugging Face Testnet | Accessible to others, persistent |
-| **Staging tests** | Hugging Face Testnet | Production-like environment |
-| **Production app** | Protonet | Real value, high reliability |
-
-### Development Workflow
+| What you're doing | Use | Why |
+|---|---|---|
+| Learning Convex | Hugging Face testnet | Nothing to install, free funds, safe to break |
+| Day-to-day development | Local peer | Fastest loop, binary protocol, works offline |
+| Integration tests | Local peer | Isolated and repeatable — reset state between runs |
+| Public demo or shared staging | Hugging Face testnet | Reachable by other people |
+| Production | Protonet | Real value, persistent state, no resets |
 
 ```mermaid
 graph TD
-    A[Starting Development] --> B{What are you doing?}
-    B -->|Learning Basics| C[Hugging Face Testnet]
-    B -->|Active Development| D[Local Peer]
-    B -->|Integration Testing| D
+    A[Starting development] --> B{What are you doing?}
+    B -->|Learning basics| C[Hugging Face testnet]
+    B -->|Active development| D[Local peer]
+    B -->|Integration testing| D
     B -->|Deployment| E[Protonet]
 
     C -->|Ready to deploy| E
@@ -197,75 +65,42 @@ graph TD
     D -->|Ready to deploy| E
 ```
 
-### Quick Start by Use Case
+## Connecting
 
-**Learning Convex** → Use **Hugging Face Testnet** (`https://mikera1337-convex-testnet.hf.space`)
-- No setup required • Free test funds • Safe to experiment
-
-**Building an Application** → Use **Local Peer** ([setup guide](peer-operations/local-testnets))
-- Fastest iteration • Full control • Binary protocol • Works offline
-
-**Deploying to Production** → Use **Protonet** (`https://peer.convex.live`)
-- Real value • High reliability • [Verify genesis hash](peer-operations#verifying-network-identity)!
-
-## Connecting to Networks
-
-All networks support the same client API. Simply change the URL to switch networks:
+Every network speaks the same client API, so switching is mostly a matter of changing the endpoint. Note that the class you use depends on the *protocol*, not the network: in Java, `ConvexJSON` is the REST client and `Convex` speaks the binary protocol.
 
 ```java
-// Testnet
-Convex convex = Convex.connect("https://mikera1337-convex-testnet.hf.space");
+// Testnet — HTTP only, so the REST client
+ConvexJSON convex = ConvexJSON.connect("https://mikera1337-convex-testnet.hf.space");
 
-// Production
-Convex convex = Convex.connect("https://peer.convex.live");
+// Production over HTTP
+ConvexJSON convex = ConvexJSON.connect("https://peer.convex.live");
+
+// Production over the binary protocol — note the peer port, not 443
+Convex convex = Convex.connect("peer.convex.live:18888");
 ```
 
-**→ See [Peer Operations Guide](peer-operations)** for:
-- Connection types (HTTP vs binary protocol)
-- Configuration and timeouts
-- Genesis hash verification
-- Health monitoring
-- Troubleshooting
+The [peer operations guide](peer-operations) covers connection types, timeouts, health monitoring and troubleshooting in detail.
 
-## Security Considerations
+## What changes when you move networks
 
-### Production (Protonet)
+Moving code from a testnet to Protonet changes three things:
 
-- **Always verify genesis hash** - See [verification guide](peer-operations#verifying-network-identity)
-- Use HTTPS for encrypted connections
-- Never share private keys or seed phrases
-- Transactions are irreversible
-- Test thoroughly on testnets first
+**Funding.** There is no faucet on Protonet. Any code path that calls a faucet endpoint to obtain coins will fail there, so account funding needs a different mechanism in production.
 
-### Testnets
+**Irreversibility.** A testnet mistake costs nothing and a reset erases it. A Protonet transaction is final — there is no administrator who can reverse it.
 
-- Never use production keys on testnets
-- Testnets may reset without notice
-- Test funds have no real value
-- Safe to experiment and make mistakes
+**Keys.** Use different keys per network. A key that has touched a testnet has been through test tooling, sample repositories and possibly a screen share; it is not a production key, and treating it as one is how test credentials end up holding real value.
 
-### Local Peers
+A local peer is private and never exposed to the network, which makes it safe for testing — but its state is ephemeral unless you configure a persistent store, so treat anything you have not persisted as disposable.
 
-- Completely private (no network exposure)
-- Safe for testing with production-like keys
-- State is ephemeral unless persisted
+## Finding other networks
 
-## Next Steps
+Community-run peers and additional test networks are announced in the [Discord `#network-status` channel](https://discord.com/invite/xfYGq4CT7v) and by the [Convex Foundation](https://convex.world). Verify the genesis hash of any peer you have not used before: the URL tells you who you are talking to, but only the genesis hash tells you which network they are on.
 
-### Getting Started
+## Next steps
 
-- **[Peer Operations](peer-operations)** - Detailed connection guide, verification, troubleshooting
-- **[Client SDKs](/docs/tutorial/client-sdks)** - Connect from your programming language
-- **[Faucet Guide](/docs/tutorial/coins/faucet)** - Get test funds for testnets
-
-### Advanced Topics
-
-- **[Client Types](/docs/tutorial/client-sdks/java/clients)** - HTTP vs binary protocol
-- **[Convex Peer](/docs/products/convex-peer)** - Run your own production peer
-- **[Account Management](/docs/tutorial/client-sdks/java/accounts)** - Keys and accounts
-
-## Resources
-
-- **[Discord Community](https://discord.com/invite/xfYGq4CT7v)** - Network status and support
-- **[Convex.world](https://convex.world)** - Official website
-- **[GitHub](https://github.com/Convex-Dev/convex)** - Source code
+- **[Peer Operations](peer-operations)** — connecting, verifying, monitoring and troubleshooting
+- **[Client SDKs](/docs/tutorial/client-sdks)** — connect from Java, TypeScript or Python
+- **[Faucet Guide](/docs/tutorial/coins/faucet)** — getting test funds
+- **[Convex Peer](/docs/products/convex-peer)** — running a peer of your own
