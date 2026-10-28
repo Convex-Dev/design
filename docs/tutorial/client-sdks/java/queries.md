@@ -33,7 +33,7 @@ System.out.println("Result: " + result.getValue());  // 6
 
 Unlike transactions, queries:
 
-- **Don't consume juice** - completely free to execute
+- **Aren't charged for juice** - a query is metered like a transaction, but nothing is deducted from any account
 - **Don't require balance** - work even with zero funds
 - **Don't need signatures** - read-only access
 - **Execute instantly** - no consensus delay
@@ -366,21 +366,23 @@ AMap<?, ?> resultMap = (AMap<?, ?>) result.getValue();
 
 ### Minimize Query Complexity
 
-Complex queries take longer to execute:
+A query that does a lot of work is not just slower: it is metered, and it stops with a `:JUICE` error when it reaches the peer's juice limit. A loop of 10,000 iterations completes in milliseconds on a local peer, and a loop of 100,000 runs out of juice:
 
 ```java
-// ❌ SLOW - iterates entire range
+// Heavy - 10,000 iterations
 Result result = convex.query(
-    Reader.read("(reduce + (range 1000000))"),
+    Reader.read("(loop [i 0 total 0] (if (< i 10000) (recur (inc i) (+ total i)) total))"),
     Address.create(1)
 ).get();
 
-// ✅ FAST - simple arithmetic
+// Light - simple arithmetic
 Result result = convex.query(
     Reader.read("(* 1000000 500000)"),
     Address.create(1)
 ).get();
 ```
+
+Public REST peers apply a lower limit than the binary protocol, 100,000 juice per query by default, so keep queries to the data you need and move heavy computation out of the query.
 
 ### Use Parallel Queries
 

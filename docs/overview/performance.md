@@ -9,7 +9,7 @@ Convex offers outstanding performance for decentralised applications. Our object
 
 ## The headline numbers
 
-- **Sub-second end-to-end finality** — consensus confirmation typically contributes ~200ms of a complete signed round trip (breakdown below)
+- **Sub-second end-to-end finality** — a complete signed round trip takes about 35ms with the peers and client on one machine, and about 280ms in the example below, where client and peers are separated by internet latency (breakdown below)
 - **Zero block delay** — a peer publishes a block the instant it has a transaction; no leader slot, no waiting
 - **Up to 1 million transactions per second** raw CVM execution, measured by `CVMBenchmark`; the network targets 100,000+ TPS end-to-end
 - **~5 million reads / 800,000 writes per second** in Etch storage, on an ordinary laptop (`EtchBenchmark`)
@@ -39,6 +39,8 @@ Latency is the time to achieve some specified result (between the cause and the 
 4. Confirming the Block in consensus (200ms)
 5. Computing the result of the transaction / CVM state updates (10ms)
 6. Returning the result to the Client (30ms)
+
+These figures assume a client and peers separated by internet latency, so most of the budget is network time. With that cost removed, the whole round trip is short: against the five-peer `TestNetwork` used by the peer tests, 100 sequential transactions, each awaited before the next was sent, had a median round trip of 35ms (90th percentile 39ms, slowest 44ms).
 
 In some cases, a client may not need to wait for all six stages, for example, a client that trusts the reliability and correctness of the Peer they connect to may be happy to assume that their transaction will be successfully processed after Stage 2.
 
