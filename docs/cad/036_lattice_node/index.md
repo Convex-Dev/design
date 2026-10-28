@@ -450,7 +450,6 @@ Nodes MAY implement these standard lattice types:
 | KeyedLattice | Per-key statically-typed child lattices | Per-key zeros |
 | LWWLattice | Whole value with the newer timestamp wins (durable deletes) | nil |
 | JSONLattice | Structural navigation only (defines no merge) | Empty container by key shape |
-| StampingLattice | Stamp-on-write layer; delegates merge and navigation | Delegated |
 | DataLattice | Union of hash-indexed values | Empty index |
 | SignedLattice | Validates signatures on merge; signs on write at the boundary | nil |
 | OwnerLattice | Per-owner signed data maps | Empty map |
