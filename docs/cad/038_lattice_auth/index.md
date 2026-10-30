@@ -194,7 +194,7 @@ A UCAN token is a JWT with the following claims:
 |-------|-------------|
 | `iss` | Issuer DID (who is delegating) |
 | `aud` | Audience DID (who receives the delegation) |
-| `exp` | Expiry timestamp (token invalid once `exp <= now`) |
+| `exp` | Expiry timestamp (token invalid once `exp <= now`); required, `null` for a token that never expires |
 | `nbf` | Not-before timestamp (token inactive until `nbf <= now`); optional |
 | `att` | Attenuations — vector of capabilities |
 | `prf` | Proof chain — vector of parent UCAN tokens |
@@ -206,9 +206,11 @@ UCAN tokens can be encoded as standard JWTs with EdDSA signatures:
 
 ```
 Header:  {"alg": "EdDSA", "typ": "JWT"}
-Payload: {"iss": "did:key:z6Mk...", "aud": "did:key:z6Mk...", "exp": 1718000000, "att": [...], "prf": [...]}
+Payload: {"ucv": "0.10.0", "iss": "did:key:z6Mk...", "aud": "did:key:z6Mk...", "exp": 1718000000, "att": [...], "prf": [...]}
 Signature: Ed25519 signature over header.payload
 ```
+
+The `ucv` claim names the Convex UCAN profile version and must be exactly `0.10.0`.
 
 The `toJWT()` and `fromJWT()` methods convert between UCAN objects and JWT strings.
 
@@ -264,9 +266,11 @@ Delegated capabilities can only narrow the grantor's authority — the delegate'
 UCAN tokens are validated by checking:
 
 1. **Signature** — the EdDSA signature is valid against the public key bound in the token's `iss` DID (never the `kid` header). Signatures are verified once, at the transport boundary.
-2. **Temporal bounds** — the token is within its validity window: `exp > now` (not expired) and, if present, `nbf <= now` (already active). Temporal bounds are re-checked at the point of use, after the boundary signature check, so a token that expires in flight is rejected on use.
+2. **Temporal bounds** — the token is within its validity window: `exp` is `null` or `exp > now` (not expired) and, if present, `nbf <= now` (already active). Temporal bounds are re-checked at the point of use, after the boundary signature check, so a token that expires in flight is rejected on use.
 3. **Capabilities** — each capability in `att` is covered by the issuer's own authority, under the resource and ability matching rules above.
-4. **Proof chain** — every parent token in `prf` is validated recursively, and each link is well-formed: `proof.aud == token.iss` (the parent delegated to this issuer) and `token.exp <= proof.exp` (a child may not outlive its parent).
+4. **Proof chain** — every parent token in `prf` is validated recursively, including its temporal bounds at the point of use, and each link is well-formed: `proof.aud == token.iss` (the parent delegated to this issuer).
+
+Temporal validity follows UCAN 1.0 execution-time semantics: links in a chain may carry different validity periods, but every link must be valid when the authority is exercised, so a chain is usable from its latest `nbf` to its earliest non-null `exp`. A child's window need not lie within its parent's. This deliberately departs from the UCAN 0.10.0 containment rule, despite the `0.10.0` profile version.
 
 Audience and issuer matching (e.g. `aud == caller DID`) is an **application policy** decision layered on top of these mandatory cryptographic, temporal, and chain-linkage checks — the core validator enforces proof-chain linkage but leaves audience acceptance to the caller.
 
