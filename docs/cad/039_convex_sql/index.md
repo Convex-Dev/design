@@ -33,11 +33,12 @@ Traditional distributed databases solve these problems with consensus protocols 
 Where a database lives is the choice of the application that uses it: an application's own databases live in its state under `:app` ([CAD045](../045_lattice_apps/index.md)). [CAD053](../053_lattice_regions/index.md) reserves the `:sql` region for databases published for many applications to read, such as reference tables, each owner's under the signed owner envelope below. What the region holds is not yet defined beyond that.
 :::
 
-A **database map** holds databases by name. Each database is a keyword-keyed structure: the `:tables` section holds the table store, leaving room for further per-database sections in future.
+A **database map** holds databases by name. Each database is a keyword-keyed structure: the `:tables` section holds the table store, and the optional `:config` section holds the database's [settings](#settings), leaving room for further per-database sections in future.
 
 ```
 database map    {db-name → database}
-  database      {:tables → table store}
+  database      {:tables → table store, :config → settings}
+    settings    {setting-key → value}
     table store {table-name → table entry}
       table entry [schema, rows, ctime, live-count, version]
         rows      {primary-key → row entry}
@@ -216,6 +217,23 @@ The reference implementation does not yet encode integer keys beyond the 64-bit 
 
 This allows natural primary key usage while maintaining Index compatibility.
 
+### Settings
+
+The `:config` section of a database is a map from keywords to values, the database's **settings**. The section is optional, and a setting that is absent takes its default.
+
+Settings describe the database, not a connection to it, so every node and every client reads the database by the same settings. Each implementation decides which settings it acts on and which values it accepts:
+
+- An implementation MUST keep the settings it does not act on when it writes the section.
+- An implementation that acts on a setting MUST refuse to serve the database for that purpose when the setting holds a value it does not support, rather than assume another value.
+
+The section merges as part of its database, with the database's [merge policy](#merge-policy). Convex SQL does not specify how. A policy may keep each node's own settings and leave the application to agree on them, as the reference policy does.
+
+This CAD defines one setting:
+
+| Key | Values | Default | Meaning |
+|-----|--------|---------|---------|
+| `:identifiers` | `:upper`, `:lower`, `:insensitive` | `:upper` | How SQL resolves names ([Identifiers](#identifiers)) |
+
 ### Merge Policy
 
 A database merges with a **merge policy**: a function that takes two states of the database, the established (own) state and an incoming one, and returns the merged state. Convex SQL specifies the data format, not how concurrent writes combine. Whatever constructs a database, normally the application that uses it, supplies its policy. There is no default.
@@ -233,7 +251,7 @@ A value delivered to a path below a database ([CAD036](../036_lattice_node/index
 | `[:tables name 1]` | The table's rows, in an entry without a ctime |
 | `[:tables name 1 key]` | One row, in an entry without a ctime |
 
-An entry without a ctime carries only rows, and the policy decides whether they apply. Convex SQL defines only the `:tables` section, so values delivered to other sections are not merged. A delivery to any other path into a table entry MUST be refused.
+An entry without a ctime carries only rows, and the policy decides whether they apply. Path delivery is defined only for the `:tables` section, so values delivered to other sections, `:config` included, are not merged. A delivery to any other path into a table entry MUST be refused.
 
 ### Ownership and Authentication
 
@@ -268,6 +286,20 @@ A node that absorbs other owners' replicas into its own database has several wri
 
 Convex SQL presents each live table to SQL with its declared column types ([Column Types](#column-types)), and supports CREATE TABLE, DROP TABLE, SELECT, INSERT, UPDATE and DELETE. Queries read the node's own copy of the database; writes change it, and reach other nodes by replication.
 
+### Identifiers
+
+The database's `:identifiers` setting ([Settings](#settings)) decides how SQL resolves the names of schemas, tables and columns. Quoted names keep the case they are written in under every policy. Unquoted names fold as follows:
+
+| Value | Unquoted names | Comparison |
+|-------|----------------|------------|
+| `:upper` (default) | Fold to upper case, as the SQL standard requires | Exact |
+| `:lower` | Fold to lower case | Exact |
+| `:insensitive` | Fold to upper case | Regardless of case |
+
+A table or column created through SQL is stored under the name SQL resolves, so `CREATE TABLE orders` stores `ORDERS` under the default. A name written by other means is stored as given. Under an exact policy, SQL reaches such a name unquoted only if it is in the policy's case, and quoted otherwise.
+
+Changing the setting changes how SQL resolves names, not the names stored, so SQL written for the old policy may no longer resolve. An implementation applies the setting held when a SQL session begins.
+
 ### Writes
 
 Each write changes the database as follows, where *t* is the writer's clock reading ([Timestamps](#timestamps)):
@@ -278,7 +310,9 @@ Each write changes the database as follows, where *t* is the writer's clock read
 | DROP TABLE | A tombstone: `nil` schema, `nil` rows and ctime *t* |
 | INSERT | A row entry `[values, t, nil]` under the row's primary key |
 | DELETE | A row tombstone `[nil, t, t]` under the row's primary key |
-| UPDATE | As a DELETE of the old row and an INSERT of the new one |
+| UPDATE | A row entry `[values, t, nil]` under the row's primary key; if the key changes, also a row tombstone under the old key |
+
+An INSERT adds new rows only: if a row's key is already held, or repeated within the statement, the statement fails with SQLSTATE `23505` and writes nothing, as does an UPDATE that changes a key to one already held. An INSERT writes all its rows in one change to the database.
 
 ### Prepared Statements
 
@@ -305,7 +339,8 @@ Such a server keeps prepared statements on a client's behalf. When a kept statem
 The reference implementation is the `convex-db` module of the [Convex repository](https://github.com/Convex-Dev/convex), in Java. Its README and `docs/` describe its API. Notes:
 
 - `ConvexDB` holds a database map. `SQLDatabase`, `SQLSchema` and `SQLTable` are views of a database, its table store and a table entry.
-- `RowLWW` is a merge policy, per-row last-write-wins, described in `convex-db/docs/LATTICE-DB-ARCHITECTURE.md`.
+- `RowLWW` is a merge policy, per-row last-write-wins, described in `convex-db/docs/LATTICE-DB-ARCHITECTURE.md`. It keeps each node's own `:config` section.
+- `SQLDatabase.configure` writes a setting, and `IdentifierPolicy` names the `:identifiers` values. The JDBC driver applies the policy when a connection opens.
 - SQL is parsed and planned with Apache Calcite.
 - The JDBC driver opens databases by URL: `jdbc:convex:mem:<name>` in memory, `jdbc:convex:file:<path>` in an Etch store. Both merge with `RowLWW`.
 - `PgServer` serves the PostgreSQL wire protocol.
