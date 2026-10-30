@@ -180,7 +180,7 @@ Deactivation of a registry-backed DID is permanent. Loss of a controller does no
 Registry operations MUST validate that a new controller is a plausible trust monitor (an existing account or scoped reference). In particular, setting a controller to a non-existent account address is dangerous: account addresses are allocated sequentially, so control would silently pass to whoever later creates that account.
 
 :::note
-This CAD is under development. The specification will be extended to cover authentication flows and verifiable credential anchoring. The current DID registry implementation (`convex/lab/did.cvx`) predates parts of this specification and is being upgraded to match (controller validation, terminal deactivation, resolver metadata).
+This CAD is under development. The specification will be extended to cover authentication flows and verifiable credential anchoring. The DID registry implementation (`convex/lab/did.cvx`) validates new controllers, makes deactivation terminal and exposes the full registry record for resolver metadata (`read-record`).
 :::
 
 ## References

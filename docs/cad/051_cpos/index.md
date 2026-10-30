@@ -151,7 +151,7 @@ In the Convex JVM implementation:
 - Belief merge is `convex.core.cpos.BeliefMerge` (level updates in `updateLevel`, the stage (i) clamp after `updateConsensus`, stage (ii) demotion in `filterBlocks`/`demoteFutureBlocks`); constants live in `CPoSConstants` (`CONSENSUS_LEVELS`, `CONSENSUS_THRESHOLD`, `MAX_BLOCK_BACKDATE`, `MAX_BLOCK_FORWARD`, `PEER_DECAY_*`, `MINIMUM_EFFECTIVE_STAKE`, `KEEP_PROPOSAL_TIME`, `ENABLE_FORK_RECOVERY`).
 - Deterministic checks are `State.checkBlock`/`applyBlock`; effective stake is `State.computeStakes` with `Economics.stakeDecay`; execution against the finalised prefix is `Peer.updateState`.
 - Test suites: `BeliefMergeTest`, `BeliefVotingTest`, `SnapshotStateTest` (golden-hash replay), `StakingTest`, plus the adversarial coverage in `CoreTest`.
-- The implementation-level design narrative, decision log and issue links live in `convex-core/docs/CONSENSUS.md` in the [Convex repository](https://github.com/Convex-Dev/convex) (forward-dating: convex#595; fork recovery: convex#492).
+- The implementation-level design narrative, decision log and issue links live in `convex-core/docs/CONSENSUS.md` in the [Convex repository](https://github.com/Convex-Dev/convex) (forward-dating: convex#595; fork recovery: convex#480).
 
 ## See also
 
