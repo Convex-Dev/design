@@ -4,6 +4,12 @@
 
 This CAD specifies Decentralised Identity (DID) support for the Convex network, covering identity methods, on-chain representation, and interoperability with the wider DID ecosystem.
 
+## DID Syntax
+
+DIDs follow the [W3C DID Core syntax](https://www.w3.org/TR/did-core/#did-syntax). A DID is a URI, so DIDs are equal when they are equivalent under [RFC 3986 syntax-based normalisation](https://www.rfc-editor.org/rfc/rfc3986#section-6.2.2): hex digits in a percent-encoding compare case-insensitively (§6.2.2.1), and an encoded `idchar` equals the plain character (§6.2.2.2). An encoded reserved character is not the raw character ([§2.2](https://www.rfc-editor.org/rfc/rfc3986#section-2.2)), so `did:web:example.com%3A8080` and `did:web:example.com:8080` are different DIDs.
+
+The normalised form writes percent-encodings with upper-case hex digits, decodes encoded `idchar`s, and percent-encodes as UTF-8 every other character outside `idchar` and `:`. `~` is unreserved in RFC 3986 but not an `idchar`, so its normalised form is `%7E`. Implementations compare DIDs in this form, and a DID used as a key, such as a lattice owner, MUST be written in it.
+
 ## DID Methods
 
 ### `did:convex`
@@ -186,6 +192,7 @@ This CAD is under development. The specification will be extended to cover authe
 ## References
 
 - [W3C DID Core Specification](https://www.w3.org/TR/did-core/)
+- [RFC 3986: Uniform Resource Identifier (URI): Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
 - [did:key Method](https://w3c-ccg.github.io/did-method-key/)
 - [did:web Method](https://w3c-ccg.github.io/did-method-web/)
 - [CAD004: Accounts](/docs/cad/accounts)
