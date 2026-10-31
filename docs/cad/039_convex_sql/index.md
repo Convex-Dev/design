@@ -312,7 +312,7 @@ Each write changes the database as follows, where *t* is the writer's clock read
 | DELETE | A row tombstone `[nil, t, t]` under the row's primary key |
 | UPDATE | A row entry `[values, t, nil]` under the row's primary key; if the key changes, also a row tombstone under the old key |
 
-An INSERT adds new rows only: if a row's key is already held, or repeated within the statement, the statement fails with SQLSTATE `23505` and writes nothing, as does an UPDATE that changes a key to one already held. An INSERT writes all its rows in one change to the database.
+An INSERT adds new rows only: if a row's key is already held, or repeated within the statement, the statement fails with SQLSTATE `23000` (integrity constraint violation) and writes nothing, as does an UPDATE that changes a key to one already held. An INSERT writes all its rows in one change to the database.
 
 ### Prepared Statements
 
@@ -330,7 +330,7 @@ An implementation MUST publish only the `:tables` section on commit and keep the
 
 ### PostgreSQL Wire Protocol
 
-An implementation may serve Convex SQL over the PostgreSQL wire protocol, so that PostgreSQL clients can connect, with a `pg_catalog` schema for PostgreSQL client tooling.
+An implementation may serve Convex SQL over the PostgreSQL wire protocol, so that PostgreSQL clients can connect, with a `pg_catalog` schema for PostgreSQL client tooling. Such a server SHOULD report a condition by PostgreSQL's more specific SQLSTATE where it has one, as PostgreSQL clients expect: `23505` (unique violation) for a key already held.
 
 Such a server keeps prepared statements on a client's behalf. When a kept statement's plan fails because a table's binding changed ([Prepared Statements](#prepared-statements)), the server SHOULD prepare the statement again from its SQL text. If the statement then returns rows of the same description, the server SHOULD execute it as if nothing had changed. Otherwise the server MUST fail each execution with SQLSTATE `0A000` until the client prepares the statement again, as PostgreSQL does, since the client may decode rows by the description it was given.
 
